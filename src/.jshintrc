@@ -1,0 +1,24 @@
+{
+  "boss": true,
+  "curly": true,
+  "trailing": true,
+  "indent": 2,
+  "devel": true,
+  "eqeqeq": true,
+  "eqnull": true,
+  "immed": true,
+  "latedef": "nofunc",
+  "newcap": false,
+  "noarg": true,
+  "quotmark": "single",
+  "undef": true,
+  "unused": "vars",
+  "maxlen": 80,
+
+  "browser": true,
+  "globals": {
+    "define": false,
+    "require": false,
+    "PImage": false
+  }
+}
