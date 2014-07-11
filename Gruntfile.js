@@ -54,9 +54,9 @@ module.exports = function(grunt) {
           baseUrl: '.',
           findNestedDependencies: true,
           include: ['src/app'],
-          // onBuildWrite: function( name, path, contents ) {
-          //   return require('amdclean').clean(contents);
-          // },
+          onBuildWrite: function( name, path, contents ) {
+            return require('amdclean').clean(contents);
+          },
           optimize: 'none',
           out: 'lib/p5.sound.js',
           paths: {
