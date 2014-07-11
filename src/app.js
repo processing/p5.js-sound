@@ -3,9 +3,8 @@ define(function (require) {
   'use strict';
 
   var p5SOUND = require('sndcore');
-  
   require('master');
-  require('global');
+  require('helpers');
   require('soundfile');
   require('amplitude');
   require('fft');
@@ -16,7 +15,6 @@ define(function (require) {
   require('audioin');
   require('env');
 
-
-  return p5;
+  return p5SOUND;
 
 });

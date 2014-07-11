@@ -1,8 +1,8 @@
 {
-  "name": "p5",
+  "name": "p5.sound",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lmccart/p5.js.git"
+    "url": "https://github.com/therewasaguy/p5.sound.js.git"
   },
   "version": "0.2.21",
   "devDependencies": {
@@ -19,18 +19,4 @@
     "amdclean": "~0.3.3",
     "grunt-contrib-sass": "~0.7.2"
   },
-  "licenses": [
-    {
-      "type": "GPL",
-      "url": "http://www.opensource.org/licenses/GPL-3.0"
-    }
-  ],
-  "dependencies": {
-    "reqwest": "~0.9.6"
-  },
-  "files": [
-    "license.txt",
-    "lib/p5.min.js",
-    "lib/p5.js"
-  ]
 }

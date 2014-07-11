@@ -4,267 +4,149 @@ define(function (require) {
   var p5sound = require('master');
 
   /**
-   *  <p>Creates a signal that oscillates between -1.0 and 1.0.
-   *  By default, the oscillation takes the form of a sinusoidal
-   *  shape ('sine'). Additional types include 'triangle',
-   *  'sawtooth' and 'square'. The frequency defaults to
-   *  440 oscillations per second (440Hz, equal to the pitch of an
-   *  'A' note).</p> 
+   * Create an analyser node with optional variables for smoothing, 
+   * fft size, min/max decibels. Decibels are in dBFS (0 is loudest),
+   * and will impact the range of your results.
    *
-   *  <p>Set the type of oscillation  setType(), or by creating a
-   *  specific oscillator.</p> For example:
-   *  <code>new SinOsc(freq)</code>
-   *  <code>new TriOsc(freq)</code>
-   *  <code>new SqrOsc(freq)</code>
-   *  <code>new SawOsc(freq)</code>.
-   *  </p>
-   *  
-   *  @class Oscillator
-   *  @constructor
-   *  @param {[Number]} freq frequency defaults to 440Hz
-   *  @param {[String]} type type of oscillator. Options:
-   *                         'sine' (default), 'triangle',
-   *                         'sawtooth', 'square'
+   * @class FFT
+   * @constructor
+   * @param {[Number]} smoothing   Smooth results of Freq Spectrum between 0.01 and .99)]
+   * @param {[Number]} fft_size    Must be a power of two between 32 and 2048
+   * @param {[Number]} minDecibels Minimum decibels (dBFS, defaults to -140)
+   * @param {[Number]} maxDecibels Maximum decibels (dBFS, defaults to 0)
+   * @return {Object}    FFT Object
    */
-  p5.prototype.Oscillator = function(freq, type){
-    this.started = false;
+  p5.prototype.FFT = function(smoothing, fft_size, minDecibels, maxDecibels) {
+    var SMOOTHING = smoothing || 0.6;
+    var FFT_SIZE = fft_size || 1024;
     this.p5s = p5sound;
+    this.analyser = this.p5s.audiocontext.createAnalyser();
 
-    // components
-    this.oscillator = this.p5s.audiocontext.createOscillator();
-    this.f = freq || 440; // frequency
-    this.oscillator.frequency.value = this.f;
-    this.oscillator.type = type || 'sine';
-    var o = this.oscillator;
+    // default connections to p5sound master
+    this.p5s.output.connect(this.analyser);
+    // this.analyser.connect(this.p5s.audiocontext.destination);
 
-    // connections
-    this.input = this.p5s.audiocontext.createGain();
-    this.output = this.p5s.audiocontext.createGain();
+    this.analyser.maxDecibels = maxDecibels || 0;
+    this.analyser.minDecibels = minDecibels || -140;
 
-    // param nodes for modulation
-    // this.freqNode = o.frequency;
-    this.ampNode = this.output.gain;
-    this.freqNode = this.oscillator.frequency;
+    this.analyser.smoothingTimeConstant = SMOOTHING;
+    this.analyser.fftSize = FFT_SIZE;
 
-    // set default output gain
-    this.output.gain.value = 0.5;
+    this.freqDomain = new Uint8Array(this.analyser.frequencyBinCount);
+    this.timeDomain = new Uint8Array(this.analyser.frequencyBinCount);
 
-    // sterep panning
-    this.panPosition = 0.0;
-    this.panner = this.p5s.audiocontext.createPanner();
-    this.panner.panningModel = 'equalpower';
-    this.panner.distanceModel = 'linear';
-    this.panner.setPosition(0,0,0);
+  };
 
-    // connect to p5sound by default
-    this.oscillator.connect(this.output);
-    this.output.connect(this.panner);
-    this.panner.connect(this.p5s.input);
-
-    // add to the soundArray so we can dispose of the osc later
-    this.p5s.soundArray.push(this);
+  // change input from default (p5)
+  p5.prototype.FFT.prototype.setInput = function(source) {
+    source.connect(this.analyser);
+    this.analyser.disconnect();
   };
 
   /**
-   *  Start an oscillator. Accepts an optional parameter to
-   *  determine how long (in seconds from now) until the
-   *  oscillator starts.
+   *  <p>This method tells the FFT to processes the frequency spectrum.</p>
+   * 
+   *  <p>Returns an array of amplitude values between 0 and 255. The array
+   *  starts with the lowest pitched frequencies, and ends with the 
+   *  highest.</p>
+   *  
+   *  <p>Length will be equal to 1/2 fftSize (default: 1024 / 512).</p>
    *
-   *  @method  start
-   *  @param  {[Number]} frequency frequency in Hz.
-   *  @param  {[Number]} time startTime in seconds from now.
+   *  @method processFreq
+   *  @return {Uint8Array} spectrum    Array of amplitude values across
+   *                                   the frequency spectrum.
+   *
    */
-  p5.prototype.Oscillator.prototype.start = function(f, time) {
-    if (this.started){
-      this.stop();
-    }
-    if (!this.started){
-      var freq = f || this.f;
-      var type = this.oscillator.type;
-      // var detune = this.oscillator.frequency.value;
-      this.oscillator = this.p5s.audiocontext.createOscillator();
-      this.oscillator.frequency.exponentialRampToValueAtTime(Math.abs(freq), this.p5s.audiocontext.currentTime);
-      this.oscillator.type = type;
-      // this.oscillator.detune.value = detune;
-      this.oscillator.connect(this.output);
-      this.started = true;
-      time = time || this.p5s.audiocontext.currentTime;
-      this.oscillator.start(time);
-      this.freqNode = this.oscillator.frequency;
+  p5.prototype.FFT.prototype.processFreq = function() {
+    this.analyser.getByteFrequencyData(this.freqDomain);
+    return this.freqDomain;
+  };
 
-      // if LFO connections depend on this oscillator
-      if (this.mods !== undefined && this.mods.frequency !== undefined){
-        this.mods.frequency.connect(this.freqNode);
+
+  /**
+   *  Returns an array of amplitude values (between 0-255) that represent
+   *  a snapshot of amplitude readings in a single buffer.
+   * 
+   *  Length will be 1/2 size of FFT buffer (default is 2048 / 1024).
+   *
+   *  Can be used to draw the waveform of a sound. 
+   *  
+   *  @method waveform
+   *  @return {Uint8Array}      Array of amplitude values (0-255) over time. Length will be 1/2 fftBands.
+   *
+   */
+  p5.prototype.FFT.prototype.waveform = function() {
+    this.analyser.getByteTimeDomainData(this.timeDomain);
+    return this.timeDomain;
+  };
+
+  // change smoothing
+  p5.prototype.FFT.prototype.setSmoothing = function(s) {
+    this.analyser.smoothingTimeConstant = s;
+  };
+
+  p5.prototype.FFT.prototype.getSmoothing = function() {
+    return this.analyser.smoothingTimeConstant;
+  };
+
+  /**
+   *  <p>Returns the amount of energy (volume) at a specific
+   *  frequency, or the average amount of energy between two
+   *  given frequencies.</p>
+   *
+   *  <p>To get accurate results, processFreq() must be
+   *  called prior to getFreq(). This is because procesFreq()
+   *  tells the FFT to update its array of frequency data, which
+   *  getFreq() uses to determine the value at a specific frequency
+   *  or range of frequencies.</p>
+   *  
+   *  @method  getFreq
+   *  @param  {Number} frequency1   Will return a value representing
+   *                                energy at this frequency.
+   *  @param  {Number} [frequency2] If a second frequency is given,
+   *                                will return average amount of
+   *                                energy that exists between the
+   *                                two frequencies.
+   *  @return {Number}           
+   */
+  p5.prototype.FFT.prototype.getFreq = function(frequency1, frequency2) {
+    var nyquist = this.p5s.audiocontext.sampleRate/2;
+
+    if (typeof(frequency1) !== 'number') {
+      return null;
+    }
+
+    // if only one parameter:
+    else if (!frequency2) {
+      var index = Math.round(frequency1/nyquist * this.freqDomain.length);
+      return this.freqDomain[index];
+    }
+
+    // if two parameters:
+    else if (frequency1 && frequency2) {
+      // if second is higher than first
+      if (frequency1 > frequency2) {
+        var swap = frequency2;
+        frequency2 = frequency1;
+        frequency1 = swap;
       }
-    }
-  };
+      var lowIndex = Math.round(frequency1/nyquist * this.freqDomain.length);
+      var highIndex = Math.round(frequency2/nyquist * this.freqDomain.length);
 
-  /**
-   *  Stop an oscillator. Accepts an optional parameter
-   *  to determine how long (in seconds from now) until the
-   *  oscillator stops.
-   *
-   *  @method  stop
-   *  @param  {[Number]} time, in seconds from now.
-   */
-  p5.prototype.Oscillator.prototype.stop = function(time){
-    if (this.started){
-      var t = time || this.p5s.audiocontext.currentTime;
-      this.oscillator.stop(t);
-      this.started = false;
-    }
-  };
-
-  /**
-   *  Set amplitude (volume) of an oscillator between 0 and 1.0
-   *
-   *  @method  amp
-   *  @param  {Number} vol between 0 and 1.0
-   *  @param {Number} [time] ramp time (optional)
-   */
-  p5.prototype.Oscillator.prototype.amp = function(vol, t){
-    if (t) {
-      var rampTime = t || 0;
-      var currentVol = this.output.gain.value;
-      this.output.gain.cancelScheduledValues(this.p5s.audiocontext.currentTime);
-      this.output.gain.setValueAtTime(currentVol, this.p5s.audiocontext.currentTime);
-      this.output.gain.linearRampToValueAtTime(vol, rampTime + this.p5s.audiocontext.currentTime);
-    } else {
-      this.output.gain.cancelScheduledValues(this.p5s.audiocontext.currentTime);
-      this.output.gain.setValueAtTime(vol, this.p5s.audiocontext.currentTime);
-    }
-  };
-
-  p5.prototype.Oscillator.prototype.getAmp = function(){
-    return this.output.gain.value;
-  };
-
-  /**
-   *  Set frequency of an oscillator.
-   *
-   *  @method  freq
-   *  @param  {Number} Frequency Frequency in Hz
-   *  @param  {Number} [Time] Ramp time in seconds
-   *  @example
-   *  <div><code>
-   *  var osc = new Oscillator(300);
-   *  osc.start();
-   *  osc.freq(40, 10);
-   *  </code></div>
-   */
-  p5.prototype.Oscillator.prototype.freq = function(val, t){
-    this.f = val;
-    if (t) {
-      var rampTime = t || 0;
-      var currentFreq = this.oscillator.frequency.value;
-      this.oscillator.frequency.cancelScheduledValues(this.p5s.audiocontext.currentTime);
-      this.oscillator.frequency.setValueAtTime(currentFreq, this.p5s.audiocontext.currentTime);
-      this.oscillator.frequency.exponentialRampToValueAtTime(val, rampTime + this.p5s.audiocontext.currentTime);
-    } else {
-      this.oscillator.frequency.cancelScheduledValues(this.p5s.audiocontext.currentTime);
-      this.oscillator.frequency.setValueAtTime(val, this.p5s.audiocontext.currentTime);
-    }
-  };
-
-  p5.prototype.Oscillator.prototype.getFreq = function(){
-    return this.oscillator.frequency.value;
-  };
-
-  p5.prototype.Oscillator.prototype.setType = function(type){
-    this.oscillator.type = type;
-  };
-
-  p5.prototype.Oscillator.prototype.getType = function(){
-    return this.oscillator.type;
-  };
-
-  p5.prototype.Oscillator.prototype.connect = function(unit){
-    if (!unit) {
-       this.panner.connect(this.p5s.input);
-    }
-    else if (unit.hasOwnProperty('input')){
-      this.panner.connect(unit.input);
+      var total = 0;
+      var numFrequencies = 0;
+      // add up all of the values for the frequencies
+      for (var i = lowIndex; i<=highIndex; i++) {
+        total += this.freqDomain[i];
+        numFrequencies += 1;
       }
+      // divide by total number of frequencies
+      var toReturn = total/numFrequencies;
+      return toReturn;
+    }
     else {
-      this.panner.connect(unit);
+      throw 'invalid input for getFreq()';
     }
   };
-
-
-  p5.prototype.Oscillator.prototype.disconnect = function(unit){
-    this.panner.disconnect(unit);
-  };
-
-
-  p5.prototype.Oscillator.prototype.pan = function(pval) {
-    if (!pval) {
-      pval = 0;
-    }
-      this.panPosition = pval;
-      pval = pval * 90.0;
-      var xDeg = parseInt(pval);
-      var zDeg = xDeg + 90;
-      if (zDeg > 90) {
-        zDeg = 180 - zDeg;
-      }
-      var x = Math.sin(xDeg * (Math.PI / 180));
-      var z = Math.sin(zDeg * (Math.PI / 180));
-      this.panner.setPosition(x, 0, z);
-  };
-
-  p5.prototype.Oscillator.prototype.getPan = function() {
-    return this.panPosition;
-  };
-
-  // get rid of the oscillator
-  p5.prototype.Oscillator.prototype.dispose = function() {
-    if (this.oscillator){
-      this.stop();
-      this.disconnect();
-      this.oscillator.disconnect();
-      this.panner = null;
-      this.oscillator = null;
-    }
-    // if it is a Pulse
-    if (this.osc2) {
-      this.osc2.dispose();
-    }
-  };
-
-  /**
-   *  Modulate any audio param.
-   *
-   *  @method  mod
-   *  @param  {Object} oscillator The param to modulate
-   */
-  p5.prototype.Oscillator.prototype.mod = function(unit){
-    unit.cancelScheduledValues(this.p5s.audiocontext.currentTime);
-    this.output.connect(unit);
-  };
-
-  // Extending
-  p5.prototype.SinOsc = function(freq) {
-    p5.prototype.Oscillator.call(this, freq, 'sine');
-  };
-
-  p5.prototype.SinOsc.prototype = Object.create(p5.prototype.Oscillator.prototype);
-
-  p5.prototype.TriOsc = function(freq) {
-    p5.prototype.Oscillator.call(this, freq, 'triangle');
-  };
-
-  p5.prototype.TriOsc.prototype = Object.create(p5.prototype.Oscillator.prototype);
-
-  p5.prototype.SawOsc = function(freq) {
-    p5.prototype.Oscillator.call(this, freq, 'sawtooth');
-  };
-
-  p5.prototype.SawOsc.prototype = Object.create(p5.prototype.Oscillator.prototype);
-
-  p5.prototype.SqrOsc = function(freq) {
-    p5.prototype.Oscillator.call(this, freq, 'square');
-  };
-
-  p5.prototype.SqrOsc.prototype = Object.create(p5.prototype.Oscillator.prototype);
 
 });
