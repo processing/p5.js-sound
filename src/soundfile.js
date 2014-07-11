@@ -781,6 +781,10 @@ define(function (require) {
     this.panner.disconnect(unit);
   };
 
+
+  // register preload handling of loadSound
+  p5.prototype._registerPreloadFunc('loadSound');
+
   /**
    * loadSound() should be used if you want to create a SoundFile 
    * during preload. It returns a new SoundFile from a specified

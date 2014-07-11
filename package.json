@@ -18,5 +18,5 @@
     "almond": "~0.2.7",
     "amdclean": "~0.3.3",
     "grunt-contrib-sass": "~0.7.2"
-  },
+  }
 }

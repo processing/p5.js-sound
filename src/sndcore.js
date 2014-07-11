@@ -1,12 +1,6 @@
 define(function (require) {
   'use strict';
 
-  // register preload handling of loadSound
-  p5.prototype._registerPreloadFunc('loadSound');
-
-  // register removeSound to dispose of p5sound SoundFiles and Oscillators when sketch ends
-  p5.prototype._registerRemoveFunc('disposeSound');
-
   /**
    * Web Audio SHIMS and helper functions to ensure compatability across browsers
    */

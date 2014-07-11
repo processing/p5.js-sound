@@ -76,6 +76,10 @@ define(function (require) {
     return 440 * Math.pow(2, (m-69)/12.0);
   };
 
+
+  // register removeSound to dispose of p5sound SoundFiles and Oscillators when sketch ends
+  p5.prototype._registerRemoveFunc('disposeSound');
+
   p5.prototype.disposeSound = function(){
     for (var i = 0; i < p5sound.soundArray.length; i++){
       console.log(p5sound.soundArray[i]);
