@@ -13,17 +13,16 @@ define(function (require) {
    */
   p5.prototype.Noise = function(type){
     this.started = false;
-    this.p5s = p5sound;
 
     this.buffer = _whiteNoise;
-    this.output = this.p5s.audiocontext.createGain();
+    this.output = p5sound.audiocontext.createGain();
 
     // set default output gain
     this.output.gain.value = 0.5;
 
     // sterep panning
     this.panPosition = 0.0;
-    this.panner = audiocontext.createPanner();
+    this.panner = p5sound.audiocontext.createPanner();
     this.panner.panningModel = 'equalpower';
     this.panner.distanceModel = 'linear';
     this.panner.setPosition(0,0,0);
@@ -32,7 +31,7 @@ define(function (require) {
     // this.panner.connect(this.p5s.input);  // maybe not connected to output default
 
     // add to soundArray so we can dispose on close
-    this.p5sound.soundArray.push(this);
+    p5sound.soundArray.push(this);
   };
 
   // generate noise buffers
@@ -83,7 +82,7 @@ define(function (require) {
 
   p5.prototype.Noise.prototype.connect = function(unit){
     if (!unit) {
-      this.panner.connect(this.p5s.input);
+      this.panner.connect(p5sound.input);
     } 
     else if (unit.hasOwnProperty('input')){
         this.panner.connect(unit.input);
@@ -101,7 +100,7 @@ define(function (require) {
   };
 
   p5.prototype.Noise.prototype.ampMod = function(unit){
-    unit.output.gain.cancelScheduledValues(this.p5s.audiocontext.currentTime);
+    unit.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
     this.output.connect(unit.output.gain);
   };
 
@@ -109,7 +108,7 @@ define(function (require) {
     if (this.started){
       this.stop();
     }
-    this.noise = this.p5s.audiocontext.createBufferSource();
+    this.noise = p5sound.audiocontext.createBufferSource();
     this.noise.buffer = this.buffer;
     this.noise.loop = true;
     this.noise.connect(this.output);
@@ -167,12 +166,12 @@ define(function (require) {
     if (t) {
       var rampTime = t || 0;
       var currentVol = this.output.gain.value;
-      this.output.gain.cancelScheduledValues(this.p5s.audiocontext.currentTime);
-      this.output.gain.setValueAtTime(currentVol, this.p5s.audiocontext.currentTime);
-      this.output.gain.linearRampToValueAtTime(vol, rampTime + this.p5s.audiocontext.currentTime);
+      this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
+      this.output.gain.setValueAtTime(currentVol, p5sound.audiocontext.currentTime);
+      this.output.gain.linearRampToValueAtTime(vol, rampTime + p5sound.audiocontext.currentTime);
     } else {
-      this.output.gain.cancelScheduledValues(this.p5s.audiocontext.currentTime);
-      this.output.gain.setValueAtTime(vol, this.p5s.audiocontext.currentTime);
+      this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
+      this.output.gain.setValueAtTime(vol, p5sound.audiocontext.currentTime);
     }
   };
 
