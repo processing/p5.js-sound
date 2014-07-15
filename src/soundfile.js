@@ -786,10 +786,13 @@ define(function (require) {
   p5.prototype._registerPreloadFunc('loadSound');
 
   /**
-   * loadSound() should be used if you want to create a SoundFile 
+   * <p>loadSound() should be used if you want to create a SoundFile 
    * during preload. It returns a new SoundFile from a specified
    * path, or an array of paths. If used outside of preload, it 
-   * accepts a callback as the second parameter.
+   * accepts a callback as the second parameter.</p>
+   * <p>Using a <a href=
+   * "https://github.com/lmccart/p5.js/wiki/Local-server">
+   * local server</a> is recommended when loading external files.</p>
    *  
    * @method loadSound
    * @param  {String/Array}   path     Path to the sound file, or an array with
@@ -811,6 +814,10 @@ define(function (require) {
   p5.prototype.loadSound = function(path, callback){
     var s = new p5.prototype.SoundFile(path, callback);
     return s;
+  };
+
+  p5.prototype.soundFormats = function(format1, format2, format3, format4){
+    
   }
 
 });

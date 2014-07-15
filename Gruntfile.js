@@ -56,8 +56,11 @@ module.exports = function(grunt) {
           include: ['src/app'],
           onBuildWrite: function( name, path, contents ) {
             return require('amdclean').clean({
-              'code':contents
-            });
+              'code':contents,
+                'escodegen': {
+                  'comment': true
+                  }
+              });
           },
           optimize: 'none',
           out: 'lib/p5.sound.js',
@@ -130,16 +133,9 @@ module.exports = function(grunt) {
   });
 
 
-  // grunt.loadNpmTasks('grunt-contrib-jshint');
-  // grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
-  // // grunt.loadNpmTasks('grunt-mocha');
   grunt.loadNpmTasks('grunt-contrib-yuidoc');
-  // grunt.loadNpmTasks('grunt-contrib-sass');
-  // // grunt.registerTask('test', ['jshint', 'mocha']);
-
   grunt.registerTask('yui', ['yuidoc']);
-
   grunt.registerTask('default', ['requirejs']);
 
 };
