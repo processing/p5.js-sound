@@ -55,7 +55,9 @@ module.exports = function(grunt) {
           findNestedDependencies: true,
           include: ['src/app'],
           onBuildWrite: function( name, path, contents ) {
-            return require('amdclean').clean(contents);
+            return require('amdclean').clean({
+              'code':contents
+            });
           },
           optimize: 'none',
           out: 'lib/p5.sound.js',
@@ -83,7 +85,12 @@ module.exports = function(grunt) {
           findNestedDependencies: true,
           include: ['src/app'],
           onBuildWrite: function( name, path, contents ) {
-            return require('amdclean').clean(contents);
+           return require('amdclean').clean({
+              'code':contents,
+               'escodegen': {
+                 'comment': false
+               }
+            });
           },
           optimize: 'uglify2',
           out: 'lib/p5.sound.min.js',
