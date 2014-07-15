@@ -47,6 +47,9 @@ define(function (require) {
     // an array of all sounds in the sketch
     this.soundArray = [];
 
+    // file extensions to search for
+    this.extensions = [];
+
   };
 
   // Will this be useful to access?

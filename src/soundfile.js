@@ -41,10 +41,49 @@ define(function (require) {
   p5.prototype.SoundFile = function(paths, onload) {
     var path;
 
-    // path can either be a single string, or an array
+    // if path is a single string, check to see if extension is provided
     if (typeof(paths) === 'string') {
       path = paths;
-    }
+      // see if extension is provided
+      var extTest = path.split('.').pop();
+      // if an extension is provided...
+      if (['mp3','wav','ogg', 'm4a', 'aac'].indexOf(extTest) > -1) {
+        var supported = p5.prototype.isFileSupported(extTest);
+        if (supported){
+          path = path;
+        }
+        else {
+          var pathSplit = path.split('.');
+          var pathCore = pathSplit[pathSplit.length - 2];
+          for (var i = 0; i<p5sound.extensions.length; i++){
+            var extension = p5sound.extensions[i];
+            var supported = p5.prototype.isFileSupported(extension);
+            if (supported) {
+              pathCore = '';
+              for (var i = 0; i <= pathSplit.length - 2; i++){
+                pathCore.push(pathSplit[i]);
+              }
+              path = pathCore + '.' + extension;
+              console.log(path);
+              break;
+            }
+          }
+        }
+      }
+      // if no extension is provided...
+      else {
+        for (var i = 0; i<p5sound.extensions.length; i++){
+          var extension = p5sound.extensions[i];
+          var supported = p5.prototype.isFileSupported(extension);
+          if (supported) {
+            path = path + '.' + extension;
+            break;
+          }
+        }
+      }
+    } // end 'if string'
+
+    // path can either be a single string, or an array
     else if (typeof(paths) === 'object') {
       for (var i = 0; i<paths.length; i++) {
         var extension = paths[i].split('.').pop();
@@ -57,8 +96,6 @@ define(function (require) {
         }
       }
     }
-
-    this.p5s = p5sound;
 
     // player variables
     this.url = path;
@@ -73,8 +110,8 @@ define(function (require) {
     this.playbackRate = 1;
     this.gain = 1;
 
-    this.input = this.p5s.audiocontext.createGain();
-    this.output = this.p5s.audiocontext.createGain();
+    this.input = p5sound.audiocontext.createGain();
+    this.output = p5sound.audiocontext.createGain();
 
     this.reversed = false;
 
@@ -96,7 +133,7 @@ define(function (require) {
 
     // stereo panning
     this.panPosition = 0.0;
-    this.panner = this.p5s.audiocontext.createPanner();
+    this.panner = p5sound.audiocontext.createPanner();
     this.panner.panningModel = 'equalpower';
     this.panner.distanceModel = 'linear';
     this.panner.setPosition(0,0,0);
@@ -104,12 +141,12 @@ define(function (require) {
     this.output.connect(this.panner);
 
     // by default, the panner is connected to the p5s destination
-    this.panner.connect(this.p5s.input);
+    this.panner.connect(p5sound.input);
 
     this.load(onload);
 
     // add this SoundFile to the soundArray
-    this.p5s.soundArray.push(this);
+    p5sound.soundArray.push(this);
   };
 
   /**
@@ -199,7 +236,7 @@ define(function (require) {
         }
 
       // make a new source
-      this.source = this.p5s.audiocontext.createBufferSource();
+      this.source = p5sound.audiocontext.createBufferSource();
       this.source.buffer = this.buffer;
       this.source.loop = this.looping;
       if (this.source.loop === true){
@@ -215,7 +252,7 @@ define(function (require) {
 
       // firefox method of controlling gain without resetting volume
       if (!this.source.gain) {
-        this.source.gain = this.p5s.audiocontext.createGain();
+        this.source.gain = p5sound.audiocontext.createGain();
         this.source.connect(this.source.gain);
         // set local amp if provided, otherwise 1
         this.source.gain.gain.value = amp || 1;
@@ -240,7 +277,7 @@ define(function (require) {
         this.unpaused = false;
         this.source.start(0, this.startTime, this.endTime);
       }
-      this.startSeconds = this.p5s.audiocontext.currentTime;
+      this.startSeconds = p5sound.audiocontext.currentTime;
       this.playing = true;
       this.paused = false;
 
@@ -520,11 +557,11 @@ define(function (require) {
     // TO DO --> make reverse() flip these values appropriately ?
     var howLong;
     if (this.isPlaying() && !this.unpaused) {
-        howLong = ( (this.p5s.audiocontext.currentTime - this.startSeconds + this.startTime) * this.source.playbackRate.value ) % this.duration();
+        howLong = ( (p5sound.audiocontext.currentTime - this.startSeconds + this.startTime) * this.source.playbackRate.value ) % this.duration();
         return howLong;
     }
     else if (this.isPlaying() && this.unpaused) {
-        howLong = ( this.pauseTime + (this.p5s.audiocontext.currentTime - this.startSeconds) * this.source.playbackRate.value ) % this.duration();
+        howLong = ( this.pauseTime + (p5sound.audiocontext.currentTime - this.startSeconds) * this.source.playbackRate.value ) % this.duration();
         return howLong;
     }
     else if (this.paused) {
@@ -670,12 +707,12 @@ define(function (require) {
     if (t) {
       var rampTime = t || 0;
       var currentVol = this.output.gain.value;
-      this.output.gain.cancelScheduledValues(this.p5s.audiocontext.currentTime);
-      this.output.gain.setValueAtTime(currentVol, this.p5s.audiocontext.currentTime);
-      this.output.gain.linearRampToValueAtTime(vol, rampTime + this.p5s.audiocontext.currentTime);
+      this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
+      this.output.gain.setValueAtTime(currentVol, p5sound.audiocontext.currentTime);
+      this.output.gain.linearRampToValueAtTime(vol, rampTime + p5sound.audiocontext.currentTime);
     } else {
-      this.output.gain.cancelScheduledValues(this.p5s.audiocontext.currentTime);
-      this.output.gain.setValueAtTime(vol, this.p5s.audiocontext.currentTime);
+      this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
+      this.output.gain.setValueAtTime(vol, p5sound.audiocontext.currentTime);
     }
   };
 
@@ -761,7 +798,7 @@ define(function (require) {
    */
   p5.prototype.SoundFile.prototype.connect = function(unit) {
     if (!unit) {
-       this.panner.connect(this.p5s.input);
+       this.panner.connect(p5sound.input);
     }
     else if (this.buffer && this.source) {
       if (unit.hasOwnProperty('input')){
@@ -816,8 +853,37 @@ define(function (require) {
     return s;
   };
 
-  p5.prototype.soundFormats = function(format1, format2, format3, format4){
-    
-  }
+  /**
+   *  List the SoundFile formats that you will include. LoadSound 
+   *  will search your directory for these formats, and will pick
+   *  a format that is compatable with the user's web browser.
+   *  
+   *  @param {String} format(s) Example: 'mp3', 'wav', 'ogg'
+   *  @example
+   *  <div><code>
+   *  function setup() {
+   *    soundFormats('mp3, 'ogg');
+   *    // load either beatbox.mp3, or .ogg, depending on browser
+   *    mySound = new SoundFile('beatbox');
+   *  }
+   *
+   *  function onload() {
+   *    mySound.play();
+   *  }
+   *  </code></div>
+   */
+  p5.prototype.soundFormats = function(){
+    // reset extensions array
+    p5sound.extensions = [];
+    // add extensions
+    for (var i = 0; i < arguments.length; i++){
+      arguments[i] = arguments[i].toLowerCase();
+      if (['mp3','wav','ogg', 'm4a', 'aac'].indexOf(arguments[i]) > -1){
+        p5sound.extensions.push(arguments[i]);
+      } else {
+        throw arguments[i] + ' is not a valid sound format!';
+      }
+    }
+  };
 
 });
