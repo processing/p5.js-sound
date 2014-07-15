@@ -19,12 +19,12 @@ define(function (require) {
   p5.prototype.FFT = function(smoothing, fft_size, minDecibels, maxDecibels) {
     var SMOOTHING = smoothing || 0.6;
     var FFT_SIZE = fft_size || 1024;
-    this.p5s = p5sound;
-    this.analyser = this.p5s.audiocontext.createAnalyser();
+    p5sound = p5sound;
+    this.analyser = p5sound.audiocontext.createAnalyser();
 
     // default connections to p5sound master
-    this.p5s.output.connect(this.analyser);
-    // this.analyser.connect(this.p5s.audiocontext.destination);
+    p5sound.output.connect(this.analyser);
+    // this.analyser.connect(p5sound.audiocontext.destination);
 
     this.analyser.maxDecibels = maxDecibels || 0;
     this.analyser.minDecibels = minDecibels || -140;
@@ -110,7 +110,7 @@ define(function (require) {
    *  @return {Number}           
    */
   p5.prototype.FFT.prototype.getFreq = function(frequency1, frequency2) {
-    var nyquist = this.p5s.audiocontext.sampleRate/2;
+    var nyquist = p5sound.audiocontext.sampleRate/2;
 
     if (typeof(frequency1) !== 'number') {
       return null;

@@ -7,16 +7,17 @@
 var soundFile;
 
 
-function setup() {
-  createCanvas(400, 400);
-  background(0);
-
+function preload() {
   // set the extensions we have included
   soundFormats('mp3', 'ogg');
 
-  // will load either betabox.mp3 or beatbox.ogg, depending on the browser
+  // load either betabox.mp3 or beatbox.ogg, depending on the browser
   soundFile = loadSound('../_files/beatbox');
+}
 
+function setup() {
+  createCanvas(400, 400);
+  background(0);
 }
 
 // when a key is pressed...

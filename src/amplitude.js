@@ -29,14 +29,11 @@ define(function (require) {
    */
   p5.prototype.Amplitude = function(smoothing) {
 
-    // store a local reference to the window's p5sound context
-    this.p5s = p5sound;
-
     // Set to 2048 for now. In future iterations, this should be inherited or parsed from p5sound's default
     this.bufferSize = 2048;
 
     // set audio context
-    this.audiocontext = this.p5s.audiocontext;
+    this.audiocontext = p5sound.audiocontext;
     this.processor = this.audiocontext.createScriptProcessor(this.bufferSize);
 
     // for connections
@@ -63,7 +60,7 @@ define(function (require) {
     this.output.connect(this.audiocontext.destination);
 
     // connect to p5sound master output by default, unless set by input()
-    this.p5s.meter.connect(this.processor);
+    p5sound.meter.connect(this.processor);
 
   };
 
@@ -87,7 +84,7 @@ define(function (require) {
    */
   p5.prototype.Amplitude.prototype.setInput = function(source, smoothing) {
 
-    this.p5s.meter.disconnect(this.processor);
+    p5sound.meter.disconnect(this.processor);
 
     if (smoothing) {
       this.smoothing = smoothing;
@@ -96,7 +93,7 @@ define(function (require) {
     // connect to the master out of p5s instance if no snd is provided
     if (source == null) {
       console.log('Amplitude input source is not ready! Connecting to master output instead');
-      this.p5s.meter.connect(this.processor);
+      p5sound.meter.connect(this.processor);
     }
 
     // connect to the sound if it is available
@@ -109,7 +106,7 @@ define(function (require) {
 
     // otherwise, connect to the master out of p5s instance (default)
     else {
-      this.p5s.meter.connect(this.processor);
+      p5sound.meter.connect(this.processor);
     }
   };
 
@@ -121,7 +118,7 @@ define(function (require) {
         this.output.connect(unit);
       }
     } else {
-      this.output.connect(this.panner.connect(this.p5s.input));
+      this.output.connect(this.panner.connect(p5sound.input));
     }
   };
 

@@ -19,15 +19,15 @@ define(function (require) {
    */
   p5.prototype.LFO = function(freq, type) {
     this.started = false;
-    this.p5s = p5sound;
+    p5sound = p5sound;
 
     // connections
-    this.input = this.p5s.audiocontext.createGain();
-    this.output = this.p5s.audiocontext.createGain();
+    this.input = p5sound.audiocontext.createGain();
+    this.output = p5sound.audiocontext.createGain();
 
     // components
     if (!this.oscillator){
-      this.oscillator = this.p5s.audiocontext.createOscillator();
+      this.oscillator = p5sound.audiocontext.createOscillator();
       this.oscillator.frequency.value = freq || 1;
       this.f = this.oscillator.frequency.value;
       this.oscillator.type = type || 'sine';
@@ -52,7 +52,7 @@ define(function (require) {
    *                              be modulated.
    */
   p5.prototype.LFO.prototype.freqMod = function(unit){
-    unit.oscillator.frequency.cancelScheduledValues(this.p5s.audiocontext.currentTime);
+    unit.oscillator.frequency.cancelScheduledValues(p5sound.audiocontext.currentTime);
     this.output.connect(unit.oscillator.frequency);
     // for Pulse
     if (unit.oscillator.osc2){
@@ -81,7 +81,7 @@ define(function (require) {
    *                              be modulated.
    */
   p5.prototype.LFO.prototype.ampMod = function(unit){
-    unit.output.gain.cancelScheduledValues(this.p5s.audiocontext.currentTime);
+    unit.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
     this.output.connect(unit.output.gain);
   };
 
@@ -96,8 +96,8 @@ define(function (require) {
   p5.prototype.LFO.prototype.freq = function(val, t){
     this.f = val;
     var rampTime = t || 0;
-    this.oscillator.frequency.cancelScheduledValues(this.p5s.audiocontext.currentTime);
-    this.oscillator.frequency.exponentialRampToValueAtTime(val, rampTime + this.p5s.audiocontext.currentTime);
+    this.oscillator.frequency.cancelScheduledValues(p5sound.audiocontext.currentTime);
+    this.oscillator.frequency.exponentialRampToValueAtTime(val, rampTime + p5sound.audiocontext.currentTime);
   };
 
 });

@@ -18,9 +18,9 @@ define(function (require) {
    */
   p5.prototype.AudioIn = function() {
     // set up audio input
-    this.p5s = p5sound;
-    this.input = this.p5s.audiocontext.createGain();
-    this.output = this.p5s.audiocontext.createGain();
+    p5sound = p5sound;
+    this.input = p5sound.audiocontext.createGain();
+    this.output = p5sound.audiocontext.createGain();
 
     this.stream = null;
     this.mediaStream = null;
@@ -42,7 +42,7 @@ define(function (require) {
     }
 
     // add to soundArray so we can dispose on close
-    this.p5s.soundArray.push(this);
+    p5sound.soundArray.push(this);
   };
 
   // connect to unit if given, otherwise connect to p5sound (master)
@@ -56,7 +56,7 @@ define(function (require) {
       }
     }
     else {
-      this.output.connect(this.p5s.input);
+      this.output.connect(p5sound.input);
     }
   };
 
@@ -146,7 +146,7 @@ define(function (require) {
         this._onStream = function(stream) {
         self.stream = stream;
         // Wrap a MediaStreamSourceNode around the live input
-        self.mediaStream = self.p5s.audiocontext.createMediaStreamSource(stream);
+        self.mediaStream = p5sound.audiocontext.createMediaStreamSource(stream);
         self.mediaStream.connect(self.output);
 
         // only send to the Amplitude reader, so we can see it but not hear it.
@@ -162,7 +162,7 @@ define(function (require) {
         this._onStream = function(stream) {
         self.stream = stream;
         // Wrap a MediaStreamSourceNode around the live input
-        self.mediaStream = self.p5s.audiocontext.createMediaStreamSource(stream);
+        self.mediaStream = p5sound.audiocontext.createMediaStreamSource(stream);
         self.mediaStream.connect(self.output);
         // only send to the Amplitude reader, so we can see it but not hear it.
         self.amplitude.setInput(self.output);
@@ -209,12 +209,12 @@ define(function (require) {
     if (t) {
       var rampTime = t || 0;
       var currentVol = this.output.gain.value;
-      this.output.gain.cancelScheduledValues(this.p5s.audiocontext.currentTime);
-      this.output.gain.setValueAtTime(currentVol, this.p5s.audiocontext.currentTime);
-      this.output.gain.linearRampToValueAtTime(vol, rampTime + this.p5s.audiocontext.currentTime);
+      this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
+      this.output.gain.setValueAtTime(currentVol, p5sound.audiocontext.currentTime);
+      this.output.gain.linearRampToValueAtTime(vol, rampTime + p5sound.audiocontext.currentTime);
     } else {
-      this.output.gain.cancelScheduledValues(this.p5s.audiocontext.currentTime);
-      this.output.gain.setValueAtTime(vol, this.p5s.audiocontext.currentTime);
+      this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
+      this.output.gain.setValueAtTime(vol, p5sound.audiocontext.currentTime);
     }
   };
 

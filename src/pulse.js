@@ -30,7 +30,7 @@ define(function (require) {
     this.osc2 = new SawOsc(freq);
 
     // create a delay node
-    this.dNode = this.p5s.audiocontext.createDelay();
+    this.dNode = p5sound.audiocontext.createDelay();
 
     // set delay time based on PWM width
     this.dNode.delayTime.value = map(this.w, 0, 1.0, 0, 1/this.oscillator.frequency.value);
@@ -68,19 +68,19 @@ define(function (require) {
       var freq = f || this.f;
       var type = this.oscillator.type;
       // var detune = this.oscillator.frequency.value;
-      this.oscillator = this.p5s.audiocontext.createOscillator();
-      this.oscillator.frequency.exponentialRampToValueAtTime(freq, this.p5s.audiocontext.currentTime);
+      this.oscillator = p5sound.audiocontext.createOscillator();
+      this.oscillator.frequency.exponentialRampToValueAtTime(freq, p5sound.audiocontext.currentTime);
       this.oscillator.type = type;
       // this.oscillator.detune.value = detune;
       this.oscillator.connect(this.output);
       this.started = true;
-      time = time + this.p5s.audiocontext.currentTime || this.p5s.audiocontext.currentTime;
+      time = time + p5sound.audiocontext.currentTime || p5sound.audiocontext.currentTime;
       this.oscillator.start(time);
 
       // set up osc2
-      this.osc2.oscillator = this.p5s.audiocontext.createOscillator();
+      this.osc2.oscillator = p5sound.audiocontext.createOscillator();
       this.osc2.oscillator.frequency.value = freq;
-      this.osc2.oscillator.frequency.exponentialRampToValueAtTime(freq, this.p5s.audiocontext.currentTime);
+      this.osc2.oscillator.frequency.exponentialRampToValueAtTime(freq, p5sound.audiocontext.currentTime);
       this.osc2.oscillator.type = type;
       this.osc2.start(time);
       this.freqNode = [this.oscillator.frequency, this.osc2.oscillator.frequency];
@@ -96,8 +96,8 @@ define(function (require) {
 
   p5.prototype.Pulse.prototype.stop = function(_time){
     if (this.started){
-      var time = _time + this.p5s.audiocontext.currentTime;
-      var t = time || this.p5s.audiocontext.currentTime;
+      var time = _time + p5sound.audiocontext.currentTime;
+      var t = time || p5sound.audiocontext.currentTime;
       this.oscillator.stop(t);
       this.osc2.stop(t);
       this.started = false;
@@ -106,10 +106,10 @@ define(function (require) {
 
   p5.prototype.Pulse.prototype.freq = function(val, t){
     var rampTime = t || 0;
-    this.oscillator.frequency.cancelScheduledValues(this.p5s.audiocontext.currentTime);
-    this.osc2.oscillator.frequency.cancelScheduledValues(this.p5s.audiocontext.currentTime);
-    this.oscillator.frequency.exponentialRampToValueAtTime(val, rampTime + this.p5s.audiocontext.currentTime);
-    this.osc2.oscillator.frequency.exponentialRampToValueAtTime(val, rampTime + this.p5s.audiocontext.currentTime);
+    this.oscillator.frequency.cancelScheduledValues(p5sound.audiocontext.currentTime);
+    this.osc2.oscillator.frequency.cancelScheduledValues(p5sound.audiocontext.currentTime);
+    this.oscillator.frequency.exponentialRampToValueAtTime(val, rampTime + p5sound.audiocontext.currentTime);
+    this.osc2.oscillator.frequency.exponentialRampToValueAtTime(val, rampTime + p5sound.audiocontext.currentTime);
   };
 
 });

@@ -855,14 +855,16 @@ define(function (require) {
 
   /**
    *  List the SoundFile formats that you will include. LoadSound 
-   *  will search your directory for these formats, and will pick
+   *  will search your directory for these extensions, and will pick
    *  a format that is compatable with the user's web browser.
    *  
-   *  @param {String} format(s) Example: 'mp3', 'wav', 'ogg'
+   *  @param {String} format(s) i.e. 'mp3', 'wav', 'ogg'
    *  @example
    *  <div><code>
-   *  function setup() {
+   *  function preload() {
+   *    // set the global sound formats
    *    soundFormats('mp3, 'ogg');
+   *    
    *    // load either beatbox.mp3, or .ogg, depending on browser
    *    mySound = new SoundFile('beatbox');
    *  }
