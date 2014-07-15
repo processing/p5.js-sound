@@ -849,6 +849,11 @@ define(function (require) {
    * </code></div>
    */
   p5.prototype.loadSound = function(path, callback){
+    // if loading locally without a server
+    if (window.location.origin.indexOf('file://') > -1) {
+      alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
+    }
+
     var s = new p5.prototype.SoundFile(path, callback);
     return s;
   };
