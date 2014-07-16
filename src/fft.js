@@ -17,7 +17,6 @@ define(function (require) {
   p5.prototype.FFT = function(smoothing, fft_size) {
     var SMOOTHING = smoothing || 0.6;
     var FFT_SIZE = fft_size || 1024;
-    p5sound = p5sound;
     this.analyser = p5sound.audiocontext.createAnalyser();
 
     // default connections to p5sound master

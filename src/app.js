@@ -15,6 +15,8 @@ define(function (require) {
   require('audioin');
   require('env');
 
+  require('newOSC');
+
   return p5SOUND;
 
 });
