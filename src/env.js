@@ -94,4 +94,8 @@ define(function (require) {
     input.setValueAtTime(0, p5sound.audiocontext.currentTime);
   };
 
+  p5.prototype.Env.prototype.triggerAttack = function(t) {
+    // TO DO
+  }
+
 });

@@ -74,6 +74,7 @@ define(function (require) {
 
     this.frequency = 400; //default
 
+    this._phase = 0.0; // float between 0.0 and 1.0
 
     // stereo panning
     this.panPosition = 0.0;
@@ -89,7 +90,7 @@ define(function (require) {
   };
 
   // start playback
-  p5.prototype.Osc.prototype.start = function(t) {
+  p5.prototype.Osc.prototype.start = function(t, amp) {
     var time = t || p5sound.audiocontext.currentTime;
 
     this.source = p5sound.audiocontext.createBufferSource();
@@ -99,6 +100,10 @@ define(function (require) {
     // playback rate controls frequency
     var rate = this.frequency * (this.buffer.length / p5sound.audiocontext.sampleRate);
     this.source.playbackRate.setValueAtTime(rate, time);
+
+    // set phase
+    this.source.loopStart = this._phase * this.buffer.duration * this.source.playbackRate.value;
+    this.source.loopEnd = this.source.loopStart - this.buffer.duration * this.source.playbackRate.value / p5sound.audiocontext.sampleRate;
 
     // control gain
     if (!this.source.gain) {
@@ -114,7 +119,7 @@ define(function (require) {
       this.source.connect(this.output); 
     }
 
-    this.source.start(time);
+    this.source.start(time, this.source.loopStart);
   };
 
   p5.prototype.Osc.prototype.stop = function(t) {
@@ -136,6 +141,10 @@ define(function (require) {
       this.source.playbackRate.exponentialRampToValueAtTime(rate, time + now);
       console.log('set: ' + this.source.playbackRate.value );
     }
+  };
+
+  p5.prototype.Osc.prototype.phase = function(p) {
+    this._phase = p % 1.0;
   };
 
   // ================
