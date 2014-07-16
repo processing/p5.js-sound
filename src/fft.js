@@ -12,11 +12,9 @@ define(function (require) {
    * @constructor
    * @param {[Number]} smoothing   Smooth results of Freq Spectrum between 0.01 and .99)]
    * @param {[Number]} fft_size    Must be a power of two between 32 and 2048
-   * @param {[Number]} minDecibels Minimum decibels (dBFS, defaults to -140)
-   * @param {[Number]} maxDecibels Maximum decibels (dBFS, defaults to 0)
    * @return {Object}    FFT Object
    */
-  p5.prototype.FFT = function(smoothing, fft_size, minDecibels, maxDecibels) {
+  p5.prototype.FFT = function(smoothing, fft_size) {
     var SMOOTHING = smoothing || 0.6;
     var FFT_SIZE = fft_size || 1024;
     p5sound = p5sound;
@@ -24,15 +22,11 @@ define(function (require) {
 
     // default connections to p5sound master
     p5sound.output.connect(this.analyser);
-    // this.analyser.connect(p5sound.audiocontext.destination);
-
-    this.analyser.maxDecibels = maxDecibels || 0;
-    this.analyser.minDecibels = minDecibels || -140;
 
     this.analyser.smoothingTimeConstant = SMOOTHING;
     this.analyser.fftSize = FFT_SIZE;
 
-    this.freqDomain = new Uint8Array(this.analyser.frequencyBinCount);
+    this.freqDomain = new Float32Array(this.analyser.frequencyBinCount);
     this.timeDomain = new Uint8Array(this.analyser.frequencyBinCount);
 
   };
@@ -46,7 +40,7 @@ define(function (require) {
   /**
    *  <p>This method tells the FFT to processes the frequency spectrum.</p>
    * 
-   *  <p>Returns an array of amplitude values between 0 and 255. The array
+   *  <p>Returns an array of amplitude values between -140 and 0. The array
    *  starts with the lowest pitched frequencies, and ends with the 
    *  highest.</p>
    *  
@@ -58,7 +52,7 @@ define(function (require) {
    *
    */
   p5.prototype.FFT.prototype.processFreq = function() {
-    this.analyser.getByteFrequencyData(this.freqDomain);
+    this.analyser.getFloatFrequencyData(this.freqDomain);
     return this.freqDomain;
   };
 
