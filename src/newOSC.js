@@ -75,6 +75,8 @@ define(function (require) {
     this.frequency = 400; //default
 
     this._phase = 0.0; // float between 0.0 and 1.0
+    this._phaseOffset = 0.0; // if phase is reset while buffer is playing
+    this.playing = false;
 
     // stereo panning
     this.panPosition = 0.0;
@@ -102,8 +104,8 @@ define(function (require) {
     this.source.playbackRate.setValueAtTime(rate, time);
 
     // set phase
-    this.source.loopStart = this._phase * this.buffer.duration * this.source.playbackRate.value;
-    this.source.loopEnd = this.source.loopStart - this.buffer.duration * this.source.playbackRate.value / p5sound.audiocontext.sampleRate;
+    this.source.loopStart = ( this._phase * this.buffer.duration * this.source.playbackRate.value + this._phaseOffset ) % this.buffer.duration;
+    this.source.loopEnd = ( this.source.loopStart - this.buffer.duration * this.source.playbackRate.value / p5sound.audiocontext.sampleRate + this._phaseOffset ) % this.buffer.duration;
 
     // control gain
     if (!this.source.gain) {
@@ -119,7 +121,14 @@ define(function (require) {
       this.source.connect(this.output); 
     }
 
+    // START
     this.source.start(time, this.source.loopStart);
+
+    // reset the _phaseOffset which is used only when phase is shifted live
+    this._phaseOffset = 0;
+
+    this.playing = true;
+    this.timeStarted = time;
   };
 
   p5.prototype.Osc.prototype.stop = function(t) {
@@ -127,6 +136,7 @@ define(function (require) {
     if (this.buffer && this.source) {
       this.source.stop(time);
     }
+    this.playing = false;
   };
 
 
@@ -144,7 +154,27 @@ define(function (require) {
   };
 
   p5.prototype.Osc.prototype.phase = function(p) {
-    this._phase = p % 1.0;
+    if (this.playing === true){
+      // jump to this point
+      this._phaseOffset = this.currentTime();
+      this._phase = p % 1.0;
+      this.stop();
+      this.start();
+    } else {
+      this._phase = p % 1.0;
+    }
+  };
+
+  p5.prototype.Osc.prototype.currentTime = function() {
+    var howLong;
+    if (this.playing === true) {
+      howLong = ( (p5sound.audiocontext.currentTime - this.timeStarted + this.source.loopStart) * this.source.playbackRate.value ) % (this.buffer.length / p5sound.audiocontext.sampleRate);
+      return howLong;
+    } else if (this.source !== null){
+      return this.source.loopStart;
+    } else {
+      return 0;
+    }
   };
 
   // ================
@@ -166,7 +196,7 @@ define(function (require) {
   var generateSaw = function(tableSize) {
     var samples = new Float32Array(tableSize);
     var phaseInc = TWO_PI/tableSize;
-    var a = 2;
+    var a = 1;
     var currentPhase = 0.0;
     for (var i = 0; i < tableSize; i++){
       // samples[i] = Math.abs(currentPhase % 2) - 1;
@@ -190,7 +220,7 @@ define(function (require) {
   // via http://en.wikibooks.org/wiki/Sound_Synthesis_Theory/Oscillators_and_Wavetables
   var generateTri = function(tableSize) {
     var samples = new Float32Array(tableSize);
-    var a = 2; //amp
+    var a = 1; //amp
     var phaseInc = TWO_PI/tableSize;
     var currentPhase = 0.0;
     for (var i = 0; i < tableSize/2; i++){

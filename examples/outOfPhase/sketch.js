@@ -15,8 +15,9 @@ function setup() {
   osc1 = new Osc('sine');
   osc2 = new Osc('sine');
   fft = new FFT();
-  osc1.phase(.5);
+  osc1.phase(.501);
   osc2.phase(0);
+  osc1.start(); osc2.start();
 }
 
 function draw() {
