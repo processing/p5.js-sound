@@ -14,6 +14,7 @@ define(function (require) {
   require('noise');
   require('audioin');
   require('env');
+  require('distortion');
 
   require('newOSC');
 

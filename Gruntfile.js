@@ -77,7 +77,8 @@ module.exports = function(grunt) {
             'noise': 'src/noise',
             'audioin': 'src/audioin',
             'env': 'src/env',
-            'newOSC': 'src/newOSC'
+            'newOSC': 'src/newOSC',
+            'distortion': 'src/distortion'
           },
           useStrict: true,
           wrap: true

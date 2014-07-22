@@ -66,7 +66,7 @@ define(function (require) {
     this.name = name || 'sine';
     var tableSize = tableSize || 2048;
     // assign buffer to sine by default
-    this.buffer = new oscBuffer(name, tableSize);
+    this.buffer = new oscBuffer(this.name, tableSize);
     console.log(this.name);
 
     this.input = p5sound.audiocontext.createGain();
@@ -123,12 +123,13 @@ define(function (require) {
 
     // START
     this.source.start(time, this.source.loopStart);
+    // startTime is used to determine the currentTime or currentFrame of playback
+    this.timeStarted = time;
 
     // reset the _phaseOffset which is used only when phase is shifted live
     this._phaseOffset = 0;
 
     this.playing = true;
-    this.timeStarted = time;
   };
 
   p5.prototype.Osc.prototype.stop = function(t) {
@@ -168,13 +169,46 @@ define(function (require) {
   p5.prototype.Osc.prototype.currentTime = function() {
     var howLong;
     if (this.playing === true) {
-      howLong = ( (p5sound.audiocontext.currentTime - this.timeStarted + this.source.loopStart) * this.source.playbackRate.value ) % (this.buffer.length / p5sound.audiocontext.sampleRate);
+      var timeSinceStart = p5sound.audiocontext.currentTime - this.timeStarted;
+      console.log(timeSinceStart);
+      howLong = ( timeSinceStart ) % (this.buffer.length / p5sound.audiocontext.sampleRate)* this.source.playbackRate.value;
       return howLong;
-    } else if (this.source !== null){
-      return this.source.loopStart;
     } else {
       return 0;
     }
+  };
+
+  // current frame of the buffer
+  p5.prototype.Osc.prototype.currentFrame = function() {
+    if (this.playing === true) {
+      var howLong = ( (p5sound.audiocontext.currentTime - this.timeStarted) ) % (this.buffer.length / this.buffer.sampleRate * this.source.playbackRate.value);
+      var f = ( howLong / this.duration() ) * this.buffer.length;
+      return Math.round(f);
+    } else {
+      return 0;
+    }
+  };
+
+  p5.prototype.Osc.prototype.connect = function(unit) {
+    if (!unit) {
+       this.panner.connect(p5sound.input);
+    }
+    else if (this.buffer && this.source) {
+      if (unit.hasOwnProperty('input')){
+        this.panner.connect(unit.input);
+      } else {
+      this.panner.connect(unit);
+      }
+    }
+  };
+
+  p5.prototype.Osc.prototype.disconnect = function(unit){
+    this.panner.disconnect(unit);
+  };
+
+  // duration in seconds
+  p5.prototype.Osc.prototype.duration = function(){
+    return (this.buffer.length / this.buffer.sampleRate) * this.source.playbackRate.value
   };
 
   // ================
