@@ -75,7 +75,6 @@ define(function (require) {
     this.frequency = 400; //default
 
     this._phase = 0.0; // float between 0.0 and 1.0
-    this._phaseOffset = 0.0; // if phase is reset while buffer is playing
     this.playing = false;
 
     // stereo panning
@@ -104,8 +103,8 @@ define(function (require) {
     this.source.playbackRate.setValueAtTime(rate, time);
 
     // set phase
-    this.source.loopStart = ( this._phase * this.buffer.duration * this.source.playbackRate.value + this._phaseOffset ) % this.buffer.duration;
-    this.source.loopEnd = ( this.source.loopStart - this.buffer.duration * this.source.playbackRate.value / p5sound.audiocontext.sampleRate + this._phaseOffset ) % this.buffer.duration;
+    this.source.loopStart = ( this.buffer.duration * this.source.playbackRate.value) % this.buffer.duration;
+    this.source.loopEnd = ( this.source.loopStart - this.buffer.duration * this.source.playbackRate.value / p5sound.audiocontext.sampleRate ) % this.buffer.duration;
 
     // control gain
     if (!this.source.gain) {
@@ -126,9 +125,6 @@ define(function (require) {
     // startTime is used to determine the currentTime or currentFrame of playback
     this.timeStarted = time;
 
-    // reset the _phaseOffset which is used only when phase is shifted live
-    this._phaseOffset = 0;
-
     this.playing = true;
   };
 
@@ -143,27 +139,78 @@ define(function (require) {
 
   // change playback rate
   p5.prototype.Osc.prototype.freq = function(f, t) {
-    this.frequency = f;
-    if (this.source){
+    var time = t || 0;
+    var now = p5sound.audiocontext.currentTime;
+    if (typeof(f) === 'number') {
+      this.frequency = f;
+      if (this.source){
+        this.source.playbackRate.cancelScheduledValues(time + now);
+        var rate = f* (this.buffer.length / p5sound.audiocontext.sampleRate);
+        if (rate === 0) {
+          this.source.playbackRate.setValueAtTime(rate, time + now);
+        } else {
+        this.source.playbackRate.exponentialRampToValueAtTime(rate, time + now);
+        }
+      }
+    }
+    // if 'f' is an oscillator
+    else if (f.output) {
+      // TO DO: make this work if source hasn't been initialized yet // keep track of connections
+      // OR: always connected to an oscillator at a constant value
+      f.disconnect();
+      this.source.playbackRate.cancelScheduledValues(time + now);
+      f.output.connect(this.source.playbackRate);
+      console.log('yo');
+    }
+  };
+
+  var scaler = function(){
+    // TO DO: connect this to freq value, always scale it
+  }
+
+  p5.prototype.Osc.prototype.amp = function(a, t) {
+    if (typeof(a) === 'number') {
       var time = t || 0;
       var now = p5sound.audiocontext.currentTime;
-      this.source.playbackRate.cancelScheduledValues(time + now);
-      var rate = f* (this.buffer.length / p5sound.audiocontext.sampleRate);
-      this.source.playbackRate.exponentialRampToValueAtTime(rate, time + now);
-      console.log('set: ' + this.source.playbackRate.value );
+      this.output.gain.cancelScheduledValues(time + now);
+      this.output.gain.linearRampToValueAtTime(a, time + now);
+    }
+    else if (a.output) {
+      a.disconnect();
+      a.output.connect(this.output.gain);
     }
   };
 
   p5.prototype.Osc.prototype.phase = function(p) {
-    if (this.playing === true){
-      // jump to this point
-      this._phaseOffset = this.currentTime();
-      this._phase = p % 1.0;
-      this.stop();
-      this.start();
-    } else {
-      this._phase = p % 1.0;
+    var oldPhase = this._phase;
+    var newPhase = Math.abs(p - this._phase) % (1);
+    this._phase = newPhase;
+    console.log(this._phase);
+    var oldBuffer = this.buffer.getChannelData(0);
+    var slicePoint = ( this._phase * this.buffer.length ) % this.buffer.length;
+    var parts = new Array(2);
+    parts[1] = oldBuffer.subarray(0, slicePoint)
+    parts[0] = oldBuffer.subarray(slicePoint+1, this.buffer.length);
+    var result = new Float32Array(this.buffer.length);
+    var offset = 0;
+    for (var i = 0; i < parts.length; i++){
+      result.set(parts[i], offset);
+      offset += parts[i].length;
     }
+    this.setBuff(result);
+  };
+
+  p5.prototype.Osc.prototype.setBuff = function(buf) {
+    // create an AudioBuffer of the appropriate size and # of channels,
+    // and copy the data from one Float32 buffer to another
+    var audioContext = p5sound.audiocontext;
+    var newBuffer = audioContext.createBuffer(1, buf.length, audioContext.sampleRate);
+    var channel = newBuffer.getChannelData(0);
+    channel.set(buf);
+    if (this.source && this.source.buffer){
+      this.source.buffer = newBuffer;
+    }
+    this.buffer = newBuffer;
   };
 
   p5.prototype.Osc.prototype.currentTime = function() {
@@ -208,7 +255,7 @@ define(function (require) {
 
   // duration in seconds
   p5.prototype.Osc.prototype.duration = function(){
-    return (this.buffer.length / this.buffer.sampleRate) * this.source.playbackRate.value
+    return (this.buffer.length / this.buffer.sampleRate) * this.source.playbackRate.value;
   };
 
   // ================
@@ -265,11 +312,6 @@ define(function (require) {
       samples[i] = 3*a - (2*a / PI) * currentPhase;
       currentPhase += phaseInc;
     }
-
-    // for (var i = 0; i < tableSize; i++){
-    //   samples[i] = 1 - abs(currentPhase % (2*m) - m);
-    //   currentPhase += phaseInc;
-    // }
     return samples;
   };
 

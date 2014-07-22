@@ -12,10 +12,10 @@ function setup() {
   stroke(255);
   strokeWeight(10);
 
-  osc1 = new Osc('sine');
-  osc2 = new Osc('sine');
+  osc1 = new Oscillator('sine');
+  osc2 = new Oscillator('sine');
   fft = new FFT();
-  osc1.phase(.501);
+  osc1.phase(.5);
   osc2.phase(0);
   osc1.start(); osc2.start();
 }

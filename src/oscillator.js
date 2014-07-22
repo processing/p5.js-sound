@@ -60,6 +60,7 @@ define(function (require) {
     this.oscillator.connect(this.output);
     this.output.connect(this.panner);
     this.panner.connect(p5sound.input);
+    this.connection = p5sound.input;
 
     // add to the soundArray so we can dispose of the osc later
     p5sound.soundArray.push(this);
@@ -123,15 +124,22 @@ define(function (require) {
    *  @param {Number} [time] ramp time (optional)
    */
   p5.prototype.Oscillator.prototype.amp = function(vol, t){
-    if (t) {
-      var rampTime = t || 0;
-      var currentVol = this.output.gain.value;
-      this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
-      this.output.gain.setValueAtTime(currentVol, p5sound.audiocontext.currentTime);
-      this.output.gain.linearRampToValueAtTime(vol, rampTime + p5sound.audiocontext.currentTime);
-    } else {
-      this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
-      this.output.gain.setValueAtTime(vol, p5sound.audiocontext.currentTime);
+    if (typeof(vol) === 'number') {
+      console.log('amp');
+      if (t) {
+        var rampTime = t || 0;
+        var currentVol = this.output.gain.value;
+        this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
+        this.output.gain.setValueAtTime(currentVol, p5sound.audiocontext.currentTime);
+        this.output.gain.linearRampToValueAtTime(vol, rampTime + p5sound.audiocontext.currentTime);
+      } else {
+        this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
+        this.output.gain.setValueAtTime(vol, p5sound.audiocontext.currentTime);
+      }
+    }
+    else if (vol.output) {
+      vol.output.disconnect();
+      vol.output.connect(this.output.gain);
     }
   };
 
@@ -153,16 +161,29 @@ define(function (require) {
    *  </code></div>
    */
   p5.prototype.Oscillator.prototype.freq = function(val, t){
-    this.f = val;
-    if (t) {
-      var rampTime = t || 0;
-      var currentFreq = this.oscillator.frequency.value;
-      this.oscillator.frequency.cancelScheduledValues(p5sound.audiocontext.currentTime);
-      this.oscillator.frequency.setValueAtTime(currentFreq, p5sound.audiocontext.currentTime);
-      this.oscillator.frequency.exponentialRampToValueAtTime(val, rampTime + p5sound.audiocontext.currentTime);
-    } else {
-      this.oscillator.frequency.cancelScheduledValues(p5sound.audiocontext.currentTime);
-      this.oscillator.frequency.setValueAtTime(val, p5sound.audiocontext.currentTime);
+    if (typeof(val) === 'number') {
+      console.log('freq');
+      this.f = val;
+      if (t) {
+        var rampTime = t || 0;
+        var currentFreq = this.oscillator.frequency.value;
+        this.oscillator.frequency.cancelScheduledValues(p5sound.audiocontext.currentTime);
+        this.oscillator.frequency.setValueAtTime(currentFreq, p5sound.audiocontext.currentTime);
+        this.oscillator.frequency.exponentialRampToValueAtTime(val, rampTime + p5sound.audiocontext.currentTime);
+      } else {
+        this.oscillator.frequency.cancelScheduledValues(p5sound.audiocontext.currentTime);
+        this.oscillator.frequency.setValueAtTime(val, p5sound.audiocontext.currentTime);
+      }
+      // disconnect if frequencies are too low or high
+      if (val < 20 || val > 20000) {
+        this.panner.disconnect();
+      } else {
+        this.connect(this.connection);
+      }
+
+    } else if (val.output) {
+      val.output.disconnect();
+      val.output.connect(this.oscillator.frequency);
     }
   };
 
@@ -184,9 +205,11 @@ define(function (require) {
     }
     else if (unit.hasOwnProperty('input')){
       this.panner.connect(unit.input);
+      this.connection = unit.input;
       }
     else {
       this.panner.connect(unit);
+      this.connection = unit;
     }
   };
 
@@ -240,6 +263,25 @@ define(function (require) {
   p5.prototype.Oscillator.prototype.mod = function(unit){
     unit.cancelScheduledValues(p5sound.audiocontext.currentTime);
     this.output.connect(unit);
+  };
+
+  /**
+   *  Set the phase of an oscillator between 0.0 and 1.0
+   *  
+   *  @param  {Number} phase float between 0.0 and 1.0
+   */
+  p5.prototype.Oscillator.prototype.phase = function(p){
+    if (!this.dNode) {
+      // create a delay node
+      this.dNode = p5sound.audiocontext.createDelay();
+      // put the delay node in between output and panner
+      this.output.disconnect();
+      this.output.connect(this.dNode);
+      this.dNode.connect(this.panner);
+    }
+    // set delay time based on PWM width
+    var now = p5sound.audiocontext.currentTime;
+    this.dNode.delayTime.linearRampToValueAtTime( map(p, 0, 1.0, 0, 1/this.oscillator.frequency.value), now);
   };
 
   // Extending
