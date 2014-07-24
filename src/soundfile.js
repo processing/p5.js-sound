@@ -696,25 +696,28 @@ define(function (require) {
   /**
    *  Multiply the output volume (amplitude) of a sound file
    *  between 0.0 (silence) and 1.0 (full volume).
-   *  1.0 is the maximum amplitude of a digital sound, so multiplying by
-   *  greater than 1.0 may cause digital distortion.
+   *  1.0 is the maximum amplitude of a digital sound, so multiplying
+   *  by greater than 1.0 may cause digital distortion.</p> <p>To
+   *  fade, provide a <code>rampTime</code> parameter. For more
+   *  complex fades, see the Env class.</p>
    *
    *  @method  setVolume
    *  @param {Number} volume  Volume (amplitude) between 0.0 and 1.0
-   *  @param {[Number]} time  Fade Time (optional) in seconds
+   *  @param {[Number]} rampTime  Fade for t seconds
+   *  @param {[Number]} timeFromNow  Schedule this event to happen at
+   *                                 t seconds in the future
    */
-  p5.prototype.SoundFile.prototype.setVolume = function(vol, t) {
-    if (t) {
-      var rampTime = t || 0;
+  p5.prototype.SoundFile.prototype.setVolume = function(vol, rampTime, tFromNow) {
+    console.log('yo');
+      var rampTime = rampTime || 0;
+      var tFromNow = tFromNow || 0;
+      var now = p5sound.audiocontext.currentTime;
       var currentVol = this.output.gain.value;
-      this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
-      this.output.gain.setValueAtTime(currentVol, p5sound.audiocontext.currentTime);
-      this.output.gain.linearRampToValueAtTime(vol, rampTime + p5sound.audiocontext.currentTime);
-    } else {
-      this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
-      this.output.gain.setValueAtTime(vol, p5sound.audiocontext.currentTime);
-    }
+      this.output.gain.cancelScheduledValues(now);
+      this.output.gain.setValueAtTime(currentVol, now + tFromNow);
+      this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
   };
+
 
   p5.prototype.SoundFile.prototype.add = function() {
     // TO DO

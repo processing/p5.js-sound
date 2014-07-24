@@ -58,8 +58,14 @@ module.exports = function(grunt) {
             return require('amdclean').clean({
               'code':contents,
                 'escodegen': {
-                  'comment': true
+                  'comment': true,
+                  'format': {
+                    'indent': {
+                      'style': '  ',
+                      'adjustMultiLineComment': true
+                    }
                   }
+                }
               });
           },
           optimize: 'none',
@@ -77,11 +83,12 @@ module.exports = function(grunt) {
             'noise': 'src/noise',
             'audioin': 'src/audioin',
             'env': 'src/env',
-            'newOSC': 'src/newOSC',
-            'distortion': 'src/distortion'
           },
           useStrict: true,
-          wrap: true
+          wrap: {
+            start: '/*! p5.sound.js v<%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
+            end: ''
+          }
         }
       },
       min: {
@@ -101,7 +108,10 @@ module.exports = function(grunt) {
           out: 'lib/p5.sound.min.js',
           paths: '<%= requirejs.unmin.options.paths %>',
           useStrict: true,
-          wrap: true
+          wrap: {
+            start: '/*! p5.sound.min.js v<%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
+            end: ''
+          }
         }
       },
       yuidoc_theme: {

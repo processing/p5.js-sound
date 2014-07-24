@@ -60,56 +60,82 @@ define(function (require) {
   };
 
 
-  p5.prototype.Pulse.prototype.start = function(f, time) {
-    if (this.started){
-      this.stop();
-    }
+  p5.prototype.Pulse.prototype.start = function(time, f) {
+    var now = p5sound.audiocontext.currentTime;
+    var t = time || 0;
     if (!this.started){
       var freq = f || this.f;
       var type = this.oscillator.type;
       // var detune = this.oscillator.frequency.value;
       this.oscillator = p5sound.audiocontext.createOscillator();
-      this.oscillator.frequency.exponentialRampToValueAtTime(freq, p5sound.audiocontext.currentTime);
+      this.oscillator.frequency.setValueAtTime(freq, now);
       this.oscillator.type = type;
       // this.oscillator.detune.value = detune;
       this.oscillator.connect(this.output);
-      this.started = true;
-      time = time + p5sound.audiocontext.currentTime || p5sound.audiocontext.currentTime;
-      this.oscillator.start(time);
+      this.oscillator.start(t + now);
 
       // set up osc2
       this.osc2.oscillator = p5sound.audiocontext.createOscillator();
-      this.osc2.oscillator.frequency.value = freq;
-      this.osc2.oscillator.frequency.exponentialRampToValueAtTime(freq, p5sound.audiocontext.currentTime);
+      this.osc2.oscillator.frequency.setValueAtTime(freq, now);
       this.osc2.oscillator.type = type;
-      this.osc2.start(time);
+      this.osc2.start(t + now);
       this.freqNode = [this.oscillator.frequency, this.osc2.oscillator.frequency];
 
       // if LFO connections depend on these oscillators
       if (this.mods !== undefined && this.mods.frequency !== undefined){
         this.mods.frequency.connect(this.freqNode[0]);
         this.mods.frequency.connect(this.freqNode[1]);
-
       }
+      this.started = true;
+      this.osc2.started = true;
     }
   };
 
-  p5.prototype.Pulse.prototype.stop = function(_time){
+  p5.prototype.Pulse.prototype.stop = function(time){
     if (this.started){
-      var time = _time + p5sound.audiocontext.currentTime;
-      var t = time || p5sound.audiocontext.currentTime;
-      this.oscillator.stop(t);
-      this.osc2.stop(t);
+      var t = time || 0;
+      var now = p5sound.audiocontext.currentTime;
+      this.oscillator.stop(t + now);
+      this.osc2.oscillator.stop(t + now);
       this.started = false;
+      this.osc2.started = false;
     }
   };
 
-  p5.prototype.Pulse.prototype.freq = function(val, t){
-    var rampTime = t || 0;
-    this.oscillator.frequency.cancelScheduledValues(p5sound.audiocontext.currentTime);
-    this.osc2.oscillator.frequency.cancelScheduledValues(p5sound.audiocontext.currentTime);
-    this.oscillator.frequency.exponentialRampToValueAtTime(val, rampTime + p5sound.audiocontext.currentTime);
-    this.osc2.oscillator.frequency.exponentialRampToValueAtTime(val, rampTime + p5sound.audiocontext.currentTime);
+  p5.prototype.Pulse.prototype.freq = function(val, rampTime, tFromNow){
+    if (typeof(val) === 'number') {
+      this.f = val;
+      var now = p5sound.audiocontext.currentTime;
+      var rampTime = rampTime || 0;
+      var tFromNow = tFromNow || 0;
+      var currentFreq = this.oscillator.frequency.value;
+      this.oscillator.frequency.cancelScheduledValues(now);
+      this.oscillator.frequency.setValueAtTime(currentFreq, now + tFromNow);
+      this.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
+      this.osc2.oscillator.frequency.cancelScheduledValues(now);
+      this.osc2.oscillator.frequency.setValueAtTime(currentFreq, now + tFromNow);
+      this.osc2.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
+
+      // disconnect if frequencies are too low or high, otherwise connect
+      if (val < 20 || val > 20000) {
+        this.panner.disconnect();
+      } else {
+        this.connect(this.connection);
+      }
+
+      if (this.freqMod){
+        console.log('disconnect freqmod');
+        this.freqMod.output.disconnect();
+        this.freqMod = null;
+      }
+
+    } else if (val.output) {
+      val.output.disconnect();
+      val.output.connect(this.oscillator.frequency);
+      val.output.connect(this.osc2.oscillator.frequency);
+      this.freqMod = val;
+      console.log('connect freqmod');
+    }
   };
 
 });

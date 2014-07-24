@@ -72,10 +72,10 @@ define(function (require) {
    *  oscillator starts.
    *
    *  @method  start
-   *  @param  {[Number]} frequency frequency in Hz.
    *  @param  {[Number]} time startTime in seconds from now.
+   *  @param  {[Number]} frequency frequency in Hz.
    */
-  p5.prototype.Oscillator.prototype.start = function(f, time) {
+  p5.prototype.Oscillator.prototype.start = function(time, f) {
     if (this.started){
       this.stop();
     }
@@ -89,8 +89,8 @@ define(function (require) {
       // this.oscillator.detune.value = detune;
       this.oscillator.connect(this.output);
       this.started = true;
-      time = time || p5sound.audiocontext.currentTime;
-      this.oscillator.start(time);
+      time = time || 0;
+      this.oscillator.start(time + p5sound.audiocontext.currentTime);
       this.freqNode = this.oscillator.frequency;
 
       // if LFO connections depend on this oscillator
@@ -110,8 +110,9 @@ define(function (require) {
    */
   p5.prototype.Oscillator.prototype.stop = function(time){
     if (this.started){
-      var t = time || p5sound.audiocontext.currentTime;
-      this.oscillator.stop(t);
+      var t = time || 0;
+      var now = p5sound.audiocontext.currentTime;
+      this.oscillator.stop(t + now);
       this.started = false;
     }
   };
@@ -121,25 +122,48 @@ define(function (require) {
    *
    *  @method  amp
    *  @param  {Number} vol between 0 and 1.0
-   *  @param {Number} [time] ramp time (optional)
+   *  @param {Number} [time] schedule this event to happen seconds
+   *                         from now (optional)
    */
-  p5.prototype.Oscillator.prototype.amp = function(vol, t){
+  p5.prototype.Oscillator.prototype.amp = function(vol, time){
     if (typeof(vol) === 'number') {
-      console.log('amp');
-      if (t) {
-        var rampTime = t || 0;
-        var currentVol = this.output.gain.value;
-        this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
-        this.output.gain.setValueAtTime(currentVol, p5sound.audiocontext.currentTime);
-        this.output.gain.linearRampToValueAtTime(vol, rampTime + p5sound.audiocontext.currentTime);
-      } else {
-        this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
-        this.output.gain.setValueAtTime(vol, p5sound.audiocontext.currentTime);
+      var t = time || 0;
+      var now = p5sound.audiocontext.currentTime;
+      var currentVol = this.output.gain.value;
+      this.output.gain.cancelScheduledValues(now);
+      this.output.gain.setValueAtTime(vol, t + now);
+
+      // disconnect any oscillators that were modulating this param
+      if (this.ampMod){
+
+        this.ampMod.output.disconnect();
+        this.ampMod = null;
       }
+
     }
     else if (vol.output) {
       vol.output.disconnect();
       vol.output.connect(this.output.gain);
+
+      // keep track of any oscillators that were modulating this param
+      this.ampMod = vol;
+    }
+  };
+
+  /**
+   *  Fade to a certain volume starting now, and ending at rampTime
+   *
+   *  @param  {Number} vol      volume between 0.0 and 1.0
+   *  @param  {Number} rampTime duration of the fade (in seconds)
+   */
+  p5.prototype.Oscillator.prototype.fade = function(vol, rampTime){
+    var t = rampTime || 0;
+    var now = p5sound.audiocontext.currentTime;
+    if (typeof(vol) === 'number') {
+      var currentVol = this.output.gain.value;
+      this.output.gain.cancelScheduledValues(now);
+      this.output.gain.setValueAtTime(currentVol, now);
+      this.output.gain.linearRampToValueAtTime(vol, t + now);
     }
   };
 
@@ -152,7 +176,9 @@ define(function (require) {
    *
    *  @method  freq
    *  @param  {Number} Frequency Frequency in Hz
-   *  @param  {Number} [Time] Ramp time in seconds
+   *  @param  {[Number]} [rampTime] Ramp time (in seconds)
+   *  @param  {[Number]} [TimeFromNow] Schedule this event to happen
+   *                                   at x seconds from now
    *  @example
    *  <div><code>
    *  var osc = new Oscillator(300);
@@ -160,30 +186,35 @@ define(function (require) {
    *  osc.freq(40, 10);
    *  </code></div>
    */
-  p5.prototype.Oscillator.prototype.freq = function(val, t){
+  p5.prototype.Oscillator.prototype.freq = function(val, rampTime, tFromNow){
     if (typeof(val) === 'number') {
-      console.log('freq');
       this.f = val;
-      if (t) {
-        var rampTime = t || 0;
-        var currentFreq = this.oscillator.frequency.value;
-        this.oscillator.frequency.cancelScheduledValues(p5sound.audiocontext.currentTime);
-        this.oscillator.frequency.setValueAtTime(currentFreq, p5sound.audiocontext.currentTime);
-        this.oscillator.frequency.exponentialRampToValueAtTime(val, rampTime + p5sound.audiocontext.currentTime);
-      } else {
-        this.oscillator.frequency.cancelScheduledValues(p5sound.audiocontext.currentTime);
-        this.oscillator.frequency.setValueAtTime(val, p5sound.audiocontext.currentTime);
-      }
-      // disconnect if frequencies are too low or high
+      var now = p5sound.audiocontext.currentTime;
+      var rampTime = rampTime || 0;
+      var tFromNow = tFromNow || 0;
+      var currentFreq = this.oscillator.frequency.value;
+      this.oscillator.frequency.cancelScheduledValues(now);
+      this.oscillator.frequency.setValueAtTime(currentFreq, now + tFromNow);
+      this.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
+
+      // disconnect if frequencies are too low or high, otherwise connect
       if (val < 20 || val > 20000) {
         this.panner.disconnect();
       } else {
         this.connect(this.connection);
       }
 
+      if (this.freqMod){
+        this.freqMod.output.disconnect();
+        this.freqMod = null;
+      }
+
     } else if (val.output) {
       val.output.disconnect();
       val.output.connect(this.oscillator.frequency);
+
+      // keep track of what is modulating this param
+      this.freqMod = val;
     }
   };
 
