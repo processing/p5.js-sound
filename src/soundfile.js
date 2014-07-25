@@ -131,6 +131,10 @@ define(function (require) {
     // time that playback was started, in millis
     this.startMillis = null;
 
+    // create an amplitude, connect to it by default
+    this.amplitude = new Amplitude();
+    this.output.connect(this.amplitude.input);
+
     // stereo panning
     this.panPosition = 0.0;
     this.panner = p5sound.audiocontext.createPanner();
@@ -894,6 +898,27 @@ define(function (require) {
         throw arguments[i] + ' is not a valid sound format!';
       }
     }
+  };
+
+  /**
+   *  <p>Read the Amplitude (volume level) of a SoundFile. The
+   *  SoundFile class contains its own instance of the Amplitude
+   *  class to help make it easy to get a microphone's volume level.</p>
+   *
+   *  <p>Accepts an optional smoothing value (0.0 < 1.0).</p>
+   *
+   *  <p>AudioIn must be .on() before using .getLevel().</p>
+   *  
+   *  @method  getLevel
+   *  @param  {[Number]} smoothing Smoothing is 0.0 by default.
+   *                               Smooths values based on previous values.
+   *  @return {Number}           Volume level (between 0.0 and 1.0)
+   */
+  p5.prototype.SoundFile.prototype.getLevel = function(smoothing) {
+    if (smoothing) {
+      this.amplitude.smoothing = smoothing;
+    }
+    return this.amplitude.getLevel();
   };
 
 });

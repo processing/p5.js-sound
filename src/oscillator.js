@@ -75,7 +75,7 @@ define(function (require) {
    *  @param  {[Number]} time startTime in seconds from now.
    *  @param  {[Number]} frequency frequency in Hz.
    */
-  p5.prototype.Oscillator.prototype.start = function(time, f) {
+  p5.prototype.Oscillator.prototype.start = function(f, time) {
     if (this.started){
       this.stop();
     }
@@ -198,11 +198,11 @@ define(function (require) {
       this.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
 
       // disconnect if frequencies are too low or high, otherwise connect
-      if (val < 20 || val > 20000) {
-        this.panner.disconnect();
-      } else {
-        this.connect(this.connection);
-      }
+      // if (val < 20 || val > 20000) {
+      //   this.panner.disconnect();
+      // } else {
+      //   this.connect(this.connection);
+      // }
 
       if (this.freqMod){
         this.freqMod.output.disconnect();

@@ -60,7 +60,7 @@ define(function (require) {
   };
 
 
-  p5.prototype.Pulse.prototype.start = function(time, f) {
+  p5.prototype.Pulse.prototype.start = function(f, time) {
     var now = p5sound.audiocontext.currentTime;
     var t = time || 0;
     if (!this.started){
@@ -117,11 +117,11 @@ define(function (require) {
       this.osc2.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
 
       // disconnect if frequencies are too low or high, otherwise connect
-      if (val < 20 || val > 20000) {
-        this.panner.disconnect();
-      } else {
-        this.connect(this.connection);
-      }
+      // if (val < 20 || val > 20000) {
+      //   this.panner.disconnect();
+      // } else {
+      //   this.connect(this.connection);
+      // }
 
       if (this.freqMod){
         console.log('disconnect freqmod');
