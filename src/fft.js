@@ -32,8 +32,11 @@ define(function (require) {
 
   // change input from default (p5)
   p5.prototype.FFT.prototype.setInput = function(source) {
-    source.connect(this.analyser);
-    this.analyser.disconnect();
+    if (source.output){
+      source.output.connect(this.analyser);
+    } else {
+      source.connect(this.analyser);
+    }
   };
 
   /**

@@ -44,6 +44,7 @@ function setup() {
 
   // create an fft to analyze the audio
   fft = new FFT();
+  fft.setInput(osc);
 }
 
 function draw() {
