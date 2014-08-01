@@ -4,19 +4,22 @@ define(function (require) {
   var p5sound = require('master');
 
   /**
-   * Create an analyser node with optional variables for smoothing, 
-   * fft size, min/max decibels. Decibels are in dBFS (0 is loudest),
-   * and will impact the range of your results.
+   *  Create an analyser node with optional variables for smoothing, 
+   *  fft size, min/max decibels. Decibels are in dBFS (0 is loudest),
+   *  and will impact the range of your results.
    *
-   * @class FFT
-   * @constructor
-   * @param {[Number]} smoothing   Smooth results of Freq Spectrum between 0.01 and .99)]
-   * @param {[Number]} fft_size    Must be a power of two between 32 and 2048
-   * @return {Object}    FFT Object
+   *  @class FFT
+   *  @constructor
+   *  @param {[Number]} smoothing   Smooth results of Freq Spectrum.
+   *                                0.0 < smoothing < 1.0.
+   *                                Defaults to 0.8.
+   *  @param {[Number]} bands    Must be a power of two between
+   *                             16 and 1024. Defaults to 1024.
+   *  @return {Object}    FFT Object
    */
-  p5.prototype.FFT = function(smoothing, fft_size) {
-    var SMOOTHING = smoothing || 0.6;
-    var FFT_SIZE = fft_size || 1024;
+  p5.prototype.FFT = function(smoothing, bands) {
+    var SMOOTHING = smoothing || 0.8;
+    var FFT_SIZE = bands*2 || 2048;
     this.analyser = p5sound.audiocontext.createAnalyser();
 
     // default connections to p5sound master
@@ -30,8 +33,17 @@ define(function (require) {
 
   };
 
-  // change input from default (p5)
-  p5.prototype.FFT.prototype.setInput = function(source) {
+  /**
+   *  Set the input source for the FFT analysis. If no source is
+   *  provided, FFT will analyze all sound in the sketch.
+   *  
+   *  @param {[Object]} source p5.sound object (or web audio API source node)
+   *  @param {[Number]} bands  Must be a power of two between 16 and 1024
+   */
+  p5.prototype.FFT.prototype.setInput = function(source, bands) {
+    if (bands){
+      this.analyser.fftSize = bands*2;
+    }
     if (source.output){
       source.output.connect(this.analyser);
     } else {
@@ -46,18 +58,24 @@ define(function (require) {
    *  starts with the lowest pitched frequencies, and ends with the 
    *  highest.</p>
    *  
-   *  <p>Length will be equal to 1/2 fftSize (default: 1024 / 512).</p>
+   *  <p>Length will be equal to fft bands (default: 1024).</p>
    *
-   *  @method processFreq
-   *  @return {Uint8Array} spectrum    Array of amplitude values across
+   *  @method analyze
+   *  @param {[Number]} bands    Must be a power of two between
+   *                             16 and 1024. Defaults to 512.
+   *  @return {Float32Array} spectrum    Array of amplitude values across
    *                                   the frequency spectrum.
    *
    */
-  p5.prototype.FFT.prototype.processFreq = function() {
+  p5.prototype.FFT.prototype.analyze = function(bands) {
+    if (bands){
+      this.analyser.fftSize = bands*2;
+    }
     this.analyser.getFloatFrequencyData(this.freqDomain);
     return this.freqDomain;
   };
 
+  //  p5.prototype.FFT.prototype.processFreq =  p5.prototype.FFT.prototype.analyze;
 
   /**
    *  Returns an array of amplitude values (between 0-255) that represent
@@ -76,13 +94,14 @@ define(function (require) {
     return this.timeDomain;
   };
 
-  // change smoothing
+  /**
+   *  Smooth FFT analysis by averaging with the last analysis frame.
+   *  
+   *  @param {Number} smoothing    0.0 < smoothing < 1.0.
+   *                               Defaults to 0.8.
+   */
   p5.prototype.FFT.prototype.setSmoothing = function(s) {
     this.analyser.smoothingTimeConstant = s;
-  };
-
-  p5.prototype.FFT.prototype.getSmoothing = function() {
-    return this.analyser.smoothingTimeConstant;
   };
 
   /**
@@ -90,16 +109,15 @@ define(function (require) {
    *  frequency, or the average amount of energy between two
    *  given frequencies.</p>
    *
-   *  <p>To get accurate results, processFreq() must be
-   *  called prior to getFreq(). This is because procesFreq()
-   *  tells the FFT to update its array of frequency data, which
-   *  getFreq() uses to determine the value at a specific frequency
-   *  or range of frequencies.</p>
+   *  <p>analyze() must be called prior to getFreq().
+   *  Analyze() tells the FFT to analyze frequency data, and
+   *  getFreq() uses the results determine the value at
+   *  a specific frequency or range of frequencies.</p>
    *  
    *  @method  getFreq
    *  @param  {Number} frequency1   Will return a value representing
    *                                energy at this frequency.
-   *  @param  {Number} [frequency2] If a second frequency is given,
+   *  @param  {[Number]} frequency2 If a second frequency is given,
    *                                will return average amount of
    *                                energy that exists between the
    *                                two frequencies.

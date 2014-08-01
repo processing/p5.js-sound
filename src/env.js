@@ -57,6 +57,20 @@ define(function (require) {
      * @property releaseLevel
      */
     this.releaseLevel = releaseLevel || 0;
+
+    this.control = null;
+  };
+
+  /**
+   *  @param  {Object} input        A p5Sound object or
+   *                                Web Audio Param
+   */
+  p5.prototype.Env.prototype.setInput = function(input){
+    // assume we're talking about output gain, unless given a different audio param
+    if (input.output !== undefined){
+      input = input.output.gain;
+    }
+    this.control = input;
   };
 
   /**
@@ -69,10 +83,16 @@ define(function (require) {
    *                                Web Audio Param
    */
   p5.prototype.Env.prototype.play = function(input){
+    // if no input is given, input is this Envelope's input
+    if (!input){
+      input = this.control;
+    }
     // assume we're talking about output gain, unless given a different audio param
     if (input.output !== undefined){
       input = input.output.gain;
     }
+    this.control = input;
+
     var now =  p5sound.audiocontext.currentTime;
     input.cancelScheduledValues(now);
     input.setValueAtTime(0, now);
@@ -87,6 +107,11 @@ define(function (require) {
   };
 
   p5.prototype.Env.prototype.stop = function(input){
+    // if no input is given, input is this Envelope's input
+    if (!input){
+      input = this.control;
+    }
+    // assume we're talking about output gain, unless given a different audio param
     if (input.output !== undefined){
       input = input.output.gain;
     }
@@ -94,8 +119,55 @@ define(function (require) {
     input.setValueAtTime(0, p5sound.audiocontext.currentTime);
   };
 
-  p5.prototype.Env.prototype.triggerAttack = function(t) {
-    // TO DO
+  p5.prototype.Env.prototype.triggerAttack = function(input) {
+    var now =  p5sound.audiocontext.currentTime;
+
+    // if no input is given, input is this Envelope's input
+    if (!input){
+      input = this.control;
+    }
+    // assume we're talking about output gain, unless given a different audio param
+    if (input.output !== undefined){
+      input = input.output.gain;
+    }
+    this.control = input;
+
+    var currentVal =  input.value;
+    input.cancelScheduledValues(now);
+    input.setValueAtTime(currentVal, now);
+
+    input.linearRampToValueAtTime(this.attackLevel, now + this.attackTime);
+
+    // attack
+    input.linearRampToValueAtTime(this.attackLevel, now + this.attackTime);
+    // decay to sustain level
+    input.linearRampToValueAtTime(this.sustainLevel, now + this.attackTime + this.decayTime);
+    // hold sustain level
+    input.setValueAtTime(this.sustainLevel, now + this.attackTime + this.decayTime + this.sustainTime);
+  }
+
+  p5.prototype.Env.prototype.triggerRelease = function(input) {
+    var now =  p5sound.audiocontext.currentTime;
+
+    // if no input is given, input is this Envelope's input
+    if (!input){
+      input = this.control;
+    }
+    // assume we're talking about output gain, unless given a different audio param
+    if (input.output !== undefined){
+      input = input.output.gain;
+    }
+
+    if (input.output !== undefined){
+      input = input.output.gain;
+    }
+
+    var currentVal =  input.value;
+    input.cancelScheduledValues(p5sound.audiocontext.currentTime);
+    input.setValueAtTime(currentVal, now);
+
+    // release
+    input.linearRampToValueAtTime(this.releaseLevel, now + this.releaseTime);
   }
 
 });

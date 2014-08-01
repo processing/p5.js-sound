@@ -131,7 +131,6 @@ define(function (require) {
     // time that playback was started, in millis
     this.startMillis = null;
 
-    // create an amplitude, connect to it by default
     this.amplitude = new Amplitude();
     this.output.connect(this.amplitude.input);
 
@@ -342,6 +341,7 @@ define(function (require) {
       // this.startTime = this.currentTime();
       this.source.stop();
       this.paused = true;
+      console.log('pause stop');
       // TO DO: make sure play() still starts from orig start position
     }
     else {
@@ -423,6 +423,9 @@ define(function (require) {
       }
       if (this.source.playbackState === 3) {
         this.playing = false;
+      }
+      else {
+        console.log(this.source.playbackState);
       }
     }
     return this.playing;
@@ -906,8 +909,6 @@ define(function (require) {
    *  class to help make it easy to get a microphone's volume level.</p>
    *
    *  <p>Accepts an optional smoothing value (0.0 < 1.0).</p>
-   *
-   *  <p>AudioIn must be .on() before using .getLevel().</p>
    *  
    *  @method  getLevel
    *  @param  {[Number]} smoothing Smoothing is 0.0 by default.
