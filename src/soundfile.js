@@ -341,6 +341,7 @@ define(function (require) {
       // this.startTime = this.currentTime();
       this.source.stop();
       this.paused = true;
+      this.playing = false;
       console.log('pause stop');
       // TO DO: make sure play() still starts from orig start position
     }
@@ -416,18 +417,6 @@ define(function (require) {
    * @return {Boolean}
    */
   p5.prototype.SoundFile.prototype.isPlaying = function() {
-    // Double check playback state
-    if (this.source) {
-      if (this.source.playbackState === 2) {
-        this.playing = true;
-      }
-      if (this.source.playbackState === 3) {
-        this.playing = false;
-      }
-      else {
-        console.log(this.source.playbackState);
-      }
-    }
     return this.playing;
   };
 
