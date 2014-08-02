@@ -1,11 +1,11 @@
 /**
- * Example: change the frequency of an oscillator and visualize the frequency spectrum
+ * Example: change the frequency of an oscillator and visualize the waveform
  */
 var freqSlider, freqLabel, ampLabel, ampSlider, button;
 
 var osc;
 var freq = 220; // current frequency (updated by slider)
-var amp = .5;
+var amp = 0.5;
 var fft;
 
 
@@ -13,9 +13,6 @@ var oscOn = false;
 
 function setup() {
   createCanvas(800,400);
-  background(30);
-  stroke(255);
-  strokeWeight(10);
 
   freqLabel = createP('Frequency: ');
   freqSlider = createSlider(1, 700, freq);
@@ -44,11 +41,10 @@ function setup() {
 
   // create an fft to analyze the audio
   fft = new FFT();
-  fft.setInput(osc);
 }
 
 function draw() {
-  background(0);
+  background(30);
 
   amp = ampSlider.value()/100;
   osc.amp(amp);
@@ -64,6 +60,8 @@ function draw() {
   waveform = fft.waveform();
 
   // draw the shape of the waveform
+  stroke(255);
+  strokeWeight(10);
   beginShape();
   for (var i = 0; i<waveform.length; i++){
     var x = map(i, 0, waveform.length, 0, width);

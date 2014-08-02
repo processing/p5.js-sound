@@ -8,9 +8,6 @@ var osc1, osc2, fft;
 
 function setup() {
   createCanvas(800,400);
-  background(30);
-  stroke(255);
-  strokeWeight(10);
 
   osc1 = new Oscillator('sine');
   osc2 = new Oscillator('sine');
@@ -21,12 +18,14 @@ function setup() {
 }
 
 function draw() {
-  background(0);
+  background(30);
 
   // analyze the waveform of all sound in the sketch
   waveform = fft.waveform();
 
   // draw the shape of the waveform
+  stroke(255);
+  strokeWeight(10);
   beginShape();
   for (var i = 0; i<waveform.length; i++){
     var x = map(i, 0, waveform.length, 0, width);

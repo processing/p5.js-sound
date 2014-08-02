@@ -28,7 +28,7 @@ define(function (require) {
     this.panner.setPosition(0,0,0);
 
     this.output.connect(this.panner);
-    // this.panner.connect(p5sound.input);  // maybe not connected to output default
+    this.panner.connect(p5sound.input);  // maybe not connected to output default?
 
     // add to soundArray so we can dispose on close
     p5sound.soundArray.push(this);
