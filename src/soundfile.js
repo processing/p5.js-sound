@@ -315,12 +315,12 @@ define(function (require) {
       // play the sound
       if (this.paused && this.wasUnpaused){
         this.source.start(0, this.pauseTime, this.endTime);
-
         // flag for whether to use pauseTime or startTime to get currentTime()
         // this.wasUnpaused = true;
       }
       else {
         this.wasUnpaused = false;
+        this.pauseTime = 0;
         this.source.start(0, this.startTime, this.endTime);
       }
       this.startSeconds = now;
@@ -396,25 +396,22 @@ define(function (require) {
     var keepLoop = this.looping;
     if (this.isPlaying() && this.buffer && this.source) {
       this.pauseTime = this.currentTime();
-      // this.startTime = this.currentTime();
       this.source.stop();
       this.paused = true;
       this.wasUnpaused = false;
       this.playing = false;
-      console.log('pause stop');
       // TO DO: make sure play() still starts from orig start position
     }
     else if (this.paused === true) {
       // preserve original start time
-      var origStart = this.startTime;
+      // var origStart = this.startTime;
       // this.startTime = this.pauseTime;
       // used by play() to determine whether to start from pauseTime or startTime
       this.wasUnpaused = true;
       this.play();
       this.looping = keepLoop;
-      this.startTime = origStart;
+      // this.startTime = origStart;
       this.paused = false;
-
     }
   };
 
@@ -578,19 +575,6 @@ define(function (require) {
     var now = p5sound.audiocontext.currentTime;
     this.source.playbackRate.cancelScheduledValues(now);
     this.source.playbackRate.linearRampToValueAtTime(Math.abs(rate), now);
-    // if (playbackRate === 0 && this.playing) {
-    //   this.pause();
-    // }
-    // if (playbackRate < 0 && !this.reversed) {
-    //   this.reverseBuffer();
-    // }
-    // else if (playbackRate > 0 && this.reversed) {
-    //   this.reverseBuffer();
-    // }
-    // if (this.isPlaying() === true) {
-    //   this.pause();
-    //   this.play();
-    // }
   };
 
   p5.prototype.SoundFile.prototype.getPlaybackRate = function() {
@@ -645,23 +629,24 @@ define(function (require) {
   };
 
   /**
-   * Return the current position of the playhead in the song, in seconds
+   * Return the current position of the SoundFile playhead, in seconds.
+   * Note that if you change the playbackRate while the SoundFile is
+   * playing, the results may not be accurate.
    *
    * @method currentTime
    * @return {Number}   currentTime of the soundFile in seconds.
    */
   p5.prototype.SoundFile.prototype.currentTime = function() {
     // TO DO --> make reverse() flip these values appropriately ?
+
     var howLong;
-    if (this.isPlaying() && !this.wasUnpaused) {
-        howLong = ( (p5sound.audiocontext.currentTime - this.startSeconds + this.startTime) * this.source.playbackRate.value ) % this.duration();
-        return howLong;
+    if (this.isPlaying()) {
+      var timeSinceStart = p5sound.audiocontext.currentTime - this.startSeconds + this.startTime + this.pauseTime;
+      howLong = ( timeSinceStart * this.playbackRate ) % ( this.duration() * this.playbackRate);
+        // howLong = ( (p5sound.audiocontext.currentTime - this.startSeconds + this.startTime) * this.source.playbackRate.value ) % this.duration();
+      return howLong;
     }
-    else if (this.isPlaying() && this.wasUnpaused) {
-        howLong = ( this.pauseTime + (p5sound.audiocontext.currentTime - this.startSeconds) * this.source.playbackRate.value ) % this.duration();
-        return howLong;
-    }
-    else if (this.paused) {
+    else if (this.paused){
       return this.pauseTime;
     }
     else {
@@ -784,7 +769,6 @@ define(function (require) {
       Array.prototype.reverse.call( this.buffer.getChannelData(1) );
     // set reversed flag
     this.reversed = !this.reversed;
-    console.log('reversed!');
     // this.playbackRate = -this.playbackRate;
     } else {
       throw 'SoundFile is not done loading';

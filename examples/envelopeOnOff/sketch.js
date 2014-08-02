@@ -1,3 +1,9 @@
+/**
+ *  Example: Create an Envelope to control oscillator amplitude.
+ *  Trigger the Attack portion of the envelope when the mouse is clicked.
+ *  Trigger the Release when the mouse is released.
+ */
+
 var triOsc;
 var env;
 

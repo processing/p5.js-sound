@@ -1,11 +1,13 @@
-// ====================
-// Ensure file format compatability by including multiple file extensions.
-// MP3 and OGG are recommended.
-// ====================
+/**
+ *  There is no single audio format that is supported by all
+ *  popular web browsers. Most web browsers support MP3, but
+ *  some (Firefox, Opera) do not because it is a patented codec.
+ *
+ *  You can ensure file format compatability by including multiple
+ *  file extensions. Both MP3 and OGG are recommended.
+ */
 
-// create a variable for the sound file
 var soundFile;
-
 
 function preload() {
   // set the extensions we have included
@@ -20,17 +22,11 @@ function setup() {
   background(0);
 }
 
-// when a key is pressed...
 function keyPressed() {
-
-  // play the sound file
   soundFile.play(1,1);
-
-  // also make the background yellow
   background(255, 255, 0);
 }
 
 function keyReleased() {
-  // make the background black again when the key is released
   background(0);
 }

@@ -1,10 +1,12 @@
-// ====================
-// Testing .phase() for the new Osc class
-// ====================
+/**
+ *  Tell two sine wave oscillators to start at the same time,
+ *  50% out of phase. Phase Cancellation results!
+ *  Change the phase with the slider.
+ */
 
 // create a variable for the sound file
 var osc1, osc2, fft;
-
+var phaseSlider;
 
 function setup() {
   createCanvas(800,400);
@@ -15,6 +17,8 @@ function setup() {
   osc1.phase(.5);
   osc2.phase(0);
   osc1.start(); osc2.start();
+
+  phaseSlider = createSlider(0, 100, 50);
 }
 
 function draw() {
@@ -33,4 +37,7 @@ function draw() {
     vertex(x, y + height/2);
   }
   endShape();
+
+  var osc1Phase = phaseSlider.value()/100;
+  osc1.phase(osc1Phase);
 }
