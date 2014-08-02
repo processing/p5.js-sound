@@ -270,14 +270,14 @@ define(function (require) {
 
 
       // play the sound
-      if (this.paused){
+      if (this.paused && this.wasUnpaused){
         this.source.start(0, this.pauseTime, this.endTime);
 
         // flag for whether to use pauseTime or startTime to get currentTime()
-        this.unpaused = true;
+        // this.wasUnpaused = true;
       }
       else {
-        this.unpaused = false;
+        this.wasUnpaused = false;
         this.source.start(0, this.startTime, this.endTime);
       }
       this.startSeconds = p5sound.audiocontext.currentTime;
@@ -341,17 +341,22 @@ define(function (require) {
       // this.startTime = this.currentTime();
       this.source.stop();
       this.paused = true;
+      this.wasUnpaused = false;
       this.playing = false;
       console.log('pause stop');
       // TO DO: make sure play() still starts from orig start position
     }
-    else {
-        // preserve original start time
-        var origStart = this.startTime;
-        this.startTime = this.pauseTime;
-        this.play();
-        this.looping = keepLoop;
-        this.startTime = origStart;
+    else if (this.paused === true) {
+      // preserve original start time
+      var origStart = this.startTime;
+      // this.startTime = this.pauseTime;
+      // used by play() to determine whether to start from pauseTime or startTime
+      this.wasUnpaused = true;
+      this.play();
+      this.looping = keepLoop;
+      this.startTime = origStart;
+      this.paused = false;
+
     }
   };
 
@@ -552,11 +557,11 @@ define(function (require) {
   p5.prototype.SoundFile.prototype.currentTime = function() {
     // TO DO --> make reverse() flip these values appropriately ?
     var howLong;
-    if (this.isPlaying() && !this.unpaused) {
+    if (this.isPlaying() && !this.wasUnpaused) {
         howLong = ( (p5sound.audiocontext.currentTime - this.startSeconds + this.startTime) * this.source.playbackRate.value ) % this.duration();
         return howLong;
     }
-    else if (this.isPlaying() && this.unpaused) {
+    else if (this.isPlaying() && this.wasUnpaused) {
         howLong = ( this.pauseTime + (p5sound.audiocontext.currentTime - this.startSeconds) * this.source.playbackRate.value ) % this.duration();
         return howLong;
     }
@@ -684,7 +689,6 @@ define(function (require) {
   // private function for onended behavior
   p5.prototype.SoundFile.prototype._onEnded = function(s) {
     s.onended = function(s){
-      console.log(s);
       s.stop();
     };
   };
@@ -704,7 +708,6 @@ define(function (require) {
    *                                 t seconds in the future
    */
   p5.prototype.SoundFile.prototype.setVolume = function(vol, rampTime, tFromNow) {
-    console.log('yo');
       var rampTime = rampTime || 0;
       var tFromNow = tFromNow || 0;
       var now = p5sound.audiocontext.currentTime;
@@ -714,6 +717,8 @@ define(function (require) {
       this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
   };
 
+  // same as setVolume, to match Processing Sound
+  p5.prototype.SoundFile.prototype.amp = p5.prototype.SoundFile.prototype.setVolume;
 
   p5.prototype.SoundFile.prototype.add = function() {
     // TO DO
