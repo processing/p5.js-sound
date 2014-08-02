@@ -4,29 +4,30 @@ define(function (require) {
   var p5sound = require('master');
 
   /**
-   *  <p>Generate an audio source from an input such as your computer's
-   *  microphone.</p>
-   * 
-   *  <p>Some browsers let the client choose their input source,
-   *  while others leave this to the application designer, and for this
-   *  we have the methods getSources() and setSoure().</p>
+   *  <p>Get audio from an input, i.e. your computer's microphone.</p>
    *
-   *  <p>Turn the mic on/off with the on() and off() methods. When the mic
+   *  <p>Turn the mic on/off with the start() and stop() methods. When the mic
    *  is on, its volume can be measured with getLevel or by connecting an
    *  FFT object.</p>
+   *  
    *  <p>If you want to hear the AudioIn, use the .connect() method. 
-   *  (AudioIn does not connect to p5.sound output by default to prevent
-   *  feedback).</p>
-   * 
+   *  AudioIn does not connect to p5.sound output by default to prevent
+   *  feedback.</p> 
    *
    *  @class AudioIn
    *  @constructor
-   *  @return {Object} capture
+   *  @return {Object} AudioIn
    *  @example
    *  <div><code>
-   *  mic = new AudioIn()
-   *  mic.start();
-   *  mic.connect(); // wear headphones or it may feedback!
+   *  function setup(){
+   *    mic = new AudioIn()
+   *    mic.start();
+   *  }
+   *  function draw(){
+   *    background(0);
+   *    micLevel = mic.getLevel();
+   *    ellipse(width/2, constrain(height-micLevel*height*5, 0, height), 10, 10);
+   *  }
    *  </code></div>
    */
   p5.prototype.AudioIn = function() {
@@ -41,7 +42,7 @@ define(function (require) {
     this.currentSource = 0;
 
     // create an amplitude, connect to it by default but not to master out
-    this.amplitude = new Amplitude();
+    this.amplitude = new p5.prototype.Amplitude();
     this.output.connect(this.amplitude.input);
 
     // Some browsers let developer determine their input sources
@@ -58,94 +59,11 @@ define(function (require) {
     p5sound.soundArray.push(this);
   };
 
-  // connect to unit if given, otherwise connect to p5sound (master)
-  p5.prototype.AudioIn.prototype.connect = function(unit) {
-    if (unit) {
-      if (unit.hasOwnProperty('input')) {
-        this.output.connect(unit.input);
-      }
-      else if (unit.hasOwnProperty('analyser')) {
-        this.output.connect(unit.analyser);
-      }
-      else {
-        this.output.connect(unit);
-      }
-    }
-    else {
-      this.output.connect(p5sound.input);
-    }
-  };
-
-  /**
-   *  Returns a list of available input sources.
-   *
-   *  @method  listSources
-   *  @return {Array}
-   */
-  p5.prototype.AudioIn.prototype.listSources = function() {
-    console.log('input sources: ');
-    console.log(p5sound.inputSources);
-    if (p5sound.inputSources.length > 0) {
-      return p5sound.inputSources;
-    } else {
-      return 'This browser does not support MediaStreamTrack.getSources()';
-    }
-  };
-
-  /**
-   *  Set the input source. Accepts a number representing a
-   *  position in the array returned by listSources().
-   *  This is only supported in browsers that support 
-   *  MediaStreamTrack.getSources(). Instead, some browsers
-   *  give users the option to set their own media source.
-   *  
-   *  @method setSource
-   *  @param {number} num position of input source in the array
-   */
-  p5.prototype.AudioIn.prototype.setSource = function(num) {
-    // TO DO - set input by string or # (array position)
-    var self = this;
-    if ((p5sound.inputSources.length > 0) && (num < p5sound.inputSources.length)) {
-      // set the current source
-      self.currentSource = num;
-      console.log('set source to ' + p5sound.inputSources[self.currentSource].id);
-    } else {
-      console.log('unable to set input source');
-    }
-  };
-
-  p5.prototype.AudioIn.prototype.disconnect = function(unit) {
-      this.output.disconnect(unit);
-      // stay connected to amplitude even if not outputting to p5
-      // this.output.connect(this.amplitude.input);
-  };
-
-  /**
-   *  <p>Read the Amplitude (volume level) of an AudioIn. The AudioIn
-   *  class contains its own instance of the Amplitude class to help
-   *  make it easy to get a microphone's volume level.</p>
-   *
-   *  <p>Accepts an optional smoothing value (0.0 < 1.0).</p>
-   *
-   *  <p>AudioIn must .start() before using .getLevel().</p>
-   *  
-   *  @method  getLevel
-   *  @param  {[Number]} smoothing Smoothing is 0.0 by default.
-   *                               Smooths values based on previous values.
-   *  @return {Number}           Volume level (between 0.0 and 1.0)
-   */
-  p5.prototype.AudioIn.prototype.getLevel = function(smoothing) {
-    if (smoothing) {
-      this.amplitude.smoothing = smoothing;
-    }
-    return this.amplitude.getLevel();
-  };
-
   /**
    *  Start processing audio input. This enables the use of other
    *  AudioIn methods like getLevel(). Note that by default, AudioIn
    *  is not connected to p5.sound's output. So you won't hear
-   *  anything unless you use the connect() method.
+   *  anything unless you use the connect() method.<br/>
    *
    *  @method start
    */
@@ -170,7 +88,7 @@ define(function (require) {
         // only send to the Amplitude reader, so we can see it but not hear it.
         self.amplitude.setInput(self.output);
       }, this._onStreamError = function(stream) {
-        console.error(e);
+        console.error(stream);
       });
     } else {
     // if Firefox where users select their source via browser
@@ -185,13 +103,13 @@ define(function (require) {
         // only send to the Amplitude reader, so we can see it but not hear it.
         self.amplitude.setInput(self.output);
       }, this._onStreamError = function(stream) {
-        console.error(e);
+        console.error(stream);
       });
     }
   };
 
   /**
-   *  Turn the AudioIn off. If the AudioIn is stopped, it cannot getLevel().
+   *  Turn the AudioIn off. If the AudioIn is stopped, it cannot getLevel().<br/>
    *
    *  @method stop
    */
@@ -199,6 +117,64 @@ define(function (require) {
     if (this.stream) {
       this.stream.stop();
     }
+  };
+
+  /**
+   *  Connect to an audio unit. If no parameter is provided, will
+   *  connect to the master output (i.e. your speakers).<br/>
+   *  
+   *  @method  connect
+   *  @param  {Object} [unit] An object that accepts audio input,
+   *                          such as an FFT
+   */
+  p5.prototype.AudioIn.prototype.connect = function(unit) {
+    if (unit) {
+      if (unit.hasOwnProperty('input')) {
+        this.output.connect(unit.input);
+      }
+      else if (unit.hasOwnProperty('analyser')) {
+        this.output.connect(unit.analyser);
+      }
+      else {
+        this.output.connect(unit);
+      }
+    }
+    else {
+      this.output.connect(p5sound.input);
+    }
+  };
+
+  /**
+   *  Disconnect the AudioIn from all audio units. For example, if
+   *  connect() had been called, disconnect() will stop sending 
+   *  signal to your speakers.<br/>
+   *
+   *  @method  disconnect
+   */
+  p5.prototype.AudioIn.prototype.disconnect = function(unit) {
+      this.output.disconnect(unit);
+      // stay connected to amplitude even if not outputting to p5
+      this.output.connect(this.amplitude.input);
+  };
+
+  /**
+   *  Read the Amplitude (volume level) of an AudioIn. The AudioIn
+   *  class contains its own instance of the Amplitude class to help
+   *  make it easy to get a microphone's volume level. Accepts an
+   *  optional smoothing value (0.0 < 1.0).<br/><br/>
+   *
+   *  AudioIn must .start() before using .getLevel().<br/>
+   *  
+   *  @method  getLevel
+   *  @param  {Number} [smoothing] Smoothing is 0.0 by default.
+   *                               Smooths values based on previous values.
+   *  @return {Number}           Volume level (between 0.0 and 1.0)
+   */
+  p5.prototype.AudioIn.prototype.getLevel = function(smoothing) {
+    if (smoothing) {
+      this.amplitude.smoothing = smoothing;
+    }
+    return this.amplitude.getLevel();
   };
 
   /**
@@ -217,7 +193,7 @@ define(function (require) {
   };
 
   /**
-   *  Set amplitude (volume) of a mic input between 0 and 1.0
+   *  Set amplitude (volume) of a mic input between 0 and 1.0. <br/>
    *
    *  @method  amp
    *  @param  {Number} vol between 0 and 1.0
@@ -236,9 +212,50 @@ define(function (require) {
     }
   };
 
+  /**
+   *  Returns a list of available input sources. Some browsers
+   *  give the client the option to set their own media source.
+   *  Others allow JavaScript to determine which source,
+   *  and for this we have listSources() and setSource().<br/>
+   *
+   *  @method  listSources
+   *  @return {Array}
+   */
+  p5.prototype.AudioIn.prototype.listSources = function() {
+    console.log('input sources: ');
+    console.log(p5sound.inputSources);
+    if (p5sound.inputSources.length > 0) {
+      return p5sound.inputSources;
+    } else {
+      return 'This browser does not support MediaStreamTrack.getSources()';
+    }
+  };
+
+  /**
+   *  Set the input source. Accepts a number representing a
+   *  position in the array returned by listSources().
+   *  This is only available in browsers that support 
+   *  MediaStreamTrack.getSources(). Instead, some browsers
+   *  give users the option to set their own media source.<br/>
+   *  
+   *  @method setSource
+   *  @param {number} num position of input source in the array
+   */
+  p5.prototype.AudioIn.prototype.setSource = function(num) {
+    // TO DO - set input by string or # (array position)
+    var self = this;
+    if ((p5sound.inputSources.length > 0) && (num < p5sound.inputSources.length)) {
+      // set the current source
+      self.currentSource = num;
+      console.log('set source to ' + p5sound.inputSources[self.currentSource].id);
+    } else {
+      console.log('unable to set input source');
+    }
+  };
+
   // private method
   p5.prototype.AudioIn.prototype.dispose = function(){
-    this.off();
+    this.stop();
     this.output.disconnect();
     this.amplitude.disconnect();
     this.amplitude = null;

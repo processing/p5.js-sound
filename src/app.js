@@ -10,7 +10,7 @@ define(function (require) {
   require('fft');
   require('oscillator');
   require('pulse');
-  require('lfo');
+  // require('lfo');
   require('noise');
   require('audioin');
   require('env');

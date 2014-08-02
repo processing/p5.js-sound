@@ -6,36 +6,37 @@ define(function (require) {
   var p5sound = require('master');
 
   /**
-   * <p>Create a SoundFile object with a path to a file.</p>
+   *  <p>SoundFile object with a path to a file.</p>
+   *  
+   *  <p>The SoundFile may not be available immediately because
+   *  it loads the file information asynchronously.</p>
    * 
-   * <p>The SoundFile may not be available immediately because
-   * it loads the file information asynchronously.</p>
-   *
-   * <p>To do something with the sound as soon as it loads
-   * pass the name of a function as the second parameter.</p>
+   *  <p>To do something with the sound as soon as it loads
+   *  pass the name of a function as the second parameter.</p>
+   *  
+   *  <p>Only one file path is required. However, audio file formats 
+   *  (i.e. mp3, ogg, wav and m4a/aac) are not supported by all
+   *  web browsers. If you want to ensure compatability, instead of a single
+   *  file path, you may include an Array of filepaths, and the browser will
+   *  choose a format that works.</p>
    * 
-   * <p>Only one file path is required. However, audio file formats 
-   * (i.e. mp3, ogg, wav and m4a/aac) are not supported by all
-   * web browsers. If you want to ensure compatability, instead of a single
-   * file path, you may include an Array of filepaths, and the browser will
-   * choose a format that works.</p>
+   *  @class SoundFile
+   *  @constructor
+   *  @param {String/Array} path   path to a sound file (String). Optionally,
+   *                               you may include multiple file formats in
+   *                               an array.
+   *  @param {Function} [callback]   Name of a function to call once file loads
+   *  @return {Object}    SoundFile Object
+   *  @example 
+   *  <div><code>
+   *  function preload() {
+   *    mySound = loadSound('../sounds/drum.mp3');
+   *  }
    *
-   * @class SoundFile
-   * @constructor
-   * @param {String/Array} path   path to a sound file (String). Optionally,
-   *                              you may include multiple file formats in
-   *                              an array.
-   * @param {Function} [callback]   Name of a function to call once file loads
-   * @return {Object}    SoundFile Object
-   * @example 
-   * <div><code>
-   * function setup() {
-   *   mySound = new SoundFile(['mySound.mp3', 'mySound.ogg'], onload);
-   * }
-   *
-   * function onload() {
-   *   mySound.play();
-   * }
+   *  function setup() {
+   *    mySound.play();
+   *  }
+   * 
    * </code></div>
    */
   p5.prototype.SoundFile = function(paths, onload) {
@@ -131,7 +132,7 @@ define(function (require) {
     // time that playback was started, in millis
     this.startMillis = null;
 
-    this.amplitude = new Amplitude();
+    this.amplitude = new p5.prototype.Amplitude();
     this.output.connect(this.amplitude.input);
 
     // stereo panning
@@ -152,12 +153,51 @@ define(function (require) {
     p5sound.soundArray.push(this);
   };
 
+  // register preload handling of loadSound
+  p5.prototype._registerPreloadFunc('loadSound');
+
+  /**
+   *  <p>loadSound() returns a new SoundFile from a specified
+   *  path. If called during preload(), the SoundFile will be ready
+   *  to play in time for setup() and draw(). If called outside of
+   *  preload, the SoundFile will not be ready immediately, so
+   *  loadSound accepts a callback as the second parameter.</p>
+   *  <p>Using a <a href=
+   *  "https://github.com/lmccart/p5.js/wiki/Local-server">
+   *  local server</a> is recommended when loading external files.</p>
+   *  
+   *  @method loadSound
+   *  @param  {String/Array}   path     Path to the sound file, or an array with
+   *                                    paths to soundfiles in multiple formats
+   *                                    i.e. ['sound.ogg', 'sound.mp3']
+   *  @param {Function} [callback]   Name of a function to call once file loads
+   *  @return {SoundFile}            Returns a SoundFile
+   *  @example 
+   *  <div><code>
+   *  function preload() {
+   *   mySound = loadSound('../sounds/drum.mp3');
+   *  }
+   *
+   *  function setup() {
+   *    mySound.loop();
+   *  }
+   *  </code></div>
+   */
+  p5.prototype.loadSound = function(path, callback){
+    // if loading locally without a server
+    if (window.location.origin.indexOf('file://') > -1) {
+      alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
+    }
+
+    var s = new p5.prototype.SoundFile(path, callback);
+    return s;
+  };
+
   /**
    * <p>This is a helper function that the SoundFile calls to load
    * itself. Accepts a callback (the name of another function)
    * as an optional parameter.</p> 
    *
-   * @method  load
    * @private
    * @param {Function} [callback]   Name of a function to call once file loads
    */
@@ -187,7 +227,7 @@ define(function (require) {
   };
 
   /**
-   *  Returns true if the sound file has finished loading.
+   *  Returns true if the sound file finished loading successfully.
    *  
    *  @method  isLoaded
    *  @return {Boolean} 
@@ -211,6 +251,7 @@ define(function (require) {
    * @param {Number} [endTime]          (optional) endTime in seconds
    */
   p5.prototype.SoundFile.prototype.play = function(rate, amp, startTime, endTime) {
+    var now = p5sound.audiocontext.currentTime;
     // TO DO: if already playing, create array of buffers for easy stop()
     if (this.buffer) {
 
@@ -266,7 +307,9 @@ define(function (require) {
         this.source.gain.value = amp || 1;
         this.source.connect(this.output); 
       }
-      this.source.playbackRate.value = rate || Math.abs(this.playbackRate);
+      this.source.playbackRate.cancelScheduledValues(now);
+      rate = rate || Math.abs(this.playbackRate);
+      this.source.playbackRate.setValueAtTime(rate, now);
 
 
       // play the sound
@@ -280,7 +323,7 @@ define(function (require) {
         this.wasUnpaused = false;
         this.source.start(0, this.startTime, this.endTime);
       }
-      this.startSeconds = p5sound.audiocontext.currentTime;
+      this.startSeconds = now;
       this.playing = true;
       this.paused = false;
 
@@ -298,12 +341,27 @@ define(function (require) {
    *  SoundFile has two play modes: <code>restart</code> and
    *  <code>sustain</code>. Play Mode determines what happens to a
    *  SoundFile if it is triggered while in the middle of playback.
-   *  In sustain, the existing playback will continue. In restart
-   *  .play() will stop playback and start over. Sustain is the
-   *  default mode. 
+   *  In sustain mode, playback will continue simultaneous to the
+   *  new playback. In restart mode, play() will stop playback
+   *  and start over. Sustain is the default mode. 
    *  
    *  @method  playMode
    *  @param  {String} str 'restart' or 'sustain'
+   *  @example
+   *  <div><code>
+   *  function setup(){
+   *    mySound = loadSound('../sounds/Damscray_DancingTiger.mp3');
+   *  }
+   *  function mouseClicked() {
+   *    mySound.playMode('sustain');
+   *    mySound.play();
+   *  }
+   *  function keyPressed() {
+   *    mySound.playMode('restart');
+   *    mySound.play();
+   *  }
+   * 
+   * </code></div>
    */
   p5.prototype.SoundFile.prototype.playMode = function(str) {
     var s = str.toLowerCase();
@@ -444,7 +502,10 @@ define(function (require) {
    * @method stop
    */
   p5.prototype.SoundFile.prototype.stop = function() {
-    if (this.buffer && this.source) {
+    if (this.mode == 'sustain') {
+      this.stopAll();
+    }
+    else if (this.buffer && this.source) {
       this.source.stop();
       this.pauseTime = 0;
       this.playing = false;
@@ -452,14 +513,12 @@ define(function (require) {
   };
 
   /**
-   * Stop playback on all of this soundfile's sources.
-   * This may soon be replaced by different playModes for the player.
-   *
-   * @method stopAll
+   *  Stop playback on all of this soundfile's sources.
+   *  @private
    */
   p5.prototype.SoundFile.prototype.stopAll = function() {
     if (this.buffer && this.source) {
-      for (var i = 0; i < this.sources.length - 1; i++){
+      for (var i = 0; i < this.sources.length; i++){
         if (this.sources[i] !== null){
           this.sources[i].stop();
         }
@@ -469,32 +528,69 @@ define(function (require) {
   };
 
   /**
-   * Set the playback rate of a sound file. Will change the speed and the pitch.
-   * Values less than zero will reverse the audio buffer before playback.
+   *  Set the playback rate of a sound file. Will change the speed and the pitch.
+   *  Values less than zero will reverse the audio buffer before playback.
    *
-   * @method rate
-   * @param {Number} [playbackRate]     Set the playback rate. 1.0 is normal,
-   *                                    .5 is half-speed, 2.0 is twice as fast.
-   *                                    Must be greater than zero.
+   *  @method rate
+   *  @param {Number} [playbackRate]     Set the playback rate. 1.0 is normal,
+   *                                     .5 is half-speed, 2.0 is twice as fast.
+   *                                     Must be greater than zero.
+   *  @example
+   *  <div><code>
+   *  var soundfile;
+   *  
+   *  function preload() {
+   *    soundfile = loadSound('../sounds/Damscray_DancingTiger.mp3');
+   *  }
+   *
+   *  function setup() {
+   *    soundfile.loop();
+   *  }
+   *
+   *  function draw() {
+   *    soundfile.rate(map(mouseX, 0, width, 0.25, 1.5)); 
+   *  }
+   *  
+   * </code>
+   * </div>
+
+   *  
    */
   p5.prototype.SoundFile.prototype.rate = function(playbackRate) {
-    if (this.playbackRate === playbackRate) {
+    if (this.playbackRate === playbackRate && this.source.playbackRate.value === playbackRate) {
       return;
     }
     this.playbackRate = playbackRate;
-    if (playbackRate === 0 && this.playing) {
+    var rate = playbackRate;
+    if (this.playbackRate === 0 && this.playing) {
       this.pause();
     }
-    if (playbackRate < 0 && !this.reversed) {
+    if (this.playbackRate < 0 && !this.reversed) {
       this.reverseBuffer();
-    }
-    else if (playbackRate > 0 && this.reversed) {
-      this.reverseBuffer();
-    }
-    if (this.isPlaying() === true) {
+      rate = Math.abs(playbackRate);
       this.pause();
       this.play();
     }
+    else if (this.playbackRate > 0 && this.reversed) {
+      this.reverseBuffer();
+    }
+
+    var now = p5sound.audiocontext.currentTime;
+    this.source.playbackRate.cancelScheduledValues(now);
+    this.source.playbackRate.linearRampToValueAtTime(Math.abs(rate), now);
+    // if (playbackRate === 0 && this.playing) {
+    //   this.pause();
+    // }
+    // if (playbackRate < 0 && !this.reversed) {
+    //   this.reverseBuffer();
+    // }
+    // else if (playbackRate > 0 && this.reversed) {
+    //   this.reverseBuffer();
+    // }
+    // if (this.isPlaying() === true) {
+    //   this.pause();
+    //   this.play();
+    // }
   };
 
   p5.prototype.SoundFile.prototype.getPlaybackRate = function() {
@@ -614,7 +710,7 @@ define(function (require) {
    * Inspired by Wavesurfer.js.
    * 
    * @method  getPeaks
-   * @params {[Number]} length length is the size of the returned array.
+   * @params {Number} [length] length is the size of the returned array.
    *                          Larger length results in more precision.
    *                          Defaults to 5*width of the browser window.
    * @returns {Float32Array} Array of peaks.
@@ -662,15 +758,23 @@ define(function (require) {
   };
 
   /**
-   * Reverses the SoundFile's buffer source.
-   * Playback must be handled separately (see example).
+   *  Reverses the SoundFile's buffer source.
+   *  Playback must be handled separately (see example).
    *
-   * @method  reverseBuffer
-   * @example
-   * <div><code>
-   * s = new SoundFile('beat.mp3');
-   * s.reverseBuffer();
-   * s.play();
+   *  @method  reverseBuffer
+   *  @example
+   *  <div><code>
+   *  var drum;
+   *  
+   *  function preload() {
+   *    drum = loadSound('../sounds/drum.mp3');
+   *  }
+   *
+   *  function setup() {
+   *    drum.reverseBuffer();
+   *    drum.play();
+   *  }
+   *  
    * </code>
    * </div>
    */
@@ -680,6 +784,7 @@ define(function (require) {
       Array.prototype.reverse.call( this.buffer.getChannelData(1) );
     // set reversed flag
     this.reversed = !this.reversed;
+    console.log('reversed!');
     // this.playbackRate = -this.playbackRate;
     } else {
       throw 'SoundFile is not done loading';
@@ -703,8 +808,8 @@ define(function (require) {
    *
    *  @method  setVolume
    *  @param {Number} volume  Volume (amplitude) between 0.0 and 1.0
-   *  @param {[Number]} rampTime  Fade for t seconds
-   *  @param {[Number]} timeFromNow  Schedule this event to happen at
+   *  @param {Number} [rampTime]  Fade for t seconds
+   *  @param {Number} [timeFromNow]  Schedule this event to happen at
    *                                 t seconds in the future
    */
   p5.prototype.SoundFile.prototype.setVolume = function(vol, rampTime, tFromNow) {
@@ -784,21 +889,16 @@ define(function (require) {
   /**
    * <p>Connects the output of a p5sound object to input of another
    * p5Sound object. For example, you may connect a SoundFile to an
-   * Effect.</p>
+   * FFT or an Effect.</p>
    * 
-   * <p>If no parameter is given, this object will connect
-   * to the master output.</p>
+   * <p>If no parameter is given, it will connect to the master output.
+   * </p>
    * 
    * <p>Most p5sound objects connect to the master output when they
-   * are created, so you can hear them without ever using this
-   * function. AudioIn is the only exception: you will not hear 
-   * the AudioIn unless you explicitly tell it to connect.
-   * This is because connecting a microphone input through your
-   * speakers can cause feedback</p>
+   * are created.</p>
    *
    * @method connect
-   * @param {[object]} p5Sound_Object p5Sound objects can connect (send their
-   *                                  output) to other p5Sound objects
+   * @param {Object} [object] Audio object that accepts an input
    */
   p5.prototype.SoundFile.prototype.connect = function(unit) {
     if (!unit) {
@@ -822,45 +922,6 @@ define(function (require) {
     this.panner.disconnect(unit);
   };
 
-
-  // register preload handling of loadSound
-  p5.prototype._registerPreloadFunc('loadSound');
-
-  /**
-   * <p>loadSound() should be used if you want to create a SoundFile 
-   * during preload. It returns a new SoundFile from a specified
-   * path, or an array of paths. If used outside of preload, it 
-   * accepts a callback as the second parameter.</p>
-   * <p>Using a <a href=
-   * "https://github.com/lmccart/p5.js/wiki/Local-server">
-   * local server</a> is recommended when loading external files.</p>
-   *  
-   * @method loadSound
-   * @param  {String/Array}   path     Path to the sound file, or an array with
-   *                                   paths to soundfiles in multiple formats
-   *                                   i.e. ['sound.ogg', 'sound.mp3']
-   * @param {Function} [callback]   Name of a function to call once file loads
-   * @return {SoundFile}            Returns a SoundFile
-   * @example 
-   * <div><code>
-   * function preload() {
-   *   mySound = loadSound(['mySound.mp3', 'mySound.ogg']);
-   * }
-   *
-   * function setup() {
-   *   mySound.loop();
-   * }
-   * </code></div>
-   */
-  p5.prototype.loadSound = function(path, callback){
-    // if loading locally without a server
-    if (window.location.origin.indexOf('file://') > -1) {
-      alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
-    }
-
-    var s = new p5.prototype.SoundFile(path, callback);
-    return s;
-  };
 
   /**
    *  List the SoundFile formats that you will include. LoadSound 
@@ -905,7 +966,7 @@ define(function (require) {
    *  <p>Accepts an optional smoothing value (0.0 < 1.0).</p>
    *  
    *  @method  getLevel
-   *  @param  {[Number]} smoothing Smoothing is 0.0 by default.
+   *  @param  {Number} [smoothing] Smoothing is 0.0 by default.
    *                               Smooths values based on previous values.
    *  @return {Number}           Volume level (between 0.0 and 1.0)
    */

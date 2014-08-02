@@ -122,6 +122,10 @@ define(function (require) {
     }
   };
 
+  p5.prototype.Amplitude.prototype.disconnect = function(unit) {
+    this.output.disconnect();
+  };
+
   // Should this be a private function?
   // TO DO make this stereo / dependent on # of audio channels
   p5.prototype.Amplitude.prototype.volumeAudioProcess = function(event) {
@@ -135,8 +139,8 @@ define(function (require) {
     for (var i = 0; i < bufLength; i++) {
       x = inputBuffer[i];
       if (this.normalize){
-        total += constrain(x/this.volMax, -1, 1);
-        sum += constrain(x/this.volMax, -1, 1) * constrain(x/this.volMax, -1, 1);
+        total += p5.prototype.constrain(x/this.volMax, -1, 1);
+        sum += p5.prototype.constrain(x/this.volMax, -1, 1) * p5.prototype.constrain(x/this.volMax, -1, 1);
       }
       else {
         total += x;
@@ -153,7 +157,7 @@ define(function (require) {
     this.volMax=Math.max(this.volume, this.volMax);
 
     // normalized values
-    this.volNorm = constrain(this.volume/this.volMax, 0, 1);
+    this.volNorm = p5.prototype.constrain(this.volume/this.volMax, 0, 1);
   };
 
   /**

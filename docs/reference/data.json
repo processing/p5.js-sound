@@ -1,36 +1,44 @@
 {
     "project": {
-        "name": "p5",
+        "name": "p5.sound",
         "description": "",
-        "version": "0.2.21",
+        "version": "0.009",
         "url": ""
     },
     "files": {
         "src/amplitude.js": {
             "name": "src/amplitude.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "Amplitude": 1
+            },
             "fors": {},
             "namespaces": {}
         },
         "src/audioin.js": {
             "name": "src/audioin.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "AudioIn": 1
+            },
             "fors": {},
             "namespaces": {}
         },
         "src/env.js": {
             "name": "src/env.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "Env": 1
+            },
             "fors": {},
             "namespaces": {}
         },
         "src/fft.js": {
             "name": "src/fft.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "FFT": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -62,7 +70,9 @@
         "src/noise.js": {
             "name": "src/noise.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "Noise": 1
+            },
             "fors": {
                 "Noise": 1
             },
@@ -71,14 +81,18 @@
         "src/oscillator.js": {
             "name": "src/oscillator.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "Oscillator": 1
+            },
             "fors": {},
             "namespaces": {}
         },
         "src/pulse.js": {
             "name": "src/pulse.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "Pulse": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -86,13 +100,17 @@
             "name": "src/sndcore.js",
             "modules": {},
             "classes": {},
-            "fors": {},
+            "fors": {
+                "p5.sound": 1
+            },
             "namespaces": {}
         },
         "src/soundfile.js": {
             "name": "src/soundfile.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "SoundFile": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -107,25 +125,6 @@
             "fors": {
                 "p5.dom": 1,
                 "p5.Element": 1
-            },
-            "namespaces": {}
-        },
-        "lib/addons/p5.sound.js": {
-            "name": "lib/addons/p5.sound.js",
-            "modules": {},
-            "classes": {
-                "Amplitude": 1,
-                "AudioIn": 1,
-                "Env": 1,
-                "FFT": 1,
-                "Pulse": 1,
-                "Noise": 1,
-                "Oscillator": 1,
-                "SoundFile": 1
-            },
-            "fors": {
-                "p5.sound": 1,
-                "Noise": 1
             },
             "namespaces": {}
         }
@@ -151,11 +150,11 @@
             },
             "namespaces": {},
             "module": "p5.sound",
-            "file": "lib/addons/p5.sound.js",
-            "line": 284,
+            "file": "src/soundfile.js",
+            "line": 8,
             "tag": "main",
             "itemtype": "main",
-            "description": "<h1>Version .0003</h1>\n\n<p>p5.sound by Jason Sigal (jasonsigal.cc) for the\nProcessing Foundation & Google Summer of Code 2014.</p>\n\n<p>This is an addon that extends p5 to work with sound.<br>\n<a href=\"https://github.com/therewasaguy/p5.js/blob/p5sound/lib/addons/p5.sound.js\">DOWNLOAD HERE.</a></p>\n \n<p>Incorporates elements from:<br>\n  - <a href=\"https://github.com/TONEnoTONE/Tone.js\">TONE.js</a> (c) Yotam Mann, 2014. Licensed under The MIT License (MIT).<br />\n  - <a href=\"http://buzz.jaysalvat.com/\">buzz.js</a> (c) Jay Salvat, 2013. Licensed under The MIT License (MIT).<br />\n  - <a href=\"http://www.apache.org/licenses/LICENSE-2.0\">Boris Smus Web Audio API book</a>, 2013. Licensed under the Apache License<br />\n  - <a href=\"https://github.com/katspaugh/wavesurfer.js\">wavesurfer.js</a><br />\n  - <a href=\"https://github.com/wirsing/processingsound\">Wilm Thoben's Sound library for Processing</a>"
+            "description": "p5.sound extends p5 with Web Audio functionality including audio input, playback, analysis and synthesis."
         },
         "p5.dom": {
             "name": "p5.dom",
@@ -188,8 +187,8 @@
             "plugin_for": [],
             "extension_for": [],
             "module": "p5.sound",
-            "file": "lib/addons/p5.sound.js",
-            "line": 1061,
+            "file": "src/amplitude.js",
+            "line": 5,
             "description": "Create an Amplitude object, which measures amplitude (volume)\nbetween 0.0 and 1.0. Accepts an optional smoothing value,\nwhich defaults to 0. Reads global p5sound output by default,\nor use setInput() to listen to a specific sound source.",
             "is_constructor": 1,
             "params": [
@@ -206,8 +205,7 @@
             },
             "example": [
                 "\n<div><code>\nfunction setup() { \n  mic = new AudioIn();\n  mic.on();\n  amplitude = new Amplitude();\n  amplitude.setInput(mic);\n}\nfunction draw() {\n  micLevel = amplitude.analyze();\n  ellipse(width/2, height - micLevel*height, 10, 10);\n}\n</code></div>"
-            ],
-            "submodule": "p5.sound"
+            ]
         },
         "AudioIn": {
             "name": "AudioIn",
@@ -218,18 +216,17 @@
             "plugin_for": [],
             "extension_for": [],
             "module": "p5.sound",
-            "file": "lib/addons/p5.sound.js",
-            "line": 2109,
-            "description": "Similar to p5.dom createCapture() but for audio, without\ncreating a DOM element.",
+            "file": "src/audioin.js",
+            "line": 6,
+            "description": "<p>Generate an audio source from an input such as your computer's\nmicrophone.</p>\n \n<p>Some browsers let the client choose their input source,\nwhile others leave this to the application designer, and for this\nwe have the methods getSources() and setSoure().</p>\n\n<p>Turn the mic on/off with the on() and off() methods. When the mic\nis on, its volume can be measured with getLevel or by connecting an\nFFT object.</p>\n<p>If you want to hear the AudioIn, use the .connect() method. \n(AudioIn does not connect to p5.sound output by default to prevent\nfeedback).</p>",
             "is_constructor": 1,
             "return": {
                 "description": "capture",
                 "type": "Object"
             },
             "example": [
-                "\n<div><code>\nmic = new AudioIn()\nmic.on();\n</code></div>"
-            ],
-            "submodule": "p5.sound"
+                "\n<div><code>\nmic = new AudioIn()\nmic.start();\nmic.connect(); // wear headphones or it may feedback!\n</code></div>"
+            ]
         },
         "Env": {
             "name": "Env",
@@ -240,8 +237,8 @@
             "plugin_for": [],
             "extension_for": [],
             "module": "p5.sound",
-            "file": "lib/addons/p5.sound.js",
-            "line": 2349,
+            "file": "src/env.js",
+            "line": 6,
             "description": "Envelopes are pre-defined amplitude distribution over time. \nTypically, envelopes are used to control the output volume\nof an object. This is the default behavior. However,\nEnvelopes can also be used to control any Web Audio Param.",
             "is_constructor": 1,
             "params": [
@@ -280,8 +277,7 @@
                     "description": "Release level (defaults to 0)",
                     "type": "[Number]"
                 }
-            ],
-            "submodule": "p5.sound"
+            ]
         },
         "FFT": {
             "name": "FFT",
@@ -292,37 +288,26 @@
             "plugin_for": [],
             "extension_for": [],
             "module": "p5.sound",
-            "file": "lib/addons/p5.sound.js",
-            "line": 1283,
+            "file": "src/fft.js",
+            "line": 6,
             "description": "Create an analyser node with optional variables for smoothing, \nfft size, min/max decibels. Decibels are in dBFS (0 is loudest),\nand will impact the range of your results.",
             "is_constructor": 1,
             "params": [
                 {
                     "name": "smoothing",
-                    "description": "Smooth results of Freq Spectrum between 0.01 and .99)]",
+                    "description": "Smooth results of Freq Spectrum.\n                              0.0 < smoothing < 1.0.\n                              Defaults to 0.8.",
                     "type": "[Number]"
                 },
                 {
-                    "name": "fft_size",
-                    "description": "Must be a power of two between 32 and 2048",
-                    "type": "[Number]"
-                },
-                {
-                    "name": "minDecibels",
-                    "description": "Minimum decibels (dBFS, defaults to -140)",
-                    "type": "[Number]"
-                },
-                {
-                    "name": "maxDecibels",
-                    "description": "Maximum decibels (dBFS, defaults to 0)",
+                    "name": "bands",
+                    "description": "Must be a power of two between\n                           16 and 1024. Defaults to 1024.",
                     "type": "[Number]"
                 }
             ],
             "return": {
                 "description": "FFT Object",
                 "type": "Object"
-            },
-            "submodule": "p5.sound"
+            }
         },
         "Pulse": {
             "name": "Pulse",
@@ -333,9 +318,9 @@
             "plugin_for": [],
             "extension_for": [],
             "module": "p5.sound",
-            "file": "lib/addons/p5.sound.js",
-            "line": 1813,
-            "description": "A Low Frequency Oscillator (LFO) oscillates at a lower frequency\nthan humans can hear, and is typically used to modulate a\nparameter. By default this class not connect to the master output,\nand oscillates at 1Hz. Use freqMod() to modulate the frequency of\nanother oscillator, ampMod() to modulate the amplitude, and mod()\nto modulate any other Web Audio Param.",
+            "file": "src/pulse.js",
+            "line": 7,
+            "description": "Creates a Pulse object, an oscillator that implements\nPulse Width Modulation.\nThe pulse is created with two oscillators.\nAccepts a parameter for frequency, and to set the\nwidth between the pulses.\n\nInspired by <a href=\"\nhttp://www.musicdsp.org/showone.php?id=8\">musicdsp.org\"</a>",
             "is_constructor": 1,
             "params": [
                 {
@@ -348,8 +333,7 @@
                     "description": "Type of oscillator (defaults to 'sine')",
                     "type": "[String]"
                 }
-            ],
-            "submodule": "p5.sound"
+            ]
         },
         "p5.sound": {
             "name": "p5.sound",
@@ -373,8 +357,8 @@
             "extension_for": [],
             "module": "p5.sound",
             "namespace": "",
-            "file": "lib/addons/p5.sound.js",
-            "line": 1916,
+            "file": "src/noise.js",
+            "line": 6,
             "description": "Noise is a type of oscillator that generates a buffer with random values.",
             "is_constructor": 1,
             "params": [
@@ -383,8 +367,7 @@
                     "description": "Type of noise can be 'white' (default),\n                     'brown' or 'pink'.",
                     "type": "[type]"
                 }
-            ],
-            "submodule": "p5.sound"
+            ]
         },
         "Oscillator": {
             "name": "Oscillator",
@@ -396,8 +379,8 @@
             "extension_for": [],
             "module": "p5.sound",
             "namespace": "",
-            "file": "lib/addons/p5.sound.js",
-            "line": 1434,
+            "file": "src/oscillator.js",
+            "line": 6,
             "description": "<p>Creates a signal that oscillates between -1.0 and 1.0.\nBy default, the oscillation takes the form of a sinusoidal\nshape ('sine'). Additional types include 'triangle',\n'sawtooth' and 'square'. The frequency defaults to\n440 oscillations per second (440Hz, equal to the pitch of an\n'A' note).</p> \n\n<p>Set the type of oscillation  setType(), or by creating a\nspecific oscillator.</p> For example:\n<code>new SinOsc(freq)</code>\n<code>new TriOsc(freq)</code>\n<code>new SqrOsc(freq)</code>\n<code>new SawOsc(freq)</code>.\n</p>",
             "is_constructor": 1,
             "params": [
@@ -411,8 +394,7 @@
                     "description": "type of oscillator. Options:\n                       'sine' (default), 'triangle',\n                       'sawtooth', 'square'",
                     "type": "[String]"
                 }
-            ],
-            "submodule": "p5.sound"
+            ]
         },
         "SoundFile": {
             "name": "SoundFile",
@@ -424,8 +406,8 @@
             "extension_for": [],
             "module": "p5.sound",
             "namespace": "",
-            "file": "lib/addons/p5.sound.js",
-            "line": 284,
+            "file": "src/soundfile.js",
+            "line": 8,
             "description": "<p>Create a SoundFile object with a path to a file.</p>\n\n<p>The SoundFile may not be available immediately because\nit loads the file information asynchronously.</p>\n\n<p>To do something with the sound as soon as it loads\npass the name of a function as the second parameter.</p>\n\n<p>Only one file path is required. However, audio file formats \n(i.e. mp3, ogg, wav and m4a/aac) are not supported by all\nweb browsers. If you want to ensure compatability, instead of a single\nfile path, you may include an Array of filepaths, and the browser will\nchoose a format that works.</p>",
             "is_constructor": 1,
             "params": [
@@ -447,8 +429,7 @@
             },
             "example": [
                 " \n<div><code>\nfunction setup() {\n  mySound = new SoundFile(['mySound.mp3', 'mySound.ogg'], onload);\n}\n\nfunction onload() {\n  mySound.play();\n}\n</code></div>"
-            ],
-            "submodule": "p5.sound"
+            ]
         },
         "p5.dom": {
             "name": "p5.dom",
@@ -507,7 +488,7 @@
     "classitems": [
         {
             "file": "src/amplitude.js",
-            "line": 70,
+            "line": 67,
             "description": "Connects to the p5sound instance (master output) by default.\nOptionally, you can pass in a specific source (i.e. a soundfile).",
             "itemtype": "method",
             "name": "setInput",
@@ -532,7 +513,7 @@
         },
         {
             "file": "src/amplitude.js",
-            "line": 162,
+            "line": 159,
             "description": "Returns a single Amplitude reading at the moment it is called.\nFor continuous readings, run in the draw loop.",
             "itemtype": "method",
             "name": "getLevel",
@@ -547,7 +528,7 @@
         },
         {
             "file": "src/amplitude.js",
-            "line": 187,
+            "line": 184,
             "description": "Determines whether the results of Amplitude.process() will be Normalized.\nTo normalize, Amplitude finds the difference the loudest reading it has processed\nand the maximum amplitude of 1.0. Amplitude adds this difference to all values to produce\nresults that will reliably map between 0.0 and 1.0. \nHowever, if a louder moment occurs, the amount that Normalize adds to all the values will change.\n\nAccepts an optional boolean parameter (true or false).\nNormalizing is off by default.",
             "itemtype": "method",
             "name": "toggleNormalize",
@@ -563,7 +544,7 @@
         },
         {
             "file": "src/amplitude.js",
-            "line": 209,
+            "line": 206,
             "description": "Determines whether the results of Amplitude.process() will be Smoothed.",
             "itemtype": "method",
             "name": "smooth",
@@ -578,7 +559,7 @@
         },
         {
             "file": "src/audioin.js",
-            "line": 63,
+            "line": 79,
             "description": "Returns a list of available input sources.",
             "itemtype": "method",
             "name": "listSources",
@@ -590,7 +571,7 @@
         },
         {
             "file": "src/audioin.js",
-            "line": 79,
+            "line": 95,
             "description": "Set the input source. Accepts a number representing a\nposition in the array returned by listSources().\nThis is only supported in browsers that support \nMediaStreamTrack.getSources(). Instead, some browsers\ngive users the option to set their own media source.",
             "itemtype": "method",
             "name": "setSource",
@@ -605,8 +586,8 @@
         },
         {
             "file": "src/audioin.js",
-            "line": 107,
-            "description": "<p>Read the Amplitude (volume level) of an AudioIn. The AudioIn\nclass contains its own instance of the Amplitude class to help\nmake it easy to get a microphone's volume level.</p>\n\n<p>Accepts an optional smoothing value (0.0 < 1.0).</p>\n\n<p>AudioIn must be .on() before using .getLevel().</p>",
+            "line": 123,
+            "description": "<p>Read the Amplitude (volume level) of an AudioIn. The AudioIn\nclass contains its own instance of the Amplitude class to help\nmake it easy to get a microphone's volume level.</p>\n\n<p>Accepts an optional smoothing value (0.0 < 1.0).</p>\n\n<p>AudioIn must .start() before using .getLevel().</p>",
             "itemtype": "method",
             "name": "getLevel",
             "params": [
@@ -624,23 +605,23 @@
         },
         {
             "file": "src/audioin.js",
-            "line": 128,
-            "description": "Turn the AudioIn on. This enables the use of other AudioIn\nmethods like getLevel().",
+            "line": 144,
+            "description": "Start processing audio input. This enables the use of other\nAudioIn methods like getLevel(). Note that by default, AudioIn\nis not connected to p5.sound's output. So you won't hear\nanything unless you use the connect() method.",
             "itemtype": "method",
-            "name": "on",
+            "name": "start",
             "class": "AudioIn"
         },
         {
             "file": "src/audioin.js",
-            "line": 175,
-            "description": "Turn the AudioIn off. If the AudioIn is off, it cannot getLevel().",
+            "line": 193,
+            "description": "Turn the AudioIn off. If the AudioIn is stopped, it cannot getLevel().",
             "itemtype": "method",
-            "name": "off",
+            "name": "stop",
             "class": "AudioIn"
         },
         {
             "file": "src/audioin.js",
-            "line": 186,
+            "line": 204,
             "description": "Add input sources to the list of available sources.",
             "access": "private",
             "tagname": "",
@@ -648,7 +629,7 @@
         },
         {
             "file": "src/audioin.js",
-            "line": 201,
+            "line": 219,
             "description": "Set amplitude (volume) of a mic input between 0 and 1.0",
             "itemtype": "method",
             "name": "amp",
@@ -720,7 +701,19 @@
         },
         {
             "file": "src/env.js",
-            "line": 62,
+            "line": 64,
+            "params": [
+                {
+                    "name": "input",
+                    "description": "A p5Sound object or\n                              Web Audio Param",
+                    "type": "Object"
+                }
+            ],
+            "class": "Env"
+        },
+        {
+            "file": "src/env.js",
+            "line": 76,
             "description": "Play tells the envelope to start acting on a given input.\nIf the input is a p5Sound object (i.e. AudioIn, Oscillator,\nSoundFile), then Env will control its output volume.\nEnvelopes can also be used to control any Web Audio Param.",
             "params": [
                 {
@@ -733,19 +726,44 @@
         },
         {
             "file": "src/fft.js",
-            "line": 46,
-            "description": "<p>This method tells the FFT to processes the frequency spectrum.</p>\n \n<p>Returns an array of amplitude values between 0 and 255. The array\nstarts with the lowest pitched frequencies, and ends with the \nhighest.</p>\n\n<p>Length will be equal to 1/2 fftSize (default: 1024 / 512).</p>",
+            "line": 36,
+            "description": "Set the input source for the FFT analysis. If no source is\nprovided, FFT will analyze all sound in the sketch.",
+            "params": [
+                {
+                    "name": "source",
+                    "description": "p5.sound object (or web audio API source node)",
+                    "type": "[Object]"
+                },
+                {
+                    "name": "bands",
+                    "description": "Must be a power of two between 16 and 1024",
+                    "type": "[Number]"
+                }
+            ],
+            "class": "FFT"
+        },
+        {
+            "file": "src/fft.js",
+            "line": 55,
+            "description": "<p>This method tells the FFT to processes the frequency spectrum.</p>\n \n<p>Returns an array of amplitude values between -140 and 0. The array\nstarts with the lowest pitched frequencies, and ends with the \nhighest.</p>\n\n<p>Length will be equal to fft bands (default: 1024).</p>",
             "itemtype": "method",
-            "name": "processFreq",
+            "name": "analyze",
+            "params": [
+                {
+                    "name": "bands",
+                    "description": "Must be a power of two between\n                           16 and 1024. Defaults to 512.",
+                    "type": "[Number]"
+                }
+            ],
             "return": {
                 "description": "spectrum    Array of amplitude values across\n                                 the frequency spectrum.",
-                "type": "Uint8Array"
+                "type": "Float32Array"
             },
             "class": "FFT"
         },
         {
             "file": "src/fft.js",
-            "line": 66,
+            "line": 81,
             "description": "Returns an array of amplitude values (between 0-255) that represent\na snapshot of amplitude readings in a single buffer.\n \nLength will be 1/2 size of FFT buffer (default is 2048 / 1024).\n\nCan be used to draw the waveform of a sound.",
             "itemtype": "method",
             "name": "waveform",
@@ -757,8 +775,21 @@
         },
         {
             "file": "src/fft.js",
-            "line": 92,
-            "description": "<p>Returns the amount of energy (volume) at a specific\nfrequency, or the average amount of energy between two\ngiven frequencies.</p>\n\n<p>To get accurate results, processFreq() must be\ncalled prior to getFreq(). This is because procesFreq()\ntells the FFT to update its array of frequency data, which\ngetFreq() uses to determine the value at a specific frequency\nor range of frequencies.</p>",
+            "line": 98,
+            "description": "Smooth FFT analysis by averaging with the last analysis frame.",
+            "params": [
+                {
+                    "name": "smoothing",
+                    "description": "0.0 < smoothing < 1.0.\n                             Defaults to 0.8.",
+                    "type": "Number"
+                }
+            ],
+            "class": "FFT"
+        },
+        {
+            "file": "src/fft.js",
+            "line": 108,
+            "description": "<p>Returns the amount of energy (volume) at a specific\nfrequency, or the average amount of energy between two\ngiven frequencies.</p>\n\n<p>analyze() must be called prior to getFreq().\nAnalyze() tells the FFT to analyze frequency data, and\ngetFreq() uses the results determine the value at\na specific frequency or range of frequencies.</p>",
             "itemtype": "method",
             "name": "getFreq",
             "params": [
@@ -770,8 +801,7 @@
                 {
                     "name": "frequency2",
                     "description": "If a second frequency is given,\n                              will return average amount of\n                              energy that exists between the\n                              two frequencies.",
-                    "type": "Number",
-                    "optional": true
+                    "type": "[Number]"
                 }
             ],
             "return": {
@@ -884,7 +914,7 @@
         },
         {
             "file": "src/noise.js",
-            "line": 121,
+            "line": 120,
             "description": "Set type of noise to 'white', 'pink' or 'brown'.\nWhite is the default.",
             "params": [
                 {
@@ -898,19 +928,19 @@
         },
         {
             "file": "src/oscillator.js",
-            "line": 68,
+            "line": 69,
             "description": "Start an oscillator. Accepts an optional parameter to\ndetermine how long (in seconds from now) until the\noscillator starts.",
             "itemtype": "method",
             "name": "start",
             "params": [
                 {
-                    "name": "frequency",
-                    "description": "frequency in Hz.",
+                    "name": "time",
+                    "description": "startTime in seconds from now.",
                     "type": "[Number]"
                 },
                 {
-                    "name": "time",
-                    "description": "startTime in seconds from now.",
+                    "name": "frequency",
+                    "description": "frequency in Hz.",
                     "type": "[Number]"
                 }
             ],
@@ -919,7 +949,7 @@
         },
         {
             "file": "src/oscillator.js",
-            "line": 102,
+            "line": 103,
             "description": "Stop an oscillator. Accepts an optional parameter\nto determine how long (in seconds from now) until the\noscillator stops.",
             "itemtype": "method",
             "name": "stop",
@@ -935,7 +965,7 @@
         },
         {
             "file": "src/oscillator.js",
-            "line": 118,
+            "line": 120,
             "description": "Set amplitude (volume) of an oscillator between 0 and 1.0",
             "itemtype": "method",
             "name": "amp",
@@ -947,7 +977,7 @@
                 },
                 {
                     "name": "time",
-                    "description": "ramp time (optional)",
+                    "description": "schedule this event to happen seconds\n                       from now (optional)",
                     "type": "Number",
                     "optional": true
                 }
@@ -957,7 +987,26 @@
         },
         {
             "file": "src/oscillator.js",
-            "line": 142,
+            "line": 153,
+            "description": "Fade to a certain volume starting now, and ending at rampTime",
+            "params": [
+                {
+                    "name": "vol",
+                    "description": "volume between 0.0 and 1.0",
+                    "type": "Number"
+                },
+                {
+                    "name": "rampTime",
+                    "description": "duration of the fade (in seconds)",
+                    "type": "Number"
+                }
+            ],
+            "class": "Oscillator",
+            "module": "p5.sound"
+        },
+        {
+            "file": "src/oscillator.js",
+            "line": 174,
             "description": "Set frequency of an oscillator.",
             "itemtype": "method",
             "name": "freq",
@@ -968,9 +1017,15 @@
                     "type": "Number"
                 },
                 {
-                    "name": "Time",
-                    "description": "Ramp time in seconds",
-                    "type": "Number",
+                    "name": "rampTime",
+                    "description": "Ramp time (in seconds)",
+                    "type": "[Number]",
+                    "optional": true
+                },
+                {
+                    "name": "TimeFromNow",
+                    "description": "Schedule this event to happen\n                                 at x seconds from now",
+                    "type": "[Number]",
                     "optional": true
                 }
             ],
@@ -982,7 +1037,7 @@
         },
         {
             "file": "src/oscillator.js",
-            "line": 234,
+            "line": 288,
             "description": "Modulate any audio param.",
             "itemtype": "method",
             "name": "mod",
@@ -991,6 +1046,20 @@
                     "name": "oscillator",
                     "description": "The param to modulate",
                     "type": "Object"
+                }
+            ],
+            "class": "Oscillator",
+            "module": "p5.sound"
+        },
+        {
+            "file": "src/oscillator.js",
+            "line": 299,
+            "description": "Set the phase of an oscillator between 0.0 and 1.0",
+            "params": [
+                {
+                    "name": "phase",
+                    "description": "float between 0.0 and 1.0",
+                    "type": "Number"
                 }
             ],
             "class": "Oscillator",
@@ -1014,14 +1083,15 @@
         },
         {
             "file": "src/sndcore.js",
-            "line": 10,
+            "line": 13,
             "description": "Web Audio SHIMS and helper functions to ensure compatability across browsers",
-            "class": "SoundFile",
-            "module": "p5.sound"
+            "class": "p5.sound",
+            "module": "p5.sound",
+            "submodule": "p5.sound"
         },
         {
             "file": "src/sndcore.js",
-            "line": 20,
+            "line": 23,
             "description": "<p>Returns the Audio Context for this sketch. Useful for users\nwho would like to dig deeper into the <a target='_blank' href=\n'http://webaudio.github.io/web-audio-api/'>Web Audio API\n</a>.</p>",
             "itemtype": "method",
             "name": "getAudioContext",
@@ -1029,19 +1099,21 @@
                 "description": "AudioContext for this sketch",
                 "type": "Object"
             },
-            "class": "SoundFile",
-            "module": "p5.sound"
+            "class": "p5.sound",
+            "module": "p5.sound",
+            "submodule": "p5.sound"
         },
         {
             "file": "src/sndcore.js",
-            "line": 61,
+            "line": 64,
             "description": "Determine which filetypes are supported (inspired by buzz.js)\nThe audio element (el) will only be used to test browser support for various audio formats",
-            "class": "SoundFile",
-            "module": "p5.sound"
+            "class": "p5.sound",
+            "module": "p5.sound",
+            "submodule": "p5.sound"
         },
         {
             "file": "src/soundfile.js",
-            "line": 115,
+            "line": 155,
             "description": "<p>This is a helper function that the SoundFile calls to load\nitself. Accepts a callback (the name of another function)\nas an optional parameter.</p>",
             "itemtype": "method",
             "name": "load",
@@ -1060,7 +1132,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 149,
+            "line": 189,
             "description": "Returns true if the sound file has finished loading.",
             "itemtype": "method",
             "name": "isLoaded",
@@ -1073,7 +1145,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 163,
+            "line": 203,
             "description": "Play the SoundFile",
             "itemtype": "method",
             "name": "play",
@@ -1108,7 +1180,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 257,
+            "line": 297,
             "description": "SoundFile has two play modes: <code>restart</code> and\n<code>sustain</code>. Play Mode determines what happens to a\nSoundFile if it is triggered while in the middle of playback.\nIn sustain, the existing playback will continue. In restart\n.play() will stop playback and start over. Sustain is the\ndefault mode.",
             "itemtype": "method",
             "name": "playMode",
@@ -1124,7 +1196,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 286,
+            "line": 326,
             "description": "Toggle whether a sound file is playing or paused.\n\nPauses a file that is currently playing,\nand unpauses (plays) a file that is currently paused.\n\nThe pauseTime and loop state are preserved\nso playback can resume from the same spot in the sound file.",
             "itemtype": "method",
             "name": "pause",
@@ -1133,7 +1205,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 317,
+            "line": 364,
             "description": "Loop the SoundFile. Accepts optional parameters to set the\nplayback rate, playback volume, loopStart, loopEnd.",
             "itemtype": "method",
             "name": "loop",
@@ -1168,7 +1240,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 332,
+            "line": 379,
             "description": "Set a SoundFile's looping flag to true or false. If the sound\nis currently playing, this change will take effect when it\nreaches the end of the current playback.",
             "itemtype": "method",
             "name": "setLoop",
@@ -1184,7 +1256,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 355,
+            "line": 402,
             "description": "Returns 'true' if a SoundFile is looping, 'false' if not.",
             "itemtype": "method",
             "name": "isLooping",
@@ -1197,7 +1269,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 371,
+            "line": 418,
             "description": "Returns 'true' if a SoundFile is playing, 'false' if not.",
             "itemtype": "method",
             "name": "isPlaying",
@@ -1210,7 +1282,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 390,
+            "line": 428,
             "description": "Returns true if a SoundFile is paused, 'false' if not.",
             "itemtype": "method",
             "name": "isPaused",
@@ -1223,7 +1295,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 403,
+            "line": 441,
             "description": "Stop soundfile playback.",
             "itemtype": "method",
             "name": "stop",
@@ -1232,7 +1304,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 416,
+            "line": 454,
             "description": "Stop playback on all of this soundfile's sources.\nThis may soon be replaced by different playModes for the player.",
             "itemtype": "method",
             "name": "stopAll",
@@ -1241,7 +1313,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 433,
+            "line": 471,
             "description": "Set the playback rate of a sound file. Will change the speed and the pitch.\nValues less than zero will reverse the audio buffer before playback.",
             "itemtype": "method",
             "name": "rate",
@@ -1258,7 +1330,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 466,
+            "line": 504,
             "description": "Return the number of channels in a sound file.\nFor example, Mono = 1, Stereo = 2.",
             "itemtype": "method",
             "name": "channels",
@@ -1271,7 +1343,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 477,
+            "line": 515,
             "description": "Return the sample rate of the sound file.",
             "itemtype": "method",
             "name": "sampleRate",
@@ -1284,7 +1356,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 487,
+            "line": 525,
             "description": "Return the number of samples in a sound file.\nEqual to sampleRate * duration.",
             "itemtype": "method",
             "name": "frames",
@@ -1297,7 +1369,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 498,
+            "line": 536,
             "description": "Returns the duration of a sound file.",
             "itemtype": "method",
             "name": "duration",
@@ -1310,7 +1382,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 513,
+            "line": 551,
             "description": "Return the current position of the playhead in the song, in seconds",
             "itemtype": "method",
             "name": "currentTime",
@@ -1323,7 +1395,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 538,
+            "line": 576,
             "description": "Move the playhead of the song to a position, in seconds. Start\nand Stop time. If none are given, will reset the file to play\nentire duration from start to finish.",
             "itemtype": "method",
             "name": "jump",
@@ -1344,7 +1416,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 569,
+            "line": 607,
             "description": "Returns an array of amplitude peaks in a SoundFile that can be\nused to draw a static waveform. Scans through the SoundFile's\naudio buffer to find the greatest amplitudes. Accepts one\nparameter, 'length', which determines size of the array.\nLarger arrays result in more precise waveform visualizations.\n\nInspired by Wavesurfer.js.",
             "itemtype": "method",
             "name": "getPeaks",
@@ -1364,7 +1436,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 626,
+            "line": 664,
             "description": "Reverses the SoundFile's buffer source.\nPlayback must be handled separately (see example).",
             "itemtype": "method",
             "name": "reverseBuffer",
@@ -1376,8 +1448,8 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 659,
-            "description": "Multiply the output volume (amplitude) of a sound file\nbetween 0.0 (silence) and 1.0 (full volume).\n1.0 is the maximum amplitude of a digital sound, so multiplying by\ngreater than 1.0 may cause digital distortion.",
+            "line": 696,
+            "description": "Multiply the output volume (amplitude) of a sound file\nbetween 0.0 (silence) and 1.0 (full volume).\n1.0 is the maximum amplitude of a digital sound, so multiplying\nby greater than 1.0 may cause digital distortion.</p> <p>To\nfade, provide a <code>rampTime</code> parameter. For more\ncomplex fades, see the Env class.</p>",
             "itemtype": "method",
             "name": "setVolume",
             "params": [
@@ -1387,8 +1459,13 @@
                     "type": "Number"
                 },
                 {
-                    "name": "time",
-                    "description": "Fade Time (optional) in seconds",
+                    "name": "rampTime",
+                    "description": "Fade for t seconds",
+                    "type": "[Number]"
+                },
+                {
+                    "name": "timeFromNow",
+                    "description": "Schedule this event to happen at\n                               t seconds in the future",
                     "type": "[Number]"
                 }
             ],
@@ -1397,7 +1474,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 710,
+            "line": 751,
             "description": "Set the stereo panning of a p5Sound object to\na floating point number between -1.0 (left) and 1.0 (right).\nDefault is 0.0 (center).",
             "itemtype": "method",
             "name": "pan",
@@ -1414,7 +1491,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 731,
+            "line": 772,
             "description": "Returns the current stereo pan position (-1.0 to 1.0)",
             "itemtype": "method",
             "name": "getPan",
@@ -1427,7 +1504,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 743,
+            "line": 784,
             "description": "<p>Connects the output of a p5sound object to input of another\np5Sound object. For example, you may connect a SoundFile to an\nEffect.</p>\n\n<p>If no parameter is given, this object will connect\nto the master output.</p>\n\n<p>Most p5sound objects connect to the master output when they\nare created, so you can hear them without ever using this\nfunction. AudioIn is the only exception: you will not hear \nthe AudioIn unless you explicitly tell it to connect.\nThis is because connecting a microphone input through your\nspeakers can cause feedback</p>",
             "itemtype": "method",
             "name": "connect",
@@ -1443,7 +1520,7 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 775,
+            "line": 816,
             "description": "Disconnects the output of this p5sound object.",
             "itemtype": "method",
             "name": "disconnect",
@@ -1452,8 +1529,8 @@
         },
         {
             "file": "src/soundfile.js",
-            "line": 784,
-            "description": "loadSound() should be used if you want to create a SoundFile \nduring preload. It returns a new SoundFile from a specified\npath, or an array of paths. If used outside of preload, it \naccepts a callback as the second parameter.",
+            "line": 829,
+            "description": "<p>loadSound() should be used if you want to create a SoundFile \nduring preload. It returns a new SoundFile from a specified\npath, or an array of paths. If used outside of preload, it \naccepts a callback as the second parameter.</p>\n<p>Using a <a href=\n\"https://github.com/lmccart/p5.js/wiki/Local-server\">\nlocal server</a> is recommended when loading external files.</p>",
             "itemtype": "method",
             "name": "loadSound",
             "params": [
@@ -1476,6 +1553,43 @@
             "example": [
                 " \n<div><code>\nfunction preload() {\n  mySound = loadSound(['mySound.mp3', 'mySound.ogg']);\n}\n\nfunction setup() {\n  mySound.loop();\n}\n</code></div>"
             ],
+            "class": "SoundFile",
+            "module": "p5.sound"
+        },
+        {
+            "file": "src/soundfile.js",
+            "line": 865,
+            "description": "List the SoundFile formats that you will include. LoadSound \nwill search your directory for these extensions, and will pick\na format that is compatable with the user's web browser.",
+            "params": [
+                {
+                    "name": "format(s)",
+                    "description": "i.e. 'mp3', 'wav', 'ogg'",
+                    "type": "String"
+                }
+            ],
+            "example": [
+                "\n<div><code>\nfunction preload() {\n  // set the global sound formats\n  soundFormats('mp3, 'ogg');\n  \n  // load either beatbox.mp3, or .ogg, depending on browser\n  mySound = new SoundFile('beatbox');\n}\n\nfunction onload() {\n  mySound.play();\n}\n</code></div>"
+            ],
+            "class": "SoundFile",
+            "module": "p5.sound"
+        },
+        {
+            "file": "src/soundfile.js",
+            "line": 900,
+            "description": "<p>Read the Amplitude (volume level) of a SoundFile. The\nSoundFile class contains its own instance of the Amplitude\nclass to help make it easy to get a microphone's volume level.</p>\n\n<p>Accepts an optional smoothing value (0.0 < 1.0).</p>",
+            "itemtype": "method",
+            "name": "getLevel",
+            "params": [
+                {
+                    "name": "smoothing",
+                    "description": "Smoothing is 0.0 by default.\n                             Smooths values based on previous values.",
+                    "type": "[Number]"
+                }
+            ],
+            "return": {
+                "description": "Volume level (between 0.0 and 1.0)",
+                "type": "Number"
+            },
             "class": "SoundFile",
             "module": "p5.sound"
         },
@@ -2212,1104 +2326,36 @@
             "class": "p5.MediaElement",
             "module": "p5.dom",
             "submodule": "p5.dom"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 35,
-            "description": "Web Audio SHIMS and helper functions to ensure compatability across browsers",
-            "class": "p5.sound",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 74,
-            "description": "Determine which filetypes are supported (inspired by buzz.js)\nThe audio element (el) will only be used to test browser support for various audio formats",
-            "class": "p5.sound",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 117,
-            "description": "Master contains AudioContext and the master sound output.",
-            "class": "p5.sound",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 156,
-            "description": "<p>Set the master amplitude (volume) for sound in this sketch.</p>\n\n<p>Note that values greater than 1.0 may lead to digital distortion.</p>\n \n<p><b>How This Works</b>: When you load the p5Sound module, it\ncreates a single instance of p5sound. All sound objects in this\nmodule output to p5sound before reaching your computer's output.\nSo if you change the amplitude of p5sound, it impacts all of the\nsound in this module.</p>",
-            "itemtype": "method",
-            "name": "masterVolume",
-            "params": [
-                {
-                    "name": "volume",
-                    "description": "Master amplitude (volume) for sound in\n                         this sketch. Should be between 0.0\n                         (silence) and 1.0. Values greater than\n                         1.0 may lead to digital distortion.",
-                    "type": "Number"
-                }
-            ],
-            "example": [
-                "\n<div><code>\nmasterVolume(.5);\n</code></div>\n "
-            ],
-            "class": "p5.sound",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 183,
-            "description": "Returns a number representing the sample rate, in samples per second,\nof all sound objects in this audio context. It is determined by the\nsampling rate of your operating system's sound card, and it is not\ncurrently possile to change.\nIt is often 44100, or twice the range of human hearing.",
-            "itemtype": "method",
-            "name": "sampleRate",
-            "return": {
-                "description": "samplerate samples per second",
-                "type": "Number"
-            },
-            "class": "p5.sound",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 202,
-            "description": "<p>Returns the Audio Context for this sketch. Useful for users\nwho would like to dig deeper into the <a target='_blank' href=\n'http://webaudio.github.io/web-audio-api/'>Web Audio API\n</a>.</p>",
-            "itemtype": "method",
-            "name": "getAudioContext",
-            "return": {
-                "description": "AudioContext for this sketch",
-                "type": "Object"
-            },
-            "class": "p5.sound",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 215,
-            "description": "Returns the closest MIDI note value for\na given frequency.",
-            "params": [
-                {
-                    "name": "frequency",
-                    "description": "A freqeuncy, for example, the \"A\"\n                           above Middle C is 440Hz",
-                    "type": "Number"
-                }
-            ],
-            "return": {
-                "description": "MIDI note value",
-                "type": "Number"
-            },
-            "class": "p5.sound",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 230,
-            "description": "Returns the frequency value of a MIDI note.",
-            "params": [
-                {
-                    "name": "midiNote",
-                    "description": "The number of a midi note,\n                          where Middle C = 60.",
-                    "type": "Number"
-                }
-            ],
-            "return": {
-                "description": "Frequency value of the given MIDI note",
-                "type": "Number"
-            },
-            "class": "p5.sound",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 241,
-            "description": "loadSound() should be used if you want to create a SoundFile \nduring preload. It returns a new SoundFile from a specified\npath, or an array of paths. If used outside of preload, it \naccepts a callback as the second parameter.",
-            "itemtype": "method",
-            "name": "loadSound",
-            "params": [
-                {
-                    "name": "path",
-                    "description": "Path to the sound file, or an array with\n                                  paths to soundfiles in multiple formats\n                                  i.e. ['sound.ogg', 'sound.mp3']",
-                    "type": "String/Array"
-                },
-                {
-                    "name": "callback",
-                    "description": "Name of a function to call once file loads",
-                    "type": "Function",
-                    "optional": true
-                }
-            ],
-            "return": {
-                "description": "Returns a SoundFile",
-                "type": "SoundFile"
-            },
-            "example": [
-                " \n<div><code>\nfunction preload() {\n  mySound = loadSound(['mySound.mp3', 'mySound.ogg']);\n}\n\nfunction setup() {\n  mySound.loop();\n}\n</code></div>"
-            ],
-            "class": "p5.sound",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 390,
-            "description": "<p>This is a helper function that the SoundFile calls to load\nitself. Accepts a callback (the name of another function)\nas an optional parameter.</p>",
-            "itemtype": "method",
-            "name": "load",
-            "access": "private",
-            "tagname": "",
-            "params": [
-                {
-                    "name": "callback",
-                    "description": "Name of a function to call once file loads",
-                    "type": "Function",
-                    "optional": true
-                }
-            ],
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 423,
-            "description": "Returns true if the sound file has finished loading.",
-            "itemtype": "method",
-            "name": "isLoaded",
-            "return": {
-                "description": "",
-                "type": "Boolean"
-            },
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 437,
-            "description": "Play the SoundFile",
-            "itemtype": "method",
-            "name": "play",
-            "params": [
-                {
-                    "name": "rate",
-                    "description": "(optional) playback rate",
-                    "type": "Number",
-                    "optional": true
-                },
-                {
-                    "name": "amp",
-                    "description": "(optional) amplitude (volume) of playback",
-                    "type": "Number",
-                    "optional": true
-                },
-                {
-                    "name": "startTime",
-                    "description": "(optional) startTime in seconds",
-                    "type": "Number",
-                    "optional": true
-                },
-                {
-                    "name": "endTime",
-                    "description": "(optional) endTime in seconds",
-                    "type": "Number",
-                    "optional": true
-                }
-            ],
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 530,
-            "description": "SoundFile has two play modes: <code>restart</code> and\n<code>sustain</code>. Play Mode determines what happens to a\nSoundFile if it is triggered while in the middle of playback.\nIn sustain, the existing playback will continue. In restart\n.play() will stop playback and start over. Sustain is the\ndefault mode.",
-            "itemtype": "method",
-            "name": "playMode",
-            "params": [
-                {
-                    "name": "str",
-                    "description": "'restart' or 'sustain'",
-                    "type": "String"
-                }
-            ],
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 558,
-            "description": "Toggle whether a sound file is playing or paused.\n\nPauses a file that is currently playing,\nand unpauses (plays) a file that is currently paused.\n\nThe pauseTime and loop state are preserved\nso playback can resume from the same spot in the sound file.",
-            "itemtype": "method",
-            "name": "pause",
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 589,
-            "description": "Loop the SoundFile. Accepts optional parameters to set the\nplayback rate, playback volume, loopStart, loopEnd.",
-            "itemtype": "method",
-            "name": "loop",
-            "params": [
-                {
-                    "name": "rate",
-                    "description": "(optional) playback rate",
-                    "type": "Number",
-                    "optional": true
-                },
-                {
-                    "name": "amp",
-                    "description": "(optional) playback volume",
-                    "type": "Number",
-                    "optional": true
-                },
-                {
-                    "name": "loopStart",
-                    "description": "(optional) startTime in seconds",
-                    "type": "Number",
-                    "optional": true
-                },
-                {
-                    "name": "loopEnd",
-                    "description": "(optional) endTime in seconds",
-                    "type": "Number",
-                    "optional": true
-                }
-            ],
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 604,
-            "description": "Set a SoundFile's looping flag to true or false. If the sound\nis currently playing, this change will take effect when it\nreaches the end of the current playback.",
-            "itemtype": "method",
-            "name": "setLoop",
-            "params": [
-                {
-                    "name": "Boolean",
-                    "description": "set looping to true or false",
-                    "type": "Boolean"
-                }
-            ],
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 627,
-            "description": "Returns 'true' if a SoundFile is looping, 'false' if not.",
-            "itemtype": "method",
-            "name": "isLooping",
-            "return": {
-                "description": "",
-                "type": "Boolean"
-            },
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 643,
-            "description": "Returns 'true' if a SoundFile is playing, 'false' if not.",
-            "itemtype": "method",
-            "name": "isPlaying",
-            "return": {
-                "description": "",
-                "type": "Boolean"
-            },
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 662,
-            "description": "Returns true if a SoundFile is paused, 'false' if not.",
-            "itemtype": "method",
-            "name": "isPaused",
-            "return": {
-                "description": "",
-                "type": "Boolean"
-            },
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 675,
-            "description": "Stop soundfile playback.",
-            "itemtype": "method",
-            "name": "stop",
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 688,
-            "description": "Stop playback on all of this soundfile's sources.\nThis may soon be replaced by different playModes for the player.",
-            "itemtype": "method",
-            "name": "stopAll",
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 705,
-            "description": "Set the playback rate of a sound file. Will change the speed and the pitch.\nValues less than zero will reverse the audio buffer before playback.",
-            "itemtype": "method",
-            "name": "rate",
-            "params": [
-                {
-                    "name": "playbackRate",
-                    "description": "Set the playback rate. 1.0 is normal,\n                                   .5 is half-speed, 2.0 is twice as fast.\n                                   Must be greater than zero.",
-                    "type": "Number",
-                    "optional": true
-                }
-            ],
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 738,
-            "description": "Return the number of channels in a sound file.\nFor example, Mono = 1, Stereo = 2.",
-            "itemtype": "method",
-            "name": "channels",
-            "return": {
-                "description": "[channels]",
-                "type": "Number"
-            },
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 749,
-            "description": "Return the sample rate of the sound file.",
-            "itemtype": "method",
-            "name": "sampleRate",
-            "return": {
-                "description": "[sampleRate]",
-                "type": "Number"
-            },
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 759,
-            "description": "Return the number of samples in a sound file.\nEqual to sampleRate * duration.",
-            "itemtype": "method",
-            "name": "frames",
-            "return": {
-                "description": "[sampleCount]",
-                "type": "Number"
-            },
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 770,
-            "description": "Returns the duration of a sound file.",
-            "itemtype": "method",
-            "name": "duration",
-            "return": {
-                "description": "The duration of the soundFile in seconds.",
-                "type": "Number"
-            },
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 785,
-            "description": "Return the current position of the playhead in the song, in seconds",
-            "itemtype": "method",
-            "name": "currentTime",
-            "return": {
-                "description": "currentTime of the soundFile in seconds.",
-                "type": "Number"
-            },
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 810,
-            "description": "Move the playhead of the song to a position, in seconds. Start\nand Stop time. If none are given, will reset the file to play\nentire duration from start to finish.",
-            "itemtype": "method",
-            "name": "jump",
-            "params": [
-                {
-                    "name": "cueTime",
-                    "description": "cueTime of the soundFile in seconds.",
-                    "type": "Number"
-                },
-                {
-                    "name": "endTime",
-                    "description": "endTime of the soundFile in seconds.",
-                    "type": "Number"
-                }
-            ],
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 841,
-            "description": "Returns an array of amplitude peaks in a SoundFile that can be\nused to draw a static waveform. Scans through the SoundFile's\naudio buffer to find the greatest amplitudes. Accepts one\nparameter, 'length', which determines size of the array.\nLarger arrays result in more precise waveform visualizations.\n\nInspired by Wavesurfer.js.",
-            "itemtype": "method",
-            "name": "getPeaks",
-            "params": [
-                {
-                    "name": "length",
-                    "description": "length is the size of the returned array.\n                         Larger length results in more precision.\n                         Defaults to 5*width of the browser window.",
-                    "type": "[Number]"
-                }
-            ],
-            "return": {
-                "description": "Array of peaks.",
-                "type": "Float32Array"
-            },
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 898,
-            "description": "Reverses the SoundFile's buffer source.\nPlayback must be handled separately (see example).",
-            "itemtype": "method",
-            "name": "reverseBuffer",
-            "example": [
-                "\n<div><code>\ns = new SoundFile('beat.mp3');\ns.reverseBuffer();\ns.play();\n</code>\n</div>"
-            ],
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 931,
-            "description": "Multiply the output volume (amplitude) of a sound file\nbetween 0.0 (silence) and 1.0 (full volume).\n1.0 is the maximum amplitude of a digital sound, so multiplying by\ngreater than 1.0 may cause digital distortion.",
-            "itemtype": "method",
-            "name": "setVolume",
-            "params": [
-                {
-                    "name": "volume",
-                    "description": "Volume (amplitude) between 0.0 and 1.0",
-                    "type": "Number"
-                },
-                {
-                    "name": "time",
-                    "description": "Fade Time (optional) in seconds",
-                    "type": "[Number]"
-                }
-            ],
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 982,
-            "description": "Set the stereo panning of a p5Sound object to\na floating point number between -1.0 (left) and 1.0 (right).\nDefault is 0.0 (center).",
-            "itemtype": "method",
-            "name": "pan",
-            "params": [
-                {
-                    "name": "panValue",
-                    "description": "Set the stereo panner",
-                    "type": "Number",
-                    "optional": true
-                }
-            ],
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1003,
-            "description": "Returns the current stereo pan position (-1.0 to 1.0)",
-            "itemtype": "method",
-            "name": "getPan",
-            "return": {
-                "description": "Returns the stereo pan setting of the Oscillator\n                         as a number between -1.0 (left) and 1.0 (right).\n                         0.0 is center and default.",
-                "type": "Number"
-            },
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1015,
-            "description": "<p>Connects the output of a p5sound object to input of another\np5Sound object. For example, you may connect a SoundFile to an\nEffect.</p>\n\n<p>If no parameter is given, this object will connect\nto the master output.</p>\n\n<p>Most p5sound objects connect to the master output when they\nare created, so you can hear them without ever using this\nfunction. AudioIn is the only exception: you will not hear \nthe AudioIn unless you explicitly tell it to connect.\nThis is because connecting a microphone input through your\nspeakers can cause feedback</p>",
-            "itemtype": "method",
-            "name": "connect",
-            "params": [
-                {
-                    "name": "p5Sound_Object",
-                    "description": "p5Sound objects can connect (send their\n                                 output) to other p5Sound objects",
-                    "type": "[object]"
-                }
-            ],
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1047,
-            "description": "Disconnects the output of this p5sound object.",
-            "itemtype": "method",
-            "name": "disconnect",
-            "params": [
-                {
-                    "name": "UNKNOWN",
-                    "description": ""
-                }
-            ],
-            "class": "SoundFile",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1126,
-            "description": "Connects to the p5sound instance (master output) by default.\nOptionally, you can pass in a specific source (i.e. a soundfile).",
-            "itemtype": "method",
-            "name": "setInput",
-            "params": [
-                {
-                    "name": "snd",
-                    "description": "set the sound source (optional, defaults to master output)",
-                    "type": "SoundObject|undefined",
-                    "optional": true
-                },
-                {
-                    "name": "smoothing",
-                    "description": "a range between 0.0 and .999 to smooth amplitude readings",
-                    "type": "Number|undefined",
-                    "optional": true
-                }
-            ],
-            "example": [
-                "\n<div><code>\nfunction preload(){\n  soundFile = loadSound('mySound.mp3');\n}\nfunction setup(){\n  amplitude = new Amplitude();\n  amplitude.setInput(soundFile);\n}\n</code></div>"
-            ],
-            "class": "Amplitude",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1218,
-            "description": "Returns a single Amplitude reading at the moment it is called.\nFor continuous readings, run in the draw loop.",
-            "itemtype": "method",
-            "name": "getLevel",
-            "return": {
-                "description": "Amplitude as a number between 0.0 and 1.0",
-                "type": "Number"
-            },
-            "example": [
-                "\n<div><code>\nfunction setup() { \n  amplitude = new Amplitude();\n}\nfunction draw() {\n  volume = amplitude.getLevel();\n}\n</code></div>"
-            ],
-            "class": "Amplitude",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1243,
-            "description": "Determines whether the results of Amplitude.process() will be Normalized.\nTo normalize, Amplitude finds the difference the loudest reading it has processed\nand the maximum amplitude of 1.0. Amplitude adds this difference to all values to produce\nresults that will reliably map between 0.0 and 1.0. \nHowever, if a louder moment occurs, the amount that Normalize adds to all the values will change.\n\nAccepts an optional boolean parameter (true or false).\nNormalizing is off by default.",
-            "itemtype": "method",
-            "name": "toggleNormalize",
-            "params": [
-                {
-                    "name": "boolean",
-                    "description": "set normalize to true (1) or false (0)",
-                    "type": "Boolean",
-                    "optional": true
-                }
-            ],
-            "class": "Amplitude",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1265,
-            "description": "Determines whether the results of Amplitude.process() will be Smoothed.",
-            "itemtype": "method",
-            "name": "smooth",
-            "params": [
-                {
-                    "name": "set",
-                    "description": "smoothing from 0.0 <= 1",
-                    "type": "Number"
-                }
-            ],
-            "class": "Amplitude",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1323,
-            "description": "<p>This method tells the FFT to processes the frequency spectrum.</p>\n \n<p>Returns an array of amplitude values between 0 and 255. The array\nstarts with the lowest pitched frequencies, and ends with the \nhighest.</p>\n\n<p>Length will be equal to 1/2 fftSize (default: 1024 / 512).</p>",
-            "itemtype": "method",
-            "name": "processFreq",
-            "return": {
-                "description": "spectrum    Array of amplitude values across\n                                 the frequency spectrum.",
-                "type": "Uint8Array"
-            },
-            "class": "FFT",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1343,
-            "description": "Returns an array of amplitude values (between 0-255) that represent\na snapshot of amplitude readings in a single buffer.\n \nLength will be 1/2 size of FFT buffer (default is 2048 / 1024).\n\nCan be used to draw the waveform of a sound.",
-            "itemtype": "method",
-            "name": "waveform",
-            "return": {
-                "description": "Array of amplitude values (0-255) over time. Length will be 1/2 fftBands.",
-                "type": "Uint8Array"
-            },
-            "class": "FFT",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1369,
-            "description": "<p>Returns the amount of energy (volume) at a specific\nfrequency, or the average amount of energy between two\ngiven frequencies.</p>\n\n<p>To get accurate results, processFreq() must be\ncalled prior to getFreq(). This is because procesFreq()\ntells the FFT to update its array of frequency data, which\ngetFreq() uses to determine the value at a specific frequency\nor range of frequencies.</p>",
-            "itemtype": "method",
-            "name": "getFreq",
-            "params": [
-                {
-                    "name": "frequency1",
-                    "description": "Will return a value representing\n                              energy at this frequency.",
-                    "type": "Number"
-                },
-                {
-                    "name": "frequency2",
-                    "description": "If a second frequency is given,\n                              will return average amount of\n                              energy that exists between the\n                              two frequencies.",
-                    "type": "Number",
-                    "optional": true
-                }
-            ],
-            "return": {
-                "description": "",
-                "type": "Number"
-            },
-            "class": "FFT",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1497,
-            "description": "Start an oscillator. Accepts an optional parameter to\ndetermine how long (in seconds from now) until the\noscillator starts.",
-            "itemtype": "method",
-            "name": "start",
-            "params": [
-                {
-                    "name": "time,",
-                    "description": "in seconds from now.",
-                    "type": "[Number]"
-                }
-            ],
-            "class": "Oscillator",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1530,
-            "description": "Stop an oscillator. Accepts an optional parameter\nto determine how long (in seconds from now) until the\noscillator stops.",
-            "itemtype": "method",
-            "name": "stop",
-            "params": [
-                {
-                    "name": "time,",
-                    "description": "in seconds from now.",
-                    "type": "[Number]"
-                }
-            ],
-            "class": "Oscillator",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1546,
-            "description": "Set amplitude (volume) of an oscillator between 0 and 1.0",
-            "itemtype": "method",
-            "name": "amp",
-            "params": [
-                {
-                    "name": "vol",
-                    "description": "between 0 and 1.0",
-                    "type": "Number"
-                },
-                {
-                    "name": "time",
-                    "description": "ramp time (optional)",
-                    "type": "Number",
-                    "optional": true
-                }
-            ],
-            "class": "Oscillator",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1570,
-            "description": "Set frequency of an oscillator.",
-            "itemtype": "method",
-            "name": "freq",
-            "params": [
-                {
-                    "name": "Frequency",
-                    "description": "Frequency in Hz",
-                    "type": "Number"
-                },
-                {
-                    "name": "Time",
-                    "description": "Ramp time in seconds",
-                    "type": "Number",
-                    "optional": true
-                }
-            ],
-            "example": [
-                "\n<div><code>\nvar osc = new Oscillator(300);\nosc.start();\nosc.freq(40, 10);\n</code></div>"
-            ],
-            "class": "Oscillator",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1664,
-            "description": "Modulate any audio param.",
-            "itemtype": "method",
-            "name": "mod",
-            "params": [
-                {
-                    "name": "oscillator",
-                    "description": "The param to modulate",
-                    "type": "Object"
-                }
-            ],
-            "class": "Oscillator",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1740,
-            "description": "Set the width of a Pulse object (an oscillator that implements\nPulse Width Modulation).",
-            "itemtype": "method",
-            "name": "width",
-            "params": [
-                {
-                    "name": "w",
-                    "description": "Width between the pulses (0 to 1.0,\n                       defaults to 0)",
-                    "type": "[Number]"
-                }
-            ],
-            "class": "Pulse",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1850,
-            "description": "Frequency Modulation (FM): Modulate the frequency\nof another signal with the frequency of this LFO.\nPass in the oscillator whose frequency you want to\nmodulate.",
-            "itemtype": "method",
-            "name": "freqMod",
-            "params": [
-                {
-                    "name": "oscillator",
-                    "description": "The oscillator whose frequency will\n                            be modulated.",
-                    "type": "Object"
-                }
-            ],
-            "class": "Pulse",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 1879,
-            "description": "Amplitude Modulation (AM): Modulate the amplitude\nof another signal with the frequency of this LFO.\nPass in the oscillator whose amplitude you want to\nmodulate.",
-            "itemtype": "method",
-            "name": "ampMod",
-            "params": [
-                {
-                    "name": "oscillator",
-                    "description": "The oscillator whose amplitude will\n                            be modulated.",
-                    "type": "Object"
-                }
-            ],
-            "class": "Pulse",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2036,
-            "description": "Set type of noise to 'white', 'pink' or 'brown'.\nWhite is the default.",
-            "params": [
-                {
-                    "name": "type",
-                    "description": "'white', 'pink' or 'brown'",
-                    "type": "[String]"
-                }
-            ],
-            "class": "Noise",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2169,
-            "description": "Returns a list of available input sources.",
-            "itemtype": "method",
-            "name": "listSources",
-            "return": {
-                "description": "",
-                "type": "Array"
-            },
-            "class": "AudioIn",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2185,
-            "description": "Set the input source. Accepts a number representing a\nposition in the array returned by listSources().\nThis is only supported in browsers that support \nMediaStreamTrack.getSources(). Instead, some browsers\ngive users the option to set their own media source.",
-            "itemtype": "method",
-            "name": "setSource",
-            "params": [
-                {
-                    "name": "num",
-                    "description": "position of input source in the array",
-                    "type": "Number"
-                }
-            ],
-            "class": "AudioIn",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2213,
-            "description": "<p>Read the Amplitude (volume level) of an AudioIn. The AudioIn\nclass contains its own instance of the Amplitude class to help\nmake it easy to get a microphone's volume level.</p>\n\n<p>Accepts an optional smoothing value (0.0 < 1.0).</p>\n\n<p>AudioIn must be .on() before using .getLevel().</p>",
-            "itemtype": "method",
-            "name": "getLevel",
-            "params": [
-                {
-                    "name": "smoothing",
-                    "description": "Smoothing is 0.0 by default.\n                             Smooths values based on previous values.",
-                    "type": "[Number]"
-                }
-            ],
-            "return": {
-                "description": "Volume level (between 0.0 and 1.0)",
-                "type": "Number"
-            },
-            "class": "AudioIn",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2234,
-            "description": "Turn the AudioIn on. This enables the use of other AudioIn\nmethods like getLevel().",
-            "itemtype": "method",
-            "name": "on",
-            "class": "AudioIn",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2281,
-            "description": "Turn the AudioIn off. If the AudioIn is off, it cannot getLevel().",
-            "itemtype": "method",
-            "name": "off",
-            "class": "AudioIn",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2292,
-            "description": "Add input sources to the list of available sources.",
-            "access": "private",
-            "tagname": "",
-            "class": "AudioIn",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2307,
-            "description": "Set amplitude (volume) of a mic input between 0 and 1.0",
-            "itemtype": "method",
-            "name": "amp",
-            "params": [
-                {
-                    "name": "vol",
-                    "description": "between 0 and 1.0",
-                    "type": "Number"
-                },
-                {
-                    "name": "time",
-                    "description": "ramp time (optional)",
-                    "type": "Number",
-                    "optional": true
-                }
-            ],
-            "class": "AudioIn",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2373,
-            "itemtype": "property",
-            "name": "attackTime",
-            "class": "Env",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2377,
-            "itemtype": "property",
-            "name": "attackLevel",
-            "class": "Env",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2381,
-            "itemtype": "property",
-            "name": "decayTime",
-            "class": "Env",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2385,
-            "itemtype": "property",
-            "name": "sustainTime",
-            "class": "Env",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2389,
-            "itemtype": "property",
-            "name": "sustainLevel",
-            "class": "Env",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2393,
-            "description": "Time between level = sustainLevel and level = releaseLevel (or 0)",
-            "itemtype": "property",
-            "name": "releaseTime",
-            "class": "Env",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2398,
-            "description": "Release level defaults to 0 (silence)",
-            "itemtype": "property",
-            "name": "releaseLevel",
-            "class": "Env",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
-        },
-        {
-            "file": "lib/addons/p5.sound.js",
-            "line": 2405,
-            "description": "Play tells the envelope to start acting on a given input.\nIf the input is a p5Sound object (i.e. AudioIn, Oscillator,\nSoundFile), then Env will control its output volume.\nEnvelopes can also be used to control any Web Audio Param.",
-            "params": [
-                {
-                    "name": "input",
-                    "description": "A p5Sound object or\n                              Web Audio Param",
-                    "type": "Object"
-                }
-            ],
-            "class": "Env",
-            "module": "p5.sound",
-            "submodule": "p5.sound"
         }
     ],
     "warnings": [
         {
             "message": "replacing incorrect tag: params with param",
-            "line": " src/soundfile.js:569"
+            "line": " src/soundfile.js:607"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/soundfile.js:569"
-        },
-        {
-            "message": "replacing incorrect tag: params with param",
-            "line": " lib/addons/p5.sound.js:841"
-        },
-        {
-            "message": "replacing incorrect tag: returns with return",
-            "line": " lib/addons/p5.sound.js:841"
-        },
-        {
-            "message": "param name missing: {}",
-            "line": " lib/addons/p5.sound.js:1047"
+            "line": " src/soundfile.js:607"
         },
         {
             "message": "Missing item type\nAdd input sources to the list of available sources.",
-            "line": " src/audioin.js:186"
+            "line": " src/audioin.js:204"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src/env.js:64"
         },
         {
             "message": "Missing item type\nPlay tells the envelope to start acting on a given input.\nIf the input is a p5Sound object (i.e. AudioIn, Oscillator,\nSoundFile), then Env will control its output volume.\nEnvelopes can also be used to control any Web Audio Param.",
-            "line": " src/env.js:62"
+            "line": " src/env.js:76"
+        },
+        {
+            "message": "Missing item type\nSet the input source for the FFT analysis. If no source is\nprovided, FFT will analyze all sound in the sketch.",
+            "line": " src/fft.js:36"
+        },
+        {
+            "message": "Missing item type\nSmooth FFT analysis by averaging with the last analysis frame.",
+            "line": " src/fft.js:98"
         },
         {
             "message": "Missing item type\nReturns the closest MIDI note value for\na given frequency.",
@@ -3325,15 +2371,27 @@
         },
         {
             "message": "Missing item type\nSet type of noise to 'white', 'pink' or 'brown'.\nWhite is the default.",
-            "line": " src/noise.js:121"
+            "line": " src/noise.js:120"
+        },
+        {
+            "message": "Missing item type\nFade to a certain volume starting now, and ending at rampTime",
+            "line": " src/oscillator.js:153"
+        },
+        {
+            "message": "Missing item type\nSet the phase of an oscillator between 0.0 and 1.0",
+            "line": " src/oscillator.js:299"
         },
         {
             "message": "Missing item type\nWeb Audio SHIMS and helper functions to ensure compatability across browsers",
-            "line": " src/sndcore.js:10"
+            "line": " src/sndcore.js:13"
         },
         {
             "message": "Missing item type\nDetermine which filetypes are supported (inspired by buzz.js)\nThe audio element (el) will only be used to test browser support for various audio formats",
-            "line": " src/sndcore.js:61"
+            "line": " src/sndcore.js:64"
+        },
+        {
+            "message": "Missing item type\nList the SoundFile formats that you will include. LoadSound \nwill search your directory for these extensions, and will pick\na format that is compatable with the user's web browser.",
+            "line": " src/soundfile.js:865"
         },
         {
             "message": "Missing item type\nHelpers for create methods.",
@@ -3354,38 +2412,6 @@
         {
             "message": "Missing item type",
             "line": " lib/addons/p5.dom.js:323"
-        },
-        {
-            "message": "Missing item type\nWeb Audio SHIMS and helper functions to ensure compatability across browsers",
-            "line": " lib/addons/p5.sound.js:35"
-        },
-        {
-            "message": "Missing item type\nDetermine which filetypes are supported (inspired by buzz.js)\nThe audio element (el) will only be used to test browser support for various audio formats",
-            "line": " lib/addons/p5.sound.js:74"
-        },
-        {
-            "message": "Missing item type\nMaster contains AudioContext and the master sound output.",
-            "line": " lib/addons/p5.sound.js:117"
-        },
-        {
-            "message": "Missing item type\nReturns the closest MIDI note value for\na given frequency.",
-            "line": " lib/addons/p5.sound.js:215"
-        },
-        {
-            "message": "Missing item type\nReturns the frequency value of a MIDI note.",
-            "line": " lib/addons/p5.sound.js:230"
-        },
-        {
-            "message": "Missing item type\nSet type of noise to 'white', 'pink' or 'brown'.\nWhite is the default.",
-            "line": " lib/addons/p5.sound.js:2036"
-        },
-        {
-            "message": "Missing item type\nAdd input sources to the list of available sources.",
-            "line": " lib/addons/p5.sound.js:2292"
-        },
-        {
-            "message": "Missing item type\nPlay tells the envelope to start acting on a given input.\nIf the input is a p5Sound object (i.e. AudioIn, Oscillator,\nSoundFile), then Env will control its output volume.\nEnvelopes can also be used to control any Web Audio Param.",
-            "line": " lib/addons/p5.sound.js:2405"
         }
     ]
 }

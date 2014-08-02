@@ -79,7 +79,6 @@ module.exports = function(grunt) {
             'fft': 'src/fft',
             'oscillator': 'src/oscillator',
             'pulse': 'src/pulse',
-            'lfo': 'src/lfo',
             'noise': 'src/noise',
             'audioin': 'src/audioin',
             'env': 'src/env',

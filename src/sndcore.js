@@ -1,3 +1,14 @@
+/**
+ * p5.sound extends p5 with <a href="http://www.w3.org/TR/webaudio/"
+ * target="_blank">Web Audio</a> functionality including audio input,
+ * playback, analysis and synthesis.
+ *
+ * @module p5.sound
+ * @submodule p5.sound
+ * @for p5.sound
+ * @main
+ */
+
 define(function (require) {
   'use strict';
 
@@ -61,19 +72,19 @@ define(function (require) {
   p5.prototype.isSupported = function() {
     return !!el.canPlayType;
   };
-  p5.prototype.isOGGSupported = function() {
+  var isOGGSupported = function() {
     return !!el.canPlayType && el.canPlayType('audio/ogg; codecs="vorbis"');
   };
-  p5.prototype.isMP3Supported = function() {
+  var isMP3Supported = function() {
     return !!el.canPlayType && el.canPlayType('audio/mpeg;');
   };
-  p5.prototype.isWAVSupported = function() {
+  var isWAVSupported = function() {
     return !!el.canPlayType && el.canPlayType('audio/wav; codecs="1"');
   };
-  p5.prototype.isAACSupported = function() {
+  var isAACSupported = function() {
     return !!el.canPlayType && (el.canPlayType('audio/x-m4a;') || el.canPlayType('audio/aac;'));
   };
-  p5.prototype.isAIFSupported = function() {
+  var isAIFSupported = function() {
     return !!el.canPlayType && el.canPlayType('audio/x-aiff;');
   };
   p5.prototype.isFileSupported = function(extension) {
