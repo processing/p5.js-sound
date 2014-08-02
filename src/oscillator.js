@@ -125,13 +125,16 @@ define(function (require) {
    *  @param {Number} [time] schedule this event to happen seconds
    *                         from now (optional)
    */
-  p5.prototype.Oscillator.prototype.amp = function(vol, time){
+  p5.prototype.Oscillator.prototype.amp = function(vol, rampTime, tFromNow){
     if (typeof(vol) === 'number') {
-      var t = time || 0;
+      var rampTime = rampTime || 0;
+      var tFromNow = tFromNow || 0;
       var now = p5sound.audiocontext.currentTime;
       var currentVol = this.output.gain.value;
+      console.log(currentVol);
       this.output.gain.cancelScheduledValues(now);
-      this.output.gain.setValueAtTime(vol, t + now);
+      this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow + .001);
+      this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
 
       // disconnect any oscillators that were modulating this param
       if (this.ampMod){
@@ -150,22 +153,25 @@ define(function (require) {
     }
   };
 
-  /**
-   *  Fade to a certain volume starting now, and ending at rampTime
-   *
-   *  @param  {Number} vol      volume between 0.0 and 1.0
-   *  @param  {Number} rampTime duration of the fade (in seconds)
-   */
-  p5.prototype.Oscillator.prototype.fade = function(vol, rampTime){
-    var t = rampTime || 0;
-    var now = p5sound.audiocontext.currentTime;
-    if (typeof(vol) === 'number') {
-      var currentVol = this.output.gain.value;
-      this.output.gain.cancelScheduledValues(now);
-      this.output.gain.setValueAtTime(currentVol, now);
-      this.output.gain.linearRampToValueAtTime(vol, t + now);
-    }
-  };
+  // these are now the same thing
+  p5.prototype.Oscillator.prototype.fade =   p5.prototype.Oscillator.prototype.amp;
+
+  // /**
+  //  *  Fade to a certain volume starting now, and ending at rampTime
+  //  *
+  //  *  @param  {Number} vol      volume between 0.0 and 1.0
+  //  *  @param  {Number} rampTime duration of the fade (in seconds)
+  //  */
+  // p5.prototype.Oscillator.prototype.fade = function(vol, rampTime){
+  //   var t = rampTime || 0;
+  //   var now = p5sound.audiocontext.currentTime;
+  //   if (typeof(vol) === 'number') {
+  //     var currentVol = this.output.gain.value;
+  //     this.output.gain.cancelScheduledValues(now);
+  //     this.output.gain.setValueAtTime(currentVol, now);
+  //     this.output.gain.linearRampToValueAtTime(vol, t + now);
+  //   }
+  // };
 
   p5.prototype.Oscillator.prototype.getAmp = function(){
     return this.output.gain.value;

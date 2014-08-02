@@ -1,15 +1,17 @@
 function setup() {
-  osc = new SinOsc();
-  osc.freq(220);
-}  
+  osc = new TriOsc();
+  osc.freq(260);
+  createP('mousePressed: set amplitude to .7 over the course of .2 seconds');
+  createP('mouseReleased: set amplitude to 0 over the course of 1 second. Start the fade after .5 seconds.');
+}
 
 function mousePressed () {
   osc.start();
-  osc.amp(.5);
+  // fade amplitude to .7 over the course of .2 seconds
+  osc.amp(0.7, 0.02);
 }
 
 function mouseReleased() {
-  // Will stop instantly on the first call if you hold the mouse longer than 2 seconds.
-  // Will stop instantly on later calls instead of waiting 2 seconds. 
-  osc.fade(0, 2);
+  // fade amplitude to zero over the course of 1 second. Start the fade after .5 seconds.
+  osc.amp(0, 1, 0.5);
 }

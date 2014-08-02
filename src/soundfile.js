@@ -825,6 +825,9 @@ define(function (require) {
   // same as setVolume, to match Processing Sound
   p5.prototype.SoundFile.prototype.amp = p5.prototype.SoundFile.prototype.setVolume;
 
+  // these are the same thing
+  p5.prototype.SoundFile.prototype.fade = p5.prototype.SoundFile.prototype.setVolume;
+
   p5.prototype.SoundFile.prototype.add = function() {
     // TO DO
   };
