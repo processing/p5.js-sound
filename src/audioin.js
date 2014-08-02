@@ -4,17 +4,30 @@ define(function (require) {
   var p5sound = require('master');
 
   /**
-   * Similar to p5.dom createCapture() but for audio, without
-   * creating a DOM element.
+   *  <p>Generate an audio source from an input such as your computer's
+   *  microphone.</p>
+   * 
+   *  <p>Some browsers let the client choose their input source,
+   *  while others leave this to the application designer, and for this
+   *  we have the methods getSources() and setSoure().</p>
    *
-   * @class AudioIn
-   * @constructor
-   * @return {Object} capture
-   * @example
-   * <div><code>
-   * mic = new AudioIn()
-   * mic.on();
-   * </code></div>
+   *  <p>Turn the mic on/off with the on() and off() methods. When the mic
+   *  is on, its volume can be measured with getLevel or by connecting an
+   *  FFT object.</p>
+   *  <p>If you want to hear the AudioIn, use the .connect() method. 
+   *  (AudioIn does not connect to p5.sound output by default to prevent
+   *  feedback).</p>
+   * 
+   *
+   *  @class AudioIn
+   *  @constructor
+   *  @return {Object} capture
+   *  @example
+   *  <div><code>
+   *  mic = new AudioIn()
+   *  mic.start();
+   *  mic.connect(); // wear headphones or it may feedback!
+   *  </code></div>
    */
   p5.prototype.AudioIn = function() {
     // set up audio input
@@ -50,6 +63,9 @@ define(function (require) {
     if (unit) {
       if (unit.hasOwnProperty('input')) {
         this.output.connect(unit.input);
+      }
+      else if (unit.hasOwnProperty('analyser')) {
+        this.output.connect(unit.analyser);
       }
       else {
         this.output.connect(unit);
@@ -101,7 +117,7 @@ define(function (require) {
   p5.prototype.AudioIn.prototype.disconnect = function(unit) {
       this.output.disconnect(unit);
       // stay connected to amplitude even if not outputting to p5
-      this.output.connect(this.amplitude.input);
+      // this.output.connect(this.amplitude.input);
   };
 
   /**
@@ -111,7 +127,7 @@ define(function (require) {
    *
    *  <p>Accepts an optional smoothing value (0.0 < 1.0).</p>
    *
-   *  <p>AudioIn must be .on() before using .getLevel().</p>
+   *  <p>AudioIn must .start() before using .getLevel().</p>
    *  
    *  @method  getLevel
    *  @param  {[Number]} smoothing Smoothing is 0.0 by default.
@@ -126,12 +142,14 @@ define(function (require) {
   };
 
   /**
-   *  Turn the AudioIn on. This enables the use of other AudioIn
-   *  methods like getLevel().
+   *  Start processing audio input. This enables the use of other
+   *  AudioIn methods like getLevel(). Note that by default, AudioIn
+   *  is not connected to p5.sound's output. So you won't hear
+   *  anything unless you use the connect() method.
    *
-   *  @method on
+   *  @method start
    */
-  p5.prototype.AudioIn.prototype.on = function() {
+  p5.prototype.AudioIn.prototype.start = function() {
     var self = this;
 
     // if _gotSources() i.e. developers determine which source to use
@@ -173,11 +191,11 @@ define(function (require) {
   };
 
   /**
-   *  Turn the AudioIn off. If the AudioIn is off, it cannot getLevel().
+   *  Turn the AudioIn off. If the AudioIn is stopped, it cannot getLevel().
    *
-   *  @method off
+   *  @method stop
    */
-  p5.prototype.AudioIn.prototype.off = function() {
+  p5.prototype.AudioIn.prototype.stop = function() {
     if (this.stream) {
       this.stream.stop();
     }
@@ -218,6 +236,7 @@ define(function (require) {
     }
   };
 
+  // private method
   p5.prototype.AudioIn.prototype.dispose = function(){
     this.off();
     this.output.disconnect();

@@ -41,8 +41,9 @@ define(function (require) {
    *  @param {[Number]} bands  Must be a power of two between 16 and 1024
    */
   p5.prototype.FFT.prototype.setInput = function(source, bands) {
-    if (bands){
+    if (bands) {
       this.analyser.fftSize = bands*2;
+      console.log('bands!');
     }
     if (source.output){
       source.output.connect(this.analyser);
@@ -68,7 +69,7 @@ define(function (require) {
    *
    */
   p5.prototype.FFT.prototype.analyze = function(bands) {
-    if (bands){
+    if (bands) {
       this.analyser.fftSize = bands*2;
     }
     this.analyser.getFloatFrequencyData(this.freqDomain);
