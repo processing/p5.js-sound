@@ -248,7 +248,6 @@ define(function (require) {
    *
    *  @method  connect
    *  @param  {Object} unit A p5.Sound or Web Audio object
-   *  @return {[type]}      [description]
    */
   p5.prototype.Oscillator.prototype.connect = function(unit){
     if (!unit) {
