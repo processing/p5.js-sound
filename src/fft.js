@@ -7,23 +7,24 @@ define(function (require) {
    *  <p>FFT (Fast Fourier Transform) is an analysis algorithm that
    *  isolates individual frequencies within a waveform.</p>
    *
-   *  <p>FFT can return two types of analyses: <code>FFT.waveform()</code>
-   *  computes amplitude values along the time domain. Here, the array
-   *  represents samples across a brief moment in time. <code>FFT.analyze()
-   *  </code> computes amplitude values along the frequency domain. Here,
-   *  the array represents the lowest to highest frequencies, or pitches,
-   *  that humans can hear. Each value represents amplitude at that slice
-   *  of the frequency spectrum.</p>
+   *  <p>FFT can return an array based on two types of analyses: <br>
+   *  • <code>FFT.waveform()</code> computes amplitude values along the
+   *  time domain. The array indices correspond to samples
+   *  across a brief moment in time. Each value represents amplitude
+   *  of the waveform at that sample of time.<br>
+   *  • <code>FFT.analyze() </code> computes amplitude values along the
+   *  frequency domain. The array indices correspond to frequencies (i.e.
+   *  pitches), from the lowest to the highest that humans can hear. Each
+   *  value represents amplitude at that slice of the frequency spectrum.</p>
    *
-   *  <p>FFT computes results based on a very short snapshot of sound
-   *  called a sample buffer. It returns an array of amplitude measurements
-   *  called bins. By default, the array will be 1024 bins long. The bin
-   *  size is half of the FFT's sample buffer, so the default buffer is
-   *  2048 samples. Given a sample rate of 44,100 samples per second,
-   *  each FFT analysis represents a fraction of a second equal to
-   *  2048/44100. You can change the bin size, but it must be a power
-   *  of 2 between 16 and 1024 in order for the FFT algorithm to
-   *  function to correctly.</p>
+   *  <p>FFT analyzes a very short snapshot of sound called a sample
+   *  buffer. It returns an array of amplitude measurements, referred
+   *  to as <code>bins</code>. The array is 1024 bins long by default.
+   *  You can change the bin size, but it must be a power of 2
+   *  between 16 and 1024 in order for the FFT algorithm to function
+   *  correctly. The actual size of the FFT buffer is twice the 
+   *  number of bins, so given a standard sample rate, the buffer is
+   *  2048/44100 seconds long.</p>
    *  
    *  <p>Use <code>getFreq()</code> to measure amplitude at specific
    *  frequencies, or within a range of frequencies. </p>
@@ -53,24 +54,25 @@ define(function (require) {
    *  }
    *
    *  function draw(){
-   *    background(255);
+   *    background(0);
    *
-   *    var spectrum = fft.analyze();
-   *    var waveform = fft.waveform();
-   *    
-   *    // draw spectrum
+   *    var spectrum = fft.analyze(); 
    *    noStroke();
-   *    fill(0);
+   *    fill(0,255,0); // spectrum is green
    *    for (var i = 0; i< spectrum.length; i++){
-   *      rect(map(i, 0, spectrum.length, 0, width), height, width / spectrum.length, -height -spectrum[i] );
+   *      var x = map(i, 0, spectrum.length, 0, width);
+   *      var h = -height + map(spectrum[i], 0, 255, height, 0);
+   *      rect(x, height, width / spectrum.length, h )
    *    }
    *
-   *    // draw waveform
+   *    var waveform = fft.waveform();
    *    beginShape();
-   *    stroke(255,0,0);
+   *    stroke(255,0,0); // waveform is red
    *    strokeWeight(1);
    *    for (var i = 0; i< waveform.length; i++){
-   *      vertex(map(i, 0, waveform.length, 0, width), map( waveform[i], 0, 255, 0, height) );
+   *      var x = map(i, 0, waveform.length, 0, width);
+   *      var y = map( waveform[i], 0, 255, 0, height);
+   *      vertex(x,y);
    *    }
    *    endShape();
    *  }
@@ -87,7 +89,7 @@ define(function (require) {
     this.analyser.smoothingTimeConstant = SMOOTHING;
     this.analyser.fftSize = FFT_SIZE;
 
-    this.freqDomain = new Float32Array(this.analyser.frequencyBinCount);
+    this.freqDomain = new Uint8Array(this.analyser.frequencyBinCount);
     this.timeDomain = new Uint8Array(this.analyser.frequencyBinCount);
 
   };
@@ -111,18 +113,18 @@ define(function (require) {
   };
 
   /**
-   *  <p>This method tells the FFT to processes the frequency spectrum.</p>
-   * 
-   *  <p>Returns an array of amplitude values between -140 and 0. The array
+   *  This method tells the FFT to processes the frequency spectrum.<br/>
+   *  <br/>
+   *  Returns an array of amplitude values between 0 and 255. The array
    *  starts with the lowest pitched frequencies, and ends with the 
-   *  highest.</p>
+   *  highest.<br/><br/>
    *  
-   *  <p>Length will be equal to fft bins (default: 1024).</p>
+   *  Length will be equal to fft bins (default: 1024).<br/><br/>
    *
    *  @method analyze
    *  @param {Number} [bins]    Must be a power of two between
    *                             16 and 1024. Defaults to 1024.
-   *  @return {Float32Array} spectrum    Array of amplitude values across
+   *  @return {Uint8Array} spectrum    Array of amplitude values across
    *                                   the frequency spectrum.
    *
    */
@@ -130,11 +132,12 @@ define(function (require) {
     if (bins) {
       this.analyser.fftSize = bins*2;
     }
-    this.analyser.getFloatFrequencyData(this.freqDomain);
+    this.analyser.getByteFrequencyData(this.freqDomain);
     return this.freqDomain;
   };
 
   //  p5.prototype.FFT.prototype.processFreq =  p5.prototype.FFT.prototype.analyze;
+  //  p5.prototype.FFT.prototype.spectrum =  p5.prototype.FFT.prototype.analyze;
 
   /**
    *  Returns an array of amplitude values (between 0-255) that represent
