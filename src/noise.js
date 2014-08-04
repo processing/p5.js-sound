@@ -8,8 +8,9 @@ define(function (require) {
    *
    *  @class Noise
    *  @constructor
-   *  @param {[type]} type Type of noise can be 'white' (default),
+   *  @param {String} type Type of noise can be 'white' (default),
    *                       'brown' or 'pink'.
+   *  @return {Object}    Noise Object
    */
   p5.prototype.Noise = function(type){
     this.started = false;
@@ -80,49 +81,17 @@ define(function (require) {
     return brownBuffer;
     }());
 
-  p5.prototype.Noise.prototype.connect = function(unit){
-    if (!unit) {
-      this.panner.connect(p5sound.input);
-    } 
-    else if (unit.hasOwnProperty('input')){
-        this.panner.connect(unit.input);
-    }
-    else {
-      this.panner.connect(unit);
-    }
-  };
-
-
-  p5.prototype.Noise.prototype.disconnect = function(unit){
-    this.output.disconnect();
-    this.panner.disconnect();
-    this.output.connect(this.panner);
-  };
-
   p5.prototype.Noise.prototype.ampMod = function(unit){
     unit.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
     this.output.connect(unit.output.gain);
-  };
-
-  p5.prototype.Noise.prototype.start = function() {
-    if (this.started){
-      this.stop();
-    }
-    this.noise = p5sound.audiocontext.createBufferSource();
-    this.noise.buffer = this.buffer;
-    this.noise.loop = true;
-    this.noise.connect(this.output);
-    console.log(this.output);
-    this.noise.start();
-    this.started = true;
   };
 
   /**
    *  Set type of noise to 'white', 'pink' or 'brown'.
    *  White is the default.
    *
-   *  @for  Noise
-   *  @param {[String]} type 'white', 'pink' or 'brown'
+   *  @method setType
+   *  @param {String} [type] 'white', 'pink' or 'brown'
    */
   p5.prototype.Noise.prototype.setType = function(type) {
     switch(type){
@@ -144,11 +113,41 @@ define(function (require) {
     }
   };
 
+  /**
+   *  Start the noise
+   *
+   *  @method start
+   */
+  p5.prototype.Noise.prototype.start = function() {
+    if (this.started){
+      this.stop();
+    }
+    this.noise = p5sound.audiocontext.createBufferSource();
+    this.noise.buffer = this.buffer;
+    this.noise.loop = true;
+    this.noise.connect(this.output);
+    console.log(this.output);
+    this.noise.start();
+    this.started = true;
+  };
+
+  /**
+   *  Stop the noise.
+   *
+   *  @method  stop
+   */
   p5.prototype.Noise.prototype.stop = function() {
     this.noise.stop();
     this.started = false;
   };
 
+  /**
+   *  Pan the noise.
+   *
+   *  @method  pan
+   *  @param  {Number} panning Number between -1 (left)
+   *                           and 1 (right)
+   */
   p5.prototype.Noise.prototype.pan = function(pval) {
     this.panPosition = pval;
     pval = pval * 90.0;
@@ -162,17 +161,51 @@ define(function (require) {
     this.panner.setPosition(x, 0, z);
   };
 
-  p5.prototype.Noise.prototype.amp = function(vol, t){
-    if (t) {
-      var rampTime = t || 0;
-      var currentVol = this.output.gain.value;
-      this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
-      this.output.gain.setValueAtTime(currentVol, p5sound.audiocontext.currentTime);
-      this.output.gain.linearRampToValueAtTime(vol, rampTime + p5sound.audiocontext.currentTime);
-    } else {
-      this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
-      this.output.gain.setValueAtTime(vol, p5sound.audiocontext.currentTime);
+  /**
+   *  Set the amplitude of the noise between 0 and 1.0
+   *  
+   *  @param  {Number} volume amplitude between 0 and 1.0
+   *  @param {Number} [rampTime] create a fade that lasts rampTime 
+   *  @param {Number} [timeFromNow] schedule this event to happen
+   *                                seconds from now
+   */
+  p5.prototype.Noise.prototype.amp = function(vol, rampTime, tFromNow){
+    var rampTime = rampTime || 0;
+    var tFromNow = tFromNow || 0;
+    var now = p5sound.audiocontext.currentTime;
+    var currentVol = this.output.gain.value;
+    this.output.gain.cancelScheduledValues(now);
+    this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow + .001);
+    this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
+  };
+
+  /**
+   *  Send output to a p5.sound or web audio object
+   *  
+   *  @method  connect
+   *  @param  {Object} unit
+   */
+  p5.prototype.Noise.prototype.connect = function(unit){
+    if (!unit) {
+      this.panner.connect(p5sound.input);
+    } 
+    else if (unit.hasOwnProperty('input')){
+        this.panner.connect(unit.input);
     }
+    else {
+      this.panner.connect(unit);
+    }
+  };
+
+  /**
+   *  Disconnect all output.
+   *  
+   *  @method disconnect
+   */
+  p5.prototype.Noise.prototype.disconnect = function(unit){
+    this.output.disconnect();
+    this.panner.disconnect();
+    this.output.connect(this.panner);
   };
 
   p5.prototype.Noise.prototype.dispose = function(){

@@ -76,6 +76,41 @@ define(function (require) {
     return 440 * Math.pow(2, (m-69)/12.0);
   };
 
+  /**
+   *  List the SoundFile formats that you will include. LoadSound 
+   *  will search your directory for these extensions, and will pick
+   *  a format that is compatable with the client's web browser.
+   *  
+   *  @method soundFormats
+   *  @param {String|Strings} formats i.e. 'mp3', 'wav', 'ogg'
+   *  @example
+   *  <div><code>
+   *  function preload() {
+   *    // set the global sound formats
+   *    soundFormats('mp3', 'ogg');
+   *    
+   *    // load either beatbox.mp3, or .ogg, depending on browser
+   *    mySound = loadSound('../sounds/beatbox.mp3');
+   *  }
+   *
+   *  function setup() {
+   *    mySound.play();
+   *  }
+   *  </code></div>
+   */
+  p5.prototype.soundFormats = function(){
+    // reset extensions array
+    p5sound.extensions = [];
+    // add extensions
+    for (var i = 0; i < arguments.length; i++){
+      arguments[i] = arguments[i].toLowerCase();
+      if (['mp3','wav','ogg', 'm4a', 'aac'].indexOf(arguments[i]) > -1){
+        p5sound.extensions.push(arguments[i]);
+      } else {
+        throw arguments[i] + ' is not a valid sound format!';
+      }
+    }
+  };
 
   // register removeSound to dispose of p5sound SoundFiles and Oscillators when sketch ends
   p5.prototype._registerRemoveFunc('disposeSound');

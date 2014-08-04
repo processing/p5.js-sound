@@ -21,10 +21,11 @@ define(function (require) {
    *  
    *  @class Oscillator
    *  @constructor
-   *  @param {[Number]} freq frequency defaults to 440Hz
-   *  @param {[String]} type type of oscillator. Options:
+   *  @param {Number} [freq] frequency defaults to 440Hz
+   *  @param {String} [type] type of oscillator. Options:
    *                         'sine' (default), 'triangle',
    *                         'sawtooth', 'square'
+   *  @return {Object}    Oscillator object
    */
   p5.prototype.Oscillator = function(freq, type){
     this.started = false;
@@ -72,8 +73,8 @@ define(function (require) {
    *  oscillator starts.
    *
    *  @method  start
-   *  @param  {[Number]} time startTime in seconds from now.
-   *  @param  {[Number]} frequency frequency in Hz.
+   *  @param  {Number} [time] startTime in seconds from now.
+   *  @param  {Number} [frequency] frequency in Hz.
    */
   p5.prototype.Oscillator.prototype.start = function(f, time) {
     if (this.started){
@@ -106,7 +107,7 @@ define(function (require) {
    *  oscillator stops.
    *
    *  @method  stop
-   *  @param  {[Number]} time, in seconds from now.
+   *  @param  {Number} time, in seconds from now.
    */
   p5.prototype.Oscillator.prototype.stop = function(time){
     if (this.started){
@@ -122,8 +123,9 @@ define(function (require) {
    *
    *  @method  amp
    *  @param  {Number} vol between 0 and 1.0
-   *  @param {Number} [time] schedule this event to happen seconds
-   *                         from now (optional)
+   *  @param {Number} [rampTime] create a fade that lasts rampTime 
+   *  @param {Number} [timeFromNow] schedule this event to happen
+   *                                seconds from now
    */
   p5.prototype.Oscillator.prototype.amp = function(vol, rampTime, tFromNow){
     if (typeof(vol) === 'number') {
@@ -131,7 +133,6 @@ define(function (require) {
       var tFromNow = tFromNow || 0;
       var now = p5sound.audiocontext.currentTime;
       var currentVol = this.output.gain.value;
-      console.log(currentVol);
       this.output.gain.cancelScheduledValues(now);
       this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow + .001);
       this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
@@ -182,8 +183,8 @@ define(function (require) {
    *
    *  @method  freq
    *  @param  {Number} Frequency Frequency in Hz
-   *  @param  {[Number]} [rampTime] Ramp time (in seconds)
-   *  @param  {[Number]} [TimeFromNow] Schedule this event to happen
+   *  @param  {Number} [rampTime] Ramp time (in seconds)
+   *  @param  {Number} [timeFromNow] Schedule this event to happen
    *                                   at x seconds from now
    *  @example
    *  <div><code>
@@ -228,6 +229,12 @@ define(function (require) {
     return this.oscillator.frequency.value;
   };
 
+  /**
+   *  Set type to 'sine', 'triangle', 'sawtooth' or 'square'.
+   *
+   *  @method  setType
+   *  @param {String} type 'sine', 'triangle', 'sawtooth' or 'square'.
+   */
   p5.prototype.Oscillator.prototype.setType = function(type){
     this.oscillator.type = type;
   };
@@ -236,6 +243,13 @@ define(function (require) {
     return this.oscillator.type;
   };
 
+  /**
+   *  Connect to a p5.Sound / Web Audio object.
+   *
+   *  @method  connect
+   *  @param  {Object} unit A p5.Sound or Web Audio object
+   *  @return {[type]}      [description]
+   */
   p5.prototype.Oscillator.prototype.connect = function(unit){
     if (!unit) {
        this.panner.connect(p5sound.input);
@@ -250,12 +264,21 @@ define(function (require) {
     }
   };
 
-
+  /**
+   *  Disconnect all outputs
+   *
+   *  @method  disconnect
+   */
   p5.prototype.Oscillator.prototype.disconnect = function(unit){
     this.panner.disconnect(unit);
   };
 
-
+  /**
+   *  Pan between Left (-1) and Right (1)
+   *
+   *  @method  pan
+   *  @param  {Number} panning Number between -1 and 1
+   */
   p5.prototype.Oscillator.prototype.pan = function(pval) {
     if (!pval) {
       pval = 0;
@@ -295,7 +318,7 @@ define(function (require) {
    *  Modulate any audio param.
    *
    *  @method  mod
-   *  @param  {Object} oscillator The param to modulate
+   *  @param  {AudioParam} AudioParam The param to modulate
    */
   p5.prototype.Oscillator.prototype.mod = function(unit){
     unit.cancelScheduledValues(p5sound.audiocontext.currentTime);
@@ -305,6 +328,7 @@ define(function (require) {
   /**
    *  Set the phase of an oscillator between 0.0 and 1.0
    *  
+   *  @method  phase
    *  @param  {Number} phase float between 0.0 and 1.0
    */
   p5.prototype.Oscillator.prototype.phase = function(p){

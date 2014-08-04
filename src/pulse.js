@@ -9,15 +9,13 @@ define(function (require) {
    *  Pulse Width Modulation.
    *  The pulse is created with two oscillators.
    *  Accepts a parameter for frequency, and to set the
-   *  width between the pulses.
+   *  width between the pulses. See <code>Oscillator</code>
+   *  for a full list of methods.
    *  
-   *  Inspired by <a href="
-   *  http://www.musicdsp.org/showone.php?id=8">musicdsp.org"</a>
-   *
    *  @class Pulse
    *  @constructor
-   *  @param {[Number]} freq Frequency in oscillations per second (Hz)
-   *  @param {[Number]} w    Width between the pulses (0 to 1.0,
+   *  @param {Number} [freq] Frequency in oscillations per second (Hz)
+   *  @param {Number} [w]    Width between the pulses (0 to 1.0,
    *                         defaults to 0)
    */
   p5.prototype.Pulse = function(freq, w) {
@@ -48,7 +46,7 @@ define(function (require) {
    *  Pulse Width Modulation).
    *
    *  @method  width
-   *  @param {[Number]} w    Width between the pulses (0 to 1.0,
+   *  @param {Number} [width]    Width between the pulses (0 to 1.0,
    *                         defaults to 0)
    */
   p5.prototype.Pulse.prototype.width = function(w) {

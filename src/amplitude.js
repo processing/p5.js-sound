@@ -3,10 +3,10 @@ define(function (require) {
   var p5sound = require('master');
 
   /**
-   *  Create an Amplitude object, which measures amplitude (volume)
-   *  between 0.0 and 1.0. Accepts an optional smoothing value,
-   *  which defaults to 0. Reads global p5sound output by default,
-   *  or use setInput() to listen to a specific sound source.
+   *  Amplitude measures volume between 0.0 and 1.0.
+   *  Listens to all p5sound by default, or use setInput()
+   *  to listen to a specific sound source. Accepts an optional
+   *  smoothing value, which defaults to 0. 
    *
    *  @class Amplitude
    *  @constructor
@@ -15,15 +15,22 @@ define(function (require) {
    *  @return {Object}    Amplitude Object
    *  @example
    *  <div><code>
+   *  function preload(){
+   *    sound = loadSound('../sounds/beat.mp3');
+   *  }
    *  function setup() { 
-   *    mic = new AudioIn();
-   *    mic.on();
    *    amplitude = new Amplitude();
-   *    amplitude.setInput(mic);
+   *    sound.loop();
    *  }
    *  function draw() {
-   *    micLevel = amplitude.analyze();
-   *    ellipse(width/2, height - micLevel*height, 10, 10);
+   *    background(0);
+   *    fill(255);
+   *    var level = amplitude.getLevel();
+   *    var size = map(level, 0, 1, 0, 200);
+   *    ellipse(width/2, height/2, size, size);
+   *  }
+   *  function mouseClicked(){
+   *    sound.stop();
    *  }
    *  </code></div>
    */
@@ -69,16 +76,33 @@ define(function (require) {
    *  Optionally, you can pass in a specific source (i.e. a soundfile).
    *
    *  @method setInput
-   *  @param {soundObject|undefined} [snd]       set the sound source (optional, defaults to master output)
-   *  @param {Number|undefined} [smoothing]      a range between 0.0 and .999 to smooth amplitude readings
+   *  @param {soundObject|undefined} [snd] set the sound source
+   *                                       (optional, defaults to
+   *                                       master output)
+   *  @param {Number|undefined} [smoothing] a range between 0.0 and 1.0
+   *                                        to smooth amplitude readings
    *  @example
    *  <div><code>
    *  function preload(){
-   *    soundFile = loadSound('mySound.mp3');
+   *    sound1 = loadSound('../sounds/beat.mp3');
+   *    sound2 = loadSound('../sounds/drum.mp3');
    *  }
    *  function setup(){
    *    amplitude = new Amplitude();
-   *    amplitude.setInput(soundFile);
+   *    sound1.loop();
+   *    sound2.loop();
+   *    amplitude.setInput(sound2);
+   *  }
+   *  function draw() {
+   *    background(0);
+   *    fill(255);
+   *    var level = amplitude.getLevel();
+   *    var size = map(level, 0, 1, 0, 200);
+   *    ellipse(width/2, height/2, size, size);
+   *  }
+   *  function mouseClicked(){
+   *    sound1.stop();
+   *    sound2.stop();
    *  }
    *  </code></div>
    */
@@ -168,11 +192,22 @@ define(function (require) {
    *  @return {Number}       Amplitude as a number between 0.0 and 1.0
    *  @example
    *  <div><code>
+   *  function preload(){
+   *    sound = loadSound('../sounds/beat.mp3');
+   *  }
    *  function setup() { 
    *    amplitude = new Amplitude();
+   *    sound.loop();
    *  }
    *  function draw() {
-   *    volume = amplitude.getLevel();
+   *    background(0);
+   *    fill(255);
+   *    var level = amplitude.getLevel();
+   *    var size = map(level, 0, 1, 0, 200);
+   *    ellipse(width/2, height/2, size, size);
+   *  }
+   *  function mouseClicked(){
+   *    sound.stop();
    *  }
    *  </code></div>
    */
@@ -186,14 +221,14 @@ define(function (require) {
   };
 
   /**
-   * Determines whether the results of Amplitude.process() will be Normalized.
-   * To normalize, Amplitude finds the difference the loudest reading it has processed
-   * and the maximum amplitude of 1.0. Amplitude adds this difference to all values to produce
-   * results that will reliably map between 0.0 and 1.0. 
-   * However, if a louder moment occurs, the amount that Normalize adds to all the values will change.
-   *
-   * Accepts an optional boolean parameter (true or false).
-   * Normalizing is off by default.
+   * Determines whether the results of Amplitude.process() will be
+   * Normalized. To normalize, Amplitude finds the difference the
+   * loudest reading it has processed and the maximum amplitude of
+   * 1.0. Amplitude adds this difference to all values to produce
+   * results that will reliably map between 0.0 and 1.0. However,
+   * if a louder moment occurs, the amount that Normalize adds to
+   * all the values will change. Accepts an optional boolean parameter
+   * (true or false). Normalizing is off by default.
    *
    * @method toggleNormalize
    * @param {boolean} [boolean] set normalize to true (1) or false (0)
@@ -208,10 +243,11 @@ define(function (require) {
   };
 
   /**
-   * Determines whether the results of Amplitude.process() will be Smoothed.
+   *  Smooth Amplitude analysis by averaging with the last analysis 
+   *  frame. Off by default.
    *
-   * @method smooth
-   * @param {Number} set smoothing from 0.0 <= 1
+   *  @method smooth
+   *  @param {Number} set smoothing from 0.0 <= 1
    */
   p5.prototype.Amplitude.prototype.smooth = function(s) {
     if (s >= 0 && s < 1) {

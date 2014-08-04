@@ -15,19 +15,19 @@ define(function (require) {
    *  • <code>FFT.analyze() </code> computes amplitude values along the
    *  frequency domain. The array indices correspond to frequencies (i.e.
    *  pitches), from the lowest to the highest that humans can hear. Each
-   *  value represents amplitude at that slice of the frequency spectrum.</p>
+   *  value represents amplitude at that slice of the frequency spectrum.
+   *  Use with <code>getFreq()</code> to measure amplitude at specific
+   *  frequencies, or within a range of frequencies. </p>
    *
    *  <p>FFT analyzes a very short snapshot of sound called a sample
    *  buffer. It returns an array of amplitude measurements, referred
    *  to as <code>bins</code>. The array is 1024 bins long by default.
-   *  You can change the bin size, but it must be a power of 2
+   *  You can change the bin array length, but it must be a power of 2
    *  between 16 and 1024 in order for the FFT algorithm to function
    *  correctly. The actual size of the FFT buffer is twice the 
    *  number of bins, so given a standard sample rate, the buffer is
    *  2048/44100 seconds long.</p>
    *  
-   *  <p>Use <code>getFreq()</code> to measure amplitude at specific
-   *  frequencies, or within a range of frequencies. </p>
    * 
    *  @class FFT
    *  @constructor
@@ -40,9 +40,6 @@ define(function (require) {
    *  @return {Object}    FFT Object
    *  @example
    *  <div><code>
-   *  var sound;
-   *  var fft;
-   *  
    *  function preload(){
    *    sound = loadSound('../sounds/Damscray_DancingTiger.mp3');
    *  }
@@ -76,10 +73,17 @@ define(function (require) {
    *    }
    *    endShape();
    *  }
+   *  
+   *  function mouseClicked(){
+   *    sound.stop();
+   *  }
    *  </code></div>
    */
   p5.prototype.FFT = function(smoothing, bins) {
     var SMOOTHING = smoothing || 0.8;
+    if (smoothing === 0) {
+      SMOOTHING = smoothing;
+    }
     var FFT_SIZE = bins*2 || 2048;
     this.analyser = p5sound.audiocontext.createAnalyser();
 
@@ -97,7 +101,8 @@ define(function (require) {
   /**
    *  Set the input source for the FFT analysis. If no source is
    *  provided, FFT will analyze all sound in the sketch.
-   *  
+   *
+   *  @method  setInput
    *  @param {Object} [source] p5.sound object (or web audio API source node)
    *  @param {Number} [bins]  Must be a power of two between 16 and 1024
    */
@@ -113,19 +118,70 @@ define(function (require) {
   };
 
   /**
-   *  This method tells the FFT to processes the frequency spectrum.<br/>
-   *  <br/>
-   *  Returns an array of amplitude values between 0 and 255. The array
-   *  starts with the lowest pitched frequencies, and ends with the 
-   *  highest.<br/><br/>
+   *  Returns an array of amplitude values (between 0-255) that represent
+   *  a snapshot of amplitude readings in a single buffer. Length will be
+   *  equal to bins (defaults to 1024). Can be used to draw the waveform
+   *  of a sound. 
    *  
-   *  Length will be equal to fft bins (default: 1024).<br/><br/>
+   *  @method waveform
+   *  @param {Number} [bins]    Must be a power of two between
+   *                             16 and 1024. Defaults to 1024.
+   *  @return {Uint8Array}  Array   Array of amplitude values (0-255)
+   *                                over time. Array length = bins.
+   *
+   */
+  p5.prototype.FFT.prototype.waveform = function(bins) {
+    this.analyser.getByteTimeDomainData(this.timeDomain);
+    return this.timeDomain;
+  };
+
+  /**
+   *  Returns an array of amplitude values (between 0 and 255)
+   *  across the frequency spectrum. Length is equal to FFT bins
+   *  (1024 by default). The array indices correspond to frequencies
+   *  (i.e. pitches), from the lowest to the highest that humans can
+   *  hear. Each value represents amplitude at that slice of the
+   *  frequency spectrum. Must be called prior to using
+   *  <code>getFreq()</code>.
    *
    *  @method analyze
    *  @param {Number} [bins]    Must be a power of two between
    *                             16 and 1024. Defaults to 1024.
    *  @return {Uint8Array} spectrum    Array of amplitude values across
    *                                   the frequency spectrum.
+   *  @example
+   *  <div><code>
+   *  var osc;
+   *  var fft;
+   *
+   *  function setup(){
+   *    createCanvas(100,100);
+   *    osc = new Oscillator();
+   *    osc.start();
+   *    fft = new FFT();
+   *  }
+   *
+   *  function draw(){
+   *    background(0);
+   *
+   *    var freq = map(mouseX, 0, 800, 20, 15000);
+   *    freq = constrain(freq, 1, 20000);
+   *    osc.freq(freq);
+   *
+   *    var spectrum = fft.analyze(); 
+   *    noStroke();
+   *    fill(0,255,0); // spectrum is green
+   *    for (var i = 0; i< spectrum.length; i++){
+   *      var x = map(i, 0, spectrum.length, 0, width);
+   *      var h = -height + map(spectrum[i], 0, 255, height, 0);
+   *      rect(x, height, width / spectrum.length, h )
+   *    }
+   *
+   *    stroke(255);
+   *    text('Freq: ' + round(freq)+'Hz', 10, 10); 
+   *  }
+   *  </code></div>
+   *                                   
    *
    */
   p5.prototype.FFT.prototype.analyze = function(bins) {
@@ -140,39 +196,11 @@ define(function (require) {
   //  p5.prototype.FFT.prototype.spectrum =  p5.prototype.FFT.prototype.analyze;
 
   /**
-   *  Returns an array of amplitude values (between 0-255) that represent
-   *  a snapshot of amplitude readings in a single buffer. Length will be
-   *  equal to bins (defaults to 1024). Can be used to draw the waveform
-   *  of a sound. 
-   *  
-   *  @method waveform
-   *  @return {Uint8Array}  Array   Array of amplitude values (0-255)
-   *                                over time. Array length = bins.
-   *
-   */
-  p5.prototype.FFT.prototype.waveform = function(bins) {
-    this.analyser.getByteTimeDomainData(this.timeDomain);
-    return this.timeDomain;
-  };
-
-  /**
-   *  Smooth FFT analysis by averaging with the last analysis frame.
-   *  
-   *  @param {Number} smoothing    0.0 < smoothing < 1.0.
-   *                               Defaults to 0.8.
-   */
-  p5.prototype.FFT.prototype.setSmoothing = function(s) {
-    this.analyser.smoothingTimeConstant = s;
-  };
-
-  /**
-   *  <p>Returns the amount of energy (volume) at a specific
+   *  Returns the amount of energy (volume) at a specific
    *  frequency, or the average amount of energy between two
-   *  given frequencies.</p>
-   *
-   *  <p>analyze() must be called prior to getFreq().
-   *  Analyze() tells the FFT to analyze frequency data, and
-   *  getFreq() uses the results determine the value at
+   *  given frequencies. NOTE: analyze() must be called prior
+   *  to getFreq(). Analyze() tells the FFT to analyze frequency
+   *  data, and getFreq() uses the results determine the value at
    *  a specific frequency or range of frequencies.</p>
    *  
    *  @method  getFreq
@@ -222,6 +250,17 @@ define(function (require) {
     else {
       throw 'invalid input for getFreq()';
     }
+  };
+
+  /**
+   *  Smooth FFT analysis by averaging with the last analysis frame.
+   *  
+   *  @method smooth
+   *  @param {Number} smoothing    0.0 < smoothing < 1.0.
+   *                               Defaults to 0.8.
+   */
+  p5.prototype.FFT.prototype.smooth = function(s) {
+    this.analyser.smoothingTimeConstant = s;
   };
 
 });

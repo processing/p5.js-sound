@@ -157,14 +157,13 @@ define(function (require) {
   p5.prototype._registerPreloadFunc('loadSound');
 
   /**
-   *  <p>loadSound() returns a new SoundFile from a specified
+   *  loadSound() returns a new SoundFile from a specified
    *  path. If called during preload(), the SoundFile will be ready
    *  to play in time for setup() and draw(). If called outside of
    *  preload, the SoundFile will not be ready immediately, so
-   *  loadSound accepts a callback as the second parameter.</p>
-   *  <p>Using a <a href=
-   *  "https://github.com/lmccart/p5.js/wiki/Local-server">
-   *  local server</a> is recommended when loading external files.</p>
+   *  loadSound accepts a callback as the second parameter. Using a
+   *  <a href="https://github.com/lmccart/p5.js/wiki/Local-server">
+   *  local server</a> is recommended when loading external files.
    *  
    *  @method loadSound
    *  @param  {String/Array}   path     Path to the sound file, or an array with
@@ -194,9 +193,9 @@ define(function (require) {
   };
 
   /**
-   * <p>This is a helper function that the SoundFile calls to load
+   * This is a helper function that the SoundFile calls to load
    * itself. Accepts a callback (the name of another function)
-   * as an optional parameter.</p> 
+   * as an optional parameter.
    *
    * @private
    * @param {Function} [callback]   Name of a function to call once file loads
@@ -436,7 +435,6 @@ define(function (require) {
    * is currently playing, this change will take effect when it
    * reaches the end of the current playback. 
    * 
-   * @method setLoop
    * @param {Boolean} Boolean   set looping to true or false
    */
   p5.prototype.SoundFile.prototype.setLoop = function(bool) {
@@ -457,7 +455,6 @@ define(function (require) {
  /**
    * Returns 'true' if a SoundFile is looping, 'false' if not.
    *
-   * @method isLooping
    * @return {Boolean}
    */
   p5.prototype.SoundFile.prototype.isLooping = function() {
@@ -483,7 +480,6 @@ define(function (require) {
   /**
    * Returns true if a SoundFile is paused, 'false' if not.
    *
-   * @method isPaused
    * @return {Boolean}
    */
   p5.prototype.SoundFile.prototype.isPaused = function() {
@@ -525,6 +521,68 @@ define(function (require) {
   };
 
   /**
+   *  Multiply the output volume (amplitude) of a sound file
+   *  between 0.0 (silence) and 1.0 (full volume).
+   *  1.0 is the maximum amplitude of a digital sound, so multiplying
+   *  by greater than 1.0 may cause digital distortion. To
+   *  fade, provide a <code>rampTime</code> parameter. For more
+   *  complex fades, see the Env class.
+   *
+   *  @method  setVolume
+   *  @param {Number} volume  Volume (amplitude) between 0.0 and 1.0
+   *  @param {Number} [rampTime]  Fade for t seconds
+   *  @param {Number} [timeFromNow]  Schedule this event to happen at
+   *                                 t seconds in the future
+   */
+  p5.prototype.SoundFile.prototype.setVolume = function(vol, rampTime, tFromNow) {
+      var rampTime = rampTime || 0;
+      var tFromNow = tFromNow || 0;
+      var now = p5sound.audiocontext.currentTime;
+      var currentVol = this.output.gain.value;
+      this.output.gain.cancelScheduledValues(now);
+      this.output.gain.setValueAtTime(currentVol, now + tFromNow);
+      this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
+  };
+
+  // same as setVolume, to match Processing Sound
+  p5.prototype.SoundFile.prototype.amp = p5.prototype.SoundFile.prototype.setVolume;
+
+  // these are the same thing
+  p5.prototype.SoundFile.prototype.fade = p5.prototype.SoundFile.prototype.setVolume;
+
+  /**
+   * Set the stereo panning of a p5Sound object to
+   * a floating point number between -1.0 (left) and 1.0 (right).
+   * Default is 0.0 (center).
+   *
+   * @method pan
+   * @param {Number} [panValue]     Set the stereo panner
+   */
+  p5.prototype.SoundFile.prototype.pan = function(pval) {
+    this.panPosition = pval;
+    pval = pval * 90.0;
+    var xDeg = parseInt(pval);
+    var zDeg = xDeg + 90;
+    if (zDeg > 90) {
+      zDeg = 180 - zDeg;
+    }
+    var x = Math.sin(xDeg * (Math.PI / 180));
+    var z = Math.sin(zDeg * (Math.PI / 180));
+    this.panner.setPosition(x, 0, z);
+  };
+
+  /**
+   * Returns the current stereo pan position (-1.0 to 1.0)
+   *
+   * @return {Number} Returns the stereo pan setting of the Oscillator
+   *                          as a number between -1.0 (left) and 1.0 (right).
+   *                          0.0 is center and default.
+   */
+  p5.prototype.SoundFile.prototype.getPan = function() {
+    return this.panPosition;
+  };
+
+  /**
    *  Set the playback rate of a sound file. Will change the speed and the pitch.
    *  Values less than zero will reverse the audio buffer before playback.
    *
@@ -550,7 +608,6 @@ define(function (require) {
    *  
    * </code>
    * </div>
-
    *  
    */
   p5.prototype.SoundFile.prototype.rate = function(playbackRate) {
@@ -580,38 +637,6 @@ define(function (require) {
 
   p5.prototype.SoundFile.prototype.getPlaybackRate = function() {
     return this.playbackRate;
-  };
-
-  /**
-    * Return the number of channels in a sound file.
-    * For example, Mono = 1, Stereo = 2.
-    *
-    * @method channels
-    * @return {Number} [channels]
-    */
-  p5.prototype.SoundFile.prototype.channels = function() {
-    return this.buffer.numberOfChannels;
-  };
-
-  /**
-    * Return the sample rate of the sound file.
-    *
-    * @method sampleRate
-    * @return {Number} [sampleRate]
-    */
-  p5.prototype.SoundFile.prototype.sampleRate = function() {
-    return this.buffer.sampleRate;
-  };
-
-  /**
-    * Return the number of samples in a sound file.
-    * Equal to sampleRate * duration.
-    *
-    * @method frames
-    * @return {Number} [sampleCount]
-    */
-  p5.prototype.SoundFile.prototype.frames = function() {
-    return this.buffer.length;
   };
 
   /**
@@ -685,6 +710,37 @@ define(function (require) {
     }
   };
 
+  /**
+    * Return the number of channels in a sound file.
+    * For example, Mono = 1, Stereo = 2.
+    *
+    * @method channels
+    * @return {Number} [channels]
+    */
+  p5.prototype.SoundFile.prototype.channels = function() {
+    return this.buffer.numberOfChannels;
+  };
+
+  /**
+    * Return the sample rate of the sound file.
+    *
+    * @method sampleRate
+    * @return {Number} [sampleRate]
+    */
+  p5.prototype.SoundFile.prototype.sampleRate = function() {
+    return this.buffer.sampleRate;
+  };
+
+  /**
+    * Return the number of samples in a sound file.
+    * Equal to sampleRate * duration.
+    *
+    * @method frames
+    * @return {Number} [sampleCount]
+    */
+  p5.prototype.SoundFile.prototype.frames = function() {
+    return this.buffer.length;
+  };
 
   /**
    * Returns an array of amplitude peaks in a SoundFile that can be
@@ -783,36 +839,6 @@ define(function (require) {
     };
   };
 
-  /**
-   *  Multiply the output volume (amplitude) of a sound file
-   *  between 0.0 (silence) and 1.0 (full volume).
-   *  1.0 is the maximum amplitude of a digital sound, so multiplying
-   *  by greater than 1.0 may cause digital distortion.</p> <p>To
-   *  fade, provide a <code>rampTime</code> parameter. For more
-   *  complex fades, see the Env class.</p>
-   *
-   *  @method  setVolume
-   *  @param {Number} volume  Volume (amplitude) between 0.0 and 1.0
-   *  @param {Number} [rampTime]  Fade for t seconds
-   *  @param {Number} [timeFromNow]  Schedule this event to happen at
-   *                                 t seconds in the future
-   */
-  p5.prototype.SoundFile.prototype.setVolume = function(vol, rampTime, tFromNow) {
-      var rampTime = rampTime || 0;
-      var tFromNow = tFromNow || 0;
-      var now = p5sound.audiocontext.currentTime;
-      var currentVol = this.output.gain.value;
-      this.output.gain.cancelScheduledValues(now);
-      this.output.gain.setValueAtTime(currentVol, now + tFromNow);
-      this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
-  };
-
-  // same as setVolume, to match Processing Sound
-  p5.prototype.SoundFile.prototype.amp = p5.prototype.SoundFile.prototype.setVolume;
-
-  // these are the same thing
-  p5.prototype.SoundFile.prototype.fade = p5.prototype.SoundFile.prototype.setVolume;
-
   p5.prototype.SoundFile.prototype.add = function() {
     // TO DO
   };
@@ -837,53 +863,12 @@ define(function (require) {
     }
   };
 
-// =============================================================================
-//                 SoundFile Methods Shared With Other Classes
-// =============================================================================
-
   /**
-   * Set the stereo panning of a p5Sound object to
-   * a floating point number between -1.0 (left) and 1.0 (right).
-   * Default is 0.0 (center).
-   *
-   * @method pan
-   * @param {Number} [panValue]     Set the stereo panner
-   */
-  p5.prototype.SoundFile.prototype.pan = function(pval) {
-    this.panPosition = pval;
-    pval = pval * 90.0;
-    var xDeg = parseInt(pval);
-    var zDeg = xDeg + 90;
-    if (zDeg > 90) {
-      zDeg = 180 - zDeg;
-    }
-    var x = Math.sin(xDeg * (Math.PI / 180));
-    var z = Math.sin(zDeg * (Math.PI / 180));
-    this.panner.setPosition(x, 0, z);
-  };
-
-  /**
-   * Returns the current stereo pan position (-1.0 to 1.0)
-   *
-   * @method getPan
-   * @return {Number} Returns the stereo pan setting of the Oscillator
-   *                          as a number between -1.0 (left) and 1.0 (right).
-   *                          0.0 is center and default.
-   */
-  p5.prototype.SoundFile.prototype.getPan = function() {
-    return this.panPosition;
-  };
-
-  /**
-   * <p>Connects the output of a p5sound object to input of another
+   * Connects the output of a p5sound object to input of another
    * p5Sound object. For example, you may connect a SoundFile to an
-   * FFT or an Effect.</p>
-   * 
-   * <p>If no parameter is given, it will connect to the master output.
-   * </p>
-   * 
-   * <p>Most p5sound objects connect to the master output when they
-   * are created.</p>
+   * FFT or an Effect. If no parameter is given, it will connect to
+   * the master output. Most p5sound objects connect to the master
+   * output when they are created.
    *
    * @method connect
    * @param {Object} [object] Audio object that accepts an input
@@ -910,48 +895,11 @@ define(function (require) {
     this.panner.disconnect(unit);
   };
 
-
   /**
-   *  List the SoundFile formats that you will include. LoadSound 
-   *  will search your directory for these extensions, and will pick
-   *  a format that is compatable with the user's web browser.
-   *  
-   *  @param {String} format(s) i.e. 'mp3', 'wav', 'ogg'
-   *  @example
-   *  <div><code>
-   *  function preload() {
-   *    // set the global sound formats
-   *    soundFormats('mp3, 'ogg');
-   *    
-   *    // load either beatbox.mp3, or .ogg, depending on browser
-   *    mySound = new SoundFile('beatbox');
-   *  }
-   *
-   *  function onload() {
-   *    mySound.play();
-   *  }
-   *  </code></div>
-   */
-  p5.prototype.soundFormats = function(){
-    // reset extensions array
-    p5sound.extensions = [];
-    // add extensions
-    for (var i = 0; i < arguments.length; i++){
-      arguments[i] = arguments[i].toLowerCase();
-      if (['mp3','wav','ogg', 'm4a', 'aac'].indexOf(arguments[i]) > -1){
-        p5sound.extensions.push(arguments[i]);
-      } else {
-        throw arguments[i] + ' is not a valid sound format!';
-      }
-    }
-  };
-
-  /**
-   *  <p>Read the Amplitude (volume level) of a SoundFile. The
+   *  Read the Amplitude (volume level) of a SoundFile. The
    *  SoundFile class contains its own instance of the Amplitude
-   *  class to help make it easy to get a microphone's volume level.</p>
-   *
-   *  <p>Accepts an optional smoothing value (0.0 < 1.0).</p>
+   *  class to help make it easy to get a microphone's volume level.
+   *  Accepts an optional smoothing value (0.0 < 1.0).
    *  
    *  @method  getLevel
    *  @param  {Number} [smoothing] Smoothing is 0.0 by default.
