@@ -571,10 +571,11 @@ define(function (require) {
     else if (this.playbackRate > 0 && this.reversed) {
       this.reverseBuffer();
     }
-
-    var now = p5sound.audiocontext.currentTime;
-    this.source.playbackRate.cancelScheduledValues(now);
-    this.source.playbackRate.linearRampToValueAtTime(Math.abs(rate), now);
+    if (this.source){
+      var now = p5sound.audiocontext.currentTime;
+      this.source.playbackRate.cancelScheduledValues(now);
+      this.source.playbackRate.linearRampToValueAtTime(Math.abs(rate), now);
+    }
   };
 
   p5.prototype.SoundFile.prototype.getPlaybackRate = function() {
