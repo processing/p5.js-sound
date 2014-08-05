@@ -16,7 +16,7 @@ define(function (require) {
    *  @example
    *  <div><code>
    *  function preload(){
-   *    sound = loadSound('../sounds/beat.mp3');
+   *    sound = loadSound('assets/beat.mp3');
    *  }
    *  function setup() { 
    *    amplitude = new Amplitude();
@@ -84,8 +84,8 @@ define(function (require) {
    *  @example
    *  <div><code>
    *  function preload(){
-   *    sound1 = loadSound('../sounds/beat.mp3');
-   *    sound2 = loadSound('../sounds/drum.mp3');
+   *    sound1 = loadSound('assets/beat.mp3');
+   *    sound2 = loadSound('assets/drum.mp3');
    *  }
    *  function setup(){
    *    amplitude = new Amplitude();
@@ -193,7 +193,7 @@ define(function (require) {
    *  @example
    *  <div><code>
    *  function preload(){
-   *    sound = loadSound('../sounds/beat.mp3');
+   *    sound = loadSound('assets/beat.mp3');
    *  }
    *  function setup() { 
    *    amplitude = new Amplitude();

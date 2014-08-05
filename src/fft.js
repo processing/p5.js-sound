@@ -41,7 +41,7 @@ define(function (require) {
    *  @example
    *  <div><code>
    *  function preload(){
-   *    sound = loadSound('../sounds/Damscray_DancingTiger.mp3');
+   *    sound = loadSound('assets/Damscray_DancingTiger.mp3');
    *  }
    *
    *  function setup(){

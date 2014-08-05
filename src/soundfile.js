@@ -30,7 +30,7 @@ define(function (require) {
    *  @example 
    *  <div><code>
    *  function preload() {
-   *    mySound = loadSound('../sounds/drum.mp3');
+   *    mySound = loadSound('assets/drum.mp3');
    *  }
    *
    *  function setup() {
@@ -174,7 +174,7 @@ define(function (require) {
    *  @example 
    *  <div><code>
    *  function preload() {
-   *   mySound = loadSound('../sounds/drum.mp3');
+   *   mySound = loadSound('assets/drum.mp3');
    *  }
    *
    *  function setup() {
@@ -349,7 +349,7 @@ define(function (require) {
    *  @example
    *  <div><code>
    *  function setup(){
-   *    mySound = loadSound('../sounds/Damscray_DancingTiger.mp3');
+   *    mySound = loadSound('assets/Damscray_DancingTiger.mp3');
    *  }
    *  function mouseClicked() {
    *    mySound.playMode('sustain');
@@ -595,7 +595,7 @@ define(function (require) {
    *  var soundfile;
    *  
    *  function preload() {
-   *    soundfile = loadSound('../sounds/Damscray_DancingTiger.mp3');
+   *    soundfile = loadSound('assets/Damscray_DancingTiger.mp3');
    *  }
    *
    *  function setup() {
@@ -809,7 +809,7 @@ define(function (require) {
    *  var drum;
    *  
    *  function preload() {
-   *    drum = loadSound('../sounds/drum.mp3');
+   *    drum = loadSound('assets/drum.mp3');
    *  }
    *
    *  function setup() {
