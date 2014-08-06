@@ -310,6 +310,9 @@ define(function (require) {
       rate = rate || Math.abs(this.playbackRate);
       this.source.playbackRate.setValueAtTime(rate, now);
 
+      if (this.paused){
+        this.wasUnpaused = true;
+      }
 
       // play the sound
       if (this.paused && this.wasUnpaused){
@@ -401,17 +404,18 @@ define(function (require) {
       this.playing = false;
       // TO DO: make sure play() still starts from orig start position
     }
-    else if (this.paused === true) {
-      // preserve original start time
-      // var origStart = this.startTime;
-      // this.startTime = this.pauseTime;
-      // used by play() to determine whether to start from pauseTime or startTime
-      this.wasUnpaused = true;
-      this.play();
-      this.looping = keepLoop;
-      // this.startTime = origStart;
-      this.paused = false;
-    }
+    // else { if (this.paused === true) {
+    //   throw 'already paused';
+    //   // preserve original start time
+    //   // var origStart = this.startTime;
+    //   // this.startTime = this.pauseTime;
+    //   // used by play() to determine whether to start from pauseTime or startTime
+    //   this.wasUnpaused = true;
+    //   this.play();
+    //   this.looping = keepLoop;
+    //   // this.startTime = origStart;
+    //   this.paused = false;
+    // }
   };
 
 
@@ -497,11 +501,17 @@ define(function (require) {
   p5.prototype.SoundFile.prototype.stop = function() {
     if (this.mode == 'sustain') {
       this.stopAll();
+      this.playing = false;
+      this.pauseTime = 0;
+      this.wasUnpaused = false;
+      this.paused = false;
     }
     else if (this.buffer && this.source) {
       this.source.stop();
-      this.pauseTime = 0;
       this.playing = false;
+      this.pauseTime = 0;
+      this.wasUnpaused = false;
+      this.paused = false;
     }
   };
 
@@ -516,7 +526,6 @@ define(function (require) {
           this.sources[i].stop();
         }
       }
-    this.playing = false;
     }
   };
 
