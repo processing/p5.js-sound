@@ -1,10 +1,3 @@
-/**
- * @module p5.sound
- * @submodule p5.sound
- * @for p5.sound
- * @main
- */
-
 define(function (require) {
 
   'use strict';
@@ -52,11 +45,19 @@ define(function (require) {
 
   };
 
-  // Will this be useful to access?
-  // p5.prototype.SoundOut = p5sound;
-
   // create a single instance of the p5Sound / master output for use within this sketch
   var p5sound = new Master();
+
+  /**
+   *  p5.soundOut is the p5.sound master output. It sends output to
+   *  the destination of this window's web audio context. It contains 
+   *  Web Audio API nodes including a dyanmicsCompressor (<code>.limiter</code>),
+   *  and Gain Nodes for <code>.input</code> and <code>.output</code>.
+   *  
+   *  @property p5.soundOut
+   *  @type {Object}
+   */
+  p5.soundOut = p5sound;
 
   return p5sound;
 

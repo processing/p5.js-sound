@@ -14,13 +14,13 @@ define(function (require) {
    *  AudioIn does not connect to p5.sound output by default to prevent
    *  feedback.</p> 
    *
-   *  @class AudioIn
+   *  @class p5.AudioIn
    *  @constructor
    *  @return {Object} AudioIn
    *  @example
    *  <div><code>
    *  function setup(){
-   *    mic = new AudioIn()
+   *    mic = new p5.AudioIn()
    *    mic.start();
    *  }
    *  function draw(){
@@ -30,7 +30,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.prototype.AudioIn = function() {
+  p5.AudioIn = function() {
     // set up audio input
     p5sound = p5sound;
     this.input = p5sound.audiocontext.createGain();
@@ -42,7 +42,7 @@ define(function (require) {
     this.currentSource = 0;
 
     // create an amplitude, connect to it by default but not to master out
-    this.amplitude = new p5.prototype.Amplitude();
+    this.amplitude = new p5.Amplitude();
     this.output.connect(this.amplitude.input);
 
     // Some browsers let developer determine their input sources
@@ -67,7 +67,7 @@ define(function (require) {
    *
    *  @method start
    */
-  p5.prototype.AudioIn.prototype.start = function() {
+  p5.AudioIn.prototype.start = function() {
     var self = this;
 
     // if _gotSources() i.e. developers determine which source to use
@@ -113,7 +113,7 @@ define(function (require) {
    *
    *  @method stop
    */
-  p5.prototype.AudioIn.prototype.stop = function() {
+  p5.AudioIn.prototype.stop = function() {
     if (this.stream) {
       this.stream.stop();
     }
@@ -127,7 +127,7 @@ define(function (require) {
    *  @param  {Object} [unit] An object that accepts audio input,
    *                          such as an FFT
    */
-  p5.prototype.AudioIn.prototype.connect = function(unit) {
+  p5.AudioIn.prototype.connect = function(unit) {
     if (unit) {
       if (unit.hasOwnProperty('input')) {
         this.output.connect(unit.input);
@@ -151,7 +151,7 @@ define(function (require) {
    *
    *  @method  disconnect
    */
-  p5.prototype.AudioIn.prototype.disconnect = function(unit) {
+  p5.AudioIn.prototype.disconnect = function(unit) {
       this.output.disconnect(unit);
       // stay connected to amplitude even if not outputting to p5
       this.output.connect(this.amplitude.input);
@@ -161,16 +161,15 @@ define(function (require) {
    *  Read the Amplitude (volume level) of an AudioIn. The AudioIn
    *  class contains its own instance of the Amplitude class to help
    *  make it easy to get a microphone's volume level. Accepts an
-   *  optional smoothing value (0.0 < 1.0).<br/><br/>
-   *
-   *  AudioIn must .start() before using .getLevel().<br/>
+   *  optional smoothing value (0.0 < 1.0). <em>NOTE: AudioIn must
+   *  .start() before using .getLevel().</em><br/>
    *  
    *  @method  getLevel
    *  @param  {Number} [smoothing] Smoothing is 0.0 by default.
    *                               Smooths values based on previous values.
    *  @return {Number}           Volume level (between 0.0 and 1.0)
    */
-  p5.prototype.AudioIn.prototype.getLevel = function(smoothing) {
+  p5.AudioIn.prototype.getLevel = function(smoothing) {
     if (smoothing) {
       this.amplitude.smoothing = smoothing;
     }
@@ -182,7 +181,7 @@ define(function (require) {
    *  
    *  @private
    */
-  p5.prototype.AudioIn.prototype._gotSources = function(sourceInfos) {
+  p5.AudioIn.prototype._gotSources = function(sourceInfos) {
     for (var i = 0; i!== sourceInfos.length; i++) {
       var sourceInfo = sourceInfos[i];
       if (sourceInfo.kind === 'audio') {
@@ -199,7 +198,7 @@ define(function (require) {
    *  @param  {Number} vol between 0 and 1.0
    *  @param {Number} [time] ramp time (optional)
    */
-  p5.prototype.AudioIn.prototype.amp = function(vol, t){
+  p5.AudioIn.prototype.amp = function(vol, t){
     if (t) {
       var rampTime = t || 0;
       var currentVol = this.output.gain.value;
@@ -221,7 +220,7 @@ define(function (require) {
    *  @method  listSources
    *  @return {Array}
    */
-  p5.prototype.AudioIn.prototype.listSources = function() {
+  p5.AudioIn.prototype.listSources = function() {
     console.log('input sources: ');
     console.log(p5sound.inputSources);
     if (p5sound.inputSources.length > 0) {
@@ -241,7 +240,7 @@ define(function (require) {
    *  @method setSource
    *  @param {number} num position of input source in the array
    */
-  p5.prototype.AudioIn.prototype.setSource = function(num) {
+  p5.AudioIn.prototype.setSource = function(num) {
     // TO DO - set input by string or # (array position)
     var self = this;
     if ((p5sound.inputSources.length > 0) && (num < p5sound.inputSources.length)) {
@@ -254,7 +253,7 @@ define(function (require) {
   };
 
   // private method
-  p5.prototype.AudioIn.prototype.dispose = function(){
+  p5.AudioIn.prototype.dispose = function(){
     this.stop();
     this.output.disconnect();
     this.amplitude.disconnect();

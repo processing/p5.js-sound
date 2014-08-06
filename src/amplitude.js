@@ -8,7 +8,7 @@ define(function (require) {
    *  to listen to a specific sound source. Accepts an optional
    *  smoothing value, which defaults to 0. 
    *
-   *  @class Amplitude
+   *  @class p5.Amplitude
    *  @constructor
    *  @param {Number} [smoothing] between 0.0 and .999 to smooth
    *                             amplitude readings (defaults to 0)
@@ -19,7 +19,7 @@ define(function (require) {
    *    sound = loadSound('assets/beat.mp3');
    *  }
    *  function setup() { 
-   *    amplitude = new Amplitude();
+   *    amplitude = new p5.Amplitude();
    *    sound.loop();
    *  }
    *  function draw() {
@@ -34,7 +34,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.prototype.Amplitude = function(smoothing) {
+  p5.Amplitude = function(smoothing) {
 
     // Set to 2048 for now. In future iterations, this should be inherited or parsed from p5sound's default
     this.bufferSize = 2048;
@@ -88,7 +88,7 @@ define(function (require) {
    *    sound2 = loadSound('assets/drum.mp3');
    *  }
    *  function setup(){
-   *    amplitude = new Amplitude();
+   *    amplitude = new p5.Amplitude();
    *    sound1.loop();
    *    sound2.loop();
    *    amplitude.setInput(sound2);
@@ -106,7 +106,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.prototype.Amplitude.prototype.setInput = function(source, smoothing) {
+  p5.Amplitude.prototype.setInput = function(source, smoothing) {
 
     p5sound.meter.disconnect(this.processor);
 
@@ -134,7 +134,7 @@ define(function (require) {
     }
   };
 
-  p5.prototype.Amplitude.prototype.connect = function(unit) {
+  p5.Amplitude.prototype.connect = function(unit) {
     if (unit) {
       if (unit.hasOwnProperty('input')) {
         this.output.connect(unit.input);
@@ -146,13 +146,13 @@ define(function (require) {
     }
   };
 
-  p5.prototype.Amplitude.prototype.disconnect = function(unit) {
+  p5.Amplitude.prototype.disconnect = function(unit) {
     this.output.disconnect();
   };
 
   // Should this be a private function?
   // TO DO make this stereo / dependent on # of audio channels
-  p5.prototype.Amplitude.prototype.volumeAudioProcess = function(event) {
+  p5.Amplitude.prototype.volumeAudioProcess = function(event) {
     // return result
     var inputBuffer = event.inputBuffer.getChannelData(0);
     var bufLength = inputBuffer.length;
@@ -196,7 +196,7 @@ define(function (require) {
    *    sound = loadSound('assets/beat.mp3');
    *  }
    *  function setup() { 
-   *    amplitude = new Amplitude();
+   *    amplitude = new p5.Amplitude();
    *    sound.loop();
    *  }
    *  function draw() {
@@ -211,7 +211,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.prototype.Amplitude.prototype.getLevel = function() {
+  p5.Amplitude.prototype.getLevel = function() {
     if (this.normalize) {
       return this.volNorm;
     }
@@ -233,7 +233,7 @@ define(function (require) {
    * @method toggleNormalize
    * @param {boolean} [boolean] set normalize to true (1) or false (0)
    */
-  p5.prototype.Amplitude.prototype.toggleNormalize = function(bool) {
+  p5.Amplitude.prototype.toggleNormalize = function(bool) {
     if (typeof(bool) === 'boolean'){
       this.normalize = bool;
     }
@@ -249,7 +249,7 @@ define(function (require) {
    *  @method smooth
    *  @param {Number} set smoothing from 0.0 <= 1
    */
-  p5.prototype.Amplitude.prototype.smooth = function(s) {
+  p5.Amplitude.prototype.smooth = function(s) {
     if (s >= 0 && s < 1) {
       this.smoothing = s;
     } else {

@@ -11,15 +11,15 @@ define(function (require) {
    *  440 oscillations per second (440Hz, equal to the pitch of an
    *  'A' note).</p> 
    *
-   *  <p>Set the type of oscillation  setType(), or by creating a
+   *  <p>Set the type of oscillation with setType(), or by creating a
    *  specific oscillator.</p> For example:
-   *  <code>new SinOsc(freq)</code>
-   *  <code>new TriOsc(freq)</code>
-   *  <code>new SqrOsc(freq)</code>
-   *  <code>new SawOsc(freq)</code>.
+   *  <code>new p5.SinOsc(freq)</code>
+   *  <code>new p5.TriOsc(freq)</code>
+   *  <code>new p5.SqrOsc(freq)</code>
+   *  <code>new p5.SawOsc(freq)</code>.
    *  </p>
    *  
-   *  @class Oscillator
+   *  @class p5.Oscillator
    *  @constructor
    *  @param {Number} [freq] frequency defaults to 440Hz
    *  @param {String} [type] type of oscillator. Options:
@@ -27,7 +27,7 @@ define(function (require) {
    *                         'sawtooth', 'square'
    *  @return {Object}    Oscillator object
    */
-  p5.prototype.Oscillator = function(freq, type){
+  p5.Oscillator = function(freq, type){
     this.started = false;
     p5sound = p5sound;
 
@@ -76,7 +76,7 @@ define(function (require) {
    *  @param  {Number} [time] startTime in seconds from now.
    *  @param  {Number} [frequency] frequency in Hz.
    */
-  p5.prototype.Oscillator.prototype.start = function(f, time) {
+  p5.Oscillator.prototype.start = function(f, time) {
     if (this.started){
       this.stop();
     }
@@ -109,7 +109,7 @@ define(function (require) {
    *  @method  stop
    *  @param  {Number} time, in seconds from now.
    */
-  p5.prototype.Oscillator.prototype.stop = function(time){
+  p5.Oscillator.prototype.stop = function(time){
     if (this.started){
       var t = time || 0;
       var now = p5sound.audiocontext.currentTime;
@@ -127,7 +127,7 @@ define(function (require) {
    *  @param {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
    */
-  p5.prototype.Oscillator.prototype.amp = function(vol, rampTime, tFromNow){
+  p5.Oscillator.prototype.amp = function(vol, rampTime, tFromNow){
     if (typeof(vol) === 'number') {
       var rampTime = rampTime || 0;
       var tFromNow = tFromNow || 0;
@@ -155,7 +155,7 @@ define(function (require) {
   };
 
   // these are now the same thing
-  p5.prototype.Oscillator.prototype.fade =   p5.prototype.Oscillator.prototype.amp;
+  p5.Oscillator.prototype.fade =   p5.Oscillator.prototype.amp;
 
   // /**
   //  *  Fade to a certain volume starting now, and ending at rampTime
@@ -163,7 +163,7 @@ define(function (require) {
   //  *  @param  {Number} vol      volume between 0.0 and 1.0
   //  *  @param  {Number} rampTime duration of the fade (in seconds)
   //  */
-  // p5.prototype.Oscillator.prototype.fade = function(vol, rampTime){
+  // p5.Oscillator.prototype.fade = function(vol, rampTime){
   //   var t = rampTime || 0;
   //   var now = p5sound.audiocontext.currentTime;
   //   if (typeof(vol) === 'number') {
@@ -174,7 +174,7 @@ define(function (require) {
   //   }
   // };
 
-  p5.prototype.Oscillator.prototype.getAmp = function(){
+  p5.Oscillator.prototype.getAmp = function(){
     return this.output.gain.value;
   };
 
@@ -188,12 +188,12 @@ define(function (require) {
    *                                   at x seconds from now
    *  @example
    *  <div><code>
-   *  var osc = new Oscillator(300);
+   *  var osc = new p5.Oscillator(300);
    *  osc.start();
    *  osc.freq(40, 10);
    *  </code></div>
    */
-  p5.prototype.Oscillator.prototype.freq = function(val, rampTime, tFromNow){
+  p5.Oscillator.prototype.freq = function(val, rampTime, tFromNow){
     if (typeof(val) === 'number') {
       this.f = val;
       var now = p5sound.audiocontext.currentTime;
@@ -225,7 +225,7 @@ define(function (require) {
     }
   };
 
-  p5.prototype.Oscillator.prototype.getFreq = function(){
+  p5.Oscillator.prototype.getFreq = function(){
     return this.oscillator.frequency.value;
   };
 
@@ -235,11 +235,11 @@ define(function (require) {
    *  @method  setType
    *  @param {String} type 'sine', 'triangle', 'sawtooth' or 'square'.
    */
-  p5.prototype.Oscillator.prototype.setType = function(type){
+  p5.Oscillator.prototype.setType = function(type){
     this.oscillator.type = type;
   };
 
-  p5.prototype.Oscillator.prototype.getType = function(){
+  p5.Oscillator.prototype.getType = function(){
     return this.oscillator.type;
   };
 
@@ -249,7 +249,7 @@ define(function (require) {
    *  @method  connect
    *  @param  {Object} unit A p5.Sound or Web Audio object
    */
-  p5.prototype.Oscillator.prototype.connect = function(unit){
+  p5.Oscillator.prototype.connect = function(unit){
     if (!unit) {
        this.panner.connect(p5sound.input);
     }
@@ -268,7 +268,7 @@ define(function (require) {
    *
    *  @method  disconnect
    */
-  p5.prototype.Oscillator.prototype.disconnect = function(unit){
+  p5.Oscillator.prototype.disconnect = function(unit){
     this.panner.disconnect(unit);
   };
 
@@ -278,7 +278,7 @@ define(function (require) {
    *  @method  pan
    *  @param  {Number} panning Number between -1 and 1
    */
-  p5.prototype.Oscillator.prototype.pan = function(pval) {
+  p5.Oscillator.prototype.pan = function(pval) {
     if (!pval) {
       pval = 0;
     }
@@ -294,12 +294,12 @@ define(function (require) {
       this.panner.setPosition(x, 0, z);
   };
 
-  p5.prototype.Oscillator.prototype.getPan = function() {
+  p5.Oscillator.prototype.getPan = function() {
     return this.panPosition;
   };
 
   // get rid of the oscillator
-  p5.prototype.Oscillator.prototype.dispose = function() {
+  p5.Oscillator.prototype.dispose = function() {
     if (this.oscillator){
       this.stop();
       this.disconnect();
@@ -319,7 +319,7 @@ define(function (require) {
    *  @method  mod
    *  @param  {AudioParam} AudioParam The param to modulate
    */
-  p5.prototype.Oscillator.prototype.mod = function(unit){
+  p5.Oscillator.prototype.mod = function(unit){
     unit.cancelScheduledValues(p5sound.audiocontext.currentTime);
     this.output.connect(unit);
   };
@@ -330,7 +330,7 @@ define(function (require) {
    *  @method  phase
    *  @param  {Number} phase float between 0.0 and 1.0
    */
-  p5.prototype.Oscillator.prototype.phase = function(p){
+  p5.Oscillator.prototype.phase = function(p){
     if (!this.dNode) {
       // create a delay node
       this.dNode = p5sound.audiocontext.createDelay();
@@ -345,28 +345,28 @@ define(function (require) {
   };
 
   // Extending
-  p5.prototype.SinOsc = function(freq) {
-    p5.prototype.Oscillator.call(this, freq, 'sine');
+  p5.SinOsc = function(freq) {
+    p5.Oscillator.call(this, freq, 'sine');
   };
 
-  p5.prototype.SinOsc.prototype = Object.create(p5.prototype.Oscillator.prototype);
+  p5.SinOsc.prototype = Object.create(p5.Oscillator.prototype);
 
-  p5.prototype.TriOsc = function(freq) {
-    p5.prototype.Oscillator.call(this, freq, 'triangle');
+  p5.TriOsc = function(freq) {
+    p5.Oscillator.call(this, freq, 'triangle');
   };
 
-  p5.prototype.TriOsc.prototype = Object.create(p5.prototype.Oscillator.prototype);
+  p5.TriOsc.prototype = Object.create(p5.Oscillator.prototype);
 
-  p5.prototype.SawOsc = function(freq) {
-    p5.prototype.Oscillator.call(this, freq, 'sawtooth');
+  p5.SawOsc = function(freq) {
+    p5.Oscillator.call(this, freq, 'sawtooth');
   };
 
-  p5.prototype.SawOsc.prototype = Object.create(p5.prototype.Oscillator.prototype);
+  p5.SawOsc.prototype = Object.create(p5.Oscillator.prototype);
 
-  p5.prototype.SqrOsc = function(freq) {
-    p5.prototype.Oscillator.call(this, freq, 'square');
+  p5.SqrOsc = function(freq) {
+    p5.Oscillator.call(this, freq, 'square');
   };
 
-  p5.prototype.SqrOsc.prototype = Object.create(p5.prototype.Oscillator.prototype);
+  p5.SqrOsc.prototype = Object.create(p5.Oscillator.prototype);
 
 });

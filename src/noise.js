@@ -6,13 +6,13 @@ define(function (require) {
   /**
    *  Noise is a type of oscillator that generates a buffer with random values.
    *
-   *  @class Noise
+   *  @class p5.Noise
    *  @constructor
    *  @param {String} type Type of noise can be 'white' (default),
    *                       'brown' or 'pink'.
    *  @return {Object}    Noise Object
    */
-  p5.prototype.Noise = function(type){
+  p5.Noise = function(type){
     this.started = false;
 
     this.buffer = _whiteNoise;
@@ -81,7 +81,7 @@ define(function (require) {
     return brownBuffer;
     }());
 
-  p5.prototype.Noise.prototype.ampMod = function(unit){
+  p5.Noise.prototype.ampMod = function(unit){
     unit.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
     this.output.connect(unit.output.gain);
   };
@@ -93,7 +93,7 @@ define(function (require) {
    *  @method setType
    *  @param {String} [type] 'white', 'pink' or 'brown'
    */
-  p5.prototype.Noise.prototype.setType = function(type) {
+  p5.Noise.prototype.setType = function(type) {
     switch(type){
       case 'white':
         this.buffer = _whiteNoise;
@@ -118,7 +118,7 @@ define(function (require) {
    *
    *  @method start
    */
-  p5.prototype.Noise.prototype.start = function() {
+  p5.Noise.prototype.start = function() {
     if (this.started){
       this.stop();
     }
@@ -136,7 +136,7 @@ define(function (require) {
    *
    *  @method  stop
    */
-  p5.prototype.Noise.prototype.stop = function() {
+  p5.Noise.prototype.stop = function() {
     this.noise.stop();
     this.started = false;
   };
@@ -148,7 +148,7 @@ define(function (require) {
    *  @param  {Number} panning Number between -1 (left)
    *                           and 1 (right)
    */
-  p5.prototype.Noise.prototype.pan = function(pval) {
+  p5.Noise.prototype.pan = function(pval) {
     this.panPosition = pval;
     pval = pval * 90.0;
     var xDeg = parseInt(pval);
@@ -169,7 +169,7 @@ define(function (require) {
    *  @param {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
    */
-  p5.prototype.Noise.prototype.amp = function(vol, rampTime, tFromNow){
+  p5.Noise.prototype.amp = function(vol, rampTime, tFromNow){
     var rampTime = rampTime || 0;
     var tFromNow = tFromNow || 0;
     var now = p5sound.audiocontext.currentTime;
@@ -185,7 +185,7 @@ define(function (require) {
    *  @method  connect
    *  @param  {Object} unit
    */
-  p5.prototype.Noise.prototype.connect = function(unit){
+  p5.Noise.prototype.connect = function(unit){
     if (!unit) {
       this.panner.connect(p5sound.input);
     } 
@@ -202,13 +202,13 @@ define(function (require) {
    *  
    *  @method disconnect
    */
-  p5.prototype.Noise.prototype.disconnect = function(unit){
+  p5.Noise.prototype.disconnect = function(unit){
     this.output.disconnect();
     this.panner.disconnect();
     this.output.connect(this.panner);
   };
 
-  p5.prototype.Noise.prototype.dispose = function(){
+  p5.Noise.prototype.dispose = function(){
     this.stop();
     this.output.disconnect();
     this.panner.disconnect();

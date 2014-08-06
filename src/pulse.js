@@ -12,20 +12,20 @@ define(function (require) {
    *  width between the pulses. See <code>Oscillator</code>
    *  for a full list of methods.
    *  
-   *  @class Pulse
+   *  @class p5.Pulse
    *  @constructor
    *  @param {Number} [freq] Frequency in oscillations per second (Hz)
    *  @param {Number} [w]    Width between the pulses (0 to 1.0,
    *                         defaults to 0)
    */
-  p5.prototype.Pulse = function(freq, w) {
-    p5.prototype.Oscillator.call(this, freq, 'sawtooth');
+  p5.Pulse = function(freq, w) {
+    p5.Oscillator.call(this, freq, 'sawtooth');
 
     // width of PWM, should be betw 0 to 1.0
     this.w = w || 0;
 
     // create a second oscillator with inverse frequency
-    this.osc2 = new SawOsc(freq);
+    this.osc2 = new p5.SawOsc(freq);
 
     // create a delay node
     this.dNode = p5sound.audiocontext.createDelay();
@@ -39,7 +39,7 @@ define(function (require) {
     this.dNode.connect(this.output);
   };
 
-  p5.prototype.Pulse.prototype = Object.create(p5.prototype.Oscillator.prototype);
+  p5.Pulse.prototype = Object.create(p5.Oscillator.prototype);
 
   /**
    *  Set the width of a Pulse object (an oscillator that implements
@@ -49,7 +49,7 @@ define(function (require) {
    *  @param {Number} [width]    Width between the pulses (0 to 1.0,
    *                         defaults to 0)
    */
-  p5.prototype.Pulse.prototype.width = function(w) {
+  p5.Pulse.prototype.width = function(w) {
     if (w <= 1.0 && w >= 0.0) {
       this.w = w;
       // set delay time based on PWM width
@@ -58,7 +58,7 @@ define(function (require) {
   };
 
 
-  p5.prototype.Pulse.prototype.start = function(f, time) {
+  p5.Pulse.prototype.start = function(f, time) {
     var now = p5sound.audiocontext.currentTime;
     var t = time || 0;
     if (!this.started){
@@ -89,7 +89,7 @@ define(function (require) {
     }
   };
 
-  p5.prototype.Pulse.prototype.stop = function(time){
+  p5.Pulse.prototype.stop = function(time){
     if (this.started){
       var t = time || 0;
       var now = p5sound.audiocontext.currentTime;
@@ -100,7 +100,7 @@ define(function (require) {
     }
   };
 
-  p5.prototype.Pulse.prototype.freq = function(val, rampTime, tFromNow){
+  p5.Pulse.prototype.freq = function(val, rampTime, tFromNow){
     if (typeof(val) === 'number') {
       this.f = val;
       var now = p5sound.audiocontext.currentTime;
@@ -122,7 +122,6 @@ define(function (require) {
       // }
 
       if (this.freqMod){
-        console.log('disconnect freqmod');
         this.freqMod.output.disconnect();
         this.freqMod = null;
       }
@@ -132,7 +131,6 @@ define(function (require) {
       val.output.connect(this.oscillator.frequency);
       val.output.connect(this.osc2.oscillator.frequency);
       this.freqMod = val;
-      console.log('connect freqmod');
     }
   };
 

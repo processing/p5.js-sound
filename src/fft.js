@@ -29,7 +29,7 @@ define(function (require) {
    *  2048/44100 seconds long.</p>
    *  
    * 
-   *  @class FFT
+   *  @class p5.FFT
    *  @constructor
    *  @param {Number} [smoothing]   Smooth results of Freq Spectrum.
    *                                0.0 < smoothing < 1.0.
@@ -47,7 +47,7 @@ define(function (require) {
    *  function setup(){
    *    createCanvas(100,100);
    *    sound.loop();
-   *    fft = new FFT();
+   *    fft = new p5.FFT();
    *  }
    *
    *  function draw(){
@@ -79,7 +79,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.prototype.FFT = function(smoothing, bins) {
+  p5.FFT = function(smoothing, bins) {
     var SMOOTHING = smoothing || 0.8;
     if (smoothing === 0) {
       SMOOTHING = smoothing;
@@ -106,7 +106,7 @@ define(function (require) {
    *  @param {Object} [source] p5.sound object (or web audio API source node)
    *  @param {Number} [bins]  Must be a power of two between 16 and 1024
    */
-  p5.prototype.FFT.prototype.setInput = function(source, bins) {
+  p5.FFT.prototype.setInput = function(source, bins) {
     if (bins) {
       this.analyser.fftSize = bins*2;
     }
@@ -130,7 +130,7 @@ define(function (require) {
    *                                over time. Array length = bins.
    *
    */
-  p5.prototype.FFT.prototype.waveform = function(bins) {
+  p5.FFT.prototype.waveform = function(bins) {
     this.analyser.getByteTimeDomainData(this.timeDomain);
     return this.timeDomain;
   };
@@ -156,9 +156,9 @@ define(function (require) {
    *
    *  function setup(){
    *    createCanvas(100,100);
-   *    osc = new Oscillator();
+   *    osc = new p5.Oscillator();
    *    osc.start();
-   *    fft = new FFT();
+   *    fft = new p5.FFT();
    *  }
    *
    *  function draw(){
@@ -184,7 +184,7 @@ define(function (require) {
    *                                   
    *
    */
-  p5.prototype.FFT.prototype.analyze = function(bins) {
+  p5.FFT.prototype.analyze = function(bins) {
     if (bins) {
       this.analyser.fftSize = bins*2;
     }
@@ -192,8 +192,8 @@ define(function (require) {
     return this.freqDomain;
   };
 
-  //  p5.prototype.FFT.prototype.processFreq =  p5.prototype.FFT.prototype.analyze;
-  //  p5.prototype.FFT.prototype.spectrum =  p5.prototype.FFT.prototype.analyze;
+  //  p5.FFT.prototype.processFreq =  p5.FFT.prototype.analyze;
+  //  p5.FFT.prototype.spectrum =  p5.FFT.prototype.analyze;
 
   /**
    *  Returns the amount of energy (volume) at a specific
@@ -212,7 +212,7 @@ define(function (require) {
    *                                two frequencies.
    *  @return {Number}           
    */
-  p5.prototype.FFT.prototype.getFreq = function(frequency1, frequency2) {
+  p5.FFT.prototype.getFreq = function(frequency1, frequency2) {
     var nyquist = p5sound.audiocontext.sampleRate/2;
 
     if (typeof(frequency1) !== 'number') {
@@ -259,7 +259,7 @@ define(function (require) {
    *  @param {Number} smoothing    0.0 < smoothing < 1.0.
    *                               Defaults to 0.8.
    */
-  p5.prototype.FFT.prototype.smooth = function(s) {
+  p5.FFT.prototype.smooth = function(s) {
     this.analyser.smoothingTimeConstant = s;
   };
 

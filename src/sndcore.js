@@ -1,12 +1,48 @@
 /**
- * p5.sound extends p5 with <a href="http://www.w3.org/TR/webaudio/"
- * target="_blank">Web Audio</a> functionality including audio input,
- * playback, analysis and synthesis.
+ *  p5.sound extends p5 with <a href="http://www.w3.org/TR/webaudio/"
+ *  target="_blank">Web Audio</a> functionality including audio input,
+ *  playback, analysis and synthesis.
  *
- * @module p5.sound
- * @submodule p5.sound
- * @for p5.sound
- * @main
+ *  Classes include:
+ *  <br/><br/>
+ *  <a href="#/p5.SoundFile"><b>p5.SoundFile</b></a>: load and playback sounds.<br/><br/>
+ *  <a href="#/p5.Amplitude"><b>p5.Amplitude</b></a>: get the current volume of a sound.<br/><br/>
+ *  <a href="#/p5.AudioIn"><b>p5.AudioIn</b></a>: send sound from an input source, typically
+ *    a computer microphone.<br/><br/>
+ *  <a href="#/p5.FFT"><b>p5.FFT</b></a>: analyze the frequency of sound. Returns
+ *    results from the frequency spectrum or time domain (waveform).<br/><br/>
+ *  <a href="#/p5.Oscillator"><b>p5.Oscillator</b></a>: Generate Sine,
+ *    Triangle, Square and Sawtooth waveforms for playback and/or parameter
+ *    modulation. Base class of <a href="#/p5.Noise"><b>p5.Noise</b></a>
+ *    (white, pink, brown) and <a href="#/p5.Pulse"><b>p5.Pulse</b></a>.
+ *    <br/><br/>
+ *  <a href="#/p5.Env"><b>p5.Env</b></a>: Generate an envelope a
+ *    series of fades over time. Often used to control an object's
+ *    output gain level as an "ADSR Envelope" (Attack, Decay,
+ *    Sustain, Release). Can also modulate other parameters.
+ *
+ *  Download the latest version <a href="https://github.com/therewasaguy/p5.sound/blob/master/lib/p5.sound.js">here</a>.
+ *  
+ *  @module p5.sound
+ *  @submodule p5.sound
+ *  @for p5.sound
+ *  @main
+ */
+
+
+/**
+ *  p5.sound developed by Jason Sigal for the Processing Foundation, Google Summer of Code 2014.
+ *  
+ *  http://github.com/therewasaguy/p5.sound
+ *
+ *  Some of the many audio libraries & resources that inspire p5.sound:
+ *   - TONE.js (c) Yotam Mann, 2014. Licensed under The MIT License (MIT). https://github.com/TONEnoTONE/Tone.js
+ *   - buzz.js (c) Jay Salvat, 2013. Licensed under The MIT License (MIT). http://buzz.jaysalvat.com/
+ *   - Boris Smus Web Audio API book, 2013. Licensed under the Apache License http://www.apache.org/licenses/LICENSE-2.0
+ *   - wavesurfer.js https://github.com/katspaugh/wavesurfer.js
+ *   - Wilm Thoben's Sound library for Processing https://github.com/processing/processing/tree/master/java/libraries/sound
+ *   
+ *   Web Audio API: http://w3.org/TR/webaudio/
  */
 
 define(function (require) {

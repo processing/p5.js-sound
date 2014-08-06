@@ -4,48 +4,51 @@ define(function (require) {
   var p5sound = require('master');
 
   /**
-   *  Envelopes are pre-defined amplitude distribution over time. 
+   *  <p>Envelopes are pre-defined amplitude distribution over time. 
+   *  The p5.Env accepts up to four time/level pairs, where time
+   *  determines how long of a ramp before value reaches level.
    *  Typically, envelopes are used to control the output volume
-   *  of an object, like a series of fades. Envelopes can also
-   *  control any Web Audio Param.
+   *  of an object, a series of fades referred to as Attack, Decay,
+   *  Sustain and Release (ADSR). But p5.Env can control any
+   *  Web Audio Param.</p>
    *  
-   *  @class Env
+   *  @class p5.Env
    *  @constructor
    *  @param {Number} attackTime     Time (in seconds) before level
    *                                 reaches attackLevel
    *  @param {Number} attackLevel    Typically an amplitude between
    *                                 0.0 and 1.0
-   *  @param {Number} decayTime      Time (in seconds) before level
-   *                                 reaches sustainLevel
-   *  @param {Number} [sustainLevel] Typically an amplitude between
-   *                                 0.0 and 1.0
-   *  @param {Number} [sustainTime]  Time (in seconds) to hold sustain,
-   *                                 before release begins
-   *  @param {Number} [releaseTime]  Time before level reaches
-   *                                 releaseLevel (or 0)
-   *  @param {Number} [releaseLevel]  Release level (defaults to 0)
+   *  @param {Number} decayTime      Time
+   *  @param {Number} [decayLevel]   Amplitude (In a standard ADSR envelope,
+   *                                 decayLevel = sustainLevel)
+   *  @param {Number} [sustainTime]   Time
+   *  @param {Number} [sustainLevel]  Amplitude
+   *  @param {Number} [releaseTime]   Time
+   *  @param {Number} [releaseLevel]  Amplitude
    *  @example
    *  <div><code>
    *  var aT = 0.1; // attack time
    *  var aL = 0.7; // attack level
    *  var dT = 0.3; // decay time
-   *  var sT = 0.1; // sustain time
-   *  var sL = 0.2; // sustain level
+   *  var dL = 0.1; // decay level
+   *  var sT = 0.2; // sustain time
+   *  var sL = dL; // sustain level
    *  var rT = 0.5; // release time
+   *  // release level defaults to zero
    *
    *  var env;
    *  var triOsc;
    *  
    *  function setup() {
-   *    env = new Env(aT, aL, dT, sT, sL, rT);
-   *    triOsc = new TriOsc();
+   *    env = new p5.Env(aT, aL, dT, dL, sT, sL, rT);
+   *    triOsc = new p5.TriOsc();
    *    triOsc.amp(0);
    *    triOsc.start();
    *    env.play(triOsc);
    *  }
    *  </code></div>
    */
-  p5.prototype.Env = function(attackTime, attackLevel, decayTime, sustainLevel, sustainTime, releaseTime, releaseLevel){
+  p5.Env = function(attackTime, attackLevel, decayTime, decayLevel, sustainTime, sustainLevel, releaseTime, releaseLevel){
 
     /**
      * @property attackTime
@@ -59,6 +62,10 @@ define(function (require) {
      * @property decayTime
      */
     this.decayTime = decayTime || 0;
+    /**
+     * @property decayLevel
+     */
+    this.decayLevel = decayLevel || 0;
     /**
      * @property sustainTime
      */
@@ -84,7 +91,7 @@ define(function (require) {
    *  @param  {Object} input       A p5Sound object or
    *                                Web Audio Param
    */
-  p5.prototype.Env.prototype.setInput = function(input){
+  p5.Env.prototype.setInput = function(input){
     // assume we're talking about output gain, unless given a different audio param
     if (input.output !== undefined){
       input = input.output.gain;
@@ -102,7 +109,7 @@ define(function (require) {
    *  @param  {Object} input        A p5Sound object or
    *                                Web Audio Param
    */
-  p5.prototype.Env.prototype.play = function(input){
+  p5.Env.prototype.play = function(input){
     // if no input is given, input is this Envelope's input
     if (!input){
       input = this.control;
@@ -118,15 +125,15 @@ define(function (require) {
     input.setValueAtTime(0, now);
     // attack
     input.linearRampToValueAtTime(this.attackLevel, now + this.attackTime);
-    // decay to sustain level
-    input.linearRampToValueAtTime(this.sustainLevel, now + this.attackTime + this.decayTime);
+    // decay to decay level
+    input.linearRampToValueAtTime(this.decayLevel, now + this.attackTime + this.decayTime);
     // hold sustain level
-    input.setValueAtTime(this.sustainLevel, now + this.attackTime + this.decayTime + this.sustainTime);
+    input.linearRampToValueAtTime(this.sustainLevel, now + this.attackTime + this.decayTime + this.sustainTime);
     // release
     input.linearRampToValueAtTime(this.releaseLevel, now + this.attackTime + this.decayTime + this.sustainTime + this.releaseTime);
   };
 
-  // p5.prototype.Env.prototype.stop = function(input){
+  // p5.Env.prototype.stop = function(input){
   //   // if no input is given, input is this Envelope's input
   //   if (!input){
   //     input = this.control;
@@ -147,7 +154,7 @@ define(function (require) {
    *  @method  triggerAttack
    *  @param  {Object} input p5.Sound Object or Web Audio Param
    */
-  p5.prototype.Env.prototype.triggerAttack = function(input) {
+  p5.Env.prototype.triggerAttack = function(input) {
     var now =  p5sound.audiocontext.currentTime;
 
     // if no input is given, input is this Envelope's input
@@ -169,9 +176,9 @@ define(function (require) {
     // attack
     input.linearRampToValueAtTime(this.attackLevel, now + this.attackTime);
     // decay to sustain level
-    input.linearRampToValueAtTime(this.sustainLevel, now + this.attackTime + this.decayTime);
+    input.linearRampToValueAtTime(this.decayLevel, now + this.attackTime + this.decayTime);
     // hold sustain level
-    input.setValueAtTime(this.sustainLevel, now + this.attackTime + this.decayTime + this.sustainTime);
+    input.linearRampToValueAtTime(this.sustainLevel, now + this.attackTime + this.decayTime + this.sustainTime);
   };
 
   /**
@@ -182,7 +189,7 @@ define(function (require) {
    *  @method  triggerRelease
    *  @param  {Object} input p5.Sound Object or Web Audio Param
    */
-  p5.prototype.Env.prototype.triggerRelease = function(input) {
+  p5.Env.prototype.triggerRelease = function(input) {
     var now =  p5sound.audiocontext.currentTime;
 
     // if no input is given, input is this Envelope's input
