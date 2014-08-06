@@ -125,14 +125,20 @@ define(function (require) {
    *  
    *  @method waveform
    *  @param {Number} [bins]    Must be a power of two between
-   *                             16 and 1024. Defaults to 1024.
-   *  @return {Uint8Array}  Array   Array of amplitude values (0-255)
-   *                                over time. Array length = bins.
+   *                            16 and 1024. Defaults to 1024.
+   *  @return {Array}  Array    Array of amplitude values (0-255)
+   *                            over time. Array length = bins.
    *
    */
   p5.FFT.prototype.waveform = function(bins) {
+    if (bins) {
+      this.analyser.fftSize = bins*2;
+    }
     this.analyser.getByteTimeDomainData(this.timeDomain);
-    return this.timeDomain;
+    var  normalArray = Array.apply( [], this.timeDomain );
+    normalArray.length === this.analyser.fftSize;
+    normalArray.constructor === Array;
+    return normalArray;
   };
 
   /**
@@ -147,8 +153,8 @@ define(function (require) {
    *  @method analyze
    *  @param {Number} [bins]    Must be a power of two between
    *                             16 and 1024. Defaults to 1024.
-   *  @return {Uint8Array} spectrum    Array of amplitude values across
-   *                                   the frequency spectrum.
+   *  @return {Array} spectrum    Array of amplitude values across
+   *                              the frequency spectrum.
    *  @example
    *  <div><code>
    *  var osc;
@@ -189,7 +195,10 @@ define(function (require) {
       this.analyser.fftSize = bins*2;
     }
     this.analyser.getByteFrequencyData(this.freqDomain);
-    return this.freqDomain;
+    var  normalArray = Array.apply( [], this.freqDomain );
+    normalArray.length === this.analyser.fftSize;
+    normalArray.constructor === Array;
+    return normalArray;
   };
 
   //  p5.FFT.prototype.processFreq =  p5.FFT.prototype.analyze;
