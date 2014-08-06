@@ -133,19 +133,6 @@ define(function (require) {
     input.linearRampToValueAtTime(this.releaseLevel, now + this.attackTime + this.decayTime + this.sustainTime + this.releaseTime);
   };
 
-  // p5.Env.prototype.stop = function(input){
-  //   // if no input is given, input is this Envelope's input
-  //   if (!input){
-  //     input = this.control;
-  //   }
-  //   // assume we're talking about output gain, unless given a different audio param
-  //   if (input.output !== undefined){
-  //     input = input.output.gain;
-  //   }
-  //   input.cancelScheduledValues(p5sound.audiocontext.currentTime);
-  //   input.setValueAtTime(0, p5sound.audiocontext.currentTime);
-  // };
-
   /**
    *  Trigger the Attack, Decay, and Sustain of the Envelope.
    *  Similar to holding down a key on a piano, but it will
