@@ -384,15 +384,41 @@ define(function (require) {
   };
 
   /**
-   * Toggle whether a sound file is playing or paused.
+   *  Toggle whether a sound file is playing or paused.
    * 
-   * Pauses a file that is currently playing,
-   * and unpauses (plays) a file that is currently paused.
+   *  Pauses a file that is currently playing. If the file is not
+   *  playing, then nothing will happen.
    *
-   * The pauseTime and loop state are preserved
-   * so playback can resume from the same spot in the sound file.
+   *  Resume playback with .play(), will play from the paused
+   *  position. If SoundFile had been set to loop before it was
+   *  paused, it will continue to loop after it is unpaused with
+   *  .play().
    *
-   * @method pause
+   *  @method pause
+   *  @example
+   *  <div><code>
+   *  var soundFile;
+   *  
+   *  function preload() {
+   *    soundFormats('ogg', 'mp3');
+   *    soundFile = loadSound('../_files/Damscray_-_Dancing_Tiger_02');
+   *  }
+   *  function setup() {
+   *    background(0, 255, 0);
+   *    soundFile.loop();
+   *  }
+   *  function keyTyped() {
+   *    if (key == 'p') {
+   *      soundFile.pause();
+   *      background(255, 0, 0);
+   *    }
+   *  }
+   *  
+   *  function keyReleased() {
+   *    if (key == 'p') {
+   *      soundFile.play();
+   *      background(0, 255, 0);
+   *    }
    */
   p5.prototype.SoundFile.prototype.pause = function() {
     var keepLoop = this.looping;
@@ -404,18 +430,6 @@ define(function (require) {
       this.playing = false;
       // TO DO: make sure play() still starts from orig start position
     }
-    // else { if (this.paused === true) {
-    //   throw 'already paused';
-    //   // preserve original start time
-    //   // var origStart = this.startTime;
-    //   // this.startTime = this.pauseTime;
-    //   // used by play() to determine whether to start from pauseTime or startTime
-    //   this.wasUnpaused = true;
-    //   this.play();
-    //   this.looping = keepLoop;
-    //   // this.startTime = origStart;
-    //   this.paused = false;
-    // }
   };
 
 
@@ -472,19 +486,22 @@ define(function (require) {
   };
 
   /**
-   * Returns 'true' if a SoundFile is playing, 'false' if not.
+   *  Returns true if a SoundFile is playing, false if not (i.e.
+   *  paused or stopped).
    *
-   * @method isPlaying
-   * @return {Boolean}
+   *  @method isPlaying
+   *  @return {Boolean}
    */
   p5.prototype.SoundFile.prototype.isPlaying = function() {
     return this.playing;
   };
 
   /**
-   * Returns true if a SoundFile is paused, 'false' if not.
+   *  Returns true if a SoundFile is paused, false if not (i.e.
+   *  playing or stopped).
    *
-   * @return {Boolean}
+   *  @method  isPaused
+   *  @return {Boolean}
    */
   p5.prototype.SoundFile.prototype.isPaused = function() {
     if (!this.paused) {
@@ -593,7 +610,7 @@ define(function (require) {
 
   /**
    *  Set the playback rate of a sound file. Will change the speed and the pitch.
-   *  Values less than zero will reverse the audio buffer before playback.
+   *  Values less than zero will reverse the audio buffer.
    *
    *  @method rate
    *  @param {Number} [playbackRate]     Set the playback rate. 1.0 is normal,
@@ -629,9 +646,15 @@ define(function (require) {
       this.pause();
     }
     if (this.playbackRate < 0 && !this.reversed) {
+      var cPos = this.currentTime();
+      var cRate = this.source.playbackRate.value;
+
+      this.pause();
       this.reverseBuffer();
       rate = Math.abs(playbackRate);
-      this.pause();
+
+      var newPos = ( cPos - this.duration() ) / rate;
+      this.pauseTime = newPos;
       this.play();
     }
     else if (this.playbackRate > 0 && this.reversed) {

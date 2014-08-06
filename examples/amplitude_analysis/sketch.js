@@ -64,7 +64,11 @@ function keyPressed(e) {
 
   // spacebar pauses
   if (e.keyCode == 32) {
-    soundFile.pause();
+    if (soundFile.isPlaying()) {
+      soundFile.pause();
+    } else {
+      soundFile.play();
+    }
   }
 
   // 'n' keypress toggles normalize on/off

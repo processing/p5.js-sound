@@ -57,7 +57,11 @@ function draw() {
 }
 
 function keyPressed() {
-  soundFile.pause();
+  if (soundFile.isPlaying()){
+    soundFile.pause();
+  } else {
+    soundFile.play();
+  }
 }
 
 // Change description text if the song is loading, playing or paused

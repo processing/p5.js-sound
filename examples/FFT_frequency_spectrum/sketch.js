@@ -96,5 +96,9 @@ function updateDescription() {
 
 // pause the song if a key is pressed
 function keyPressed() {
-  soundFile.pause();
+  if (soundFile.isPlaying()){
+    soundFile.pause();
+  } else {
+    soundFile.play();
+  }
 }
