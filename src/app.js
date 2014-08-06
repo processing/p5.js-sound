@@ -11,7 +11,7 @@ define(function (require) {
   require('oscillator');
   require('pulse');
   // require('lfo');
-  require('noise');
+  // require('noise');
   require('audioin');
   require('env');
 

@@ -7,11 +7,11 @@ define(function (require) {
    *  <p>FFT (Fast Fourier Transform) is an analysis algorithm that
    *  isolates individual frequencies within a waveform.</p>
    *
-   *  <p>FFT can return an array based on two types of analyses: <br>
-   *  • <code>FFT.waveform()</code> computes amplitude values along the
-   *  time domain. The array indices correspond to samples
-   *  across a brief moment in time. Each value represents amplitude
-   *  of the waveform at that sample of time.<br>
+   *  <p>Once instantiated, a p5.FFT object can return an array based on
+   *  two types of analyses: <br> • <code>FFT.waveform()</code> computes
+   *  amplitude values along the time domain. The array indices correspond
+   *  to samples across a brief moment in time. Each value represents
+   *  amplitude of the waveform at that sample of time.<br>
    *  • <code>FFT.analyze() </code> computes amplitude values along the
    *  frequency domain. The array indices correspond to frequencies (i.e.
    *  pitches), from the lowest to the highest that humans can hear. Each
@@ -200,9 +200,6 @@ define(function (require) {
     normalArray.constructor === Array;
     return normalArray;
   };
-
-  //  p5.FFT.prototype.processFreq =  p5.FFT.prototype.analyze;
-  //  p5.FFT.prototype.spectrum =  p5.FFT.prototype.analyze;
 
   /**
    *  Returns the amount of energy (volume) at a specific

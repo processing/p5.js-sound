@@ -59,18 +59,40 @@ define(function (require) {
    *  @return {Number}   MIDI note value
    */
   p5.prototype.freqToMidi = function(f){
-    // var f = 69 + 12*log(F/(S*440))/log(2)
     var mathlog2 = Math.log(f/440) / Math.log(2);
     var m = Math.round(12*mathlog2)+57;
     return m;
   };
 
   /**
-   *  Returns the frequency value of a MIDI note.
+   *  Returns the frequency value of a MIDI note value.
+   *  General MIDI treats notes as integers where middle C
+   *  is 60, C# is 61, D is 62 etc. Useful for generating
+   *  musical frequencies with oscillators.
    *  
-   *  @param  {Number} midiNote The number of a midi note,
-   *                            where Middle C = 60.
+   *  @method  midiToFreq
+   *  @param  {Number} midiNote The number of a MIDI note
    *  @return {Number} Frequency value of the given MIDI note
+   *  @example
+   *  <div><code>
+   *  var notes = [60, 64, 67, 72];
+   *  var i = 0;
+   *  
+   *  function setup() {
+   *    osc = new p5.Oscillator('Triangle');
+   *    osc.start();
+   *    frameRate(1);
+   *  }
+   *  
+   *  function draw() {
+   *    var freq = midiToFreq(notes[i]);
+   *    osc.freq(freq);
+   *    i++;
+   *    if (i >= notes.length){
+   *      i = 0;
+   *    }
+   *  }
+   *  </code></div>
    */
   p5.prototype.midiToFreq = function(m) {
     return 440 * Math.pow(2, (m-69)/12.0);

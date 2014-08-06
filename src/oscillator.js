@@ -157,22 +157,6 @@ define(function (require) {
   // these are now the same thing
   p5.Oscillator.prototype.fade =   p5.Oscillator.prototype.amp;
 
-  // /**
-  //  *  Fade to a certain volume starting now, and ending at rampTime
-  //  *
-  //  *  @param  {Number} vol      volume between 0.0 and 1.0
-  //  *  @param  {Number} rampTime duration of the fade (in seconds)
-  //  */
-  // p5.Oscillator.prototype.fade = function(vol, rampTime){
-  //   var t = rampTime || 0;
-  //   var now = p5sound.audiocontext.currentTime;
-  //   if (typeof(vol) === 'number') {
-  //     var currentVol = this.output.gain.value;
-  //     this.output.gain.cancelScheduledValues(now);
-  //     this.output.gain.setValueAtTime(currentVol, now);
-  //     this.output.gain.linearRampToValueAtTime(vol, t + now);
-  //   }
-  // };
 
   p5.Oscillator.prototype.getAmp = function(){
     return this.output.gain.value;
