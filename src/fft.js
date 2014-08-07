@@ -5,7 +5,9 @@ define(function (require) {
 
   /**
    *  <p>FFT (Fast Fourier Transform) is an analysis algorithm that
-   *  isolates individual frequencies within a waveform.</p>
+   *  isolates individual
+   *  <a href="https://en.wikipedia.org/wiki/Audio_frequency">
+   *  audio frequencies</a> within a waveform.</p>
    *
    *  <p>Once instantiated, a p5.FFT object can return an array based on
    *  two types of analyses: <br> • <code>FFT.waveform()</code> computes
@@ -16,7 +18,7 @@ define(function (require) {
    *  frequency domain. The array indices correspond to frequencies (i.e.
    *  pitches), from the lowest to the highest that humans can hear. Each
    *  value represents amplitude at that slice of the frequency spectrum.
-   *  Use with <code>getFreq()</code> to measure amplitude at specific
+   *  Use with <code>getEnergy()</code> to measure amplitude at specific
    *  frequencies, or within a range of frequencies. </p>
    *
    *  <p>FFT analyzes a very short snapshot of sound called a sample
@@ -96,6 +98,13 @@ define(function (require) {
     this.freqDomain = new Uint8Array(this.analyser.frequencyBinCount);
     this.timeDomain = new Uint8Array(this.analyser.frequencyBinCount);
 
+    // predefined frequency ranages, these will be tweakable
+    this.bass = [20, 140];
+    this.lowMid = [140, 400];
+    this.mid = [400, 2600];
+    this.highMid = [2600, 5200];
+    this.treble = [5200, 14000];
+
   };
 
   /**
@@ -148,7 +157,7 @@ define(function (require) {
    *  (i.e. pitches), from the lowest to the highest that humans can
    *  hear. Each value represents amplitude at that slice of the
    *  frequency spectrum. Must be called prior to using
-   *  <code>getFreq()</code>.
+   *  <code>getEnergy()</code>.
    *
    *  @method analyze
    *  @param {Number} [bins]    Must be a power of two between
@@ -203,26 +212,50 @@ define(function (require) {
 
   /**
    *  Returns the amount of energy (volume) at a specific
-   *  frequency, or the average amount of energy between two
-   *  given frequencies. NOTE: analyze() must be called prior
-   *  to getFreq(). Analyze() tells the FFT to analyze frequency
-   *  data, and getFreq() uses the results determine the value at
-   *  a specific frequency or range of frequencies.</p>
+   *  <a href="en.wikipedia.org/wiki/Audio_frequency" target="_blank">
+   *  frequency</a>, or the average amount of energy between two
+   *  frequencies. Accepts Number(s) corresponding
+   *  to frequency (in Hz), or a String corresponding to predefined
+   *  frequency ranges ("bass", "lowMid", "mid", "highMid", "treble").
+   *  <em>NOTE: analyze() must be called prior to getEnergy(). Analyze()
+   *  tells the FFT to analyze frequency data, and getEnergy() uses
+   *  the results determine the value at a specific frequency or
+   *  range of frequencies.</em></p>
    *  
-   *  @method  getFreq
-   *  @param  {Number} frequency1   Will return a value representing
-   *                                energy at this frequency.
+   *  @method  getEnergy
+   *  @param  {Number|String} frequency1   Will return a value representing
+   *                                energy at this frequency. Alternately,
+   *                                the strings "bass", "lowMid" "mid",
+   *                                "highMid", and "treble" will return
+   *                                predefined frequency ranges.
    *  @param  {Number} [frequency2] If a second frequency is given,
    *                                will return average amount of
    *                                energy that exists between the
    *                                two frequencies.
    *  @return {Number}           
    */
-  p5.FFT.prototype.getFreq = function(frequency1, frequency2) {
+  p5.FFT.prototype.getEnergy = function(frequency1, frequency2) {
     var nyquist = p5sound.audiocontext.sampleRate/2;
 
+    if (frequency1 === 'bass') {
+      frequency1 = this.bass[0];
+      frequency2 = this.bass[1];
+    } else if (frequency1 === 'lowMid') {
+      frequency1 = this.lowMid[0];
+      frequency2 = this.lowMid[1];
+    } else if (frequency1 === 'mid') {
+      frequency1 = this.mid[0];
+      frequency2 = this.mid[1];
+    } else if (frequency1 === 'highMid') {
+      frequency1 = this.highMid[0];
+      frequency2 = this.highMid[1];
+    } else if (frequency1 === 'treble') {
+      frequency1 = this.treble[0];
+      frequency2 = this.treble[1];
+    }
+
     if (typeof(frequency1) !== 'number') {
-      return null;
+      throw 'invalid input for getEnergy()';
     }
 
     // if only one parameter:
@@ -254,10 +287,16 @@ define(function (require) {
       return toReturn;
     }
     else {
-      throw 'invalid input for getFreq()';
+      throw 'invalid input for getEnergy()';
     }
   };
 
+  // compatability with v.012, changed to getEnergy in v.0121. Will be deprecated...
+  p5.FFT.prototype.getFreq = function(freq1, freq2) {
+    console.log('getFreq() is deprecated. Please use getEnergy() instead.');
+    var x = this.getEnergy(freq1, freq2);
+    return x;
+  }
   /**
    *  Smooth FFT analysis by averaging with the last analysis frame.
    *  
