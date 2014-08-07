@@ -618,18 +618,29 @@ define(function (require) {
    *                                     Must be greater than zero.
    *  @example
    *  <div><code>
-   *  var soundfile;
+   *  var song;
    *  
    *  function preload() {
-   *    soundfile = loadSound('assets/Damscray_DancingTiger.mp3');
+   *    song = loadSound('assets/Damscray_DancingTiger.mp3');
    *  }
    *
    *  function setup() {
-   *    soundfile.loop();
+   *    song.loop();
    *  }
    *
    *  function draw() {
-   *    soundfile.rate(map(mouseX, 0, width, 0.25, 1.5)); 
+   *    background(200);
+   *    
+   *    // Set the rate to a range between 0.1 and 4
+   *    // Changing the rate also alters the pitch
+   *    var speed = map(mouseY, 0.1, height, 0, 2);
+   *    speed = constrain(speed, 0.01, 4);
+   *    song.rate(speed);
+   *    
+   *    // Draw a circle to show what is going on
+   *    stroke(0);
+   *    fill(51, 100);
+   *    ellipse(mouseX, 100, 48, 48);
    *  }
    *  
    * </code>

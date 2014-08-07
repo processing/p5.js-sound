@@ -102,6 +102,8 @@ define(function (require) {
    *  List the SoundFile formats that you will include. LoadSound 
    *  will search your directory for these extensions, and will pick
    *  a format that is compatable with the client's web browser.
+   *  <a href="http://media.io/">Here</a> is a free online file
+   *  converter.
    *  
    *  @method soundFormats
    *  @param {String|Strings} formats i.e. 'mp3', 'wav', 'ogg'
