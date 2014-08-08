@@ -256,7 +256,8 @@ define(function (require) {
 
       // handle restart playmode
       if (this.mode === 'restart' && this.buffer && this.source) {
-        this.source.stop();
+        var now = p5sound.audiocontext.currentTime;
+        this.source.stop(now);
       }
 
       if (startTime) {
@@ -289,7 +290,8 @@ define(function (require) {
       this.source.onended = function() {
         if (this.playing) {
           this.playing = !this.playing;
-          this.stop();
+          var now = p5sound.audiocontext.currentTime;
+          this.stop(now);
          }
        };
 
@@ -371,7 +373,8 @@ define(function (require) {
     // if restart, stop all other sounds from playing
     if (s === 'restart' && this.buffer && this.source) {
       for (var i = 0; i < this.sources.length - 1; i++){
-        this.sources[i].stop();
+        var now = p5sound.audiocontext.currentTime;
+        this.sources[i].stop(now);
       }
     }
 
@@ -424,7 +427,8 @@ define(function (require) {
     var keepLoop = this.looping;
     if (this.isPlaying() && this.buffer && this.source) {
       this.pauseTime = this.currentTime();
-      this.source.stop();
+      var now = p5sound.audiocontext.currentTime;
+      this.source.stop(now);
       this.paused = true;
       this.wasUnpaused = false;
       this.playing = false;
@@ -524,7 +528,8 @@ define(function (require) {
       this.paused = false;
     }
     else if (this.buffer && this.source) {
-      this.source.stop();
+      var now = p5sound.audiocontext.currentTime;
+      this.source.stop(now);
       this.playing = false;
       this.pauseTime = 0;
       this.wasUnpaused = false;
@@ -540,7 +545,8 @@ define(function (require) {
     if (this.buffer && this.source) {
       for (var i = 0; i < this.sources.length; i++){
         if (this.sources[i] !== null){
-          this.sources[i].stop();
+          var now = p5sound.audiocontext.currentTime;
+          this.sources[i].stop(now);
         }
       }
     }
@@ -773,7 +779,8 @@ define(function (require) {
 
     // this.endTime = endTime || this.buffer.duration;
     if (this.isPlaying()){
-      this.stop();
+      var now = p5sound.audiocontext.currentTime;
+      this.stop(now);
       this.play(cueTime, this.endTime);
     }
   };
@@ -903,7 +910,8 @@ define(function (require) {
   // private function for onended behavior
   p5.SoundFile.prototype._onEnded = function(s) {
     s.onended = function(s){
-      s.stop();
+      var now = p5sound.audiocontext.currentTime;
+      s.stop(now);
     };
   };
 
@@ -916,7 +924,8 @@ define(function (require) {
       for (var i = 0; i < this.sources.length - 1; i++){
         if (this.sources[i] !== null){
           // this.sources[i].disconnect();
-          this.sources[i].stop();
+          var now = p5sound.audiocontext.currentTime;
+          this.sources[i].stop(now);
           this.sources[i] = null;
         }
       }

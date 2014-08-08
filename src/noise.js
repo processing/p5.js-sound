@@ -108,8 +108,9 @@ define(function (require) {
         this.buffer = _whiteNoise;
     }
     if (this.started){
-      this.stop();
-      this.start();
+      var now = p5sound.audiocontext.currentTime;
+      this.stop(now);
+      this.start(now+.01);
     }
   };
 
@@ -126,8 +127,8 @@ define(function (require) {
     this.noise.buffer = this.buffer;
     this.noise.loop = true;
     this.noise.connect(this.output);
-    console.log(this.output);
-    this.noise.start();
+    var now = p5sound.audiocontext.currentTime;
+    this.noise.start(now);
     this.started = true;
   };
 
@@ -137,7 +138,8 @@ define(function (require) {
    *  @method  stop
    */
   p5.Noise.prototype.stop = function() {
-    this.noise.stop();
+    var now = p5sound.audiocontext.currentTime;
+    this.noise.stop(now);
     this.started = false;
   };
 
@@ -209,7 +211,8 @@ define(function (require) {
   };
 
   p5.Noise.prototype.dispose = function(){
-    this.stop();
+    var now = p5sound.audiocontext.currentTime;
+    this.stop(now);
     this.output.disconnect();
     this.panner.disconnect();
     this.output = null;

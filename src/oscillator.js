@@ -78,7 +78,8 @@ define(function (require) {
    */
   p5.Oscillator.prototype.start = function(f, time) {
     if (this.started){
-      this.stop();
+      var now = p5sound.audiocontext.currentTime;
+      this.stop(now);
     }
     if (!this.started){
       var freq = f || this.f;
@@ -285,7 +286,8 @@ define(function (require) {
   // get rid of the oscillator
   p5.Oscillator.prototype.dispose = function() {
     if (this.oscillator){
-      this.stop();
+      var now = p5sound.audiocontext.currentTime;
+      this.stop(now);
       this.disconnect();
       this.oscillator.disconnect();
       this.panner = null;

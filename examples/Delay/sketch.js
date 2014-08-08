@@ -116,8 +116,8 @@ Delay.prototype.setFilter = function(freq, q) {
 Delay.prototype.setTime = function(t) {
   this._leftDelay.delayTime.cancelScheduledValues(this.ac.currentTime);
   this._rightDelay.delayTime.cancelScheduledValues(this.ac.currentTime);  
-  this._leftDelay.delayTime.exponentialRampToValueAtTime(t, this.ac.currentTime);
-  this._rightDelay.delayTime.exponentialRampToValueAtTime(t, this.ac.currentTime);
+  this._leftDelay.delayTime.linearRampToValueAtTime(t, this.ac.currentTime);
+  this._rightDelay.delayTime.linearRampToValueAtTime(t, this.ac.currentTime);
 };
 
 Delay.prototype.setFeedback = function(f) {
@@ -129,7 +129,7 @@ var noise, env, analyzer, delay;
 
 function setup() {
   createCanvas(710, 710);
-  noise = new p5.Noise(); // other types include 'brown' and 'pink'
+  noise = new p5.Noise('brown'); // other types include 'brown' and 'pink'
   // multiply noise volume by 0
   // (keep it quiet until we're ready to make noise!)
   noise.amp(0);
