@@ -23,16 +23,18 @@ function preload() {
 }
 
 function setup() {
-  song.play(); // song loaded during preload(), ready to play in setup()
+  createCanvas(720, 200);
 
-  createCanvas(640, 360);
-  text('Click mouse to start/stop playback', 20, 20);
+  song.play(); // song loaded during preload(), ready to play in setup()
+  background(0,255,0);
 }
 
 function mousePressed() {
   if ( song.isPlaying() ) { // .isPlaying() returns a boolean
-    song.stop();
+    song.pause();
+    background(255,0,0);
   } else {
-    song.play();
+    song.play(); // playback will resume from the pause position
+    background(0,255,0);
   }
 }

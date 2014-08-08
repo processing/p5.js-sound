@@ -583,6 +583,31 @@ define(function (require) {
    *
    * @method pan
    * @param {Number} [panValue]     Set the stereo panner
+   * @example
+   * <div><code>
+   *
+   *  var ball = {};
+   *  var soundFile;
+   *
+   *  function setup() {
+   *    soundFormats('ogg', 'mp3');
+   *    soundFile = loadSound('assets/beatbox.mp3');
+   *  }
+   *  
+   *  function draw() {
+   *    background(0);
+   *    ball.x = constrain(mouseX, 0, width);
+   *    ellipse(ball.x, height/2, 20, 20)
+   *  }
+   *  
+   *  function mousePressed(){
+   *    // map the ball's x location to a panning degree 
+   *    // between -1.0 (left) and 1.0 (right)
+   *    var panning = map(ball.x, 0., width,-1.0, 1.0);
+   *    soundFile.pan(panning);
+   *    soundFile.play();
+   *  }
+   *  </div></code>
    */
   p5.SoundFile.prototype.pan = function(pval) {
     this.panPosition = pval;
