@@ -141,9 +141,7 @@ define(function (require) {
 
   p5.prototype.disposeSound = function(){
     for (var i = 0; i < p5sound.soundArray.length; i++){
-      console.log(p5sound.soundArray[i]);
       p5sound.soundArray[i].dispose();
-      console.log(p5sound.soundArray[i]);
     }
   };
 

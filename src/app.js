@@ -10,10 +10,11 @@ define(function (require) {
   require('fft');
   require('oscillator');
   require('pulse');
-  // require('lfo');
   require('noise');
   require('audioin');
   require('env');
+  require('delay');
+  require('filter');
 
   return p5SOUND;
 

@@ -139,8 +139,10 @@ define(function (require) {
    */
   p5.Noise.prototype.stop = function() {
     var now = p5sound.audiocontext.currentTime;
-    this.noise.stop(now);
-    this.started = false;
+    if (this.noise) {
+      this.noise.stop(now);
+      this.started = false;
+    }
   };
 
   /**
@@ -212,13 +214,19 @@ define(function (require) {
 
   p5.Noise.prototype.dispose = function(){
     var now = p5sound.audiocontext.currentTime;
-    this.stop(now);
-    this.output.disconnect();
-    this.panner.disconnect();
+    if (this.noise) {
+      this.noise.disconnect();
+      this.stop(now);
+    }
+    if (this.output) {
+      this.output.disconnect();
+    }
+    if (this.panner) {
+      this.panner.disconnect();
+    }
     this.output = null;
     this.panner = null;
     this.buffer = null;
-    this.noise.disconnect();
     this.noise = null;
   };
 

@@ -82,6 +82,8 @@ module.exports = function(grunt) {
             'noise': 'src/noise',
             'audioin': 'src/audioin',
             'env': 'src/env',
+            'delay': 'src/delay',
+            'filter': 'src/filter',
           },
           useStrict: true,
           wrap: {
