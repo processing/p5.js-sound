@@ -25,7 +25,42 @@ define(function (require) {
    *  @return {Object} p5.Filter
    *  @example
    *  <div><code>
-   *  
+   *  var fft, noise, filter;
+   *
+   *  function setup() {
+   *    fill(255, 40, 255);
+   *
+   *    filter = new p5.BandPass();
+   *
+   *    noise = new p5.Noise();
+   *    // disconnect unfiltered noise,
+   *    // and connect to filter
+   *    noise.disconnect();
+   *    noise.connect(filter);
+   *    noise.start();
+   *
+   *    fft = new p5.FFT();
+   *  }
+   *
+   *  function draw() {
+   *    background(30);
+   *
+   *    // set the BandPass frequency based on mouseX
+   *    var freq = map(mouseX, 0, width, 20, 10000);
+   *    filter.freq(freq);
+   *    // give the filter a narrow band (lower res = wider bandpass)
+   *    filter.res(50);
+   *
+   *    // draw filtered spectrum
+   *    var spectrum = fft.analyze();
+   *    noStroke();
+   *    for (var i = 0; i < spectrum.length; i++) {
+   *      var x = map(i, 0, spectrum.length, 0, width);
+   *      var h = -height + map(spectrum[i], 0, 255, height, 0);
+   *      rect(x, height, width/spectrum.length, h);
+   *    }
+   *  }
+   *  </code></div>
    */
   p5.Filter = function(type) {
     this.ac = p5sound.audiocontext;
@@ -48,14 +83,22 @@ define(function (require) {
    *  
    *  @method  process
    *  @param  {Object} Signal  An object that outputs audio
-   *  @param {[Number]} Frequency
-   *  @param {[Number]} res Resonance of the filter frequency
+   *  @param {[Number]} freq Frequency in Hz, from 10 to 22050
+   *  @param {[Number]} res Resonance/Width of the filter frequency
+   *                        from 0.001 to 1000
    */
   p5.Filter.prototype.process = function(src, freq, res) {
     src.connect(this.input);
     this.set(freq, res);
   };
 
+  /**
+   *  Set the frequency and the resonance of the filter.
+   *
+   *  @method  set
+   *  @param {Number} freq Frequency in Hz, from 10 to 22050
+   *  @param {Number} res  Resonance (Q) from 0.001 to 1000
+   */
   p5.Filter.prototype.set = function(freq, res) {
     if (freq) {
       this.freq(freq);
@@ -66,8 +109,11 @@ define(function (require) {
   };
 
   /**
-   *  Set the filter frequency, in Hz. 
-   *  
+   *  Set the filter frequency, in Hz, from 10 to 22050 (the range of
+   *  human hearing, although in reality most people hear in a narrower
+   *  range).
+   *
+   *  @method  freq
    *  @param  {[Number]} freq Filter Frequency
    *  @return {Number} value  Returns the current frequency value
    */
@@ -86,8 +132,10 @@ define(function (require) {
   /**
    *  Controls either width of a bandpass frequency,
    *  or the resonance of a low/highpass cutoff frequency.
-   *  
-   *  @param  {[Number]} res resonance/width of filter frequency
+   *
+   *  @method  res
+   *  @param {Number} res  Resonance/Width of filter freq
+   *                       from 0.001 to 1000
    *  @return {Number} value Returns the current res value
    */
   p5.Filter.prototype.res = function(res) {
@@ -103,15 +151,10 @@ define(function (require) {
   };
 
   /**
-   *  Set the type of a p5.Filter. Possible types include:<br/>
-   *    * "lowpass" (default),<br/>
-   *    * "highpass",<br/>
-   *    * "bandpass",<br/>
-   *    * "lowshelf",<br/>
-   *    * "highshelf",<br/>
-   *    * "peaking",<br/>
-   *    * "notch",<br/>
-   *    * "allpass",<br/>
+   *  Set the type of a p5.Filter. Possible types include: 
+   *  "lowpass" (default), "highpass", "bandpass", 
+   *  "lowshelf", "highshelf", "peaking", "notch",
+   *  "allpass". 
    *  
    *  @method  setType
    *  @param {String}
@@ -160,10 +203,12 @@ define(function (require) {
   };
 
   /**
-   *  LowPass Filter. See p5.Filter for methods.
+   *  Constructor: <code>new p5.LowPass()</code> Filter.
+   *  This is the same as creating a p5.Filter and then calling
+   *  its method <code>setType('lowpass')</code>.
+   *  See p5.Filter for methods.
    *  
-   *  @class p5.LowPass
-   *  @constructor
+   *  @method p5.LowPass
    */
   p5.LowPass = function() {
     p5.Filter.call(this, 'lowpass');
@@ -171,10 +216,12 @@ define(function (require) {
   p5.LowPass.prototype = Object.create(p5.Filter.prototype);
 
   /**
-   *  HighPass Filter. See p5.Filter for methods.
+   *  Constructor: <code>new p5.HighPass()</code> Filter.
+   *  This is the same as creating a p5.Filter and then calling
+   *  its method <code>setType('highpass')</code>.
+   *  See p5.Filter for methods.
    *  
-   *  @class p5.HighPass
-   *  @constructor
+   *  @method p5.HighPass
    */
   p5.HighPass = function() {
     p5.Filter.call(this, 'highpass');
@@ -182,10 +229,12 @@ define(function (require) {
   p5.HighPass.prototype = Object.create(p5.Filter.prototype);
 
   /**
-   *  BandPass Filter. See p5.Filter for methods.
+   *  Constructor: <code>new p5.BandPass()</code> Filter.
+   *  This is the same as creating a p5.Filter and then calling
+   *  its method <code>setType('bandpass')</code>.
+   *  See p5.Filter for methods. 
    *  
-   *  @class p5.HighPass
-   *  @constructor
+   *  @method p5.BandPass
    */
   p5.BandPass = function() {
     p5.Filter.call(this, 'bandpass');

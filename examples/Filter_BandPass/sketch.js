@@ -37,7 +37,7 @@ function setup() {
 function draw() {
   background(30);
 
-  // set the LowPass Filter frequency cutoff based on mouse X
+  // set the BandPass Filter frequency based on mouse X
   filterFreq = map (mouseX, 0, width, 20, 10000);
   filterRes = map(mouseY, 0, height, 0, 90);
   filter.set(filterFreq, filterRes);

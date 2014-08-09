@@ -2,7 +2,7 @@ define(function (require) {
   'use strict';
 
   var p5sound = require('master');
-
+  var Filter = require('filter');
   /**
    *  Delay is an echo effect. It processes an existing sound source,
    *  and outputs a delayed version of that sound. The p5.Delay can
@@ -27,6 +27,7 @@ define(function (require) {
    *
    *    // delay.process() accepts 4 parameters:
    *    // source, delayTime, feedback, filter frequency
+   *    // play with these numbers!!
    *    delay.process(noise, .12, .7, 2300);
    *    
    *    // play the noise with an envelope,
@@ -51,25 +52,37 @@ define(function (require) {
     this._leftDelay = this.ac.createDelay();
     this._rightDelay = this.ac.createDelay();
 
-    this._leftFilter = this.ac.createBiquadFilter();
-    this._rightFilter = this.ac.createBiquadFilter();
+    this._leftFilter = new p5.Filter();
+    this._rightFilter = new p5.Filter();
+    this._leftFilter.disconnect();
+    this._rightFilter.disconnect();
 
-    this._leftFilter.frequency.setValueAtTime(1200, this.ac.currentTime);
-    this._rightFilter.frequency.setValueAtTime(1200, this.ac.currentTime);
-    this._leftFilter.Q.setValueAtTime(0.3, this.ac.currentTime);
-    this._rightFilter.Q.setValueAtTime(0.3, this.ac.currentTime);
+    /**
+     *  Internal filter. Set to lowPass by default, but can be accessed directly.
+     *  See p5.Filter for methods. Or use the p5.Delay.filter() method to change
+     *  frequency and q.
+     *
+     *  @property lowPass
+     *  @type {p5.Filter}
+     */
+    this.lowPass = this._leftFilter;
+
+    this._leftFilter.biquad.frequency.setValueAtTime(1200, this.ac.currentTime);
+    this._rightFilter.biquad.frequency.setValueAtTime(1200, this.ac.currentTime);
+    this._leftFilter.biquad.Q.setValueAtTime(0.3, this.ac.currentTime);
+    this._rightFilter.biquad.Q.setValueAtTime(0.3, this.ac.currentTime);
 
     // graph routing
     this.input.connect(this._split);
     this._leftDelay.connect(this._leftGain);
     this._rightDelay.connect(this._rightGain);
-    this._leftGain.connect(this._leftFilter);
-    this._rightGain.connect(this._rightFilter);
+    this._leftGain.connect(this._leftFilter.input);
+    this._rightGain.connect(this._rightFilter.input);
     this._merge.connect(this.output);
     this.output.connect(p5.soundOut.input);
 
-    this._leftFilter.gain.setValueAtTime(1, this.ac.currentTime);
-    this._rightFilter.gain.setValueAtTime(1, this.ac.currentTime);
+    this._leftFilter.biquad.gain.setValueAtTime(1, this.ac.currentTime);
+    this._rightFilter.biquad.gain.setValueAtTime(1, this.ac.currentTime);
 
     // default routing
     this.setType(0);
@@ -112,8 +125,8 @@ define(function (require) {
     this._rightGain.gain.setValueAtTime(feedback, this.ac.currentTime);
 
     if (_filter) {
-      this._leftFilter.frequency.setValueAtTime(_filter, this.ac.currentTime);
-      this._rightFilter.frequency.setValueAtTime(_filter, this.ac.currentTime);
+      this._leftFilter.freq(_filter);
+      this._rightFilter.freq(_filter);
     }
   };
 
@@ -180,33 +193,8 @@ define(function (require) {
    *                              low numbers (i.e. .2) will produce a slope.
    */
   p5.Delay.prototype.filter = function(freq, q) {
-    this._leftFilter.frequency.cancelScheduledValues(this.ac.currentTime);
-    this._rightFilter.frequency.cancelScheduledValues(this.ac.currentTime);
-
-    // if freq is an audio node...
-    if (typeof(freq) !== 'number'){
-      freq.connect(this._leftFilter.frequency);
-      freq.connect(this._rightFilter.frequency);
-    }
-    else {
-      this._leftFilter.frequency.exponentialRampToValueAtTime(freq, this.ac.currentTime);
-      this._rightFilter.frequency.exponentialRampToValueAtTime(freq, this.ac.currentTime);
-    }
-
-    if (q) {
-      this._leftFilter.Q.cancelScheduledValues(this.ac.currentTime);
-      this._rightFilter.Q.cancelScheduledValues(this.ac.currentTime);
-
-      // if q is an audio node...
-      if (typeof(q) !== 'number'){
-        q.connect(this._leftFilter.Q);
-        q.connect(this._rightFilter.Q);
-      }
-      else {
-        this._leftFilter.Q.exponentialRampToValueAtTime(q, this.ac.currentTime);
-        this._rightFilter.Q.exponentialRampToValueAtTime(q, this.ac.currentTime);
-      }
-    }
+    this._leftFilter.set(freq, q);
+    this._rightFilter.set(freq, q);
   };
 
 
@@ -229,16 +217,17 @@ define(function (require) {
     this._split.connect(this._rightDelay, 1);
     switch(t) {
       case 'pingPong':
-        this._leftFilter.connect(this._merge, 0, 0);
-        this._rightFilter.connect(this._merge, 0, 1);
-        this._leftFilter.connect(this._rightDelay);
-        this._rightFilter.connect(this._leftDelay);
+        this._rightFilter.setType( this._leftFilter.biquad.type );
+        this._leftFilter.output.connect(this._merge, 0, 0);
+        this._rightFilter.output.connect(this._merge, 0, 1);
+        this._leftFilter.output.connect(this._rightDelay);
+        this._rightFilter.output.connect(this._leftDelay);
         break
       default:
-        this._leftFilter.connect(this._merge, 0, 0);
-        this._rightFilter.connect(this._merge, 0, 1);
-        this._leftFilter.connect(this._leftDelay);
-        this._rightFilter.connect(this._rightDelay);
+        this._leftFilter.output.connect(this._merge, 0, 0);
+        this._leftFilter.output.connect(this._merge, 0, 1);
+        this._leftFilter.output.connect(this._leftDelay);
+        this._leftFilter.output.connect(this._rightDelay);
     }
   };
 

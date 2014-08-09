@@ -19,7 +19,12 @@
  *  <a href="#/p5.Env"><b>p5.Env</b></a>: An Envelope is a series
  *    of fades over time. Often used to control an object's
  *    output gain level as an "ADSR Envelope" (Attack, Decay,
- *    Sustain, Release). Can also modulate other parameters.
+ *    Sustain, Release). Can also modulate other parameters.<br/>
+ *  <a href="#/p5.Delay"><b>p5.Delay</b></a>: A delay effect with
+ *    parameters for feedback, delayTime, and lowpass filter.<br/>
+ *  <a href="#/p5.Filter"><b>p5.Filter</b></a>: Filter the frequency range of a
+ *  sound. For example, p5.LowPass turns down frequencies above a certain cutoff,
+ *  while p5.BandPass filters frequencies above and below a certain range.
  *  <br/><br/>
  *  p5.sound is on <a href="https://github.com/therewasaguy/p5.sound/">GitHub</a>.
  *  Download the latest version 

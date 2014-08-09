@@ -330,25 +330,68 @@ define(function (require) {
     this.dNode.delayTime.linearRampToValueAtTime( map(p, 0, 1.0, 0, 1/this.oscillator.frequency.value), now);
   };
 
-  // Extending
+  /**
+   *  Constructor: <code>new p5.SinOsc()</code>.
+   *  This creates a Sine Wave Oscillator and is
+   *  equivalent to <code> new p5.Oscillator('sine')
+   *  </code> or creating a p5.Oscillator and then calling
+   *  its method <code>setType('sine')</code>.
+   *  See p5.Oscillator for methods.
+   *
+   *  @method  p5.SinOsc
+   *  @param {[Number]} freq Set the frequency
+   */
   p5.SinOsc = function(freq) {
     p5.Oscillator.call(this, freq, 'sine');
   };
 
   p5.SinOsc.prototype = Object.create(p5.Oscillator.prototype);
 
+  /**
+   *  Constructor: <code>new p5.TriOsc()</code>.
+   *  This creates a Triangle Wave Oscillator and is
+   *  equivalent to <code>new p5.Oscillator('triangle')
+   *  </code> or creating a p5.Oscillator and then calling
+   *  its method <code>setType('triangle')</code>.
+   *  See p5.Oscillator for methods.
+   *
+   *  @method  p5.TriOsc
+   *  @param {[Number]} freq Set the frequency
+   */
   p5.TriOsc = function(freq) {
     p5.Oscillator.call(this, freq, 'triangle');
   };
 
   p5.TriOsc.prototype = Object.create(p5.Oscillator.prototype);
 
+  /**
+   *  Constructor: <code>new p5.SawOsc()</code>.
+   *  This creates a SawTooth Wave Oscillator and is
+   *  equivalent to <code> new p5.Oscillator('sawtooth')
+   *  </code> or creating a p5.Oscillator and then calling
+   *  its method <code>setType('sawtooth')</code>.
+   *  See p5.Oscillator for methods.
+   *
+   *  @method  p5.SawOsc
+   *  @param {[Number]} freq Set the frequency
+   */
   p5.SawOsc = function(freq) {
     p5.Oscillator.call(this, freq, 'sawtooth');
   };
 
   p5.SawOsc.prototype = Object.create(p5.Oscillator.prototype);
 
+  /**
+   *  Constructor: <code>new p5.SqrOsc()</code>.
+   *  This creates a Square Wave Oscillator and is
+   *  equivalent to <code> new p5.Oscillator('square')
+   *  </code> or creating a p5.Oscillator and then calling
+   *  its method <code>setType('square')</code>.
+   *  See p5.Oscillator for methods.
+   *
+   *  @method  p5.SawOsc
+   *  @param {[Number]} freq Set the frequency
+   */
   p5.SqrOsc = function(freq) {
     p5.Oscillator.call(this, freq, 'square');
   };

@@ -13,8 +13,8 @@ define(function (require) {
   require('noise');
   require('audioin');
   require('env');
-  require('delay');
   require('filter');
+  require('delay');
 
   return p5SOUND;
 
