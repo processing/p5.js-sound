@@ -145,4 +145,68 @@ define(function (require) {
     }
   };
 
+  p5.prototype._checkFileFormats = function(paths) {
+    var path;
+    // if path is a single string, check to see if extension is provided
+    if (typeof(paths) === 'string') {
+      path = paths;
+      // see if extension is provided
+      var extTest = path.split('.').pop();
+      // if an extension is provided...
+      if (['mp3','wav','ogg', 'm4a', 'aac'].indexOf(extTest) > -1) {
+        var supported = p5.prototype.isFileSupported(extTest);
+        if (supported){
+          path = path;
+        }
+        else {
+          var pathSplit = path.split('.');
+          var pathCore = pathSplit[pathSplit.length - 1];
+          for (var i = 0; i<p5sound.extensions.length; i++){
+            var extension = p5sound.extensions[i];
+            var supported = p5.prototype.isFileSupported(extension);
+            if (supported) {
+              pathCore = '';
+              if (pathSplit.length === 2) {
+                pathCore += pathSplit[0];
+              }
+              for (var i = 1; i <= pathSplit.length - 2; i++){
+                var p = pathSplit[i];
+                pathCore += '.' + p;
+              }
+              path = pathCore += '.';
+              path = path += extension;
+              break;
+            }
+          }
+        }
+      }
+      // if no extension is provided...
+      else {
+        for (var i = 0; i<p5sound.extensions.length; i++){
+          var extension = p5sound.extensions[i];
+          var supported = p5.prototype.isFileSupported(extension);
+          if (supported) {
+            path = path + '.' + extension;
+            break;
+          }
+        }
+      }
+    } // end 'if string'
+
+    // path can either be a single string, or an array
+    else if (typeof(paths) === 'object') {
+      for (var i = 0; i<paths.length; i++) {
+        var extension = paths[i].split('.').pop();
+        var supported = p5.prototype.isFileSupported(extension);
+        if (supported) {
+          // console.log('.'+extension + ' is ' + supported +
+          //  ' supported by your browser.');
+          path = paths[i];
+          break;
+        }
+      }
+    }
+    return path;
+  };
+
 });

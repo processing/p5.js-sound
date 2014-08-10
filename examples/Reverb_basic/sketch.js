@@ -14,11 +14,12 @@ function setup() {
   noise.start();
 
   reverb = new p5.Reverb();
+
   // the Env accepts time / value pairs to
   // create a series of timed fades
   env = new p5.Env(.01, 1, .2, .1);
 
-  reverb.process(noise, 3, 5, 1);
+  reverb.process(noise, 1, 2, 1);
 }
 
 function draw() {

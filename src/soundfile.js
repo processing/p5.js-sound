@@ -40,63 +40,7 @@ define(function (require) {
    * </code></div>
    */
   p5.SoundFile = function(paths, onload) {
-    var path;
-
-    // if path is a single string, check to see if extension is provided
-    if (typeof(paths) === 'string') {
-      path = paths;
-      // see if extension is provided
-      var extTest = path.split('.').pop();
-      // if an extension is provided...
-      if (['mp3','wav','ogg', 'm4a', 'aac'].indexOf(extTest) > -1) {
-        var supported = p5.prototype.isFileSupported(extTest);
-        if (supported){
-          path = path;
-        }
-        else {
-          var pathSplit = path.split('.');
-          var pathCore = pathSplit[pathSplit.length - 2];
-          for (var i = 0; i<p5sound.extensions.length; i++){
-            var extension = p5sound.extensions[i];
-            var supported = p5.prototype.isFileSupported(extension);
-            if (supported) {
-              pathCore = '';
-              for (var i = 0; i <= pathSplit.length - 2; i++){
-                pathCore.push(pathSplit[i]);
-              }
-              path = pathCore + '.' + extension;
-              console.log(path);
-              break;
-            }
-          }
-        }
-      }
-      // if no extension is provided...
-      else {
-        for (var i = 0; i<p5sound.extensions.length; i++){
-          var extension = p5sound.extensions[i];
-          var supported = p5.prototype.isFileSupported(extension);
-          if (supported) {
-            path = path + '.' + extension;
-            break;
-          }
-        }
-      }
-    } // end 'if string'
-
-    // path can either be a single string, or an array
-    else if (typeof(paths) === 'object') {
-      for (var i = 0; i<paths.length; i++) {
-        var extension = paths[i].split('.').pop();
-        var supported = p5.prototype.isFileSupported(extension);
-        if (supported) {
-          console.log('.'+extension + ' is ' + supported +
-           ' supported by your browser.');
-          path = paths[i];
-          break;
-        }
-      }
-    }
+    var path = p5.prototype._checkFileFormats(paths);
 
     // player variables
     this.url = path;
@@ -201,28 +145,21 @@ define(function (require) {
    * @param {Function} [callback]   Name of a function to call once file loads
    */
   p5.SoundFile.prototype.load = function(callback){
-    if (!this.buffer) {
-      var request = new XMLHttpRequest();
-      request.open('GET', this.url, true);
-      request.responseType = 'arraybuffer';
-      // decode asyncrohonously
-      var self = this;
-      request.onload = function() {
-        var ac = p5.prototype.getAudioContext();
-        ac.decodeAudioData(request.response, function(buff) {
-          self.buffer = buff;
-          if (callback) {
-            callback(self);
-          }
-        });
-      };
-      request.send();
-    }
-    else {
-      if (callback){
-        callback(this);
-      }
-    }
+    var request = new XMLHttpRequest();
+    request.open('GET', this.url, true);
+    request.responseType = 'arraybuffer';
+    // decode asyncrohonously
+    var self = this;
+    request.onload = function() {
+      var ac = p5.prototype.getAudioContext();
+      ac.decodeAudioData(request.response, function(buff) {
+        self.buffer = buff;
+        if (callback) {
+          callback(self);
+        }
+      });
+    };
+    request.send();
   };
 
   /**
@@ -994,6 +931,18 @@ define(function (require) {
       this.amplitude.smoothing = smoothing;
     }
     return this.amplitude.getLevel();
+  };
+
+  /**
+   *  Reset the buffer source for this SoundFile to a
+   *  new path
+   *  @param {String}   path     path to audio file
+   *  @param {Function} callback [description]
+   */
+  p5.SoundFile.prototype.setBuffer = function(p, callback) {
+    var path = p5.prototype._checkFileFormats(p);
+    this.url = path;
+    this.load(callback);
   };
 
 });
