@@ -49,8 +49,24 @@ define(function (require) {
     this._leftGain = this.ac.createGain();
     this._rightGain = this.ac.createGain();
 
-    this._leftDelay = this.ac.createDelay();
-    this._rightDelay = this.ac.createDelay();
+    /**
+     *  The p5.Delay is built with two
+     *  <a href="http://www.w3.org/TR/webaudio/#DelayNode">
+     *  Web Audio Delay Nodes</a>, one for each stereo channel.
+     *  
+     *  @property leftDelay
+     *  @type {Object}  Web Audio Delay Node
+     */
+    this.leftDelay = this.ac.createDelay();
+    /**
+     *  The p5.Delay is built with two
+     *  <a href="http://www.w3.org/TR/webaudio/#DelayNode">
+     *  Web Audio Delay Nodes</a>, one for each stereo channel.
+     *  
+     *  @property rightDelay
+     *  @type {Object}  Web Audio Delay Node
+     */
+    this.rightDelay = this.ac.createDelay();
 
     this._leftFilter = new p5.Filter();
     this._rightFilter = new p5.Filter();
@@ -74,8 +90,8 @@ define(function (require) {
 
     // graph routing
     this.input.connect(this._split);
-    this._leftDelay.connect(this._leftGain);
-    this._rightDelay.connect(this._rightGain);
+    this.leftDelay.connect(this._leftGain);
+    this.rightDelay.connect(this._rightGain);
     this._leftGain.connect(this._leftFilter.input);
     this._rightGain.connect(this._rightFilter.input);
     this._merge.connect(this.output);
@@ -87,7 +103,7 @@ define(function (require) {
     // default routing
     this.setType(0);
 
-    this._maxDelay = this._leftDelay.delayTime.maxValue;
+    this._maxDelay = this.leftDelay.delayTime.maxValue;
   };
 
   /**
@@ -116,11 +132,9 @@ define(function (require) {
       throw new Error('Delay Time exceeds maximum delay time of ' + this._maxDelay + ' second.');
     }
 
-    // var effectSend = this.ac.createGain();
     src.connect(this.input);
-    // var now = this.ac.currentTime;
-    this._leftDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
-    this._rightDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
+    this.leftDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
+    this.rightDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
     this._leftGain.gain.setValueAtTime(feedback, this.ac.currentTime);
     this._rightGain.gain.setValueAtTime(feedback, this.ac.currentTime);
 
@@ -140,15 +154,15 @@ define(function (require) {
   p5.Delay.prototype.delayTime = function(t) {
     // if t is an audio node...
     if (typeof(t) !== 'number'){
-      t.connect(this._leftDelay.delayTime);
-      t.connect(this._rightDelay.delayTime);
+      t.connect(this.leftDelay.delayTime);
+      t.connect(this.rightDelay.delayTime);
     }
 
     else {
-      this._leftDelay.delayTime.cancelScheduledValues(this.ac.currentTime);
-      this._rightDelay.delayTime.cancelScheduledValues(this.ac.currentTime);  
-      this._leftDelay.delayTime.linearRampToValueAtTime(t, this.ac.currentTime);
-      this._rightDelay.delayTime.linearRampToValueAtTime(t, this.ac.currentTime);
+      this.leftDelay.delayTime.cancelScheduledValues(this.ac.currentTime);
+      this.rightDelay.delayTime.cancelScheduledValues(this.ac.currentTime);  
+      this.leftDelay.delayTime.linearRampToValueAtTime(t, this.ac.currentTime);
+      this.rightDelay.delayTime.linearRampToValueAtTime(t, this.ac.currentTime);
     }
   };
 
@@ -213,21 +227,21 @@ define(function (require) {
     this._split.disconnect();
     this._leftFilter.disconnect();
     this._rightFilter.disconnect();
-    this._split.connect(this._leftDelay, 0);
-    this._split.connect(this._rightDelay, 1);
+    this._split.connect(this.leftDelay, 0);
+    this._split.connect(this.rightDelay, 1);
     switch(t) {
       case 'pingPong':
         this._rightFilter.setType( this._leftFilter.biquad.type );
         this._leftFilter.output.connect(this._merge, 0, 0);
         this._rightFilter.output.connect(this._merge, 0, 1);
-        this._leftFilter.output.connect(this._rightDelay);
-        this._rightFilter.output.connect(this._leftDelay);
+        this._leftFilter.output.connect(this.rightDelay);
+        this._rightFilter.output.connect(this.leftDelay);
         break
       default:
         this._leftFilter.output.connect(this._merge, 0, 0);
         this._leftFilter.output.connect(this._merge, 0, 1);
-        this._leftFilter.output.connect(this._leftDelay);
-        this._leftFilter.output.connect(this._rightDelay);
+        this._leftFilter.output.connect(this.leftDelay);
+        this._leftFilter.output.connect(this.rightDelay);
     }
   };
 

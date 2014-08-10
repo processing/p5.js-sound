@@ -47,6 +47,7 @@
  *   - buzz.js (c) Jay Salvat, 2013. Licensed under The MIT License (MIT). http://buzz.jaysalvat.com/
  *   - Boris Smus Web Audio API book, 2013. Licensed under the Apache License http://www.apache.org/licenses/LICENSE-2.0
  *   - wavesurfer.js https://github.com/katspaugh/wavesurfer.js
+ *   - Web Audio Components by Jordan Santell https://github.com/web-audio-components
  *   - Wilm Thoben's Sound library for Processing https://github.com/processing/processing/tree/master/java/libraries/sound
  *   
  *   Web Audio API: http://w3.org/TR/webaudio/

@@ -68,6 +68,14 @@ define(function (require) {
     this.input = this.ac.createGain();
     this.output = this.ac.createGain();
 
+    /**
+     *  The p5.Filter is built with a
+     *  <a href="http://www.w3.org/TR/webaudio/#BiquadFilterNode">
+     *  Web Audio BiquadFilter Node</a>.
+     *  
+     *  @property biquadFilter
+     *  @type {Object}  Web Audio Delay Node
+     */
     this.biquad = this.ac.createBiquadFilter();
 
     this.input.connect(this.biquad);

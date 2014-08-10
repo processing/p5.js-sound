@@ -84,6 +84,7 @@ module.exports = function(grunt) {
             'env': 'src/env',
             'delay': 'src/delay',
             'filter': 'src/filter',
+            'reverb': 'src/reverb'
           },
           useStrict: true,
           wrap: {
