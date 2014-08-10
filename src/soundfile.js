@@ -288,11 +288,12 @@ define(function (require) {
         this.source.loopEnd = this.endTime;
       }
       this.source.onended = function() {
-        if (this.playing) {
-          this.playing = !this.playing;
-          var now = p5sound.audiocontext.currentTime;
-          this.stop(now);
-         }
+        // this was causing errors in Safari
+        // if (this.isPlaying()) {
+        //   this.playing = !this.playing;
+        //   var now = p5sound.audiocontext.currentTime;
+        //   this.stop(now);
+        //  }
        };
 
       // firefox method of controlling gain without resetting volume
@@ -497,7 +498,12 @@ define(function (require) {
    *  @return {Boolean}
    */
   p5.SoundFile.prototype.isPlaying = function() {
-    return this.playing;
+    if (this.playing !== null){
+      return this.playing;
+    } else {
+      console.log('null');
+      return false;
+    }
   };
 
   /**
@@ -954,11 +960,11 @@ define(function (require) {
     if (!unit) {
        this.panner.connect(p5sound.input);
     }
-    else if (this.buffer && this.source) {
+    else {
       if (unit.hasOwnProperty('input')){
         this.panner.connect(unit.input);
       } else {
-      this.panner.connect(unit);
+        this.panner.connect(unit);
       }
     }
   };

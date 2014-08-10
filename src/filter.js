@@ -82,7 +82,9 @@ define(function (require) {
     this.biquad.connect(this.output);
 
     this.connect();
-    this.setType(type);
+    if (type) {
+      this.setType(type);
+    }
   };
 
   /**

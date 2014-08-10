@@ -25,7 +25,11 @@
  *  <a href="#/p5.Filter"><b>p5.Filter</b></a>: Filter the frequency range of a
  *  sound. For example, p5.LowPass turns down frequencies above a certain cutoff,
  *  while p5.BandPass filters frequencies above and below a certain range.
- *  <br/><br/>
+ *  <br/>
+ *  <a href="#/p5.Reverb"><b>p5.Reverb</b></a>: add reverb to a sound by specifying
+ *  duration and decay. <a href="#/p5.Reverb">p5.ConvolutionReverb</a> can simulate
+ *  the sound of real physical spaces convolution.
+ *  <br/>
  *  p5.sound is on <a href="https://github.com/therewasaguy/p5.sound/">GitHub</a>.
  *  Download the latest version 
  *  <a href="https://github.com/therewasaguy/p5.sound/blob/master/lib/p5.sound.js">here</a>.

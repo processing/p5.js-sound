@@ -3,14 +3,11 @@ define(function (require) {
 
   var p5sound = require('master');
 
-   // Inspired by Simple Reverb by Jordan Santell
-   // https://github.com/web-audio-components/simple-reverb/blob/master/index.js
-
   p5.Reverb = function(path, callback) {
     this.ac = getAudioContext();
 
     /**
-     *  The p5.Reverb is built with a
+     *  p5.Reverb and p5.ConvolutionReverb are built with a
      *  <a href="http://www.w3.org/TR/webaudio/#ConvolverNode">
      *  Web Audio Convolver Node</a>.
      *  
@@ -22,11 +19,15 @@ define(function (require) {
     this.input = this.ac.createGain();
     this.output = this.ac.createGain();
 
+    // otherwise, Safari distorts
+    this.input.gain.value = 0.5;
+
     this.input.connect(this.convolver);
     this.convolver.connect(this.output);
 
     if (path) {
-      this.load(path, callback);
+      this.impulses = [];
+      this._loadBuffer(path, callback);
     }
     else {
       // parameters
@@ -39,6 +40,14 @@ define(function (require) {
     this.connect();
   };
 
+  /**
+   *  [process description]
+   *  @param  {[type]} src     [description]
+   *  @param  {[type]} seconds [description]
+   *  @param  {[type]} decay   [description]
+   *  @param  {[type]} reverse [description]
+   *  @return {[type]}         [description]
+   */
   p5.Reverb.prototype.process = function(src, seconds, decay, reverse) {
     src.connect(this.input);
     var rebuild = false;
@@ -69,8 +78,8 @@ define(function (require) {
    *  
    *  @method  amp
    *  @param  {Number} volume amplitude between 0 and 1.0
-   *  @param {Number} [rampTime] create a fade that lasts rampTime 
-   *  @param {Number} [timeFromNow] schedule this event to happen
+   *  @param  {Number} [rampTime] create a fade that lasts rampTime 
+   *  @param  {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
    */
   p5.Reverb.prototype.amp = function(vol, rampTime, tFromNow) {
@@ -103,31 +112,15 @@ define(function (require) {
     this.output.disconnect();
   };
 
-  p5.Reverb.prototype.convolve = function(ir, callback) {
-    var self = this;
-    loadSound(ir, function(soundfile) {
-      self.convolver.buffer = soundfile.buffer;
-      if (typeof(callback) !== 'undefined') {
-        callback(self);
-      }
-    });
-  };
-
-  p5.prototype._registerPreloadFunc('loadReverb');
-
-  p5.prototype.loadReverb = function(path, callback){
-    // if loading locally without a server
-    if (window.location.origin.indexOf('file://') > -1) {
-      alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
-    }
-    var reverb = new p5.Reverb(path, callback);
-    return reverb;
-  };
-
   /**
-   * via https://github.com/web-audio-components/simple-reverb/blob/master/index.js
-   * Utility function for building an impulse response
-   * from the module parameters.
+   *  Inspired by Simple Reverb by Jordan Santell
+   *  https://github.com/web-audio-components/simple-reverb/blob/master/index.js
+   * 
+   *  Utility function for building an impulse response
+   *  based on the module parameters.
+   *
+   *  @method  _buildImpulse
+   *  @private
    */
   p5.Reverb.prototype._buildImpulse = function() {
     var rate = this.ac.sampleRate;
@@ -145,7 +138,7 @@ define(function (require) {
     this.convolver.buffer = impulse;
   };
 
-  p5.Reverb.prototype.load = function(path, callback){
+  p5.Reverb.prototype._loadBuffer = function(path, callback){
     var request = new XMLHttpRequest();
     request.open('GET', path, true);
     request.responseType = 'arraybuffer';
@@ -154,13 +147,127 @@ define(function (require) {
     request.onload = function() {
       var ac = p5.prototype.getAudioContext();
       ac.decodeAudioData(request.response, function(buff) {
-        self.convolver.buffer = buff;
+        var buffer = {};
+        var chunks = path.split('/');
+        buffer.name = chunks[chunks.length - 1];
+        buffer.audioBuffer = buff;
+        console.log(self.impulses);
+        self.impulses.push(buffer);
+        self.convolver.buffer = buffer.audioBuffer;
         if (callback) {
-          callback(self);
+          callback(buffer);
         }
       });
     };
     request.send();
+  };
+
+
+  // CONVOLUTION
+
+  /**
+   *  p5.ConvolutionReverb extends p5.Reverb. It can emulate the sound of real
+   *  physical spaces through a process called <a href="
+   *  https://en.wikipedia.org/wiki/Convolution_reverb#Real_space_simulation">
+   *  convolution</a>. 
+   *  
+   *  Convolution multiplies any audio input by an "impulse response"
+   *  to simulate the dispersion of sound over time. The impulse response is
+   *  generated from an audio file that you provide. One way to
+   *  generate an impulse response is to pop a balloon in a reverberant space
+   *  and record the echo. Convolution can also be used to experiment with sound.
+   *
+   *  Use the method createReverb(path) to instantiate a p5.ConvolutionReverb.
+   *  
+   *  @param {[type]}   path     [description]
+   *  @param {Function} callback [description]
+   */
+  p5.ConvolutionReverb = function(path, callback) {
+    p5.Reverb.call(this, path, callback);
+  };
+
+  p5.ConvolutionReverb.prototype = Object.create(p5.Reverb.prototype);
+
+  p5.ConvolutionReverb.prototype.set = null;
+
+  p5.ConvolutionReverb.prototype.process = function(src) {
+    src.connect(this.input);
+  };
+
+  /**
+   *  Buffers is an Array of Objects which contain an AudioBuffer
+   *  and a Name that corresponds with the original filename.
+   *  
+   *  @property impulses
+   *  @type {Array} Array of Web Audio Buffers
+   */
+  p5.ConvolutionReverb.prototype.impulses = [];
+
+  /**
+   *  Add an Impulse Response to a convolution reverb
+   *  
+   *  @param {[type]}   reverb   [description]
+   *  @param {[type]}   path     [description]
+   *  @param {Function} callback [description]
+   */
+  p5.ConvolutionReverb.prototype.addImpulse = function(path, callback){
+    // if loading locally without a server
+    if (window.location.origin.indexOf('file://') > -1) {
+      alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
+    }
+    this._loadBuffer(path, callback);
+  };
+
+  /**
+   *  Clear the impulses
+   *
+   *  @method  resetImpulse
+   *  @param  {[type]}   path     [description]
+   *  @param  {Function} callback [description]
+   *  @return {[type]}            [description]
+   */
+  p5.ConvolutionReverb.prototype.resetImpulse = function(path, callback){
+    // if loading locally without a server
+    if (window.location.origin.indexOf('file://') > -1) {
+      alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
+    }
+    this.impulses = [];
+    this._loadBuffer(path, callback);
+  };
+
+  p5.ConvolutionReverb.prototype.setImpulse = function(id){
+    if (typeof(id) === 'number' && id < this.impulses.length) {
+      this.convolver.buffer = this.impulses[id].audioBuffer;
+    }
+    if (typeof(id) === 'string') {
+      for (var i = 0; i < this.impulses.length; i++){
+        if (this.impulses[i].name === id) {
+          this.convolver.buffer = this.impulses[i].audioBuffer;
+          break;
+        }
+      }
+    }
+  };
+
+  p5.prototype._registerPreloadFunc('createConvolution');
+
+  /**
+   *  Load a soundfile and use it as an impulse response
+   *  to create a convolution reverb effect.
+   *
+   *  @method  createConvolution
+   *  @param  {String}   path     path to a sound file
+   *  @param  {Function} callback [description]
+   *  @return {p5.ConvolutionReverb}
+   */
+  p5.prototype.createConvolution = function(path, callback){
+    // if loading locally without a server
+    if (window.location.origin.indexOf('file://') > -1) {
+      alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
+    }
+    var cReverb = new p5.ConvolutionReverb(path, callback);
+    cReverb.impulses = [];
+    return cReverb;
   };
 
 });
