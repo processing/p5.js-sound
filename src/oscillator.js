@@ -48,7 +48,7 @@ define(function (require) {
     this.freqNode = this.oscillator.frequency;
 
     // set default output gain
-    this.output.gain.value = 0.5;
+    this.output.gain.value = 0.0;
 
     // sterep panning
     this.panPosition = 0.0;
