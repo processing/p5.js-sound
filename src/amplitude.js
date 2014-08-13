@@ -15,6 +15,8 @@ define(function (require) {
    *  @return {Object}    Amplitude Object
    *  @example
    *  <div><code>
+   *  var sound, amplitude;
+   *  
    *  function preload(){
    *    sound = loadSound('assets/beat.mp3');
    *  }

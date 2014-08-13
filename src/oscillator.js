@@ -229,10 +229,10 @@ define(function (require) {
   };
 
   /**
-   *  Connect to a p5.Sound / Web Audio object.
+   *  Connect to a p5.sound / Web Audio object.
    *
    *  @method  connect
-   *  @param  {Object} unit A p5.Sound or Web Audio object
+   *  @param  {Object} unit A p5.sound or Web Audio object
    */
   p5.Oscillator.prototype.connect = function(unit){
     if (!unit) {

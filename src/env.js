@@ -21,19 +21,19 @@ define(function (require) {
    *  @param {Number} decayTime      Time
    *  @param {Number} [decayLevel]   Amplitude (In a standard ADSR envelope,
    *                                 decayLevel = sustainLevel)
-   *  @param {Number} [sustainTime]   Time
-   *  @param {Number} [sustainLevel]  Amplitude
-   *  @param {Number} [releaseTime]   Time
-   *  @param {Number} [releaseLevel]  Amplitude
+   *  @param {Number} [sustainTime]   Time (in seconds)
+   *  @param {Number} [sustainLevel]  Amplitude 0.0 to 1.0
+   *  @param {Number} [releaseTime]   Time (in seconds)
+   *  @param {Number} [releaseLevel]  Amplitude 0.0 to 1.0
    *  @example
    *  <div><code>
-   *  var aT = 0.1; // attack time
-   *  var aL = 0.7; // attack level
-   *  var dT = 0.3; // decay time
-   *  var dL = 0.1; // decay level
-   *  var sT = 0.2; // sustain time
-   *  var sL = dL; // sustain level
-   *  var rT = 0.5; // release time
+   *  var aT = 0.1; // attack time in seconds
+   *  var aL = 0.7; // attack level 0.0 to 1.0
+   *  var dT = 0.3; // decay time in seconds
+   *  var dL = 0.1; // decay level  0.0 to 1.0
+   *  var sT = 0.2; // sustain time in seconds
+   *  var sL = dL; // sustain level  0.0 to 1.0
+   *  var rT = 0.5; // release time in seconds
    *  // release level defaults to zero
    *
    *  var env;
@@ -41,7 +41,7 @@ define(function (require) {
    *  
    *  function setup() {
    *    env = new p5.Env(aT, aL, dT, dL, sT, sL, rT);
-   *    triOsc = new p5.TriOsc();
+   *    triOsc = new p5.Oscillator('triangle');
    *    triOsc.amp(0);
    *    triOsc.start();
    *    env.play(triOsc);
@@ -88,7 +88,7 @@ define(function (require) {
 
   /**
    *  
-   *  @param  {Object} input       A p5Sound object or
+   *  @param  {Object} input       A p5.sound object or
    *                                Web Audio Param
    */
   p5.Env.prototype.setInput = function(input){
@@ -101,12 +101,14 @@ define(function (require) {
 
   /**
    *  Play tells the envelope to start acting on a given input.
-   *  If the input is a p5Sound object (i.e. AudioIn, Oscillator,
+   *  If the input is a p5.sound object (i.e. AudioIn, Oscillator,
    *  SoundFile), then Env will control its output volume.
-   *  Envelopes can also be used to control any Web Audio Param.
+   *  Envelopes can also be used to control any <a href="
+   *  http://docs.webplatform.org/wiki/apis/webaudio/AudioParam">
+   *  Web Audio Audio Param.</a>
    *
    *  @method  play
-   *  @param  {Object} input        A p5Sound object or
+   *  @param  {Object} input        A p5.sound object or
    *                                Web Audio Param
    */
   p5.Env.prototype.play = function(input){
@@ -136,10 +138,13 @@ define(function (require) {
   /**
    *  Trigger the Attack, Decay, and Sustain of the Envelope.
    *  Similar to holding down a key on a piano, but it will
-   *  hold the sustain level until you let go.
+   *  hold the sustain level until you let go. Input can be
+   *  any p5.sound object, or a <a href="
+   *  http://docs.webplatform.org/wiki/apis/webaudio/AudioParam">
+   *  Web Audio Param</a>.
    *
    *  @method  triggerAttack
-   *  @param  {Object} input p5.Sound Object or Web Audio Param
+   *  @param  {Object} input p5.sound Object or Web Audio Param
    */
   p5.Env.prototype.triggerAttack = function(input) {
     var now =  p5sound.audiocontext.currentTime;
@@ -169,12 +174,12 @@ define(function (require) {
   };
 
   /**
-   *  Trigger the Release of the Envelope. This is similar to release
+   *  Trigger the Release of the Envelope. This is similar to releasing
    *  the key on a piano and letting the sound fade according to the
    *  release level and release time.
    *
    *  @method  triggerRelease
-   *  @param  {Object} input p5.Sound Object or Web Audio Param
+   *  @param  {Object} input p5.sound Object or Web Audio Param
    */
   p5.Env.prototype.triggerRelease = function(input) {
     var now =  p5sound.audiocontext.currentTime;

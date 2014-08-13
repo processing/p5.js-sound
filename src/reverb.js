@@ -59,7 +59,7 @@ define(function (require) {
    *  Connect a source to the reverb, and assign reverb parameters.
    *  
    *  @method  process
-   *  @param  {Object} src     p5.Sound / Web Audio object with a sound
+   *  @param  {Object} src     p5.sound / Web Audio object with a sound
    *                           output.
    *  @param  {[Number]} seconds Duration of the reverb, in seconds.
    *                           Min: 0, Max: 10. Defaults to 3.
@@ -355,7 +355,7 @@ define(function (require) {
    *  Connect a source to the reverb, and assign reverb parameters.
    *  
    *  @method  process
-   *  @param  {Object} src     p5.Sound / Web Audio object with a sound
+   *  @param  {Object} src     p5.sound / Web Audio object with a sound
    *                           output.
    *  @example
    *  <div><code>

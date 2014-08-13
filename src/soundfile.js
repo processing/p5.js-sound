@@ -325,15 +325,13 @@ define(function (require) {
   };
 
   /**
-   *  Toggle whether a sound file is playing or paused.
-   * 
    *  Pauses a file that is currently playing. If the file is not
    *  playing, then nothing will happen.
    *
-   *  Resume playback with .play(), will play from the paused
-   *  position. If p5.SoundFile had been set to loop before it was
-   *  paused, it will continue to loop after it is unpaused with
-   *  .play().
+   *  After pausing, .play() will resume from the paused
+   *  position.
+   *  If p5.SoundFile had been set to loop before it was paused,
+   *  it will continue to loop after it is unpaused with .play().
    *
    *  @method pause
    *  @example
@@ -526,7 +524,7 @@ define(function (require) {
   p5.SoundFile.prototype.fade = p5.SoundFile.prototype.setVolume;
 
   /**
-   * Set the stereo panning of a p5Sound object to
+   * Set the stereo panning of a p5.sound object to
    * a floating point number between -1.0 (left) and 1.0 (right).
    * Default is 0.0 (center).
    *
@@ -657,10 +655,10 @@ define(function (require) {
   };
 
   /**
-   * Returns the duration of a sound file.
+   * Returns the duration of a sound file in seconds.
    *
    * @method duration
-   * @return {Number}     The duration of the soundFile in seconds.
+   * @return {Number} The duration of the soundFile in seconds.
    */
   p5.SoundFile.prototype.duration = function() {
     // Return Duration
@@ -885,7 +883,7 @@ define(function (require) {
 
   /**
    * Connects the output of a p5sound object to input of another
-   * p5Sound object. For example, you may connect a p5.SoundFile to an
+   * p5.sound object. For example, you may connect a p5.SoundFile to an
    * FFT or an Effect. If no parameter is given, it will connect to
    * the master output. Most p5sound objects connect to the master
    * output when they are created.
@@ -918,7 +916,7 @@ define(function (require) {
   /**
    *  Read the Amplitude (volume level) of a p5.SoundFile. The
    *  p5.SoundFile class contains its own instance of the Amplitude
-   *  class to help make it easy to get a microphone's volume level.
+   *  class to help make it easy to get a SoundFile's volume level.
    *  Accepts an optional smoothing value (0.0 < 1.0).
    *  
    *  @method  getLevel

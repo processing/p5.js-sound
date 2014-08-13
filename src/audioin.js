@@ -19,6 +19,7 @@ define(function (require) {
    *  @return {Object} AudioIn
    *  @example
    *  <div><code>
+   *  var mic;
    *  function setup(){
    *    mic = new p5.AudioIn()
    *    mic.start();

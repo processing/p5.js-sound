@@ -9,7 +9,7 @@ define(function (require) {
    *
    *  <p>Note that values greater than 1.0 may lead to digital distortion.</p>
    * 
-   *  <p><b>How This Works</b>: When you load the p5Sound module, it
+   *  <p><b>How This Works</b>: When you load the p5.sound module, it
    *  creates a single instance of p5sound. All sound objects in this
    *  module output to p5sound before reaching your computer's output.
    *  So if you change the amplitude of p5sound, it impacts all of the
