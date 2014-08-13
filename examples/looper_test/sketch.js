@@ -1,4 +1,4 @@
-var l, kick, ding;
+var kick, ding;
 
 function preload() {
   soundFormats('mp3', 'ogg');
@@ -11,16 +11,25 @@ function setup() {
   background(0);
 
 
-  l = new p5.Looper(16);
-  l.setBPM(80);
-  l.addPattern('kick', playKick, [1,0,2,0,1,0.2,5,2,1,0,2,0,1,0.2,5,2]);
-  l.addPattern('snare', playSnare, [0,0,1,0,0,1,0,0,0,0,1,0,0,1,0,0]);
-  l.addPattern('melody', playMelody, [64,0,0,0,65,0,54,0, 64,0,0,0,65,0,54,0]);
-  l.addPattern('bass', playBass, [62,0,0,0,57,0,54,0,60,0,0,0,65,0,54,0]);
-  l.addPattern('ding', playDing, [0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,0]);
+  var a = new p5.Part(16);
+  a.addPhrase('kick', playKick, [1,0,2,0,1,0.2,5,2,1,0,2,0,1,0.2,5,2]);
+  a.addPhrase('snare', playSnare, [0,0,1,0,0,1,0,0,0,0,1,0,0,1,0,0]);
 
-  l.onStep(fireStep); // set a callback that runs every time through this loop
-  l.start();
+  var b = new p5.Part(16);
+  // b.addPhrase('melody', playMelody, [64,0,0,0,65,0,54,0, 64,0,0,0,65,0,54,0]);
+  // b.addPhrase('bass', playBass, [62,0,0,0,57,0,54,0,60,0,0,0,65,0,54,0]);
+  // b.addPhrase('ding', playDing, [0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,0]);
+
+  a.onStep(fireStep); // set a callback that runs every time through this loop
+  b.onStep(fireStep); // set a callback that runs every time through this loop
+
+  var c = new p5.Part(16);
+  c.onStep(fireStep); // set a callback that runs every time through this loop
+
+
+  setBPM(200);
+  var mySong = new p5.Score(a, c);
+  mySong.loop();
 }
 
 function playKick(r) {
@@ -58,20 +67,22 @@ function playMelody(params) {
 function fireStep() {
   var x = random(0,1);
   if (x > .65) {
-    var bass = new p5.Oscillator('sine');
-    bass.freq(midiToFreq( round(random(80, 70) ) ) );
-    // bass.amp(0);
-    bass.start();
-
-    var lfo = new p5.Oscillator();
-    lfo.disconnect();
-    lfo.amp(2000);
-    lfo.start();
-    lfo.freq(.2);
-    lfo.connect(bass.freqNode);
-    var e = new p5.Env(.1, .7, .2, .2);
-    e.play(bass);
+    kick.play();
   }
+  //   var bass = new p5.Oscillator('sine');
+  //   bass.freq(midiToFreq( round(random(80, 70) ) ) );
+  //   // bass.amp(0);
+  //   bass.start();
+
+  //   var lfo = new p5.Oscillator();
+  //   lfo.disconnect();
+  //   lfo.amp(2000);
+  //   lfo.start();
+  //   lfo.freq(.2);
+  //   lfo.connect(bass.freqNode);
+  //   var e = new p5.Env(.1, .7, .2, .2);
+  //   e.play(bass);
+  // }
 }
 
 function playBass(f) {
