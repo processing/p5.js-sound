@@ -53,6 +53,7 @@ define(function (require) {
 
     this._buildImpulse();
     this.connect();
+    p5sound.soundArray.push(this);
   };
 
   /**
@@ -178,6 +179,19 @@ define(function (require) {
     this.convolverNode.buffer = impulse;
   };
 
+  p5.Reverb.prototype.dispose = function() {
+    this.convolverNode.buffer = null;
+    this.convolverNode = null;
+    if (typeof(this.output) !== 'undefined'){
+      this.output.disconnect();
+      this.output = null;
+    }
+    if (typeof(this.panner) !== 'undefined'){
+      this.panner.disconnect();
+      this.panner = null;
+    }
+  };
+
   // =======================================================================
   //                          *** p5.Convolver ***
   // =======================================================================
@@ -265,11 +279,12 @@ define(function (require) {
       this._buildImpulse();
     }
     this.connect();
+    p5sound.soundArray.push(this);
   };
 
   p5.Convolver.prototype = Object.create(p5.Reverb.prototype);
 
-  p5.prototype._registerPreloadFunc('createConvolution');
+  p5.prototype.registerPreloadMethod('createConvolver');
 
   /**
    *  Create a p5.Convolver. Accepts a path to a soundfile 
@@ -460,6 +475,23 @@ define(function (require) {
           break;
         }
       }
+    }
+  };
+
+  p5.Convolver.prototype.dispose = function() {
+    // remove all the Impulse Response buffers
+    for (var i in this.impulses) {
+      this.impulses[i] = null;
+    }
+    this.convolverNode.disconnect();
+    this.concolverNode = null;
+    if (typeof(this.output) !== 'undefined'){
+      this.output.disconnect();
+      this.output = null;
+    }
+    if (typeof(this.panner) !== 'undefined'){
+      this.panner.disconnect();
+      this.panner = null;
     }
   };
 

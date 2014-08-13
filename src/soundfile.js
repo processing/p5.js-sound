@@ -98,7 +98,7 @@ define(function (require) {
   };
 
   // register preload handling of loadSound
-  p5.prototype._registerPreloadFunc('loadSound');
+  p5.prototype.registerPreloadMethod('loadSound');
 
   /**
    *  loadSound() returns a new p5.SoundFile from a specified
@@ -863,7 +863,7 @@ define(function (require) {
   p5.SoundFile.prototype.dispose = function() {
     if (this.buffer && this.source) {
       for (var i = 0; i < this.sources.length - 1; i++){
-        if (this.sources[i] !== null){
+        if (tthis.sources[i] !== null){
           // this.sources[i].disconnect();
           var now = p5sound.audiocontext.currentTime;
           this.sources[i].stop(now);
@@ -871,11 +871,11 @@ define(function (require) {
         }
       }
     }
-    if (this.output !== null){
+    if (typeof(this.output) !== 'undefined'){
       this.output.disconnect();
       this.output = null;
     }
-    if (this.panner !== null){
+    if (typeof(this.panner) !== 'undefined'){
       this.panner.disconnect();
       this.panner = null;
     }
