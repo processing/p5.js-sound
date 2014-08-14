@@ -162,8 +162,10 @@ define(function (require) {
    *  @method analyze
    *  @param {Number} [bins]    Must be a power of two between
    *                             16 and 1024. Defaults to 1024.
-   *  @return {Array} spectrum    Array of amplitude values across
-   *                              the frequency spectrum.
+   *  @return {Array} spectrum    Array of energy (amplitude/volume)
+   *                              values across the frequency spectrum.
+   *                              Lowest energy (silence) = 0, highest
+   *                              possible is 255.
    *  @example
    *  <div><code>
    *  var osc;
@@ -217,6 +219,8 @@ define(function (require) {
    *  frequencies. Accepts Number(s) corresponding
    *  to frequency (in Hz), or a String corresponding to predefined
    *  frequency ranges ("bass", "lowMid", "mid", "highMid", "treble").
+   *  Returns a range between 0 (no energy/volume at that frequency) and
+   *  255 (maximum energy). 
    *  <em>NOTE: analyze() must be called prior to getEnergy(). Analyze()
    *  tells the FFT to analyze frequency data, and getEnergy() uses
    *  the results determine the value at a specific frequency or
@@ -232,7 +236,9 @@ define(function (require) {
    *                                will return average amount of
    *                                energy that exists between the
    *                                two frequencies.
-   *  @return {Number}           
+   *  @return {Number}   Energy   Energy (volume/amplitude) from
+   *                              0 and 255.
+   *                                       
    */
   p5.FFT.prototype.getEnergy = function(frequency1, frequency2) {
     var nyquist = p5sound.audiocontext.sampleRate/2;

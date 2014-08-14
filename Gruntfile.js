@@ -37,8 +37,8 @@ module.exports = function(grunt) {
     },
     mocha: {
       test: {
-        //src: ['test/*.html'],
-        src: ['test/**/*.html'],
+        src: ['test/*.html'],
+        // src: ['test/**/*.html'],
         options: {
           // reporter: 'test/reporter/simple.js',
           reporter: 'Nyan',
@@ -150,6 +150,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-contrib-yuidoc');
   grunt.registerTask('yui', ['yuidoc']);
+  // grunt.loadNpmTasks('grunt-mocha');
+
   grunt.registerTask('default', ['requirejs']);
 
 };
