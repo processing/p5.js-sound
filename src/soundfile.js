@@ -91,7 +91,10 @@ define(function (require) {
     // by default, the panner is connected to the p5s destination
     this.panner.connect(p5sound.input);
 
-    this.load(onload);
+    // it is possible to instantiate a soundfile with no path
+    if (this.url) {
+      this.load(onload);
+    }
 
     // add this p5.SoundFile to the soundArray
     p5sound.soundArray.push(this);
@@ -940,15 +943,34 @@ define(function (require) {
   };
 
   /**
-   *  Reset the buffer source for this SoundFile to a
+   *  Reset the source for this SoundFile to a
    *  new path
    *  @param {String}   path     path to audio file
    *  @param {Function} callback [description]
    */
-  p5.SoundFile.prototype.setBuffer = function(p, callback) {
+  p5.SoundFile.prototype.setPath = function(p, callback) {
     var path = p5.prototype._checkFileFormats(p);
     this.url = path;
     this.load(callback);
+  };
+
+  /**
+   *  Replace the current Audio Buffer with a new Buffer.
+   *  
+   *  @param {Array} buf Array of Float32 Array(s). 2 Float32 Arrays
+   *                     will create a stereo source. 1 will create
+   *                     a mono source.
+   */
+  p5.SoundFile.prototype.setBuffer = function(buf){
+    var ac = p5sound.audiocontext;
+    console.log('setting buffer!');
+    console.log(buf);
+    var newBuffer = ac.createBuffer(2, buf[0].length, ac.sampleRate);
+    for (var channelNum = 0; channelNum < buf.length; channelNum++){
+      var channel = newBuffer.getChannelData(channelNum);
+      channel.set(buf[channelNum]);
+    }
+    this.buffer = newBuffer;
   };
 
 });

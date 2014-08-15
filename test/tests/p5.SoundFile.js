@@ -7,6 +7,7 @@ define(['chai'],
     this.timeout(1000);
 
     var sf;
+    var a = new p5.Amplitude();
 
     after(function(done){
       sf.dispose();
@@ -68,9 +69,11 @@ define(['chai'],
       }, 100)
     });
 
-    it('can getLevel', function() {
+    it('can getLevel', function(done) {
+      expect( sf.isPlaying() ).to.equal(true);
       setTimeout(function() {
         expect(sf.getLevel()).not.equal(0.0);
+        done();
       }, 100)
     });
 
@@ -101,19 +104,25 @@ define(['chai'],
       sf.stop();
       expect( sf.isPlaying() ).to.equal(false);
       sf.play();
+      a.setInput(sf);
       expect( sf.isPlaying() ).to.equal(true);
     });
 
-    it('can change amplitude', function(done){
+    it('can make noise', function(done) {
+      setTimeout(function() {
+        expect(a.getLevel()).to.not.equal(0.0);
+        done();
+      }, 50);
+    });
+
+    it('can set volume', function(done){
       sf.stop();
       sf.play();
       sf.setVolume(0);
-      console.log(sf.output.gain);
       setTimeout(function() {
-        console.log('output gain: ' + sf.output.gain.value);
-        expect( sf.getVolume() ).to.be.closeTo(0.0, 0.3);
+        expect( a.getLevel() ).to.be.closeTo(0.0, 0.3);
         done();
-      }, 55)
+      }, 100)
     });
 
   });

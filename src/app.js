@@ -17,6 +17,7 @@ define(function (require) {
   require('delay');
   require('reverb');
   require('looper');
+  require('soundRecorder');
 
   return p5SOUND;
 

@@ -33,7 +33,6 @@ define(function (require) {
    */
   p5.AudioIn = function() {
     // set up audio input
-    p5sound = p5sound;
     this.input = p5sound.audiocontext.createGain();
     this.output = p5sound.audiocontext.createGain();
 
@@ -41,6 +40,15 @@ define(function (require) {
     this.mediaStream = null;
 
     this.currentSource = 0;
+
+    /**
+     *  Client must allow browser to access their microphone / audioin source.
+     *  Default: false. Will become true when the client enables acces.
+     *
+     *  @property {Boolean} enabled True when client allows browser to access
+     *                              their microphone / audioin source.
+     */
+    this.enabled = false;
 
     // create an amplitude, connect to it by default but not to master out
     this.amplitude = new p5.Amplitude();
@@ -53,7 +61,7 @@ define(function (require) {
       // Chrome supports getSources to list inputs. Dev picks default
       window.MediaStreamTrack.getSources(this._gotSources);
     } else {
-      // Firefox lhas no getSources() but lets user choose their input
+      // Firefox has no getSources() but lets user choose their input
     }
 
     // add to soundArray so we can dispose on close
@@ -82,6 +90,7 @@ define(function (require) {
       navigator.getUserMedia( constraints,
         this._onStream = function(stream) {
         self.stream = stream;
+        self.enabled = true;
         // Wrap a MediaStreamSourceNode around the live input
         self.mediaStream = p5sound.audiocontext.createMediaStreamSource(stream);
         self.mediaStream.connect(self.output);
@@ -98,6 +107,7 @@ define(function (require) {
       window.navigator.getUserMedia( {'audio':true},
         this._onStream = function(stream) {
         self.stream = stream;
+        self.enabled = true;
         // Wrap a MediaStreamSourceNode around the live input
         self.mediaStream = p5sound.audiocontext.createMediaStreamSource(stream);
         self.mediaStream.connect(self.output);

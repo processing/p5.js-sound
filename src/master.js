@@ -59,6 +59,18 @@ define(function (require) {
    */
   p5.soundOut = p5sound;
 
+  /**
+   *  a silent connection to the DesinationNode
+   *  which will ensure that anything connected to it
+   *  will not be garbage collected
+   *  
+   *  @private
+   */
+  p5.soundOut._silentNode = p5sound.audiocontext.createGain();
+  p5.soundOut._silentNode.gain.value = 0;
+  p5.soundOut._silentNode.connect(p5sound.audiocontext.destination);
+
+
   return p5sound;
 
 });
