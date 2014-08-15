@@ -16,6 +16,7 @@ define(function (require) {
   require('filter');
   require('delay');
   require('reverb');
+  require('looper');
 
   return p5SOUND;
 

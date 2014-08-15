@@ -110,8 +110,10 @@ define(function (require) {
    *  @method  play
    *  @param  {Object} input        A p5.sound object or
    *                                Web Audio Param
+   *  @param  {Number} time time from now (in seconds)
    */
-  p5.Env.prototype.play = function(input){
+  p5.Env.prototype.play = function(input, timeFromNow){
+    var unit = input;
     // if no input is given, input is this Envelope's input
     if (!input){
       input = this.control;
@@ -122,17 +124,31 @@ define(function (require) {
     }
     this.control = input;
 
-    var now =  p5sound.audiocontext.currentTime;
+    var now =  p5sound.audiocontext.currentTime + 0.001;
+    var tFromNow = timeFromNow || 0;
+    var t = now + tFromNow;
+
+   // if unit is an oscillator, set its amp to 0 and start it
+    // if (unit.hasOwnProperty('oscillator')){
+    //   window.setTimeout(startThing, t - .02)
+    // }
+    // function startThing() {
+    //   if (!unit.started) {
+    //     unit.amp(0);
+    //     unit.start();
+    //   }
+    // }
+
     input.cancelScheduledValues(now);
     input.setValueAtTime(0, now);
     // attack
-    input.linearRampToValueAtTime(this.attackLevel, now + this.attackTime);
+    input.linearRampToValueAtTime(this.attackLevel, t + this.attackTime);
     // decay to decay level
-    input.linearRampToValueAtTime(this.decayLevel, now + this.attackTime + this.decayTime);
+    input.linearRampToValueAtTime(this.decayLevel, t + this.attackTime + this.decayTime);
     // hold sustain level
-    input.linearRampToValueAtTime(this.sustainLevel, now + this.attackTime + this.decayTime + this.sustainTime);
+    input.linearRampToValueAtTime(this.sustainLevel, t + this.attackTime + this.decayTime + this.sustainTime);
     // release
-    input.linearRampToValueAtTime(this.releaseLevel, now + this.attackTime + this.decayTime + this.sustainTime + this.releaseTime);
+    input.linearRampToValueAtTime(this.releaseLevel, t + this.attackTime + this.decayTime + this.sustainTime + this.releaseTime);
   };
 
   /**
@@ -145,9 +161,14 @@ define(function (require) {
    *
    *  @method  triggerAttack
    *  @param  {Object} input p5.sound Object or Web Audio Param
+   *  @param  {Number} time time from now (in seconds)
    */
-  p5.Env.prototype.triggerAttack = function(input) {
-    var now =  p5sound.audiocontext.currentTime;
+  p5.Env.prototype.triggerAttack = function(input, timeFromNow) {
+    var unit = input;
+    var now =  p5sound.audiocontext.currentTime + 0.001;
+    var tFromNow = timeFromNow || 0;
+    var t = now + tFromNow;
+    this.lastAttack = t;
 
     // if no input is given, input is this Envelope's input
     if (!input){
@@ -159,18 +180,29 @@ define(function (require) {
     }
     this.control = input;
 
-    var currentVal =  input.value;
-    input.cancelScheduledValues(now);
-    input.setValueAtTime(currentVal, now);
+    // if unit is an oscillator, set its amp to 0 and start it
+    // if (unit.hasOwnProperty('oscillator')){
+    //   window.setTimeout(startThing, t - .02)
+    // }
+    // function startThing() {
+    //   if (!unit.started) {
+    //     unit.amp(0);
+    //     unit.start();
+    //   }
+    // }
 
-    input.linearRampToValueAtTime(this.attackLevel, now + this.attackTime);
+    var currentVal =  input.value;
+    input.cancelScheduledValues(t);
+    input.setValueAtTime(currentVal, t);
+
+    input.linearRampToValueAtTime(this.attackLevel, t + this.attackTime);
 
     // attack
-    input.linearRampToValueAtTime(this.attackLevel, now + this.attackTime);
+    input.linearRampToValueAtTime(this.attackLevel, t + this.attackTime);
     // decay to sustain level
-    input.linearRampToValueAtTime(this.decayLevel, now + this.attackTime + this.decayTime);
+    input.linearRampToValueAtTime(this.decayLevel, t + this.attackTime + this.decayTime);
     // hold sustain level
-    input.linearRampToValueAtTime(this.sustainLevel, now + this.attackTime + this.decayTime + this.sustainTime);
+    input.linearRampToValueAtTime(this.sustainLevel, t + this.attackTime + this.decayTime + this.sustainTime);
   };
 
   /**
@@ -181,8 +213,15 @@ define(function (require) {
    *  @method  triggerRelease
    *  @param  {Object} input p5.sound Object or Web Audio Param
    */
-  p5.Env.prototype.triggerRelease = function(input) {
-    var now =  p5sound.audiocontext.currentTime;
+  p5.Env.prototype.triggerRelease = function(input, timeFromNow) {
+    var unit = input;
+    var now =  p5sound.audiocontext.currentTime + 0.001;
+
+    // calculate additional time of the envelope
+    var envTime = this.attackTime + this.decayTime + this.sustainTime - now;
+
+    var tFromNow = timeFromNow || 0;
+    var t = now + tFromNow + envTime;
 
     // if no input is given, input is this Envelope's input
     if (!input){
@@ -198,11 +237,22 @@ define(function (require) {
     }
 
     var currentVal =  input.value;
-    input.cancelScheduledValues(p5sound.audiocontext.currentTime);
-    input.setValueAtTime(currentVal, now);
+    input.cancelScheduledValues(t+ .001);
+    input.setValueAtTime(currentVal, t + .001);
 
     // release
-    input.linearRampToValueAtTime(this.releaseLevel, now + this.releaseTime);
+    // input.linearRampToValueAtTime(this.releaseLevel, t + this.releaseTime);
+    // var rTime = t + this.releaseTime;
+    // window.setTimeout( clearThing, rTime );
+
+    // // if unit is an oscillator, and volume is 0, stop it to save memory
+    // function clearThing() {
+    //   if (unit.hasOwnProperty('oscillator'))
+    //   unit.stop();
+    //   console.log('stopped unit')
+    // }
+
   };
+
 
 });

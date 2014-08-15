@@ -620,8 +620,10 @@ define(function (require) {
    *  
    */
   p5.SoundFile.prototype.rate = function(playbackRate) {
-    if (this.playbackRate === playbackRate && this.source.playbackRate.value === playbackRate) {
-      return;
+    if (this.playbackRate === playbackRate && this.source) {
+      if (this.source.playbackRate.value === playbackRate) {
+        return;
+      }
     }
     this.playbackRate = playbackRate;
     var rate = playbackRate;
