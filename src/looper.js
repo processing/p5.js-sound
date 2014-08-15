@@ -5,10 +5,10 @@ define(function (require) {
 
   var p5sound = require('master');
 
-  var lookahead = 50.0;       // How frequently to call scheduling function 
+  var lookahead = 25.0;       // How frequently to call scheduling function 
                               //(in milliseconds)
   var nextNoteTime = 0.0; // when the next note is due.
-  var scheduleAheadTime = 0.3;  // How far ahead to schedule audio (sec)
+  var scheduleAheadTime = 0.1;  // How far ahead to schedule audio (sec)
                                 // This is calculated from lookahead, and overlaps 
                                 // with next interval (in case the timer is late)
   var timerID = 0;            // setInterval identifier.
