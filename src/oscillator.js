@@ -28,13 +28,22 @@ define(function (require) {
    *  @return {Object}    Oscillator object
    */
   p5.Oscillator = function(freq, type){
+    if (typeof(freq) === 'string') {
+      var f = type;
+      type = freq;
+      freq = f;
+    } if (typeof(type) === 'number') {
+      var f = type;
+      type = freq;
+      freq = f;
+    }
     this.started = false;
     p5sound = p5sound;
 
     // components
     this.oscillator = p5sound.audiocontext.createOscillator();
-    this.f = freq || 440; // frequency
-    this.oscillator.frequency.value = this.f;
+    this.f = freq || 440.0; // frequency
+    this.oscillator.frequency.setValueAtTime(this.f, p5sound.audiocontext.currentTime);
     this.oscillator.type = type || 'sine';
     var o = this.oscillator;
 
@@ -76,7 +85,7 @@ define(function (require) {
    *  @param  {Number} [time] startTime in seconds from now.
    *  @param  {Number} [frequency] frequency in Hz.
    */
-  p5.Oscillator.prototype.start = function(f, time) {
+  p5.Oscillator.prototype.start = function(time, f) {
     if (this.started){
       var now = p5sound.audiocontext.currentTime;
       this.stop(now);
@@ -90,7 +99,6 @@ define(function (require) {
       this.oscillator.type = type;
       // this.oscillator.detune.value = detune;
       this.oscillator.connect(this.output);
-      this.started = true;
       time = time || 0;
       this.oscillator.start(time + p5sound.audiocontext.currentTime);
       this.freqNode = this.oscillator.frequency;
@@ -99,6 +107,14 @@ define(function (require) {
       if (this.mods !== undefined && this.mods.frequency !== undefined){
         this.mods.frequency.connect(this.freqNode);
       }
+
+      // if (time > 0) {
+      //   setTimeout(function() {
+      //     this.started = true;
+      //   }, time * 1000);
+      // } else {
+      this.started = true;
+      // }
     }
   };
 
@@ -115,7 +131,13 @@ define(function (require) {
       var t = time || 0;
       var now = p5sound.audiocontext.currentTime;
       this.oscillator.stop(t + now);
+      // if (time > 0) {
+      //   setTimeout(function() {
+      //     this.started = false;
+      //   }, time * 1000);
+      // } else {
       this.started = false;
+      // }
     }
   };
 

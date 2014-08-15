@@ -4,6 +4,8 @@ define(['chai'],
   var expect = chai.expect;
 
   describe("p5.SoundFile", function() {
+    this.timeout(1000);
+
     var sf;
 
     it('loads a file with soundFormats', function(done){
@@ -101,14 +103,14 @@ define(['chai'],
       this.timeout(500);
       sf.stop();
       sf.play();
-      sf.amp(0.0, 0.2, 0.2);
+      sf.amp(0.0, 0.0, 0.2);
       setTimeout(function(done) {
-        expect(sf.output.gain.value).to.be.closeTo(0.0, 0.1);
+        expect(sf.output.gain.value).to.be.closeTo(0.0, 0.3);
 
         after(function(){
           sf.dispose();
         });
-      }, 450)
+      }, 250)
     });
 
   });
