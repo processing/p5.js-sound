@@ -238,7 +238,8 @@ define(function (require) {
         this.source.gain = p5sound.audiocontext.createGain();
         this.source.connect(this.source.gain);
         // set local amp if provided, otherwise 1
-        this.source.gain.gain.value = amp || 1;
+        var a = amp || 1;
+        this.source.gain.gain.setValueAtTime(a, p5sound.audiocontext.currentTime);
         this.source.gain.connect(this.output); 
       }
       // chrome method of controlling gain without resetting volume
@@ -508,13 +509,14 @@ define(function (require) {
    *                                 t seconds in the future
    */
   p5.SoundFile.prototype.setVolume = function(vol, rampTime, tFromNow) {
-      var rampTime = rampTime || 0;
-      var tFromNow = tFromNow || 0;
-      var now = p5sound.audiocontext.currentTime;
-      var currentVol = this.output.gain.value;
-      this.output.gain.cancelScheduledValues(now);
-      this.output.gain.setValueAtTime(currentVol, now + tFromNow);
-      this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
+    var rampTime = rampTime || 0.0;
+    var tFromNow = tFromNow || 0.0;
+    console.log('rampTime: ' + rampTime + ', + tFromNow: ' + tFromNow);
+    var currentVol = this.output.gain.value;
+    this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
+    this.output.gain.setValueAtTime(currentVol, p5sound.audiocontext.currentTime + tFromNow);
+    this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
+    this.output.gain.linearRampToValueAtTime(vol, p5sound.audiocontext.currentTime + .01 + tFromNow + rampTime);
   };
 
   // same as setVolume, to match Processing Sound
@@ -522,6 +524,10 @@ define(function (require) {
 
   // these are the same thing
   p5.SoundFile.prototype.fade = p5.SoundFile.prototype.setVolume;
+
+  p5.SoundFile.prototype.getVolume = function() {
+    return this.output.gain.value;
+  };
 
   /**
    * Set the stereo panning of a p5.sound object to

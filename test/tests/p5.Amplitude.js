@@ -39,11 +39,12 @@ define(['chai'],
       }, 100);
     });
 
-    it('gets normalized osc level', function() {
+    it('gets normalized osc level', function(done) {
       setTimeout(function(cleanup) {
         oAmp.toggleNormalize(true);
         console.log( 'normalized: ' + oAmp.getLevel() );
         expect( oAmp.getLevel() ).to.be.closeTo(1.0, 0.4);
+        done();
       }, 200);
     });
 

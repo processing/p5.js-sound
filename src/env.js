@@ -84,6 +84,8 @@ define(function (require) {
     this.releaseLevel = releaseLevel || 0;
 
     this.control = null;
+
+    this.timeoutID = null; // store clearThing timeouts
   };
 
   /**
@@ -129,15 +131,17 @@ define(function (require) {
     var t = now + tFromNow;
 
    // if unit is an oscillator, set its amp to 0 and start it
-    // if (unit.hasOwnProperty('oscillator')){
-    //   window.setTimeout(startThing, t - .02)
-    // }
-    // function startThing() {
-    //   if (!unit.started) {
-    //     unit.amp(0);
-    //     unit.start();
-    //   }
-    // }
+    if (unit.hasOwnProperty('oscillator')){
+      if (!unit.started) {
+        unit.amp(this.releaseLevel);
+        unit.start();
+      }
+    }
+
+    if (typeof(this.timeoutID) === 'number') {
+      window.clearTimeout(this.timeoutID);
+
+    }
 
     input.cancelScheduledValues(now);
     input.setValueAtTime(0, now);
@@ -149,6 +153,16 @@ define(function (require) {
     input.linearRampToValueAtTime(this.sustainLevel, t + this.attackTime + this.decayTime + this.sustainTime);
     // release
     input.linearRampToValueAtTime(this.releaseLevel, t + this.attackTime + this.decayTime + this.sustainTime + this.releaseTime);
+    var rTime = (t + this.releaseTime + this.attackTime + this.decayTime + this.sustainTime + this.releaseTime) * 1000;
+    this.timeoutID = window.setTimeout( clearThing, rTime );
+
+    // // if unit is an oscillator, and volume is 0, stop it to save memory
+    function clearThing() {
+      if (unit.hasOwnProperty('oscillator') && unit.started){
+        unit.stop();
+        console.log('stopped unit')
+      }
+    }
   };
 
   /**
@@ -181,15 +195,17 @@ define(function (require) {
     this.control = input;
 
     // if unit is an oscillator, set its amp to 0 and start it
-    // if (unit.hasOwnProperty('oscillator')){
-    //   window.setTimeout(startThing, t - .02)
+    if (unit.hasOwnProperty('oscillator')){
+      if (!unit.started) {
+        unit.amp(this.releaseLevel);
+        unit.start();
+      }
+    }
     // }
-    // function startThing() {
-    //   if (!unit.started) {
-    //     unit.amp(0);
-    //     unit.start();
-    //   }
-    // }
+
+    if (typeof(this.timeoutID) === 'number') {
+      window.clearTimeout(this.timeoutID);
+    }
 
     var currentVal =  input.value;
     input.cancelScheduledValues(t);
@@ -218,10 +234,10 @@ define(function (require) {
     var now =  p5sound.audiocontext.currentTime + 0.001;
 
     // calculate additional time of the envelope
-    var envTime = this.attackTime + this.decayTime + this.sustainTime - now;
+    // var envTime = this.attackTime + this.decayTime + this.sustainTime - now;
 
     var tFromNow = timeFromNow || 0;
-    var t = now + tFromNow + envTime;
+    var t = now + tFromNow + .001;// + envTime;
 
     // if no input is given, input is this Envelope's input
     if (!input){
@@ -236,22 +252,22 @@ define(function (require) {
       input = input.output.gain;
     }
 
-    var currentVal =  input.value;
-    input.cancelScheduledValues(t+ .001);
-    input.setValueAtTime(currentVal, t + .001);
+    // var currentVal =  input.value;
+    input.cancelScheduledValues(t);
+    input.linearRampToValueAtTime(this.sustainLevel, t + .001);
 
     // release
-    // input.linearRampToValueAtTime(this.releaseLevel, t + this.releaseTime);
-    // var rTime = t + this.releaseTime;
-    // window.setTimeout( clearThing, rTime );
+    input.linearRampToValueAtTime(this.releaseLevel, t + this.releaseTime);
+    var rTime = (t + this.releaseTime) * 1000;
+    this.timeoutID = window.setTimeout( clearThing, rTime );
 
     // // if unit is an oscillator, and volume is 0, stop it to save memory
-    // function clearThing() {
-    //   if (unit.hasOwnProperty('oscillator'))
-    //   unit.stop();
-    //   console.log('stopped unit')
-    // }
-
+    function clearThing() {
+      if (unit.hasOwnProperty('oscillator') && unit.started){
+        unit.stop();
+        console.log('stopped unit')
+      }
+    }
   };
 
 

@@ -52,7 +52,6 @@ define(['chai'],
         amp.setInput(osc);
         amp.getLevel();
         setTimeout(function() {
-          console.log(amp.volMax);
           expect(osc.started).to.equal(true);
           expect(amp.volMax).not.equal(0.0);
           osc.stop();

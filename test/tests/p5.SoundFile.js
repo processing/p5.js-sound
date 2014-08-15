@@ -8,6 +8,11 @@ define(['chai'],
 
     var sf;
 
+    after(function(done){
+      sf.dispose();
+      done();
+    });
+
     it('loads a file with soundFormats', function(done){
       p5.prototype.soundFormats('ogg', 'mp3');
       sf = p5.prototype.loadSound('./testAudio/drum', function(){
@@ -99,18 +104,16 @@ define(['chai'],
       expect( sf.isPlaying() ).to.equal(true);
     });
 
-    it('can change amplitude', function(){
-      this.timeout(500);
+    it('can change amplitude', function(done){
       sf.stop();
       sf.play();
-      sf.amp(0.0, 0.0, 0.2);
-      setTimeout(function(done) {
-        expect(sf.output.gain.value).to.be.closeTo(0.0, 0.3);
-
-        after(function(){
-          sf.dispose();
-        });
-      }, 250)
+      sf.setVolume(0);
+      console.log(sf.output.gain);
+      setTimeout(function() {
+        console.log('output gain: ' + sf.output.gain.value);
+        expect( sf.getVolume() ).to.be.closeTo(0.0, 0.3);
+        done();
+      }, 55)
     });
 
   });
