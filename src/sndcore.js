@@ -1,5 +1,5 @@
 /**
- *  p5.sound extends p5 with <a href="http://www.w3.org/TR/webaudio/"
+ *  p5.sound extends p5 with <a href="http://caniuse.com/audio-api"
  *  target="_blank">Web Audio</a> functionality including audio input,
  *  playback, analysis and synthesis.
  *  <br/><br/>
@@ -150,5 +150,28 @@ define(function (require) {
         return false;
     }
   };
+
+  // if it is iOS, we have to have a user interaction to start Web Audio
+  // http://paulbakaus.com/tutorials/html5/web-audio-on-ios/
+  var iOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false );
+
+  if (iOS) {
+    window.addEventListener('touchstart', function() {
+
+    // create empty buffer
+    var buffer = audiocontext.createBuffer(1, 1, 22050);
+    var source = audiocontext.createBufferSource();
+    source.buffer = buffer;
+
+    // connect to output (your speakers)
+    source.connect(audiocontext.destination);
+
+    // play the file
+    source.start(0);
+
+    }, false);
+
+    // TO DO: fake touch event so that audio will just start
+  }
 
 });

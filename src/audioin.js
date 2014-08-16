@@ -14,6 +14,9 @@ define(function (require) {
    *  AudioIn does not connect to p5.sound output by default to prevent
    *  feedback.</p> 
    *
+   *  <p><em>Note: This uses the <a href="http://caniuse.com/stream">getUserMedia/
+   *  Stream</a> API, which is not supported by certain browsers.</em></p>
+   *
    *  @class p5.AudioIn
    *  @constructor
    *  @return {Object} AudioIn
