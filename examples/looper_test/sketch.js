@@ -1,4 +1,11 @@
 var kick, ding;
+var env, osc;
+var bass, lfo, envB;
+
+
+var tri = new p5.TriOsc();
+var saw = new p5.SawOsc();
+var envC;
 
 function preload() {
   soundFormats('mp3', 'ogg');
@@ -10,25 +17,43 @@ function setup() {
   createCanvas(400, 400);
   background(0);
 
+  env = new p5.Env(.01, .9, .2, .2);
+  osc = new p5.Oscillator('triangle');
+  bass = new p5.Oscillator('sine');
+
+  envB = new p5.Env(.1, .7, .2, .2);
+  lfo = new p5.Oscillator();
+  lfo.disconnect();
+  lfo.amp(2000);
+  lfo.start();
+  lfo.freq(.2);
+
+  envC = new p5.Env(.01, .9, .2, .1);
+  tri = new p5.TriOsc();
+  saw = new p5.SawOsc();
+
 
   var a = new p5.Part(16);
   a.addPhrase('kick', playKick, [1,0,2,0,1,0.2,5,2,1,0,2,0,1,0.2,5,2]);
   a.addPhrase('snare', playSnare, [0,0,1,0,0,1,0,0,0,0,1,0,0,1,0,0]);
+  a.addPhrase('ding', playDing, [0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,0]);
+
 
   var b = new p5.Part(16);
-  // b.addPhrase('melody', playMelody, [64,0,0,0,65,0,54,0, 64,0,0,0,65,0,54,0]);
+  b.addPhrase('melody', playMelody, [64,0,0,0,65,0,54,0, 64,0,0,0,65,0,54,0]);
   // b.addPhrase('bass', playBass, [62,0,0,0,57,0,54,0,60,0,0,0,65,0,54,0]);
-  // b.addPhrase('ding', playDing, [0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,0]);
+  b.addPhrase('kick', playKick, [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]);
 
-  a.onStep(fireStep); // set a callback that runs every time through this loop
+  // a.onStep(fireStep); // set a callback that runs every time through this loop
   b.onStep(fireStep); // set a callback that runs every time through this loop
 
-  var c = new p5.Part(16);
-  c.onStep(fireStep); // set a callback that runs every time through this loop
+  // var c = new p5.Part(16);
+  // c.onStep(fireStep); // set a callback that runs every time through this loop
 
 
-  setBPM(200);
-  var mySong = new p5.Score(a, c);
+  setBPM(80);
+  // b.loop();
+  var mySong = new p5.Score(b);
   mySong.loop();
 }
 
@@ -57,44 +82,31 @@ function playMelody(params) {
   var d = 1;// || duration;
   var f = midiToFreq(midiNote);
 
-  var env = new p5.Env(.01, .9, .2, .2);
-  var osc = new p5.Oscillator('triangle');
-  osc.start();
+  // osc.start();
   osc.freq(f);
-  env.triggerAttack(osc);
+  envB.triggerAttack(osc);
 }
 
 function fireStep() {
   var x = random(0,1);
-  if (x > .65) {
-    kick.play();
+  if (x > .95) {
+    // var bass = new p5.Oscillator('sine');
+    bass.freq(midiToFreq( round(random(80, 70) ) ) );
+    // bass.amp(0);
+    // bass.start();
+    lfo.connect(bass.freqNode);
+    // var e = new p5.Env(.1, .7, .2, .2);
+    envB.play(bass);
   }
-  //   var bass = new p5.Oscillator('sine');
-  //   bass.freq(midiToFreq( round(random(80, 70) ) ) );
-  //   // bass.amp(0);
-  //   bass.start();
-
-  //   var lfo = new p5.Oscillator();
-  //   lfo.disconnect();
-  //   lfo.amp(2000);
-  //   lfo.start();
-  //   lfo.freq(.2);
-  //   lfo.connect(bass.freqNode);
-  //   var e = new p5.Env(.1, .7, .2, .2);
-  //   e.play(bass);
-  // }
 }
 
 function playBass(f) {
-  var tri = new p5.TriOsc();
-  var saw = new p5.SawOsc();
-  tri.amp(0);
-  saw.amp(0);
-  tri.start();
-  saw.start();
+  // tri.amp(0);
+  // saw.amp(0);
+  // tri.start();
+  // saw.start();
   tri.freq(midiToFreq(f));
   saw.freq(midiToFreq(f));
-  var e = new p5.Env(.01, .9, .2, .1);
-  e.play(tri);
-  e.play(saw);
+  envC.play(tri);
+  envC.play(saw);
 }

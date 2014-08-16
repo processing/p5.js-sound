@@ -5,7 +5,7 @@ define(function (require) {
 
   var p5sound = require('master');
 
-  var lookahead = 25.0;       // How frequently to call scheduling function 
+  var lookahead = 50.0;       // How frequently to call scheduling function 
                               //(in milliseconds)
   var nextNoteTime = 0.0; // when the next note is due.
   var scheduleAheadTime = 0.1;  // How far ahead to schedule audio (sec)
@@ -17,6 +17,8 @@ define(function (require) {
 
   var bpm = 120;
   var beatLength;
+
+  var mode;
 
   var currentLoop; // which loop is playing now?
   var onStep = function(){};
@@ -40,15 +42,16 @@ define(function (require) {
 
   };
 
-  p5.Part.prototype.start = function( ) {
+  p5.Part.prototype.start = function() {
+    currentStep = 0;
     this.isPlaying = true;
     currentLoop = this; // set currentLoop to this
 
-    if (this.isPlaying) { // start playing
-      currentStep = 0;
+    if (mode !== 'score') { // start playing
       nextNoteTime = p5sound.audiocontext.currentTime;
-      scheduler();    // kick off scheduling
     }
+    scheduler();    // kick off scheduling
+
   };
 
   p5.Part.prototype.loop = function( ) {
@@ -113,12 +116,15 @@ define(function (require) {
     var secondsPerBeat = 60.0 / bpm;    // Notice this picks up the CURRENT 
                                           // tempo value to calculate beat length.
     nextNoteTime += beatLength * secondsPerBeat;    // Add beat length to last beat time
+
     currentStep++;    // Advance the beat number, wrap to zero
-    if (currentStep == currentLoop.length) {
+
+    if (currentStep >= currentLoop.length) {
       currentStep = 0;
       // fire the current loop's onended function
       currentLoop.onended(); 
     }
+
   };
 
   var scheduleNote = function( beatNumber, time ) {
@@ -180,13 +186,16 @@ define(function (require) {
   };
 
   p5.Score.prototype.start = function() {
+    mode = 'score';
     score = this;
     parts[currentPart].start();
+    currentStep = 0;
   };
 
   p5.Score.prototype.stop = function() {
     parts[currentPart].stop();
     currentPart = 0;
+    currentStep = 0;
   };
 
   p5.Score.prototype.pause = function() {
@@ -203,11 +212,12 @@ define(function (require) {
   };
 
   function playNextPart() {
-    currentStep = 0;
     currentPart++;
     if (currentPart >= parts.length) {
+      currentStep = 0;
       score.onended();
     } else {
+      currentStep = 0;
       parts[currentPart].start();
     }
   }
