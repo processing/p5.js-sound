@@ -95,6 +95,34 @@ define(function (require) {
   };
 
   /**
+   *  Reset the envelope with a series of time/value pairs.
+   *
+   *  @method  set
+   *  @param {Number} aTime     Time (in seconds) before level
+   *                                 reaches attackLevel
+   *  @param {Number} aLevel    Typically an amplitude between
+   *                                 0.0 and 1.0
+   *  @param {Number} dTime      Time
+   *  @param {Number} [dLevel]   Amplitude (In a standard ADSR envelope,
+   *                                 decayLevel = sustainLevel)
+   *  @param {Number} [sTime]   Time (in seconds)
+   *  @param {Number} [sLevel]  Amplitude 0.0 to 1.0
+   *  @param {Number} [rTime]   Time (in seconds)
+   *  @param {Number} [rLevel]  Amplitude 0.0 to 1.0
+   */
+  p5.Env.prototype.set = function(t1, l1, t2, l2, t3, l3, t4, l4){
+    this.aTime = t1;
+    this.aLevel = l1;
+    this.dTime = t2 || 0;
+    this.dLevel = l2 || 0;
+    this.sTime = t3 || 0;
+    this.sLevel = l3 || 0;
+    this.rTime = t4 || 0;
+    this.rLevel = l4 || 0;
+  };
+
+
+  /**
    *  
    *  @param  {Object} input       A p5.sound object or
    *                                Web Audio Param
@@ -117,23 +145,32 @@ define(function (require) {
    *  @param  {Number} secondsFromNow time from now (in seconds)
    */
   p5.Env.prototype.play = function(unit, secondsFromNow){
-    var u = unit;
-    if (this.connection !== unit) {
-      console.log('new connection');
-      this.connect(unit);
-    }
     var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
     var t = now + tFromNow;
-
 
     if (typeof(this.timeoutID) === 'number') {
       window.clearTimeout(this.timeoutID);
     }
 
     var currentVal =  this.control.getValue();
-    this.control.cancelScheduledValues(now);
-    this.control.linearRampToValueAtTime(currentVal, now);
+    this.control.cancelScheduledValues(t);
+    this.control.setValueAtTime(currentVal, t);
+
+    var u = unit;
+    if (this.connection !== unit) {
+      this.connect(unit);
+    }
+
+    // if unit is an oscillator, set its amp to 0 and start it
+    if (unit instanceof p5.Oscillator){
+      if (!unit.started) {
+        unit.stop();
+        unit.amp(0);
+        unit.start();
+      }
+    }
+
     // attack
     this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
     // decay to decay level
@@ -154,14 +191,6 @@ define(function (require) {
       }
     }
 
-    // if unit is an oscillator, set its amp to 0 and start it
-    if (this.connection && this.connection.hasOwnProperty('oscillator')){
-      if (!this.connection.started) {
-        this.control.setValue(0);
-        this.connection.start();
-      }
-    }
-
   };
 
   /**
@@ -177,13 +206,9 @@ define(function (require) {
    *  @param  {Number} secondsFromNow time from now (in seconds)
    */
   p5.Env.prototype.triggerAttack = function(u, secondsFromNow) {
-    var unit = u;
-    if (this.connection !== unit) {
-      this.connect(unit);
-      console.log('new connection');
-    }
 
-    var now =  p5sound.audiocontext.currentTime + 0.001;
+
+    var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
     var t = now + tFromNow;
     this.lastAttack = t;
@@ -196,6 +221,22 @@ define(function (require) {
     this.control.cancelScheduledValues(t);
     this.control.linearRampToValueAtTime(0.0, t);
 
+    var unit = u;
+    if (this.connection !== unit) {
+      this.connect(unit);
+      console.log('new connection');
+    }
+
+    // if unit is an oscillator, set its amp to 0 and start it
+    if (unit instanceof p5.Oscillator){
+      if (!unit.started) {
+        unit.stop();
+        unit.amp(0);
+        unit.start();
+        console.log('connect start!');
+      }
+    }
+
     this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
 
     // attack
@@ -204,15 +245,6 @@ define(function (require) {
     this.control.linearRampToValueAtTime(this.dLevel, t + this.aTime + this.dTime);
     // hold sustain level
     this.control.linearRampToValueAtTime(this.sLevel, t + this.aTime + this.dTime + this.sTime);
-
-    // if unit is an unstarted osc, start it
-    if (unit && unit.hasOwnProperty('oscillator')){
-      if (!unit.started) {
-        // unit.amp(this.releaseLevel);
-        unit.start();
-        console.log('env started osc');
-      }
-    }
   };
 
   /**
@@ -228,7 +260,6 @@ define(function (require) {
     var unit = u;
     if (this.connection !== unit) {
       this.connect(unit);
-      console.log('new connection');
     }
 
     var now =  p5sound.audiocontext.currentTime + 0.001;
@@ -250,13 +281,16 @@ define(function (require) {
       if (unit.hasOwnProperty('oscillator') && unit.started){
         unit.amp(0);
         unit.stop();
-        console.log('stopped unit')
+        console.log('stopped');
       }
     }
   };
 
   p5.Env.prototype.connect = function(unit){
+    this.disconnect();
     this.connection = unit;
+
+    // unit.start();
     // assume we're talking about output gain
     // unless given a different audio param
     if (unit instanceof p5.Oscillator ||
@@ -267,22 +301,29 @@ define(function (require) {
         unit instanceof p5.Filter ||
         unit instanceof p5.Delay){
       unit = unit.output.gain;
+      // unit.value = 0;
     }
     if (unit instanceof AudioParam){
       //set the initial value
+      // unit.value = 0;
       unit.setValueAtTime(0, p5sound.audiocontext.currentTime);
     }
     if (unit instanceof p5.Signal){
       unit.setValue(0);
     }
-    // if (unit.input) {
-    //   unit = unit.input;
-    // }
     this.output.connect(unit);
   };
 
   p5.Env.prototype.disconnect = function(unit){
     this.output.disconnect();
+  };
+
+  p5.Env.prototype.add = function(num) {
+    var add = new p5.Signal();
+    add.setValue(num);
+    this.control.connect(add.output.gain);
+    // this.oscMods.push(add.output.gain); //
+    return add;
   };
 
 });

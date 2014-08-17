@@ -34,9 +34,13 @@ define(function (require) {
     this.scalar = ac.createGain();
     this.scalar.gain.maxValue = 10000;
     this.scalar.gain.minValue = -10000;
-
     this.input = ac.createGain();
+    this.input.gain.maxValue = 10000;
+    this.input.gain.minValue = -10000;
     this.output = ac.createGain();
+    this.output.gain.maxValue = 10000;
+    this.output.gain.minValue = -10000;
+
 
     // the ratio of this value to the control signal
     this._syncRatio = 1;
@@ -48,7 +52,8 @@ define(function (require) {
     // signal passes through
     this.input.connect(this.output);
 
-    this.setValue(0);
+    var value = value || 0;
+    this.setValue(value);
   };
 
   p5.Signal.prototype.getValue = function() {
@@ -57,14 +62,18 @@ define(function (require) {
 
 
   p5.Signal.prototype.setValue = function(value) {
-    if (this._syncRatio === 0){
-      value = 0;
+    if (typeof(value) === 'number') {
+      if (this._syncRatio === 0){
+        value = 0;
+      } else {
+        value *= this._syncRatio;
+      }
+      console.log('value: ' + value);
+      // this.scalar.gain.value = value;
+      this.scalar.gain.setValueAtTime(value, ac.currentTime + 0.01);
     } else {
-      value *= this._syncRatio;
+      value.connect(this._syncRatio);
     }
-    console.log('value: ' + value);
-    // this.scalar.gain.value = value;
-    this.scalar.gain.setValueAtTime(value, ac.currentTime + 0.01);
   };
 
   p5.Signal.prototype.setValueAtTime = function(value, time) {
@@ -121,5 +130,74 @@ define(function (require) {
   p5.Signal.prototype.disconnect = function() {
     this.output.disconnect(node);
   };
+
+  p5.Signal.prototype.add = function(num) {
+    var add = new p5.Signal();
+    add.setValue(num);
+    this.connect(add.scalar);
+    // var addOut = p5sound.audiocontext.createGain();
+    // add.connect(addOut);
+    console.log(add.getValue());
+    return add;
+  };
+
+  // additional classes
+
+  p5.SignalAdd = function(num) {
+    var add = new p5.Signal(num);
+    add.setInput = function(input) {
+      // input.connect(add.output.gain);
+      input.connect(add.input);
+    };
+    // input.connect(add.output.gain);
+    return add;
+  };
+
+  p5.SignalMult = function(num, input) {
+    var mult = new p5.Signal();
+    mult.output = mult.input;
+    mult.input.gain.maxValue = 10000;
+    mult.input.gain.minValue = -10000;
+    // mult.scalar.disconnect();
+    // mult.scalar = null;
+    mult.input.gain.value = num;
+    mult.setInput = function(input) {
+      input.connect(mult.input);
+    };
+    return mult;
+  };
+
+  p5.SignalScale = function(inMin, inMax, outMin, outMax) {
+    var scale = new p5.Signal();
+    scale.scalar.disconnect();
+    scale.input.disconnect();
+    //if there are only two args
+    if (arguments.length == 2){
+      outMin = inMin;
+      outMax = inMax;
+      inMin = -1;
+      inMax = 1;
+    }
+    scale._plusInput = new p5.SignalAdd( - inMin);
+
+    scale._scale = new p5.SignalMult((outMax - outMin) / (inMax - inMin));
+
+    scale._plusOutput = new p5.SignalAdd(outMin);
+
+    scale._plusInput.setInput(scale.input);
+    scale._scale.setInput(scale._plusInput.output);
+    scale._plusOutput.setInput(scale._scale.output);
+    scale._plusOutput.connect(scale.output);
+    console.log('here!');
+    // set scaling params
+
+    scale.setInput = function(input) {
+      input.connect(scale.input);
+    };
+
+
+    return scale;
+  }
+    
 
 });

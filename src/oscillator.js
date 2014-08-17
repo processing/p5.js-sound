@@ -107,6 +107,10 @@ define(function (require) {
       if (this.mods !== undefined && this.mods.frequency !== undefined){
         this.mods.frequency.connect(this.freqNode);
       }
+      // if this oscillator is already assigned to modulate other params
+      for (var i in this.oscMods) {
+        this.oscillator.connect( this.oscMods[i] );
+      }
 
       // if (time > 0) {
       //   setTimeout(function() {
@@ -161,17 +165,17 @@ define(function (require) {
       this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
 
       // disconnect any oscillators that were modulating this param
-      if (this.ampMod){
+      // if (this.ampMod){
 
-        this.ampMod.output.disconnect();
-        this.ampMod = null;
-      }
+      //   this.ampMod.output.disconnect();
+      //   this.ampMod = null;
+      // }
 
     }
     else if (vol.output) {
       vol.output.disconnect();
       vol.output.connect(this.output.gain);
-
+      console.log('mod!');
       // keep track of any oscillators that were modulating this param
       this.ampMod = vol;
     }
@@ -209,7 +213,11 @@ define(function (require) {
       var currentFreq = this.oscillator.frequency.value;
       this.oscillator.frequency.cancelScheduledValues(now);
       this.oscillator.frequency.setValueAtTime(currentFreq, now + tFromNow);
-      this.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
+      if (val > 0 ){
+        this.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
+      } else {
+        this.oscillator.frequency.linearRampToValueAtTime(val, tFromNow + rampTime + now);
+      }
 
       // disconnect if frequencies are too low or high, otherwise connect
       // if (val < 20 || val > 20000) {
@@ -218,10 +226,10 @@ define(function (require) {
       //   this.connect(this.connection);
       // }
 
-      if (this.freqMod){
-        this.freqMod.output.disconnect();
-        this.freqMod = null;
-      }
+      // if (this.freqMod){
+      //   this.freqMod.output.disconnect();
+      //   this.freqMod = null;
+      // }
 
     } else if (val.output) {
       val.output.disconnect();
@@ -276,7 +284,9 @@ define(function (require) {
    *  @method  disconnect
    */
   p5.Oscillator.prototype.disconnect = function(unit){
+    // disconnect from specific mods
     this.panner.disconnect(unit);
+    this.oscMods = [];
   };
 
   /**
@@ -350,6 +360,45 @@ define(function (require) {
     // set delay time based on PWM width
     var now = p5sound.audiocontext.currentTime;
     this.dNode.delayTime.linearRampToValueAtTime( map(p, 0, 1.0, 0, 1/this.oscillator.frequency.value), now);
+  };
+
+  // ========================== //
+  // SIGNAL MATH FOR MODULATION //
+  // ========================== //
+
+  // p5.Oscillator.prototype.add = function(num) {
+  //   var add = new p5.Signal();
+  //   add.setValue(num);
+  //   this.oscillator.connect(add.output.gain);
+  //   this.oscMods.push(add.output.gain); //
+  //   return add;
+  // };
+
+  p5.Oscillator.prototype.add = function(num) {
+    var add = new p5.SignalAdd(num);
+    add.setInput(this);
+    this.oscMods.push(add.output.gain);
+    return add;
+  };
+
+  // p5.Oscillator.prototype.mult = function(num) {
+  //   var mult = new p5.Signal();
+  //   mult.output.gain.value = num;
+  //   this.connect(mult.output);
+  //   return mult;
+  // };
+
+  p5.Oscillator.prototype.mult = function(num) {
+    var mult = new p5.SignalMult(num);
+    mult.setInput(this);
+    return mult;
+  };
+
+  p5.Oscillator.prototype.scale = function(inMin, inMax, outMin, outMax) {
+    var scale = new p5.SignalScale(inMin, inMax, outMin, outMax);
+    console.log(scale);
+    this.connect(scale.input);
+    return scale;
   };
 
   /**
