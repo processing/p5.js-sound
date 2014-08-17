@@ -86,7 +86,8 @@ module.exports = function(grunt) {
             'filter': 'src/filter',
             'reverb': 'src/reverb',
             'looper': 'src/looper',
-            'soundRecorder': 'src/soundRecorder'
+            'soundRecorder': 'src/soundRecorder',
+            'signal': 'src/signal'
           },
           useStrict: true,
           wrap: {

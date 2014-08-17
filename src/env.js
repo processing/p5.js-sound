@@ -14,17 +14,17 @@ define(function (require) {
    *  
    *  @class p5.Env
    *  @constructor
-   *  @param {Number} attackTime     Time (in seconds) before level
+   *  @param {Number} aTime     Time (in seconds) before level
    *                                 reaches attackLevel
-   *  @param {Number} attackLevel    Typically an amplitude between
+   *  @param {Number} aLevel    Typically an amplitude between
    *                                 0.0 and 1.0
-   *  @param {Number} decayTime      Time
-   *  @param {Number} [decayLevel]   Amplitude (In a standard ADSR envelope,
+   *  @param {Number} dTime      Time
+   *  @param {Number} [dLevel]   Amplitude (In a standard ADSR envelope,
    *                                 decayLevel = sustainLevel)
-   *  @param {Number} [sustainTime]   Time (in seconds)
-   *  @param {Number} [sustainLevel]  Amplitude 0.0 to 1.0
-   *  @param {Number} [releaseTime]   Time (in seconds)
-   *  @param {Number} [releaseLevel]  Amplitude 0.0 to 1.0
+   *  @param {Number} [sTime]   Time (in seconds)
+   *  @param {Number} [sLevel]  Amplitude 0.0 to 1.0
+   *  @param {Number} [rTime]   Time (in seconds)
+   *  @param {Number} [rLevel]  Amplitude 0.0 to 1.0
    *  @example
    *  <div><code>
    *  var aT = 0.1; // attack time in seconds
@@ -48,44 +48,50 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Env = function(attackTime, attackLevel, decayTime, decayLevel, sustainTime, sustainLevel, releaseTime, releaseLevel){
+  p5.Env = function(t1, l1, t2, l2, t3, l3, t4, l4){
 
     /**
      * @property attackTime
      */
-    this.attackTime = attackTime;
+    this.aTime = t1;
     /**
      * @property attackLevel
      */
-    this.attackLevel = attackLevel;
+    this.aLevel = l1;
     /**
      * @property decayTime
      */
-    this.decayTime = decayTime || 0;
+    this.dTime = t2 || 0;
     /**
      * @property decayLevel
      */
-    this.decayLevel = decayLevel || 0;
+    this.dLevel = l2 || 0;
     /**
      * @property sustainTime
      */
-    this.sustainTime = sustainTime || 0;
+    this.sTime = t3 || 0;
     /**
      * @property sustainLevel
      */
-    this.sustainLevel = sustainLevel || 0;
+    this.sLevel = l3 || 0;
     /**
      * @property releaseTime
      */
-    this.releaseTime = releaseTime || 0;
+    this.rTime = t4 || 0;
     /**
      * @property releaseLevel
      */
-    this.releaseLevel = releaseLevel || 0;
+    this.rLevel = l4 || 0;
 
-    this.control = null;
+    this.output = p5sound.audiocontext.createGain();;
+
+    this.control =  new p5.Signal();
+
+    this.control.connect(this.output);
 
     this.timeoutID = null; // store clearThing timeouts
+
+    this.connection = null; // store connection
   };
 
   /**
@@ -93,12 +99,8 @@ define(function (require) {
    *  @param  {Object} input       A p5.sound object or
    *                                Web Audio Param
    */
-  p5.Env.prototype.setInput = function(input){
-    // assume we're talking about output gain, unless given a different audio param
-    if (input.output !== undefined){
-      input = input.output.gain;
-    }
-    this.control = input;
+  p5.Env.prototype.setInput = function(unit){
+    this.connect(unit);
   };
 
   /**
@@ -110,59 +112,56 @@ define(function (require) {
    *  Web Audio Audio Param.</a>
    *
    *  @method  play
-   *  @param  {Object} input        A p5.sound object or
+   *  @param  {Object} unit        A p5.sound object or
    *                                Web Audio Param
-   *  @param  {Number} time time from now (in seconds)
+   *  @param  {Number} secondsFromNow time from now (in seconds)
    */
-  p5.Env.prototype.play = function(input, timeFromNow){
-    var unit = input;
-    // if no input is given, input is this Envelope's input
-    if (!input){
-      input = this.control;
+  p5.Env.prototype.play = function(unit, secondsFromNow){
+    var u = unit;
+    if (this.connection !== unit) {
+      console.log('new connection');
+      this.connect(unit);
     }
-    // assume we're talking about output gain, unless given a different audio param
-    if (input.output !== undefined){
-      input = input.output.gain;
-    }
-    this.control = input;
-
-    var now =  p5sound.audiocontext.currentTime + 0.001;
-    var tFromNow = timeFromNow || 0;
+    var now =  p5sound.audiocontext.currentTime;
+    var tFromNow = secondsFromNow || 0;
     var t = now + tFromNow;
 
-   // if unit is an oscillator, set its amp to 0 and start it
-    if (unit.hasOwnProperty('oscillator')){
-      if (!unit.started) {
-        unit.amp(this.releaseLevel);
-        unit.start();
-      }
-    }
 
     if (typeof(this.timeoutID) === 'number') {
       window.clearTimeout(this.timeoutID);
-
     }
 
-    input.cancelScheduledValues(now);
-    input.setValueAtTime(0, now);
+    var currentVal =  this.control.getValue();
+    this.control.cancelScheduledValues(now);
+    this.control.linearRampToValueAtTime(currentVal, now);
     // attack
-    input.linearRampToValueAtTime(this.attackLevel, t + this.attackTime);
+    this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
     // decay to decay level
-    input.linearRampToValueAtTime(this.decayLevel, t + this.attackTime + this.decayTime);
+    this.control.linearRampToValueAtTime(this.dLevel, t + this.aTime + this.dTime);
     // hold sustain level
-    input.linearRampToValueAtTime(this.sustainLevel, t + this.attackTime + this.decayTime + this.sustainTime);
+    this.control.linearRampToValueAtTime(this.sLevel, t + this.aTime + this.dTime + this.sTime);
     // release
-    input.linearRampToValueAtTime(this.releaseLevel, t + this.attackTime + this.decayTime + this.sustainTime + this.releaseTime);
-    var rTime = (t + this.releaseTime + this.attackTime + this.decayTime + this.sustainTime + this.releaseTime) * 1000;
-    this.timeoutID = window.setTimeout( clearThing, rTime );
+    this.control.linearRampToValueAtTime(this.rLevel, t + this.aTime + this.dTime + this.sTime + this.rTime);
+    var totTime = (t + this.aTime + this.dTime + this.sTime + this.rTime) * 1000;
+    this.timeoutID = window.setTimeout( clearThing, totTime );
 
     // // if unit is an oscillator, and volume is 0, stop it to save memory
     function clearThing() {
-      if (unit.hasOwnProperty('oscillator') && unit.started){
+      if (unit && unit.hasOwnProperty('oscillator') && unit.started){
+        unit.amp(0);
         unit.stop();
         console.log('stopped unit')
       }
     }
+
+    // if unit is an oscillator, set its amp to 0 and start it
+    if (this.connection && this.connection.hasOwnProperty('oscillator')){
+      if (!this.connection.started) {
+        this.control.setValue(0);
+        this.connection.start();
+      }
+    }
+
   };
 
   /**
@@ -174,51 +173,46 @@ define(function (require) {
    *  Web Audio Param</a>.
    *
    *  @method  triggerAttack
-   *  @param  {Object} input p5.sound Object or Web Audio Param
-   *  @param  {Number} time time from now (in seconds)
+   *  @param  {Object} unit p5.sound Object or Web Audio Param
+   *  @param  {Number} secondsFromNow time from now (in seconds)
    */
-  p5.Env.prototype.triggerAttack = function(input, timeFromNow) {
-    var unit = input;
+  p5.Env.prototype.triggerAttack = function(u, secondsFromNow) {
+    var unit = u;
+    if (this.connection !== unit) {
+      this.connect(unit);
+      console.log('new connection');
+    }
+
     var now =  p5sound.audiocontext.currentTime + 0.001;
-    var tFromNow = timeFromNow || 0;
+    var tFromNow = secondsFromNow || 0;
     var t = now + tFromNow;
     this.lastAttack = t;
-
-    // if no input is given, input is this Envelope's input
-    if (!input){
-      input = this.control;
-    }
-    // assume we're talking about output gain, unless given a different audio param
-    if (input.output !== undefined){
-      input = input.output.gain;
-    }
-    this.control = input;
-
-    // if unit is an oscillator, set its amp to 0 and start it
-    if (unit.hasOwnProperty('oscillator')){
-      if (!unit.started) {
-        unit.amp(this.releaseLevel);
-        unit.start();
-      }
-    }
-    // }
 
     if (typeof(this.timeoutID) === 'number') {
       window.clearTimeout(this.timeoutID);
     }
 
-    var currentVal =  input.value;
-    input.cancelScheduledValues(t);
-    input.setValueAtTime(currentVal, t);
+    // var currentVal =  this.control.getValue(); // broken on FireFox
+    this.control.cancelScheduledValues(t);
+    this.control.linearRampToValueAtTime(0.0, t);
 
-    input.linearRampToValueAtTime(this.attackLevel, t + this.attackTime);
+    this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
 
     // attack
-    input.linearRampToValueAtTime(this.attackLevel, t + this.attackTime);
+    this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
     // decay to sustain level
-    input.linearRampToValueAtTime(this.decayLevel, t + this.attackTime + this.decayTime);
+    this.control.linearRampToValueAtTime(this.dLevel, t + this.aTime + this.dTime);
     // hold sustain level
-    input.linearRampToValueAtTime(this.sustainLevel, t + this.attackTime + this.decayTime + this.sustainTime);
+    this.control.linearRampToValueAtTime(this.sLevel, t + this.aTime + this.dTime + this.sTime);
+
+    // if unit is an unstarted osc, start it
+    if (unit && unit.hasOwnProperty('oscillator')){
+      if (!unit.started) {
+        // unit.amp(this.releaseLevel);
+        unit.start();
+        console.log('env started osc');
+      }
+    }
   };
 
   /**
@@ -227,48 +221,68 @@ define(function (require) {
    *  release level and release time.
    *
    *  @method  triggerRelease
-   *  @param  {Object} input p5.sound Object or Web Audio Param
+   *  @param  {Object} unit p5.sound Object or Web Audio Param
+   *  @param  {Number} secondsFromNow time to trigger the release
    */
-  p5.Env.prototype.triggerRelease = function(input, timeFromNow) {
-    var unit = input;
+  p5.Env.prototype.triggerRelease = function(u, secondsFromNow) {
+    var unit = u;
+    if (this.connection !== unit) {
+      this.connect(unit);
+      console.log('new connection');
+    }
+
     var now =  p5sound.audiocontext.currentTime + 0.001;
+    var tFromNow = secondsFromNow || 0;
+    var t = now + tFromNow;// + envTime;
 
-    // calculate additional time of the envelope
-    // var envTime = this.attackTime + this.decayTime + this.sustainTime - now;
-
-    var tFromNow = timeFromNow || 0;
-    var t = now + tFromNow + .001;// + envTime;
-
-    // if no input is given, input is this Envelope's input
-    if (!input){
-      input = this.control;
-    }
-    // assume we're talking about output gain, unless given a different audio param
-    if (input.output !== undefined){
-      input = input.output.gain;
-    }
-
-    if (input.output !== undefined){
-      input = input.output.gain;
-    }
-
-    // var currentVal =  input.value;
-    input.cancelScheduledValues(t);
-    input.linearRampToValueAtTime(this.sustainLevel, t + .001);
+    var currentVal =  this.control.getValue();
+    this.control.cancelScheduledValues(t);
+    this.control.linearRampToValueAtTime(currentVal, t);
+    this.control.linearRampToValueAtTime(this.sLevel, t);
 
     // release
-    input.linearRampToValueAtTime(this.releaseLevel, t + this.releaseTime);
-    var rTime = (t + this.releaseTime) * 1000;
-    this.timeoutID = window.setTimeout( clearThing, rTime );
+    this.control.linearRampToValueAtTime(this.rLevel, t + this.rTime);
+    var relTime = (t + this.rTime) * 1000;
+    this.timeoutID = window.setTimeout( clearThing, relTime );
 
     // // if unit is an oscillator, and volume is 0, stop it to save memory
     function clearThing() {
       if (unit.hasOwnProperty('oscillator') && unit.started){
+        unit.amp(0);
         unit.stop();
         console.log('stopped unit')
       }
     }
   };
 
+  p5.Env.prototype.connect = function(unit){
+    this.connection = unit;
+    // assume we're talking about output gain
+    // unless given a different audio param
+    if (unit instanceof p5.Oscillator ||
+        unit instanceof p5.SoundFile ||
+        unit instanceof p5.AudioIn ||
+        unit instanceof p5.Reverb ||
+        unit instanceof p5.Noise ||
+        unit instanceof p5.Filter ||
+        unit instanceof p5.Delay){
+      unit = unit.output.gain;
+    }
+    if (unit instanceof AudioParam){
+      //set the initial value
+      unit.setValueAtTime(0, p5sound.audiocontext.currentTime);
+    }
+    if (unit instanceof p5.Signal){
+      unit.setValue(0);
+    }
+    // if (unit.input) {
+    //   unit = unit.input;
+    // }
+    this.output.connect(unit);
+  };
+
+  p5.Env.prototype.disconnect = function(unit){
+    this.output.disconnect();
+  };
 
 });

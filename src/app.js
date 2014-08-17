@@ -8,11 +8,12 @@ define(function (require) {
   require('soundfile');
   require('amplitude');
   require('fft');
+  require('signal');
   require('oscillator');
+  require('env');
   require('pulse');
   require('noise');
   require('audioin');
-  require('env');
   require('filter');
   require('delay');
   require('reverb');

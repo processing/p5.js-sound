@@ -48,8 +48,7 @@ define(function (require) {
      *  Client must allow browser to access their microphone / audioin source.
      *  Default: false. Will become true when the client enables acces.
      *
-     *  @property {Boolean} enabled True when client allows browser to access
-     *                              their microphone / audioin source.
+     *  @property {Boolean} enabled
      */
     this.enabled = false;
 

@@ -53,7 +53,7 @@ define(function (require) {
 
     // param nodes for modulation
     // this.freqNode = o.frequency;
-    this.ampNode = this.output.gain;
+    this.ampNode = this.oscillator.gain;
     this.freqNode = this.oscillator.frequency;
 
     // set default output gain
