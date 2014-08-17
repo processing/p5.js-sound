@@ -157,18 +157,22 @@ define(function (require) {
     this.control.cancelScheduledValues(t);
     this.control.setValueAtTime(currentVal, t);
 
-    var u = unit;
-    if (this.connection !== unit) {
-      this.connect(unit);
-    }
 
-    // if unit is an oscillator, set its amp to 0 and start it
-    if (unit instanceof p5.Oscillator){
-      if (!unit.started) {
-        unit.stop();
-        unit.amp(0);
-        unit.start();
+    if (unit) {
+      if (this.connection !== unit) {
+        this.connect(unit);
       }
+      // if unit is an oscillator, set its amp to 0 and start it
+      if (unit instanceof p5.Oscillator){
+        if (!unit.started) {
+          unit.stop();
+          unit.amp(0);
+          unit.start();
+        }
+      }
+      var totTime = (t + this.aTime + this.dTime + this.sTime + this.rTime) * 1000;
+      this.timeoutID = window.setTimeout( clearThing, totTime );
+      // if unit is an oscillator, and volume is 0, stop it to save memory
     }
 
     // attack
@@ -179,10 +183,7 @@ define(function (require) {
     this.control.linearRampToValueAtTime(this.sLevel, t + this.aTime + this.dTime + this.sTime);
     // release
     this.control.linearRampToValueAtTime(this.rLevel, t + this.aTime + this.dTime + this.sTime + this.rTime);
-    var totTime = (t + this.aTime + this.dTime + this.sTime + this.rTime) * 1000;
-    this.timeoutID = window.setTimeout( clearThing, totTime );
 
-    // // if unit is an oscillator, and volume is 0, stop it to save memory
     function clearThing() {
       if (unit && unit.hasOwnProperty('oscillator') && unit.started){
         unit.amp(0);
@@ -190,6 +191,7 @@ define(function (require) {
         console.log('stopped unit')
       }
     }
+
 
   };
 
@@ -205,7 +207,7 @@ define(function (require) {
    *  @param  {Object} unit p5.sound Object or Web Audio Param
    *  @param  {Number} secondsFromNow time from now (in seconds)
    */
-  p5.Env.prototype.triggerAttack = function(u, secondsFromNow) {
+  p5.Env.prototype.triggerAttack = function(unit, secondsFromNow) {
 
 
     var now =  p5sound.audiocontext.currentTime;
@@ -221,19 +223,18 @@ define(function (require) {
     this.control.cancelScheduledValues(t);
     this.control.linearRampToValueAtTime(0.0, t);
 
-    var unit = u;
-    if (this.connection !== unit) {
-      this.connect(unit);
-      console.log('new connection');
-    }
+    if (unit) {
+      if (this.connection !== unit) {
+        this.connect(unit);
+      }
 
-    // if unit is an oscillator, set its amp to 0 and start it
-    if (unit instanceof p5.Oscillator){
-      if (!unit.started) {
-        unit.stop();
-        unit.amp(0);
-        unit.start();
-        console.log('connect start!');
+      // if unit is an oscillator, set its amp to 0 and start it
+      if (unit instanceof p5.Oscillator){
+        if (!unit.started) {
+          unit.stop();
+          unit.amp(0);
+          unit.start();
+        }
       }
     }
 
@@ -256,15 +257,18 @@ define(function (require) {
    *  @param  {Object} unit p5.sound Object or Web Audio Param
    *  @param  {Number} secondsFromNow time to trigger the release
    */
-  p5.Env.prototype.triggerRelease = function(u, secondsFromNow) {
-    var unit = u;
-    if (this.connection !== unit) {
-      this.connect(unit);
-    }
-
+  p5.Env.prototype.triggerRelease = function(unit, secondsFromNow) {
     var now =  p5sound.audiocontext.currentTime + 0.001;
     var tFromNow = secondsFromNow || 0;
     var t = now + tFromNow;// + envTime;
+
+    if (unit) {
+      if (this.connection !== unit) {
+        this.connect(unit);
+      }
+      var relTime = (t + this.rTime) * 1000;
+      this.timeoutID = window.setTimeout( clearThing, relTime );
+    }
 
     var currentVal =  this.control.getValue();
     this.control.cancelScheduledValues(t);
@@ -273,10 +277,8 @@ define(function (require) {
 
     // release
     this.control.linearRampToValueAtTime(this.rLevel, t + this.rTime);
-    var relTime = (t + this.rTime) * 1000;
-    this.timeoutID = window.setTimeout( clearThing, relTime );
 
-    // // if unit is an oscillator, and volume is 0, stop it to save memory
+    // if unit is an oscillator, and volume is 0, stop it to save memory
     function clearThing() {
       if (unit.hasOwnProperty('oscillator') && unit.started){
         unit.amp(0);
@@ -290,7 +292,6 @@ define(function (require) {
     this.disconnect();
     this.connection = unit;
 
-    // unit.start();
     // assume we're talking about output gain
     // unless given a different audio param
     if (unit instanceof p5.Oscillator ||
@@ -318,12 +319,25 @@ define(function (require) {
     this.output.disconnect();
   };
 
+  // Signal Math
+
   p5.Env.prototype.add = function(num) {
-    var add = new p5.Signal();
-    add.setValue(num);
-    this.control.connect(add.output.gain);
-    // this.oscMods.push(add.output.gain); //
+    var add = new p5.SignalAdd(num);
+    add.setInput(this.control);
     return add;
   };
+
+  p5.Env.prototype.mult = function(num) {
+    var mult = new p5.SignalMult(num);
+    mult.setInput(this.control);
+    return mult;
+  };
+
+  p5.Env.prototype.scale = function(inMin, inMax, outMin, outMax) {
+    var scale = new p5.SignalScale(inMin, inMax, outMin, outMax);
+    scale.setInput(this.control);
+    return scale;
+  };
+
 
 });

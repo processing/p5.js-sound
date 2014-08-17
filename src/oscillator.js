@@ -334,7 +334,6 @@ define(function (require) {
   /**
    *  Modulate any audio param.
    *
-   *  @method  mod
    *  @param  {AudioParam} AudioParam The param to modulate
    */
   p5.Oscillator.prototype.mod = function(unit){
@@ -366,40 +365,31 @@ define(function (require) {
   // SIGNAL MATH FOR MODULATION //
   // ========================== //
 
-  // p5.Oscillator.prototype.add = function(num) {
-  //   var add = new p5.Signal();
-  //   add.setValue(num);
-  //   this.oscillator.connect(add.output.gain);
-  //   this.oscMods.push(add.output.gain); //
-  //   return add;
-  // };
-
   p5.Oscillator.prototype.add = function(num) {
     var add = new p5.SignalAdd(num);
     add.setInput(this);
-    this.oscMods.push(add.output.gain);
+    this.oscMods.push(add.input);
     return add;
   };
-
-  // p5.Oscillator.prototype.mult = function(num) {
-  //   var mult = new p5.Signal();
-  //   mult.output.gain.value = num;
-  //   this.connect(mult.output);
-  //   return mult;
-  // };
 
   p5.Oscillator.prototype.mult = function(num) {
     var mult = new p5.SignalMult(num);
     mult.setInput(this);
+    // this.oscMods.push(mult.input);
     return mult;
   };
 
   p5.Oscillator.prototype.scale = function(inMin, inMax, outMin, outMax) {
     var scale = new p5.SignalScale(inMin, inMax, outMin, outMax);
-    console.log(scale);
-    this.connect(scale.input);
+    scale.setInput(this);
+    // this.oscMods.push(scale.input);
     return scale;
   };
+
+
+  // ============================== //
+  // SinOsc, TriOsc, SqrOsc, SawOsc //
+  // ============================== //
 
   /**
    *  Constructor: <code>new p5.SinOsc()</code>.

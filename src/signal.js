@@ -1,14 +1,14 @@
 define(function (require) {
   'use strict';
 
+  // inspiration for Signal: Tone.js 
+  // https://github.com/TONEnoTONE/Tone.js/blob/master/Tone/signal/Signal.js
+
   var p5sound = require('master');
 
   var ac = p5sound.audiocontext;
   var generator = ac.createOscillator();
   var constant = ac.createWaveShaper();
-
-  // inspiration for Signal: Tone.js 
-  // https://github.com/TONEnoTONE/Tone.js/blob/master/Tone/signal/Signal.js
 
   // generate the waveshaper table which outputs 1 for any input value
   (function() {
@@ -27,7 +27,9 @@ define(function (require) {
   generator.connect(p5.soundOut._silentNode); // noGC
 
   /**
-   *  constant audio-rate signal
+   *  p5.Signal is a constant audio-rate signal.
+   *  
+   *  Used by p5.Oscillator and p5.Envelope for modulation math.
    */
   p5.Signal = function(value) {
     // scales the constant output to desired output
@@ -59,7 +61,6 @@ define(function (require) {
   p5.Signal.prototype.getValue = function() {
     return this.scalar.gain.value;
   }
-
 
   p5.Signal.prototype.setValue = function(value) {
     if (typeof(value) === 'number') {
@@ -131,25 +132,35 @@ define(function (require) {
     this.output.disconnect(node);
   };
 
+  // signals can add / mult / scale themselves
+
   p5.Signal.prototype.add = function(num) {
-    var add = new p5.Signal();
-    add.setValue(num);
-    this.connect(add.scalar);
-    // var addOut = p5sound.audiocontext.createGain();
-    // add.connect(addOut);
-    console.log(add.getValue());
+    var add = new p5.SignalAdd(num);
+    add.setInput(this);
     return add;
   };
 
-  // additional classes
+  p5.Signal.prototype.mult = function(num) {
+    var mult = new p5.SignalMult(num);
+    mult.setInput(this);
+    return mult;
+  };
+
+  p5.Signal.prototype.scale = function(inMin, inMax, outMin, outMax) {
+    var scale = new p5.SignalScale(inMin, inMax, outMin, outMax);
+    scale.setInput(this);
+    return scale;
+  };
+
+  // ======================== //
+  // Signal Add, Mult & Scale //
+  // ======================== //
 
   p5.SignalAdd = function(num) {
     var add = new p5.Signal(num);
     add.setInput = function(input) {
-      // input.connect(add.output.gain);
       input.connect(add.input);
     };
-    // input.connect(add.output.gain);
     return add;
   };
 
@@ -179,25 +190,19 @@ define(function (require) {
       inMax = 1;
     }
     scale._plusInput = new p5.SignalAdd( - inMin);
-
     scale._scale = new p5.SignalMult((outMax - outMin) / (inMax - inMin));
-
     scale._plusOutput = new p5.SignalAdd(outMin);
-
+    // route
     scale._plusInput.setInput(scale.input);
     scale._scale.setInput(scale._plusInput.output);
     scale._plusOutput.setInput(scale._scale.output);
     scale._plusOutput.connect(scale.output);
-    console.log('here!');
-    // set scaling params
 
     scale.setInput = function(input) {
       input.connect(scale.input);
     };
 
-
     return scale;
   }
-    
 
 });
