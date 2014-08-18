@@ -27,9 +27,44 @@ define(function (require) {
   generator.connect(p5.soundOut._silentNode); // noGC
 
   /**
-   *  p5.Signal is a constant audio-rate signal.
+   *  <p>p5.Signal is a constant audio-rate signal used by p5.Oscillator
+   *  and p5.Envelope for modulation math.</p>
+   *
+   *  <p>This is necessary because Web Audio is processed on a seprate clock.
+   *  For example, the p5 draw loop runs about 60 times per second. But
+   *  the audio clock must process samples 44100 times per second. If we
+   *  want to add a value to each of those samples, we can't do it in the
+   *  draw loop, but we can do it by adding a constant-rate audio signal.</p.
    *  
-   *  Used by p5.Oscillator and p5.Envelope for modulation math.
+   *  <p>This class and its children (<b>p5.SignalAdd</b>,
+   *  <b>p5.SignalMultiply</b>, <b>p5.SignalScale</b>) mostly function
+   *  behind the scenes in p5.sound.
+   *  If you want to work directly with audio signals for modular
+   *  synthesis, check out the source of this idea,
+   *  <a href='http://bit.ly/1oIoEng' target=_'blank'>tone.js.</a></p>
+   *
+   *  @class  p5.Signal
+   *  @constructor
+   *  @example
+   *  <div><code>
+   *  function setup() {
+   *    carrier = new p5.Oscillator('sine');
+   *    carrier.amp(1); // set amplitude
+   *    carrier.freq(220); // set frequency
+   *    carrier.start(); // start oscillating
+   *    
+   *    modulator = new p5.Oscillator('sawtooth');
+   *    modulator.disconnect();
+   *    modulator.amp(1);
+   *    modulator.freq(4);
+   *    modulator.start();
+   *
+   *    // modulator's default amplitude range is -1 to 1.
+   *    // Multiply it by -200, so the range is -200 to 200
+   *    // then add 220 so the range is 20 to 420
+   *    carrier.freq( modulator.mult(-200).add(220) );
+   *  }
+   *  </code></div>
    */
   p5.Signal = function(value) {
     // scales the constant output to desired output
@@ -57,10 +92,21 @@ define(function (require) {
     this.setValue(value);
   };
 
+  /**
+   *  Get the Signal Value. This is not currently working
+   *  because of browser issues so it is not in the docs.
+   *
+   *  @return {Number} Signal value
+   */
   p5.Signal.prototype.getValue = function() {
     return this.scalar.gain.value;
   }
 
+  /**
+   *  Set the value of a signal.
+   *  
+   *  @param {Number} value
+   */
   p5.Signal.prototype.setValue = function(value) {
     if (typeof(value) === 'number') {
       if (this._syncRatio === 0){
@@ -75,6 +121,13 @@ define(function (require) {
     }
   };
 
+  /**
+   *  setValueAtTime is similar to the Web Audio API AudioParam
+   *  method of the same name.
+   *  
+   *  @param {Number} value Signal value
+   *  @param {Number} time  time, in seconds from now
+   */
   p5.Signal.prototype.setValueAtTime = function(value, time) {
     value *= this._syncRatio;
     var t = time || 0;
@@ -106,6 +159,20 @@ define(function (require) {
     this.scalar.gain.exponentialRampToValueAtTime(value, t + 0.01);
   };
 
+  /**
+   *  Fade to value, for smooth transitions
+   *
+   *  @method  fade
+   *  @param  {Number} value          Value to set this signal
+   *  @param  {[Number]} secondsFromNow Length of fade, in seconds from now
+   */
+  p5.Signal.prototype.fade = function(value, secondsFromNow) {
+    var s = secondsFromNow || 0;
+    var t = ac.currentTime + s + 0.01;
+    value *= this._syncRatio;
+    this.scalar.gain.linearRampToValueAtTime(value, t);
+  };
+
   p5.Signal.prototype.dispose = function() {
     // disconnect everything
     this.output.disconnect();
@@ -114,6 +181,24 @@ define(function (require) {
     this.scalar = null;
   };
 
+  /**
+   *  Connect a p5.sound object or Web Audio node to this
+   *  p5.Signal so that its amplitude values can be scaled.
+   *  
+   *  @method  setInput
+   *  @param {Object} input
+   */
+  p5.Signal.prototype.setInput = function(_input) {
+    _input.connect(this.input);
+  };
+
+  /**
+   *  Connect a p5.Signal to an object, such a AudioParam
+   *  
+   *  @method connect
+   *  @param  {Object} node An object that accepts a signal as input
+   *                        such as a Web Audio API AudioParam
+   */
   p5.Signal.prototype.connect = function(node) {
     // zero it out so that Signal can take control
     if (node instanceof p5.Signal) {
@@ -129,24 +214,58 @@ define(function (require) {
     this.output.connect(node);
   };
 
+  /**
+   *  Disconnect the signal
+   *
+   *  @method disconnect
+   *  @return {[type]} [description]
+   */
   p5.Signal.prototype.disconnect = function() {
     this.output.disconnect(node);
   };
 
   // signals can add / mult / scale themselves
 
+  /**
+   *  Add a constant value to this audio signal,
+   *  and return the resulting audio signal. Does
+   *  not change the value of the original signal.
+   *  
+   *  @param {Number} number
+   *  @return {p5.SignalAdd}
+   */
   p5.Signal.prototype.add = function(num) {
     var add = new p5.SignalAdd(num);
     add.setInput(this);
     return add;
   };
 
+  /**
+   *  Multiply this signal by a constant value,
+   *  and return the resulting audio signal. Does
+   *  not change the value of the original signal.
+   *  
+   *  @param {Number} number to multiply
+   *  @return {p5.SignalMult}
+   */
   p5.Signal.prototype.mult = function(num) {
     var mult = new p5.SignalMult(num);
     mult.setInput(this);
     return mult;
   };
 
+  /**
+   *  Scale this signal value to a given range,
+   *  and return the result as an audio signal. Does
+   *  not change the value of the original signal.
+   *  
+   *  @param {Number} number to multiply
+   *  @param  {Number} inMin  input range minumum
+   *  @param  {Number} inMax  input range maximum
+   *  @param  {Number} outMin input range minumum
+   *  @param  {Number} outMax input range maximum
+   *  @return {p5.SignalScale}
+   */
   p5.Signal.prototype.scale = function(inMin, inMax, outMin, outMax) {
     var scale = new p5.SignalScale(inMin, inMax, outMin, outMax);
     scale.setInput(this);
@@ -159,23 +278,40 @@ define(function (require) {
 
  p5.SignalAdd = function(num) {
     var add = new p5.Signal(num);
-    add.setInput = function(input) {
-      input.connect(add.input);
-    };
     return add;
   };
 
-  p5.SignalMult = function(num, input) {
+  /**
+   *  Multiply one signal by one constant value
+   *  using setInput(signal), setValue(value).
+   *  Or, multiply two signals together using
+   *  setInput(signal), setValue(signal), 
+   *
+   *  @method  signalMult
+   *  @param {[type]} num   [description]
+   *  @param {[type]} input [description]
+   *  @return {p5.SignalMult} Signal Returns the multiplied signal
+   *                                 as a p5.SignalMult object
+   */
+  p5.SignalMult = function(num, _input) {
     var mult = new p5.Signal();
     mult.output = mult.input;
     mult.input.gain.maxValue = 10000;
     mult.input.gain.minValue = -10000;
-    // mult.scalar.disconnect();
-    // mult.scalar = null;
-    mult.input.gain.value = num;
-    mult.setInput = function(input) {
-      input.connect(mult.input);
-    };
+    mult.setValue = function(value) {
+      if (typeof(value) === 'number') {
+        this.input.gain.value = value;
+      } else {
+        // multiply
+        value.connect(this.input.gain);
+      }
+    }
+    if (num){
+      mult.setValue(num);
+    }
+    if (_input) {
+      mult.setInput(_input);
+    }
     return mult;
   };
 
@@ -198,10 +334,6 @@ define(function (require) {
     scale._scale.setInput(scale._plusInput.output);
     scale._plusOutput.setInput(scale._scale.output);
     scale._plusOutput.connect(scale.output);
-
-    scale.setInput = function(input) {
-      input.connect(scale.input);
-    };
 
     return scale;
   }

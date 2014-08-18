@@ -10,7 +10,8 @@ define(function (require) {
    *  Typically, envelopes are used to control the output volume
    *  of an object, a series of fades referred to as Attack, Decay,
    *  Sustain and Release (ADSR). But p5.Env can control any
-   *  Web Audio Param.</p>
+   *  Web Audio Param, for example it can be passed to an Oscillator
+   *  frequency like osc.freq(env) </p>
    *  
    *  @class p5.Env
    *  @constructor
@@ -42,9 +43,9 @@ define(function (require) {
    *  function setup() {
    *    env = new p5.Env(aT, aL, dT, dL, sT, sL, rT);
    *    triOsc = new p5.Oscillator('triangle');
-   *    triOsc.amp(0);
+   *    triOsc.amp(env); // give the env control of the triOsc's amp
    *    triOsc.start();
-   *    env.play(triOsc);
+   *    env.play();
    *  }
    *  </code></div>
    */
@@ -155,7 +156,7 @@ define(function (require) {
 
     var currentVal =  this.control.getValue();
     this.control.cancelScheduledValues(t);
-    this.control.setValueAtTime(currentVal, t);
+    this.control.fade(currentVal);
 
 
     if (unit) {
@@ -220,6 +221,7 @@ define(function (require) {
 
     // var currentVal =  this.control.getValue(); // broken on FireFox
     this.control.cancelScheduledValues(t);
+    this.control.setCurrentValueNow();
     this.control.linearRampToValueAtTime(0.0, t);
 
     if (unit) {
@@ -244,10 +246,10 @@ define(function (require) {
     // decay to sustain level
     this.control.linearRampToValueAtTime(this.dLevel, t + this.aTime + this.dTime);
 
-    if (this.sLevel > 0) {
+    // if (this.sLevel > 0) {
       // hold sustain level
-      this.control.linearRampToValueAtTime(this.sLevel, t + this.aTime + this.dTime + this.sTime);
-    }
+    this.control.linearRampToValueAtTime(this.sLevel, t + this.aTime + this.dTime + this.sTime);
+    // }
   };
 
   /**
@@ -263,22 +265,45 @@ define(function (require) {
     var now =  p5sound.audiocontext.currentTime + 0.001;
     var tFromNow = secondsFromNow || 0;
     var t = now + tFromNow;// + envTime;
+    var relTime;
 
     if (unit) {
       if (this.connection !== unit) {
         this.connect(unit);
       }
-      var relTime = (t + this.rTime) * 1000;
-      this.timeoutID = window.setTimeout( clearThing, relTime );
     }
 
-    var currentVal =  this.control.getValue();
     this.control.cancelScheduledValues(t);
-    this.control.linearRampToValueAtTime(currentVal, t);
-    this.control.linearRampToValueAtTime(this.sLevel, t);
 
-    // release
-    this.control.linearRampToValueAtTime(this.rLevel, t + this.rTime);
+    // release based on how much time has passed since this.lastAttack
+    if ( (now - this.lastAttack) > (this.aTime + this.dTime + this.sTime + this.rTime) ) {
+      this.control.setCurrentValueNow();
+      this.control.linearRampToValueAtTime(this.sLevel, t + this.sTime);
+      this.control.linearRampToValueAtTime(this.rLevel, t + this.sTime + this.rTime);
+      relTime = t + this.rTime;
+      console.log('2');
+    }
+    else if ( (now - this.lastAttack) > (this.aTime + this.dTime) ) {
+      this.control.setCurrentValueNow();
+      this.control.linearRampToValueAtTime(this.dLevel, t + this.dTime);
+      this.control.linearRampToValueAtTime(this.sLevel, t + this.dTime + this.sTime);
+      this.control.linearRampToValueAtTime(this.rLevel, t + this.dTime + this.sTime + this.rTime);
+      console.log('1');
+      relTime = t + this.sTime + this.rTime;
+    } 
+    else if ( (now - this.lastAttack) > (this.aTime) ) {
+      this.control.setCurrentValueNow();
+      this.control.linearRampToValueAtTime(this.dLevel, t + this.dTime);
+      this.control.linearRampToValueAtTime(this.sLevel, t + this.dTime + this.sTime);
+      this.control.linearRampToValueAtTime(this.rLevel, t + this.dTime + this.sTime + this.rTime);
+      console.log('th0is');
+      relTime = t + this.dTime + this.sTime + this.rTime;
+    }
+
+    if (unit) {
+      var clearTime = relTime * 1000;
+      this.timeoutID = window.setTimeout( clearThing, clearTime );
+    }
 
     // if unit is an oscillator, and volume is 0, stop it to save memory
     function clearThing() {

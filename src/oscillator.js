@@ -327,16 +327,6 @@ define(function (require) {
   };
 
   /**
-   *  Modulate any audio param.
-   *
-   *  @param  {AudioParam} AudioParam The param to modulate
-   */
-  p5.Oscillator.prototype.mod = function(unit){
-    unit.cancelScheduledValues(p5sound.audiocontext.currentTime);
-    this.output.connect(unit);
-  };
-
-  /**
    *  Set the phase of an oscillator between 0.0 and 1.0
    *  
    *  @method  phase
