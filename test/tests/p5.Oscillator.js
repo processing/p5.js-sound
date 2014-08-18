@@ -61,6 +61,18 @@ define(['chai'],
       }, 1);
     });
 
+    it('can set the frequency', function(done){
+      var currentFreq = osc.getFreq();
+      osc.freq(220, 0, 0.15);
+      osc.start();
+      expect(osc.getFreq()).to.equal(currentFreq);
+      setTimeout(function(){
+        expect(osc.getFreq()).to.equal(220);
+        osc.stop();
+        done();
+      }, 15);
+    });
+
     it('can start in the future', function(done) {
       expect(osc.started).to.equal(false);
       osc.start(0.05);
@@ -73,6 +85,8 @@ define(['chai'],
         done();
       }, 55);
     });
+
+
 
   });
 });

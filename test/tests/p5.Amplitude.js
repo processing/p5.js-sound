@@ -13,9 +13,6 @@ define(['chai'],
     });
 
     after(function(done){
-      // amp.getLevel();
-      // var ac = p5.prototype.getAudioContext();
-      // expect( amp.getLevel() ).to.not.equal(0.0);
       expect( amp.getLevel() ).to.not.equal(1.0);
       osc.dispose();
       sf.dispose();
@@ -34,7 +31,7 @@ define(['chai'],
 
     it('gets oscillator level', function() {
       setTimeout(function() {
-        console.log( 'unnormalized: ' + oAmp.getLevel() );
+        // console.log( 'unnormalized: ' + oAmp.getLevel() );
         expect( oAmp.getLevel() ).to.be.closeTo(0.55, 0.25);
       }, 100);
     });
@@ -42,7 +39,7 @@ define(['chai'],
     it('gets normalized osc level', function(done) {
       setTimeout(function(cleanup) {
         oAmp.toggleNormalize(true);
-        console.log( 'normalized: ' + oAmp.getLevel() );
+        // console.log( 'normalized: ' + oAmp.getLevel() );
         expect( oAmp.getLevel() ).to.be.closeTo(1.0, 0.4);
         done();
       }, 200);
@@ -64,7 +61,7 @@ define(['chai'],
     it('stop getting level', function(done) {
       sf.stop();
       setTimeout(function() {
-        console.log( amp.getLevel() );
+        // console.log( amp.getLevel() );
         done();
       }, 10);
     });

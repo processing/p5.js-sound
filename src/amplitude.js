@@ -124,17 +124,13 @@ define(function (require) {
 
     // if it is a p5.Signal
     else if (source instanceof p5.Signal) {
-      console.log('signal!');
       source.output.connect(this.processor);
     }
     // connect to the sound if it is available
     else if (source) {
-      console.log('source!');
-
       source.connect(this.processor);
       this.processor.disconnect();
       this.processor.connect(this.output);
-      console.log('source connected');
     }
 
     // otherwise, connect to the master out of p5s instance (default)

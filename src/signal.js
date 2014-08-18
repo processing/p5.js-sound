@@ -205,14 +205,8 @@ define(function (require) {
       node.setValue(0);
     }
     else if (node instanceof AudioParam) {
-      // node = node.gain;
-      // node.value = 0;
       node.setValueAtTime(0, ac.currentTime);
-      console.log('setting to zero');
     }
-    // else {
-    //   node.setValueAtTime(0, ac.currentTime);
-    // }
     this.output.connect(node);
   };
 

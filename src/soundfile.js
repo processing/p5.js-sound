@@ -440,7 +440,6 @@ define(function (require) {
     if (this.playing !== null){
       return this.playing;
     } else {
-      console.log('null');
       return false;
     }
   };
@@ -514,7 +513,6 @@ define(function (require) {
   p5.SoundFile.prototype.setVolume = function(vol, rampTime, tFromNow) {
     var rampTime = rampTime || 0.0;
     var tFromNow = tFromNow || 0.0;
-    console.log('rampTime: ' + rampTime + ', + tFromNow: ' + tFromNow);
     var currentVol = this.output.gain.value;
     this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
     this.output.gain.setValueAtTime(currentVol, p5sound.audiocontext.currentTime + tFromNow);
@@ -963,8 +961,6 @@ define(function (require) {
    */
   p5.SoundFile.prototype.setBuffer = function(buf){
     var ac = p5sound.audiocontext;
-    console.log('setting buffer!');
-    console.log(buf);
     var newBuffer = ac.createBuffer(2, buf[0].length, ac.sampleRate);
     for (var channelNum = 0; channelNum < buf.length; channelNum++){
       var channel = newBuffer.getChannelData(channelNum);
