@@ -4,7 +4,7 @@
     "type": "git",
     "url": "https://github.com/therewasaguy/p5.sound.js.git"
   },
-  "version": "0.122",
+  "version": "0.14",
   "devDependencies": {
     "grunt": "~0.4.2",
     "grunt-contrib-jshint": "~0.6.3",
