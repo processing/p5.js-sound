@@ -19,7 +19,7 @@ p5.sound brings the [Processing](http://processing.org) approach to [Web Audio](
 
 Examples
 ========
-Check out **[p5js.org/learn](http://p5js.org/learn/)**: sound examples with code that you can edit in the browser. More examples can be found in the [examples](https://github.com/therewasaguy/p5.sound/tree/master/examples) folder and they are online [here](jasonsigal.cc/p5sound/examples)
+Check out **[p5js.org/learn](http://p5js.org/learn/)**: sound examples with code that you can edit in the browser. More examples can be found in the [examples](https://github.com/therewasaguy/p5.sound/tree/master/examples) folder and they are online [here](http://jasonsigal.cc/p5sound/examples)
 
 Latest Version
 ========
