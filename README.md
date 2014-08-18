@@ -1,6 +1,10 @@
 p5.sound
 ========
-p5.sound brings the [Processing](http://processing.org) approach to [Web Audio](http://w3.org/TR/webaudio/) as an addon for [p5.js](github.com/lmccart/p5.js).
+p5.sound brings the [Processing](http://processing.org) approach to [Web Audio](http://w3.org/TR/webaudio/) as an addon for [p5.js](github.com/lmccart/p5.js). 
+
+Documentation
+============
+[p5js.org](http://p5js.org/reference/#/libraries/p5.sound) has interactive documentation / examples. Here is an overview of what p5.sound offers:
 
 - **p5.SoundFile** [[source](https://github.com/therewasaguy/p5.sound/blob/master/src/soundfile.js) /  [docs](http://p5js.org/reference/#/p5.SoundFile)]:  Load and play sound files, manipulate playback
 - **p5.Amplitude** [[source](https://github.com/therewasaguy/p5.sound/blob/master/src/amplitude.js) /  [docs](http://p5js.org/reference/#/p5.Amplitude)]: Get the current volume of a sound.
@@ -16,10 +20,11 @@ p5.sound brings the [Processing](http://processing.org) approach to [Web Audio](
 - **p5.SoundRecorder** [ [source](https://github.com/therewasaguy/p5.sound/blob/master/src/soundrecorder.js) ]: record sound for playback / save the .wav
 - **Metronome / Sequencing** [ [source](https://github.com/therewasaguy/p5.sound/blob/master/src/looper.js) ]: Sequencing patterns / phrases with loopable p5.Part and p5.Score is currently in development.
 
-
 Examples
 ========
-Check out **[p5js.org/learn](http://p5js.org/learn/)**: sound examples with code that you can edit in the browser. More examples can be found in the [examples](https://github.com/therewasaguy/p5.sound/tree/master/examples) folder and they are online [here](http://jasonsigal.cc/p5sound/examples)
+Check out **[p5js.org/learn](http://p5js.org/learn/)**! All the examples have code that you can edit in the browser.
+
+More examples can be found in the [examples](https://github.com/therewasaguy/p5.sound/tree/master/examples) folder and they are online [here](http://jasonsigal.cc/p5sound/examples)
 
 Latest Version
 ========
