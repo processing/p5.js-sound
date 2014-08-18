@@ -1,3 +1,10 @@
+TO DO list
+========
+
+This is a list of things that we hope to accomplish with p5.sound. If you want to work on one of these, or discuss an idea, feel free to make a github issue. Got something to add to the list? We'd love to hear it!
+
+- Eliminate the click that occurs if an envelope re-triggers an oscillator before it finishes the envelope.
+
 - Make a 'p5.Panner' class, rather than writing unique panner code for each class. In the process, can we optimize the panner? Provide methods for 3D panning?
 
 - Figure out a way to keep track of connections between objects. From there, .disconnect() can accept a specific object rather than disconnecting all output.
