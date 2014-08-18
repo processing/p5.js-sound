@@ -41,6 +41,7 @@ define(function (require) {
   p5.Pulse = function(freq, w) {
     p5.Oscillator.call(this, freq, 'sawtooth');
 
+    this.output.disconnect();
     // width of PWM, should be betw 0 to 1.0
     this.w = w || 0;
 
@@ -57,8 +58,9 @@ define(function (require) {
     this.dcGain.connect(this.output);
 
     // set delay time based on PWM width
-    var mW = this.w/this.oscillator.frequency.value;
-    this.dNode.delayTime.setValueAtTime(mW, p5sound.audiocontext.currentTime)
+    this.f = freq || 440;
+    var mW = map(this.w, 0, 1.0, 0, 1/this.f);
+    this.dNode.delayTime.value = mW;
     this.dcGain.gain.value = 1.7*(0.5-this.w);
 
     this.oscillator.disconnect();
@@ -71,8 +73,8 @@ define(function (require) {
     this.osc2.disconnect();
     this.osc2.output.gain.minValue = -10;
     this.osc2.output.gain.maxValue = 10;
-    this.osc2.output.gain.value = -1; // inverted amplitude
-    this.osc2.panner.connect(this.dNode);
+    this.osc2.amp(-1); // inverted amplitude
+    this.osc2.output.connect(this.dNode);
     this.dNode.connect(this.output);
 
     this.output.connect(this.panner);
@@ -92,8 +94,11 @@ define(function (require) {
     if (w <= 1.0 && w >= 0.0) {
       this.w = w;
       // set delay time based on PWM width
-      var mW = this.w/this.oscillator.frequency.value;
-      this.dNode.delayTime.setValueAtTime(mW, p5sound.audiocontext.currentTime)
+
+      // var mW = map(this.w, 0, 1.0, 0, 1/this.f);
+      var mW = this.w / this.f;
+      console.log(mW);
+      this.dNode.delayTime.value = mW;
     }
 
     this.dcGain.gain.value = 1.7*(0.5-this.w);
@@ -121,6 +126,8 @@ define(function (require) {
       this.freqNode = [this.oscillator.frequency, this.osc2.oscillator.frequency];
 
       // start dcOffset, too
+      this.dcOffset = createDCOffset();
+      this.dcOffset.connect(this.dcGain);
       this.dcOffset.start(t + now);
 
       // if LFO connections depend on these oscillators
