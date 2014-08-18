@@ -350,6 +350,22 @@ define(function (require) {
   // SIGNAL MATH FOR MODULATION //
   // ========================== //
 
+  /**
+   *  Add a value to the p5.Oscillator's output amplitude,
+   *  and return the result in the form of a p5.Signal. 
+   *  This method does not add to the p5.Oscillator itself,
+   *  — the returned p5.Signal handles the math.
+   *  This is useful for modulating parameters
+   *  with the Oscillator.
+   *  
+   *  p5.Oscillator's amplitude. 
+   *  on this oscillator's signal.
+   *
+   *  @method  add
+   *  @param {Number} number Constant number to add
+   *  @return {p5.Signal} p5.Signal a p5.Signal does the math
+   *  
+   */
   p5.Oscillator.prototype.add = function(num) {
     var add = new p5.SignalAdd(num);
     add.setInput(this);

@@ -132,6 +132,10 @@ define(function (require) {
     this.connect(unit);
   };
 
+  p5.Env.prototype.ctrl = function(unit){
+    this.connect(unit);
+  };
+
   /**
    *  Play tells the envelope to start acting on a given input.
    *  If the input is a p5.sound object (i.e. AudioIn, Oscillator,
@@ -141,14 +145,14 @@ define(function (require) {
    *  Web Audio Audio Param.</a>
    *
    *  @method  play
-   *  @param  {Object} unit        A p5.sound object or
-   *                                Web Audio Param
+   *  @param  {Object} unit         A p5.sound object or
+   *                                Web Audio Param.
    *  @param  {Number} secondsFromNow time from now (in seconds)
    */
   p5.Env.prototype.play = function(unit, secondsFromNow){
     var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
-    var t = now + tFromNow;
+    var t = now + tFromNow + 0.001;
 
     if (typeof(this.timeoutID) === 'number') {
       window.clearTimeout(this.timeoutID);
@@ -156,24 +160,22 @@ define(function (require) {
 
     var currentVal =  this.control.getValue();
     this.control.cancelScheduledValues(t);
-    this.control.fade(currentVal);
+    // this.control.fade(currentVal, now + tFromNow);
+    this.control.fade(0, t);
 
 
     if (unit) {
       if (this.connection !== unit) {
         this.connect(unit);
       }
-      // if unit is an oscillator, set its amp to 0 and start it
-      if (unit instanceof p5.Oscillator){
-        if (!unit.started) {
-          unit.stop();
-          unit.amp(0);
-          unit.start();
-        }
-      }
-      var totTime = (t + this.aTime + this.dTime + this.sTime + this.rTime) * 1000;
-      this.timeoutID = window.setTimeout( clearThing, totTime );
-      // if unit is an oscillator, and volume is 0, stop it to save memory
+    }
+
+    //if unit is an oscillator, set its amp to 0 and stop it
+    if (this.connection instanceof p5.Oscillator){
+      // if (this.connection.started) {
+      this.connection.stop();
+      this.connection.amp(0);
+      // }
     }
 
     // attack
@@ -185,12 +187,20 @@ define(function (require) {
     // release
     this.control.linearRampToValueAtTime(this.rLevel, t + this.aTime + this.dTime + this.sTime + this.rTime);
 
-    function clearThing() {
-      if (unit && unit.hasOwnProperty('oscillator') && unit.started){
-        unit.amp(0);
-        unit.stop();
-      }
+  if (this.connection && this.connection.hasOwnProperty('oscillator')) {
+    var clearTime = (t + this.aTime + this.dTime + this.sTime + this.rTime) * 1000;
+    this.timeoutID = window.setTimeout( clearThing, clearTime );
+    this.connection.start();
+  }
+
+  // if unit is an oscillator, and volume is 0, stop it to save memory
+  function clearThing() {
+    if (this.connection && this.connection.hasOwnProperty('oscillator') && unit.started){
+      this.connection.amp(0);
+      this.connection.stop();
     }
+  }
+
 
 
   };
@@ -219,23 +229,20 @@ define(function (require) {
       window.clearTimeout(this.timeoutID);
     }
 
-    // var currentVal =  this.control.getValue(); // broken on FireFox
+    var currentVal =  this.control.getValue();
     this.control.cancelScheduledValues(t);
-    this.control.setCurrentValueNow();
-    this.control.linearRampToValueAtTime(0.0, t);
+    this.control.fade(currentVal);
 
     if (unit) {
       if (this.connection !== unit) {
         this.connect(unit);
       }
+    }
 
-      // if unit is an oscillator, set its amp to 0 and start it
-      if (unit instanceof p5.Oscillator){
-        if (!unit.started) {
-          unit.stop();
-          unit.amp(0);
-          unit.start();
-        }
+    // if unit is an oscillator, set its amp to 0 and start it
+    if (this.connection && this.connection instanceof p5.Oscillator){
+      if (this.connection.started) {
+        this.connection.stop();
       }
     }
 
@@ -246,10 +253,14 @@ define(function (require) {
     // decay to sustain level
     this.control.linearRampToValueAtTime(this.dLevel, t + this.aTime + this.dTime);
 
-    // if (this.sLevel > 0) {
-      // hold sustain level
     this.control.linearRampToValueAtTime(this.sLevel, t + this.aTime + this.dTime + this.sTime);
-    // }
+
+    if (this.connection && this.connection instanceof p5.Oscillator){
+      if (!this.connection.started) {
+        this.connection.start();
+      }
+    }
+
   };
 
   /**
@@ -273,43 +284,39 @@ define(function (require) {
       }
     }
 
+    var currentVal =  this.control.getValue();
     this.control.cancelScheduledValues(t);
+    this.control.fade(currentVal);
 
     // release based on how much time has passed since this.lastAttack
     if ( (now - this.lastAttack) > (this.aTime + this.dTime + this.sTime + this.rTime) ) {
-      this.control.setCurrentValueNow();
       this.control.linearRampToValueAtTime(this.sLevel, t + this.sTime);
       this.control.linearRampToValueAtTime(this.rLevel, t + this.sTime + this.rTime);
       relTime = t + this.rTime;
-      console.log('2');
     }
     else if ( (now - this.lastAttack) > (this.aTime + this.dTime) ) {
-      this.control.setCurrentValueNow();
       this.control.linearRampToValueAtTime(this.dLevel, t + this.dTime);
       this.control.linearRampToValueAtTime(this.sLevel, t + this.dTime + this.sTime);
       this.control.linearRampToValueAtTime(this.rLevel, t + this.dTime + this.sTime + this.rTime);
-      console.log('1');
       relTime = t + this.sTime + this.rTime;
     } 
     else if ( (now - this.lastAttack) > (this.aTime) ) {
-      this.control.setCurrentValueNow();
       this.control.linearRampToValueAtTime(this.dLevel, t + this.dTime);
       this.control.linearRampToValueAtTime(this.sLevel, t + this.dTime + this.sTime);
       this.control.linearRampToValueAtTime(this.rLevel, t + this.dTime + this.sTime + this.rTime);
-      console.log('th0is');
       relTime = t + this.dTime + this.sTime + this.rTime;
     }
 
-    if (unit) {
+    if (this.connection.hasOwnProperty('oscillator')) {
       var clearTime = relTime * 1000;
       this.timeoutID = window.setTimeout( clearThing, clearTime );
     }
 
     // if unit is an oscillator, and volume is 0, stop it to save memory
     function clearThing() {
-      if (unit.hasOwnProperty('oscillator') && unit.started){
-        unit.amp(0);
-        unit.stop();
+      if (this.connection.hasOwnProperty('oscillator') && unit.started){
+        this.connection.amp(0);
+        this.connection.stop();
       }
     }
   };

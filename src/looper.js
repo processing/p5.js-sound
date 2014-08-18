@@ -29,7 +29,7 @@ define(function (require) {
 
   p5.Part = function(steps, bLength) {
     this.length = steps || 16; // how many beats
-    beatLength = bLength || 0.25; // defaults to 4/4
+    beatLength = bLength*4 || 0.5; // defaults to 4/4
     this.noteResolution = 0;     // 0 == 16th, 1 == 8th, 2 == quarter note
 
     this.isPlaying = false;

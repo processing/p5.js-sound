@@ -115,7 +115,7 @@ define(function (require) {
         value *= this._syncRatio;
       }
       // this.scalar.gain.value = value;
-      this.scalar.gain.setValueAtTime(value, ac.currentTime + 0.01);
+      this.scalar.gain.setValueAtTime(value, ac.currentTime);
     } else {
       value.connect(this._syncRatio);
     }
@@ -131,32 +131,32 @@ define(function (require) {
   p5.Signal.prototype.setValueAtTime = function(value, time) {
     value *= this._syncRatio;
     var t = time || 0;
-    this.scalar.gain.setValueAtTime(value, t + 0.01);
+    this.scalar.gain.setValueAtTime(value, t);
   };
 
   p5.Signal.prototype.setCurrentValueNow = function(){
-    var now = ac.currentTime + 0.01;
+    var now = ac.currentTime;
     var currentVal = this.getValue();
     this.cancelScheduledValues(now);
-    this.scalar.gain.setValueAtTime(currentVal, now);
+    this.scalar.gain.linearRampToValueAtTime(currentVal, now);
     return currentVal;
   };
 
   p5.Signal.prototype.cancelScheduledValues = function(time) {
     var t = time || 0;
-    this.scalar.gain.cancelScheduledValues(t + 0.01);
+    this.scalar.gain.cancelScheduledValues(t);
   };
 
   p5.Signal.prototype.linearRampToValueAtTime = function(value, endTime) {
     var t = endTime || 0;
     value *= this._syncRatio;
-    this.scalar.gain.linearRampToValueAtTime(value, t + 0.01);
+    this.scalar.gain.linearRampToValueAtTime(value, t);
   };
 
   p5.Signal.prototype.exponentialRampToValueAtTime = function(value, endTime) {
     var t = endTime || 0;
     value *= this._syncRatio;
-    this.scalar.gain.exponentialRampToValueAtTime(value, t + 0.01);
+    this.scalar.gain.exponentialRampToValueAtTime(value, t);
   };
 
   /**
@@ -206,7 +206,9 @@ define(function (require) {
     }
     else if (node instanceof AudioParam) {
       // node = node.gain;
+      // node.value = 0;
       node.setValueAtTime(0, ac.currentTime);
+      console.log('setting to zero');
     }
     // else {
     //   node.setValueAtTime(0, ac.currentTime);
