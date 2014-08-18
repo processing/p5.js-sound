@@ -51,13 +51,17 @@ define(function (require) {
     this.input = p5sound.audiocontext.createGain();
     this.output = p5sound.audiocontext.createGain();
 
+    // MODULATION
     // param nodes for modulation
     // this.freqNode = o.frequency;
     this.ampNode = this.oscillator.gain;
     this.freqNode = this.oscillator.frequency;
 
+    this._freqMods = []; // modulators connected to this oscillator's frequency
+
     // set default output gain
     this.output.gain.value = 0.0;
+    this.output.gain.setValueAtTime(0.0, p5sound.audiocontext.currentTime);
 
     // sterep panning
     this.panPosition = 0.0;
@@ -103,14 +107,15 @@ define(function (require) {
       this.oscillator.start(time + p5sound.audiocontext.currentTime);
       this.freqNode = this.oscillator.frequency;
 
-      // if LFO connections depend on this oscillator
-      if (this.mods !== undefined && this.mods.frequency !== undefined){
-        this.mods.frequency.connect(this.freqNode);
+      // if other oscillators are already connected to this osc's freq
+      for (var i in this._freqMods) {
+        this._freqMods[i].connect(this.oscillator.frequency);
       }
+
       // if this oscillator is already assigned to modulate other params
-      for (var i in this.oscMods) {
-        this.oscillator.connect( this.oscMods[i] );
-      }
+      // for (var i in this.oscMods) {
+      //   this.oscillator.connect( this.oscMods[i] );
+      // }
 
       // if (time > 0) {
       //   setTimeout(function() {
@@ -161,23 +166,21 @@ define(function (require) {
       var now = p5sound.audiocontext.currentTime;
       var currentVol = this.output.gain.value;
       this.output.gain.cancelScheduledValues(now);
-      this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow + .001);
-      this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
-
-      // disconnect any oscillators that were modulating this param
-      // if (this.ampMod){
-
-      //   this.ampMod.output.disconnect();
-      //   this.ampMod = null;
-      // }
-
+      this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
+      this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
     }
     else if (vol.output) {
-      vol.output.disconnect();
+      // this.output.gain.setValueAtTime(0, p5sound.audiocontext.currentTime);
       vol.output.connect(this.output.gain);
-      console.log('mod!');
-      // keep track of any oscillators that were modulating this param
-      this.ampMod = vol;
+      // var sig = vol.scale(-1,1,0,1);
+      // sig.setInput(vol.output);
+      // scale.connect(vol.output.gain);
+      // scale.connect(this.output.gain);
+      // sig.connect(this.output.gain);
+
+    } else {
+      // return the Gain Node
+      return this.output.gain;
     }
   };
 
@@ -218,25 +221,17 @@ define(function (require) {
       } else {
         this.oscillator.frequency.linearRampToValueAtTime(val, tFromNow + rampTime + now);
       }
-
-      // disconnect if frequencies are too low or high, otherwise connect
-      // if (val < 20 || val > 20000) {
-      //   this.panner.disconnect();
-      // } else {
-      //   this.connect(this.connection);
+    } else {
+      // var mod = val;
+      // if (val.output) {
+      //   mod = val.output;
       // }
-
-      // if (this.freqMod){
-      //   this.freqMod.output.disconnect();
-      //   this.freqMod = null;
-      // }
-
-    } else if (val.output) {
-      val.output.disconnect();
-      val.output.connect(this.oscillator.frequency);
+      // mod.disconnect();
+      val.connect(this.oscillator.frequency);
 
       // keep track of what is modulating this param
-      this.freqMod = val;
+      // so it can be re-connected if 
+      this._freqMods.push( val );
     }
   };
 
@@ -368,7 +363,7 @@ define(function (require) {
   p5.Oscillator.prototype.add = function(num) {
     var add = new p5.SignalAdd(num);
     add.setInput(this);
-    this.oscMods.push(add.input);
+    // this._oscMods.push(add.input);
     return add;
   };
 

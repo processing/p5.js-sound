@@ -188,7 +188,6 @@ define(function (require) {
       if (unit && unit.hasOwnProperty('oscillator') && unit.started){
         unit.amp(0);
         unit.stop();
-        console.log('stopped unit')
       }
     }
 
@@ -244,8 +243,11 @@ define(function (require) {
     this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
     // decay to sustain level
     this.control.linearRampToValueAtTime(this.dLevel, t + this.aTime + this.dTime);
-    // hold sustain level
-    this.control.linearRampToValueAtTime(this.sLevel, t + this.aTime + this.dTime + this.sTime);
+
+    if (this.sLevel > 0) {
+      // hold sustain level
+      this.control.linearRampToValueAtTime(this.sLevel, t + this.aTime + this.dTime + this.sTime);
+    }
   };
 
   /**
@@ -283,7 +285,6 @@ define(function (require) {
       if (unit.hasOwnProperty('oscillator') && unit.started){
         unit.amp(0);
         unit.stop();
-        console.log('stopped');
       }
     }
   };

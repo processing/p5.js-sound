@@ -43,7 +43,6 @@ define(function (require) {
     this.output.gain.maxValue = 10000;
     this.output.gain.minValue = -10000;
 
-
     // the ratio of this value to the control signal
     this._syncRatio = 1;
 
@@ -69,7 +68,6 @@ define(function (require) {
       } else {
         value *= this._syncRatio;
       }
-      console.log('value: ' + value);
       // this.scalar.gain.value = value;
       this.scalar.gain.setValueAtTime(value, ac.currentTime + 0.01);
     } else {
@@ -79,7 +77,6 @@ define(function (require) {
 
   p5.Signal.prototype.setValueAtTime = function(value, time) {
     value *= this._syncRatio;
-    console.log(ac.currentTime);
     var t = time || 0;
     this.scalar.gain.setValueAtTime(value, t + 0.01);
   };
@@ -121,10 +118,14 @@ define(function (require) {
     // zero it out so that Signal can take control
     if (node instanceof p5.Signal) {
       node.setValue(0);
-    } else if (node.output instanceof AudioParam) {
+    } else if (node.gain instanceof AudioParam) {
+      node = node.gain;
       node.setValueAtTime(0, ac.currentTime);
-      console.log('yea');
-    }
+      console.log('hi');
+    } 
+    // else {
+    //   node.setValueAtTime(0, ac.currentTime);
+    // }
     this.output.connect(node);
   };
 
@@ -157,24 +158,23 @@ define(function (require) {
   // ======================== //
 
   p5.SignalAdd = function(num) {
-    var add = new p5.Signal(num);
-    add.setInput = function(input) {
-      input.connect(add.input);
-    };
+    var add = new p5.Signal();
+    add.setValue(num);
+    add.setInput = function(_input) {
+      _input.connect(add.scalar);
+    }
     return add;
   };
 
   p5.SignalMult = function(num, input) {
     var mult = new p5.Signal();
-    mult.output = mult.input;
-    mult.input.gain.maxValue = 10000;
-    mult.input.gain.minValue = -10000;
-    // mult.scalar.disconnect();
-    // mult.scalar = null;
-    mult.input.gain.value = num;
-    mult.setInput = function(input) {
-      input.connect(mult.input);
+    mult.setValue(num);
+    mult.setInput = function(_input) {
+      _input.connect(mult.output);
     };
+    if (input) {
+      mult.setInput(input);
+    }
     return mult;
   };
 
