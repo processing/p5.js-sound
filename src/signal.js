@@ -118,11 +118,11 @@ define(function (require) {
     // zero it out so that Signal can take control
     if (node instanceof p5.Signal) {
       node.setValue(0);
-    } else if (node.gain instanceof AudioParam) {
-      node = node.gain;
+    }
+    else if (node instanceof AudioParam) {
+      // node = node.gain;
       node.setValueAtTime(0, ac.currentTime);
-      console.log('hi');
-    } 
+    }
     // else {
     //   node.setValueAtTime(0, ac.currentTime);
     // }
@@ -157,24 +157,25 @@ define(function (require) {
   // Signal Add, Mult & Scale //
   // ======================== //
 
-  p5.SignalAdd = function(num) {
-    var add = new p5.Signal();
-    add.setValue(num);
-    add.setInput = function(_input) {
-      _input.connect(add.scalar);
-    }
+ p5.SignalAdd = function(num) {
+    var add = new p5.Signal(num);
+    add.setInput = function(input) {
+      input.connect(add.input);
+    };
     return add;
   };
 
   p5.SignalMult = function(num, input) {
     var mult = new p5.Signal();
-    mult.setValue(num);
-    mult.setInput = function(_input) {
-      _input.connect(mult.output);
+    mult.output = mult.input;
+    mult.input.gain.maxValue = 10000;
+    mult.input.gain.minValue = -10000;
+    // mult.scalar.disconnect();
+    // mult.scalar = null;
+    mult.input.gain.value = num;
+    mult.setInput = function(input) {
+      input.connect(mult.input);
     };
-    if (input) {
-      mult.setInput(input);
-    }
     return mult;
   };
 
@@ -199,7 +200,7 @@ define(function (require) {
     scale._plusOutput.connect(scale.output);
 
     scale.setInput = function(input) {
-      input.connect(scale.scalar);
+      input.connect(scale.input);
     };
 
     return scale;
