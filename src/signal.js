@@ -199,7 +199,7 @@ define(function (require) {
     scale._plusOutput.connect(scale.output);
 
     scale.setInput = function(input) {
-      input.connect(scale.input);
+      input.connect(scale.scalar);
     };
 
     return scale;
