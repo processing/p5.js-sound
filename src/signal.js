@@ -59,7 +59,7 @@ define(function (require) {
    *    modulator.freq(4);
    *    modulator.start();
    *
-   *    // modulator's default amplitude range is -1 to 1.
+   *    // Modulator's default amplitude range is -1 to 1.
    *    // Multiply it by -200, so the range is -200 to 200
    *    // then add 220 so the range is 20 to 420
    *    carrier.freq( modulator.mult(-200).add(220) );
@@ -90,12 +90,15 @@ define(function (require) {
 
     var value = value || 0;
     this.setValue(value);
+
+    p5sound.soundArray.push(this);
   };
 
   /**
    *  Get the Signal Value. This is not currently working
    *  because of browser issues so it is not in the docs.
    *
+   *  @method
    *  @return {Number} Signal value
    */
   p5.Signal.prototype.getValue = function() {
@@ -105,6 +108,7 @@ define(function (require) {
   /**
    *  Set the value of a signal.
    *  
+   *  @method setValue
    *  @param {Number} value
    */
   p5.Signal.prototype.setValue = function(value) {
@@ -126,7 +130,7 @@ define(function (require) {
    *  method of the same name.
    *  
    *  @param {Number} value Signal value
-   *  @param {Number} time  time, in seconds from now
+   *  @param {Number} time  time, in seconds
    */
   p5.Signal.prototype.setValueAtTime = function(value, time) {
     value *= this._syncRatio;
@@ -175,8 +179,12 @@ define(function (require) {
 
   p5.Signal.prototype.dispose = function() {
     // disconnect everything
-    this.output.disconnect();
-    this.scalar.disconnect();
+    if (this.output) {
+      this.output.disconnect();
+    }
+    if (this.scalar) {
+      this.scalar.disconnect();
+    }
     this.output = null;
     this.scalar = null;
   };
@@ -214,7 +222,6 @@ define(function (require) {
    *  Disconnect the signal
    *
    *  @method disconnect
-   *  @return {[type]} [description]
    */
   p5.Signal.prototype.disconnect = function() {
     this.output.disconnect(node);
@@ -225,10 +232,12 @@ define(function (require) {
   /**
    *  Add a constant value to this audio signal,
    *  and return the resulting audio signal. Does
-   *  not change the value of the original signal.
+   *  not change the value of the original signal,
+   *  instead it returns a new p5.SignalAdd.
    *  
+   *  @method  add
    *  @param {Number} number
-   *  @return {p5.SignalAdd}
+   *  @return {p5.SignalAdd} object
    */
   p5.Signal.prototype.add = function(num) {
     var add = new p5.SignalAdd(num);
@@ -239,10 +248,12 @@ define(function (require) {
   /**
    *  Multiply this signal by a constant value,
    *  and return the resulting audio signal. Does
-   *  not change the value of the original signal.
+   *  not change the value of the original signal,
+   *  instead it returns a new p5.SignalMult.
    *  
+   *  @method  mult
    *  @param {Number} number to multiply
-   *  @return {p5.SignalMult}
+   *  @return {p5.SignalMult} object
    */
   p5.Signal.prototype.mult = function(num) {
     var mult = new p5.SignalMult(num);
@@ -253,14 +264,16 @@ define(function (require) {
   /**
    *  Scale this signal value to a given range,
    *  and return the result as an audio signal. Does
-   *  not change the value of the original signal.
+   *  not change the value of the original signal,
+   *  instead it returns a new p5.SignalScale.
    *  
+   *  @method  scale
    *  @param {Number} number to multiply
    *  @param  {Number} inMin  input range minumum
    *  @param  {Number} inMax  input range maximum
    *  @param  {Number} outMin input range minumum
    *  @param  {Number} outMax input range maximum
-   *  @return {p5.SignalScale}
+   *  @return {p5.SignalScale} object
    */
   p5.Signal.prototype.scale = function(inMin, inMax, outMin, outMax) {
     var scale = new p5.SignalScale(inMin, inMax, outMin, outMax);

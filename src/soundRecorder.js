@@ -18,6 +18,61 @@ define(function (require) {
    *  
    *  @class p5.SoundRecorder
    *  @constructor
+   *  @example
+   *  <div><code>
+   *  var mic, recorder, soundFile;
+   *  var state = 0;
+   *  
+   *  function setup() {
+   *    background(200);
+   *    // create an audio in
+   *    mic = new p5.AudioIn();
+   *    
+   *    // prompts user to enable their browser mic
+   *    mic.start();
+   *    
+   *    // create a sound recorder
+   *    recorder = new p5.SoundRecorder();
+   *    
+   *    // connect the mic to the recorder
+   *    recorder.setInput(mic);
+   *    
+   *    // this sound file will be used to
+   *    // playback & save the recording
+   *    soundFile = new p5.SoundFile();
+   *
+   *    text('keyPress to record', 20, 20);
+   *  }
+   *
+   *  function keyPressed() {
+   *    // make sure user enabled the mic
+   *    if (state === 0 && mic.enabled) {
+   *    
+   *      // record to our p5.SoundFile
+   *      recorder.record(soundFile);
+   *      
+   *      background(255,0,0);
+   *      text('Recording!', 20, 20);
+   *      state++;
+   *    }
+   *    else if (state === 1) {
+   *      background(0,255,0);
+   *
+   *      // stop recorder and
+   *      // send result to soundFile
+   *      recorder.stop(); 
+   *      
+   *      text('Stopped', 20, 20);
+   *      state++;
+   *    }
+   *    
+   *    else if (state === 2) {
+   *      soundFile.play(); // play the result!
+   *      saveSound(soundFile, 'mySound.wav');
+   *      state++;
+   *    }
+   *  }
+   *  </div></code>
    */
   p5.SoundRecorder = function() {
     this.input = ac.createGain();
@@ -43,6 +98,9 @@ define(function (require) {
     // connections
     this._jsNode.connect(p5.soundOut._silentNode);
     this.setInput();
+
+    // add this p5.SoundFile to the soundArray
+    p5sound.soundArray.push(this);
   };
 
   /**
@@ -91,7 +149,6 @@ define(function (require) {
     if (sFile && callback) {
       this._callback = function() {
         this.buffer = this._getBuffer();
-        console.log(this.buffer);
         sFile.setBuffer(this.buffer);
         callback();
       };
@@ -99,7 +156,6 @@ define(function (require) {
     else if (sFile) {
       this._callback = function() {
         this.buffer = this._getBuffer();
-        console.log(this.buffer);
         sFile.setBuffer(this.buffer);
       };
     }
@@ -171,6 +227,16 @@ define(function (require) {
       offset += buffer.length;
     }
     return result;
+  };
+
+  p5.SoundRecorder.prototype.dispose = function() {
+    this._clear();
+    this._callback = function(){};
+    if (this.input) {
+      this.input.disconnect();
+    }
+    this.input = null;
+    this._jsNode = null;
   };
 
   /**

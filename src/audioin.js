@@ -268,8 +268,12 @@ define(function (require) {
   // private method
   p5.AudioIn.prototype.dispose = function(){
     this.stop();
-    this.output.disconnect();
-    this.amplitude.disconnect();
+    if (this.output) {
+      this.output.disconnect();
+    }
+    if (this.amplitude) {
+      this.amplitude.disconnect();
+    }
     this.amplitude = null;
     this.output = null;
   };

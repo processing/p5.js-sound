@@ -160,7 +160,6 @@ define(function (require) {
    *  Utility function for building an impulse response
    *  based on the module parameters.
    *
-   *  @method  _buildImpulse
    *  @private
    */
   p5.Reverb.prototype._buildImpulse = function() {

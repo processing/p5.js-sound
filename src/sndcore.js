@@ -26,7 +26,9 @@
  *    duration and decay. <br/>
  *  <b><a href="#/p5.Convolver">p5.Convolver:</a></b> Extends
  *  <a href="#/p5.Reverb">p5.Reverb</a> to simulate the sound of real
- *    physical spaces through convolution.
+ *    physical spaces through convolution.<br/>
+ *  <a href="#/p5.SoundRecorder"p5.SoundRecorder</a>: Record sound for playback 
+ *    / save the .wav file.
  *  <br/><br/>
  *  p5.sound is on <a href="https://github.com/therewasaguy/p5.sound/">GitHub</a>.
  *  Download the latest version 

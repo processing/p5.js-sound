@@ -9,7 +9,6 @@
  *  Convolution samples Creative Commons BY recordinghopkins, via freesound.org
  *  https://www.freesound.org/people/recordinghopkins/
  */
-
 var sound, env, cVerb, fft;
 var currentIR = 0;
 var p;
@@ -80,7 +79,7 @@ function mousePressed() {
   // display the current Impulse Response name (the filepath)
   p.html('Convolution Impulse Response: ' + cVerb.impulses[currentIR].name);
 
-  rawImpulse.setBuffer('../_files/' + cVerb.impulses[currentIR].name);
+  rawImpulse.setPath('../_files/' + cVerb.impulses[currentIR].name);
 }
 
 function keyPressed() {

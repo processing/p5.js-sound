@@ -880,11 +880,11 @@ define(function (require) {
         }
       }
     }
-    if (typeof(this.output) !== 'undefined'){
+    if (this.output){
       this.output.disconnect();
       this.output = null;
     }
-    if (typeof(this.panner) !== 'undefined'){
+    if (this.panner) {
       this.panner.disconnect();
       this.panner = null;
     }
@@ -942,9 +942,11 @@ define(function (require) {
 
   /**
    *  Reset the source for this SoundFile to a
-   *  new path
+   *  new path (URL).
+   *
+   *  @method  setPath
    *  @param {String}   path     path to audio file
-   *  @param {Function} callback [description]
+   *  @param {Function} callback Callback
    */
   p5.SoundFile.prototype.setPath = function(p, callback) {
     var path = p5.prototype._checkFileFormats(p);

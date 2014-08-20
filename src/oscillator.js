@@ -51,12 +51,6 @@ define(function (require) {
     this.input = p5sound.audiocontext.createGain();
     this.output = p5sound.audiocontext.createGain();
 
-    // MODULATION
-    // param nodes for modulation
-    // this.freqNode = o.frequency;
-    this.ampNode = this.oscillator.gain;
-    this.freqNode = this.oscillator.frequency;
-
     this._freqMods = []; // modulators connected to this oscillator's frequency
 
     // set default output gain
@@ -112,18 +106,7 @@ define(function (require) {
         this._freqMods[i].connect(this.oscillator.frequency);
       }
 
-      // if this oscillator is already assigned to modulate other params
-      // for (var i in this.oscMods) {
-      //   this.oscillator.connect( this.oscMods[i] );
-      // }
-
-      // if (time > 0) {
-      //   setTimeout(function() {
-      //     this.started = true;
-      //   }, time * 1000);
-      // } else {
       this.started = true;
-      // }
     }
   };
 
@@ -133,20 +116,14 @@ define(function (require) {
    *  oscillator stops.
    *
    *  @method  stop
-   *  @param  {Number} time, in seconds from now.
+   *  @param  {Number} secondsFromNow Time, in seconds from now.
    */
   p5.Oscillator.prototype.stop = function(time){
     if (this.started){
       var t = time || 0;
       var now = p5sound.audiocontext.currentTime;
       this.oscillator.stop(t + now);
-      // if (time > 0) {
-      //   setTimeout(function() {
-      //     this.started = false;
-      //   }, time * 1000);
-      // } else {
       this.started = false;
-      // }
     }
   };
 
@@ -158,6 +135,11 @@ define(function (require) {
    *  @param {Number} [rampTime] create a fade that lasts rampTime 
    *  @param {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
+   *  @return  {AudioParam} gain  If no value is provided,
+   *                              returns the Web Audio API
+   *                              AudioParam that controls
+   *                              this oscillator's
+   *                              gain/amplitude/volume)
    */
   p5.Oscillator.prototype.amp = function(vol, rampTime, tFromNow){
     if (typeof(vol) === 'number') {
@@ -169,15 +151,8 @@ define(function (require) {
       this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
       this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
     }
-    else if (vol.output) {
-      // this.output.gain.setValueAtTime(0, p5sound.audiocontext.currentTime);
-      vol.output.connect(this.output.gain);
-      // var sig = vol.scale(-1,1,0,1);
-      // sig.setInput(vol.output);
-      // scale.connect(vol.output.gain);
-      // scale.connect(this.output.gain);
-      // sig.connect(this.output.gain);
-
+    else if (vol) {
+      vol.connect(this.output.gain);
     } else {
       // return the Gain Node
       return this.output.gain;
@@ -200,6 +175,10 @@ define(function (require) {
    *  @param  {Number} [rampTime] Ramp time (in seconds)
    *  @param  {Number} [timeFromNow] Schedule this event to happen
    *                                   at x seconds from now
+   *  @return  {AudioParam} Frequency If no value is provided,
+   *                                  returns the Web Audio API
+   *                                  AudioParam that controls
+   *                                  this oscillator's frequency
    *  @example
    *  <div><code>
    *  var osc = new p5.Oscillator(300);
@@ -221,17 +200,15 @@ define(function (require) {
       } else {
         this.oscillator.frequency.linearRampToValueAtTime(val, tFromNow + rampTime + now);
       }
-    } else {
-      // var mod = val;
-      // if (val.output) {
-      //   mod = val.output;
-      // }
-      // mod.disconnect();
+    } else if (val) {
       val.connect(this.oscillator.frequency);
 
       // keep track of what is modulating this param
       // so it can be re-connected if 
       this._freqMods.push( val );
+    } else {
+      // return the Frequency Node
+      return this.oscillator.frequency;
     }
   };
 
@@ -343,7 +320,7 @@ define(function (require) {
     }
     // set delay time based on PWM width
     var now = p5sound.audiocontext.currentTime;
-    this.dNode.delayTime.linearRampToValueAtTime( map(p, 0, 1.0, 0, 1/this.oscillator.frequency.value), now);
+    this.dNode.delayTime.linearRampToValueAtTime( p5.prototype.map(p, 0, 1.0, 0, 1/this.oscillator.frequency.value), now);
   };
 
   // ========================== //
@@ -356,7 +333,7 @@ define(function (require) {
    *  This method does not add to the p5.Oscillator itself,
    *  — the returned p5.Signal handles the math.
    *  This is useful for modulating parameters
-   *  with the Oscillator.
+   *  with an oscillating signal.
    *  
    *  p5.Oscillator's amplitude. 
    *  on this oscillator's signal.
@@ -373,6 +350,18 @@ define(function (require) {
     return add;
   };
 
+  /**
+   *  Multiply the p5.Oscillator's output amplitude
+   *  by a fixed value. This method does not add to the
+   *  oscillator itself, but instead returns a p5.Signal
+   *  object that handles the signal math. This is useful for
+   *  modulating parameters with an oscillating signal.
+   *  
+   *  @method  add
+   *  @param {Number} number Constant number to multiply
+   *  @return {p5.SignalMult} p5.SignalMult a p5.SignalMult object
+   *                                        does the math
+   */
   p5.Oscillator.prototype.mult = function(num) {
     var mult = new p5.SignalMult(num);
     mult.setInput(this);
@@ -380,6 +369,19 @@ define(function (require) {
     return mult;
   };
 
+  /**
+   *  Scale this oscillator's amplitude values to a given
+   *  range, and return the result as an audio signal. Does
+   *  not change the value of the original oscillator,
+   *  instead it returns a new p5.SignalScale.
+   *  
+   *  @method  scale
+   *  @param  {Number} inMin  input range minumum
+   *  @param  {Number} inMax  input range maximum
+   *  @param  {Number} outMin input range minumum
+   *  @param  {Number} outMax input range maximum
+   *  @return {p5.SignalScale} object
+   */
   p5.Oscillator.prototype.scale = function(inMin, inMax, outMin, outMax) {
     var scale = new p5.SignalScale(inMin, inMax, outMin, outMax);
     scale.setInput(this);

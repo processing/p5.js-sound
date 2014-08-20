@@ -136,15 +136,15 @@ define(function (require) {
     }
   };
 
-  // register removeSound to dispose of p5sound SoundFiles, Convolvers,
-  // Oscillators etc when sketch ends
-  p5.prototype.registerMethod('remove', p5.prototype.disposeSound);
-
   p5.prototype.disposeSound = function(){
     for (var i = 0; i < p5sound.soundArray.length; i++){
       p5sound.soundArray[i].dispose();
     }
   };
+
+  // register removeSound to dispose of p5sound SoundFiles, Convolvers,
+  // Oscillators etc when sketch ends
+  p5.prototype.registerMethod('remove', p5.prototype.disposeSound);
 
   p5.prototype._checkFileFormats = function(paths) {
     var path;

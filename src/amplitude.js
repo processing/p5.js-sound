@@ -168,8 +168,8 @@ define(function (require) {
     for (var i = 0; i < bufLength; i++) {
       x = inputBuffer[i];
       if (this.normalize){
-        total += p5.prototype.constrain(x/this.volMax, -1, 1);
-        sum += p5.prototype.constrain(x/this.volMax, -1, 1) * p5.prototype.constrain(x/this.volMax, -1, 1);
+        total += Math.max(Math.min(x/this.volMax, 1), -1);
+        sum += Math.max(Math.min(x/this.volMax, 1), -1) * Math.max(Math.min(x/this.volMax, 1), -1);
       }
       else {
         total += x;
@@ -187,7 +187,7 @@ define(function (require) {
     this.volMax=Math.max(this.volume, this.volMax);
 
     // normalized values
-    this.volNorm = p5.prototype.constrain(this.volume/this.volMax, 0, 1);
+    this.volNorm = Math.max(Math.min(this.volume/this.volMax, 1), 0);
   };
 
   /**
