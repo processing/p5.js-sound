@@ -123,6 +123,7 @@ define(function (require) {
       var t = time || 0;
       var now = p5sound.audiocontext.currentTime;
       this.oscillator.stop(t + now);
+      this.oscillator = null;
       this.started = false;
     }
   };
