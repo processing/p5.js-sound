@@ -227,7 +227,6 @@ define(function (require) {
     }
 
     var currentVal =  this.control.getValue();
-    console.log(currentVal);
     this.control.cancelScheduledValues(tMinus);
     this.control.fade(currentVal, t);
 
