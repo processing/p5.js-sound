@@ -69,14 +69,9 @@ define(function (require) {
   p5.Signal = function(value) {
     // scales the constant output to desired output
     this.scalar = ac.createGain();
-    this.scalar.gain.maxValue = 10000;
-    this.scalar.gain.minValue = -10000;
+
     this.input = ac.createGain();
-    this.input.gain.maxValue = 10000;
-    this.input.gain.minValue = -10000;
     this.output = ac.createGain();
-    this.output.gain.maxValue = 10000;
-    this.output.gain.minValue = -10000;
 
     // the ratio of this value to the control signal
     this._syncRatio = 1;
@@ -305,8 +300,6 @@ define(function (require) {
   p5.SignalMult = function(num, _input) {
     var mult = new p5.Signal();
     mult.output = mult.input;
-    mult.input.gain.maxValue = 10000;
-    mult.input.gain.minValue = -10000;
     mult.setValue = function(value) {
       if (typeof(value) === 'number') {
         this.input.gain.value = value;

@@ -68,7 +68,7 @@ define(function (require) {
    *    
    *    else if (state === 2) {
    *      soundFile.play(); // play the result!
-   *      saveSound(soundFile, 'mySound.wav');
+   *      save(soundFile, 'mySound.wav');
    *      state++;
    *    }
    *  }

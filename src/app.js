@@ -19,6 +19,7 @@ define(function (require) {
   require('reverb');
   require('looper');
   require('soundRecorder');
+  require('metro');
 
   return p5SOUND;
 
