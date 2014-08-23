@@ -218,8 +218,7 @@ define(function (require) {
 
     var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
-    var tMinus = now + tFromNow;
-    var t = tMinus + 0.03;
+    var t = now + tFromNow;
     this.lastAttack = t;
 
     if (typeof(this.timeoutID) === 'number') {
@@ -227,8 +226,8 @@ define(function (require) {
     }
 
     var currentVal =  this.control.getValue();
-    this.control.cancelScheduledValues(tMinus);
-    this.control.fade(currentVal, t);
+    this.control.cancelScheduledValues(t);
+    this.control.fade(0);
 
     if (unit) {
       if (this.connection !== unit) {
@@ -240,6 +239,7 @@ define(function (require) {
     if (this.connection && this.connection instanceof p5.Oscillator){
       if (!this.connection.started) {
         this.connection.stop();
+        this.connection.amp(0);
       }
     }
 
@@ -272,8 +272,7 @@ define(function (require) {
   p5.Env.prototype.triggerRelease = function(unit, secondsFromNow) {
     var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
-    var tMinus = now + tFromNow;
-    var t = tMinus + 0.03;
+    var t = now + tFromNow;
     var relTime;
 
     if (unit) {
@@ -283,7 +282,7 @@ define(function (require) {
     }
 
     var currentVal =  this.control.getValue();
-    this.control.cancelScheduledValues(tMinus);
+    this.control.cancelScheduledValues(t);
     this.control.fade(currentVal, t);
 
     // release based on how much time has passed since this.lastAttack
