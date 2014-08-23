@@ -46,8 +46,10 @@ define(function (require) {
 
   p5.Metro.prototype._processTick = function(tickTime) {
     this.metroTicks += 1;
-    console.log('interval: ' + (tickTime - this.lastTick));
     this.lastTick = tickTime;
+    if (this.metroTicks % 2 === 0) {
+      console.log('metroTicks: ' + this.metroTicks);
+    }
   };
 
   p5.Metro.prototype.setBPM = function(bpm, rampTime) {
@@ -60,5 +62,6 @@ define(function (require) {
   p5.Metro.prototype.getBPM = function(tempo) {
     return (this.oscillator.frequency.value * 60) * 2;
   };
+
 
 });

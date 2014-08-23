@@ -31,10 +31,9 @@ function setup(){
   trigger = millis();
 
   triOsc = new p5.TriOsc();
-  triOsc.amp(0);
   triOsc.start();
-
   env = new p5.Env(attackTime, attackLevel, decayTime, decayLevel, sustainTime, sustainLevel, releaseTime);
+  triOsc.amp(env);
   fill(0);
   createP('click mouse to triggerAttack, release mouse to triggerRelease');
 
@@ -49,10 +48,10 @@ function draw(){
 
 function mousePressed(){
     // The envelope gets triggered with the oscillator as input and the times and levels we defined earlier
-    env.triggerAttack(triOsc);
+    env.triggerAttack();
     trigger = millis() + duration;
 }
 
 function mouseReleased(){
-    env.triggerRelease(triOsc);
+    env.triggerRelease();
 }

@@ -129,7 +129,7 @@ define(function (require) {
    */
   p5.Signal.prototype.setValueAtTime = function(value, time) {
     value *= this._syncRatio;
-    var t = time || 0;
+    var t = time || ac.currentTime;
     this.scalar.gain.setValueAtTime(value, t);
   };
 
@@ -142,18 +142,18 @@ define(function (require) {
   };
 
   p5.Signal.prototype.cancelScheduledValues = function(time) {
-    var t = time || 0;
+    var t = time || ac.currentTime;
     this.scalar.gain.cancelScheduledValues(t);
   };
 
   p5.Signal.prototype.linearRampToValueAtTime = function(value, endTime) {
-    var t = endTime || 0;
+    var t = endTime || ac.currentTime;
     value *= this._syncRatio;
     this.scalar.gain.linearRampToValueAtTime(value, t);
   };
 
   p5.Signal.prototype.exponentialRampToValueAtTime = function(value, endTime) {
-    var t = endTime || 0;
+    var t = endTime || ac.currentTime;
     value *= this._syncRatio;
     this.scalar.gain.exponentialRampToValueAtTime(value, t);
   };
@@ -166,8 +166,7 @@ define(function (require) {
    *  @param  {[Number]} secondsFromNow Length of fade, in seconds from now
    */
   p5.Signal.prototype.fade = function(value, secondsFromNow) {
-    var s = secondsFromNow || 0;
-    var t = ac.currentTime + s + 0.01;
+    var t = secondsFromNow || ac.currentTime;
     value *= this._syncRatio;
     this.scalar.gain.linearRampToValueAtTime(value, t);
   };

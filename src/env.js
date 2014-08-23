@@ -160,9 +160,7 @@ define(function (require) {
 
     var currentVal =  this.control.getValue();
     this.control.cancelScheduledValues(t);
-    // this.control.fade(currentVal, now + tFromNow);
-    this.control.fade(0, t);
-
+    this.control.fade(currentVal, now + tFromNow);
 
     if (unit) {
       if (this.connection !== unit) {
@@ -187,21 +185,19 @@ define(function (require) {
     // release
     this.control.linearRampToValueAtTime(this.rLevel, t + this.aTime + this.dTime + this.sTime + this.rTime);
 
-  if (this.connection && this.connection.hasOwnProperty('oscillator')) {
-    var clearTime = (t + this.aTime + this.dTime + this.sTime + this.rTime) * 1000;
-    this.timeoutID = window.setTimeout( clearThing, clearTime );
-    this.connection.start();
-  }
-
-  // if unit is an oscillator, and volume is 0, stop it to save memory
-  function clearThing() {
-    if (this.connection && this.connection.hasOwnProperty('oscillator') && unit.started){
-      this.connection.amp(0);
-      this.connection.stop();
+    if (this.connection && this.connection.hasOwnProperty('oscillator')) {
+      var clearTime = (t + this.aTime + this.dTime + this.sTime + this.rTime) * 1000;
+      this.timeoutID = window.setTimeout( clearThing, clearTime );
+      this.connection.start();
     }
-  }
 
-
+    // if unit is an oscillator, and volume is 0, stop it to save memory
+    function clearThing() {
+      if (this.connection && this.connection.hasOwnProperty('oscillator') && unit.started){
+        this.connection.amp(0);
+        this.connection.stop();
+      }
+    }
 
   };
 
@@ -222,7 +218,8 @@ define(function (require) {
 
     var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
-    var t = now + tFromNow;
+    var tMinus = now + tFromNow;
+    var t = tMinus + 0.03;
     this.lastAttack = t;
 
     if (typeof(this.timeoutID) === 'number') {
@@ -230,8 +227,9 @@ define(function (require) {
     }
 
     var currentVal =  this.control.getValue();
-    this.control.cancelScheduledValues(t);
-    this.control.fade(currentVal);
+    console.log(currentVal);
+    this.control.cancelScheduledValues(tMinus);
+    this.control.fade(currentVal, t);
 
     if (unit) {
       if (this.connection !== unit) {
@@ -241,7 +239,7 @@ define(function (require) {
 
     // if unit is an oscillator, set its amp to 0 and start it
     if (this.connection && this.connection instanceof p5.Oscillator){
-      if (this.connection.started) {
+      if (!this.connection.started) {
         this.connection.stop();
       }
     }
@@ -273,9 +271,10 @@ define(function (require) {
    *  @param  {Number} secondsFromNow time to trigger the release
    */
   p5.Env.prototype.triggerRelease = function(unit, secondsFromNow) {
-    var now =  p5sound.audiocontext.currentTime + 0.001;
+    var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
-    var t = now + tFromNow;// + envTime;
+    var tMinus = now + tFromNow;
+    var t = tMinus + 0.03;
     var relTime;
 
     if (unit) {
@@ -285,36 +284,44 @@ define(function (require) {
     }
 
     var currentVal =  this.control.getValue();
-    this.control.cancelScheduledValues(t);
-    this.control.fade(currentVal);
+    this.control.cancelScheduledValues(tMinus);
+    this.control.fade(currentVal, t);
 
     // release based on how much time has passed since this.lastAttack
-    if ( (now - this.lastAttack) > (this.aTime + this.dTime + this.sTime + this.rTime) ) {
-      this.control.linearRampToValueAtTime(this.sLevel, t + this.sTime);
-      this.control.linearRampToValueAtTime(this.rLevel, t + this.sTime + this.rTime);
-      relTime = t + this.rTime;
+    if ( (now - this.lastAttack) < (this.aTime) ) {
+      var a = this.aTime - (now - this.lastAttack);
+      this.control.linearRampToValueAtTime(this.aLevel, t + a);
+      this.control.linearRampToValueAtTime(this.dLevel, t + this.aTime + this.dTime);
+      this.control.linearRampToValueAtTime(this.sLevel, t + this.aTime + this.dTime + this.sTime);
+      this.control.linearRampToValueAtTime(this.rLevel, t + this.aTime + this.dTime + this.sTime + this.rTime);
+      relTime = t + this.dTime + this.sTime + this.rTime;
     }
-    else if ( (now - this.lastAttack) > (this.aTime + this.dTime) ) {
-      this.control.linearRampToValueAtTime(this.dLevel, t + this.dTime);
-      this.control.linearRampToValueAtTime(this.sLevel, t + this.dTime + this.sTime);
-      this.control.linearRampToValueAtTime(this.rLevel, t + this.dTime + this.sTime + this.rTime);
+    else if ( (now - this.lastAttack) < (this.aTime + this.dTime) ) {
+      var d = this.aTime + this.dTime - (now - this.lastAttack);
+      this.control.linearRampToValueAtTime(this.dLevel, t + d);
+      this.control.linearRampToValueAtTime(this.sLevel, t + d + this.sTime);
+      this.control.linearRampToValueAtTime(this.rLevel, t + d + this.sTime + this.rTime);
       relTime = t + this.sTime + this.rTime;
     } 
-    else if ( (now - this.lastAttack) > (this.aTime) ) {
-      this.control.linearRampToValueAtTime(this.dLevel, t + this.dTime);
-      this.control.linearRampToValueAtTime(this.sLevel, t + this.dTime + this.sTime);
-      this.control.linearRampToValueAtTime(this.rLevel, t + this.dTime + this.sTime + this.rTime);
+    else if ( (now - this.lastAttack) < (this.aTime + this.dTime + this.sTime) ) {
+      var s = this.aTime + this.dTime + this.sTime - (now - this.lastAttack);
+      this.control.linearRampToValueAtTime(this.sLevel, t + s);
+      this.control.linearRampToValueAtTime(this.rLevel, t + s + this.rTime);
+      relTime = t + this.rTime;
+    }
+    else {
+      this.control.linearRampToValueAtTime(this.rLevel, t + this.rTime);
       relTime = t + this.dTime + this.sTime + this.rTime;
     }
 
-    if (this.connection.hasOwnProperty('oscillator')) {
+    if (this.connection && this.connection.hasOwnProperty('oscillator')) {
       var clearTime = relTime * 1000;
       this.timeoutID = window.setTimeout( clearThing, clearTime );
     }
 
     // if unit is an oscillator, and volume is 0, stop it to save memory
     function clearThing() {
-      if (this.connection.hasOwnProperty('oscillator') && unit.started){
+      if (this.connection && this.connection.hasOwnProperty('oscillator') && unit.started){
         this.connection.amp(0);
         this.connection.stop();
       }
