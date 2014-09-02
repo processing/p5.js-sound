@@ -2,6 +2,10 @@ define(function (require) {
   'use strict';
 
   var p5sound = require('master');
+  var Signal = require('Tone/signal/Signal');
+  var Add = require('Tone/signal/Add');
+  var Mult = require('Tone/signal/Multiply');
+  var Scale = require('Tone/signal/Scale');
 
   /**
    *  <p>Creates a signal that oscillates between -1.0 and 1.0.
@@ -38,7 +42,6 @@ define(function (require) {
       freq = f;
     }
     this.started = false;
-    p5sound = p5sound;
 
     // components
     this.oscillator = p5sound.audiocontext.createOscillator();
@@ -57,7 +60,7 @@ define(function (require) {
     this.output.gain.value = 0.0;
     this.output.gain.setValueAtTime(0.0, p5sound.audiocontext.currentTime);
 
-    // sterep panning
+    // stereo panning
     this.panPosition = 0.0;
     this.panner = p5sound.audiocontext.createPanner();
     this.panner.panningModel = 'equalpower';
@@ -161,7 +164,6 @@ define(function (require) {
 
   // these are now the same thing
   p5.Oscillator.prototype.fade =   p5.Oscillator.prototype.amp;
-
 
   p5.Oscillator.prototype.getAmp = function(){
     return this.output.gain.value;
@@ -344,9 +346,8 @@ define(function (require) {
    *  
    */
   p5.Oscillator.prototype.add = function(num) {
-    var add = new p5.SignalAdd(num);
-    add.setInput(this);
-    // this._oscMods.push(add.input);
+    var add = new Add(num);
+    this.output.connect(add);
     return add;
   };
 
@@ -363,9 +364,8 @@ define(function (require) {
    *                                        does the math
    */
   p5.Oscillator.prototype.mult = function(num) {
-    var mult = new p5.SignalMult(num);
-    mult.setInput(this);
-    // this.oscMods.push(mult.input);
+    var mult = new Mult(num);
+    this.output.connect(mult);
     return mult;
   };
 
@@ -383,9 +383,8 @@ define(function (require) {
    *  @return {p5.SignalScale} object
    */
   p5.Oscillator.prototype.scale = function(inMin, inMax, outMin, outMax) {
-    var scale = new p5.SignalScale(inMin, inMax, outMin, outMax);
-    scale.setInput(this);
-    // this.oscMods.push(scale.input);
+    var scale = new Scale(inMin, inMax, outMin, outMax);
+    this.output.connect(scale);
     return scale;
   };
 

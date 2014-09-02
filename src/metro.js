@@ -2,6 +2,7 @@ define(function (require) {
   'use strict';
 
   var p5sound = require('master');
+  var Clock = require("Tone/core/Clock");
   var ac = p5sound.audiocontext;
   var upTick = false;
   var tatums = 4; // lowest possible division of a beat
@@ -12,6 +13,8 @@ define(function (require) {
 
   p5.Metro = function() {
     this.metroTicks = 0;
+
+    this.clock = new Clock(rate, this.ontick.bind(this));
 
     /**
      *  watch this.oscillator for timing ticks
@@ -27,6 +30,8 @@ define(function (require) {
     this.oscillator.frequency.value = 1;
 
     this.lastTick = 0;
+
+    this.syncedParts = [];
   };
 
   p5.Metro.prototype._processBuffer = function(event){
@@ -47,8 +52,16 @@ define(function (require) {
   p5.Metro.prototype._processTick = function(tickTime) {
     this.metroTicks += 1;
     this.lastTick = tickTime;
-    if (this.metroTicks % 2 === 0) {
-      console.log('metroTicks: ' + this.metroTicks);
+
+    // for all of the active things on the metro:
+    for (var i in syncedParts) {
+      // each synced source keeps track of its own beat number
+      for (var j in syncedParts[i].phrases) {
+        var thisPart = syncedParts[i];
+        if (thisPart.phrases[j].array[bNum] !== 0 ) {
+          thisPart.phrases[i].callback(thisPart.phrases[i].array[bNum]);
+        }
+      }
     }
   };
 
@@ -57,6 +70,7 @@ define(function (require) {
     var freq =  (bpm / 60) / 2 * tatums;
     var ramp = rampTime || 0;
     this.oscillator.frequency.linearRampToValueAtTime(freq, ramp);
+    this.clock.setRate(freq, rampTime);
   };
 
   p5.Metro.prototype.getBPM = function(tempo) {

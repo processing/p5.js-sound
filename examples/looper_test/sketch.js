@@ -2,6 +2,7 @@ var kick, ding;
 var env, osc;
 var bass, lfo, envB;
 
+var mySong;
 
 var tri = new p5.TriOsc();
 var saw = new p5.SawOsc();
@@ -21,7 +22,7 @@ function setup() {
   osc = new p5.Oscillator('triangle');
   bass = new p5.Oscillator('sine');
 
-  envB = new p5.Env(.1, .7, .2, .2);
+  envB = new p5.Env(.01, .7, .2, .0);
   lfo = new p5.Oscillator();
   lfo.disconnect();
   lfo.amp(2000);
@@ -47,13 +48,13 @@ function setup() {
   // a.onStep(fireStep); // set a callback that runs every time through this loop
   b.onStep(fireStep); // set a callback that runs every time through this loop
 
-  // var c = new p5.Part(16);
-  // c.onStep(fireStep); // set a callback that runs every time through this loop
+  var c = new p5.Part(16);
+  c.onStep(fireStep); // set a callback that runs every time through this loop
 
 
-  setBPM(80);
+  setBPM(120);
   // b.loop();
-  var mySong = new p5.Score(b);
+  mySong = new p5.Score(c, b, a, a);
   mySong.loop();
 }
 
@@ -88,14 +89,11 @@ function playMelody(params) {
 }
 
 function fireStep() {
+  console.log('on step!');
   var x = random(0,1);
-  if (x > .95) {
-    // var bass = new p5.Oscillator('sine');
+  if (x > .55) {
     bass.freq(midiToFreq( round(random(80, 70) ) ) );
-    // bass.amp(0);
-    // bass.start();
-    lfo.connect(bass.freqNode);
-    // var e = new p5.Env(.1, .7, .2, .2);
+    bass.amp(1);
     envB.play(bass);
   }
 }

@@ -30,8 +30,8 @@ function setup() {
 
   // add phrases, with a name, a callback,
   // and an array of values that will be passed to the callback if > 0
-  part.addPhrase('melody', playNote, [60, 0, 0, 65, 72,0, 65, 0]);
-  part.addPhrase('snare', playSnare, [0, 0, 1, 0, 0,0,1, 0]);
+  part.addPhrase('snare', playSnare, [0, 0, 1, 0, 0, 2, 0, 1, 0]);/// 0,0,1, 0]);
+  part.addPhrase('melody', playNote, [62, 0, 0, 65, 72,0, 65, 0]);
 
   // loop the part
   part.loop();
