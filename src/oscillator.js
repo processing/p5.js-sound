@@ -342,7 +342,8 @@ define(function (require) {
    *
    *  @method  add
    *  @param {Number} number Constant number to add
-   *  @return {p5.Signal} p5.Signal a p5.Signal does the math
+   *  @return {Tone.Add} Signal An object from the Tone.js
+   *                            library does the signal math
    *  
    */
   p5.Oscillator.prototype.add = function(num) {
@@ -360,8 +361,8 @@ define(function (require) {
    *  
    *  @method  add
    *  @param {Number} number Constant number to multiply
-   *  @return {p5.SignalMult} p5.SignalMult a p5.SignalMult object
-   *                                        does the math
+   *  @return {Tone.Multiply} Signal An object from the Tone.js
+   *                            library does the signal math
    */
   p5.Oscillator.prototype.mult = function(num) {
     var mult = new Mult(num);
@@ -380,7 +381,8 @@ define(function (require) {
    *  @param  {Number} inMax  input range maximum
    *  @param  {Number} outMin input range minumum
    *  @param  {Number} outMax input range maximum
-   *  @return {p5.SignalScale} object
+   *  @return {Tone.Scale} Signal An object from the Tone.js
+   *                            library does the signal math
    */
   p5.Oscillator.prototype.scale = function(inMin, inMax, outMin, outMax) {
     var scale = new Scale(inMin, inMax, outMin, outMax);
