@@ -73,6 +73,9 @@ define(function (require) {
     this.panner.connect(p5sound.input);
     this.connection = p5sound.input;
 
+    //array of math operation signal chaining
+    this.mathOps = [this.output];
+
     // add to the soundArray so we can dispose of the osc later
     p5sound.soundArray.push(this);
   };
@@ -331,63 +334,107 @@ define(function (require) {
 
   /**
    *  Add a value to the p5.Oscillator's output amplitude,
-   *  and return the result in the form of a p5.Signal. 
-   *  This method does not add to the p5.Oscillator itself,
-   *  — the returned p5.Signal handles the math.
-   *  This is useful for modulating parameters
-   *  with an oscillating signal.
+   *  and return the oscillator.
    *  
    *  p5.Oscillator's amplitude. 
    *  on this oscillator's signal.
    *
    *  @method  add
    *  @param {Number} number Constant number to add
-   *  @return {Tone.Add} Signal An object from the Tone.js
-   *                            library does the signal math
+   *  @return {p5.Oscillator} Oscillator Returns this oscillator
+   *                                     with scaled output
    *  
    */
   p5.Oscillator.prototype.add = function(num) {
     var add = new Add(num);
-    this.output.connect(add);
-    return add;
+    var thisChain = this.mathOps.length;
+    var nextChain = this.panner;
+
+    // if a mult already exists in the chain, replace it
+    for (var i in this.mathOps) {
+      if (this.mathOps[i] instanceof Add) {
+        this.mathOps[i].dispose();
+        thisChain = i;
+        if (thisChain < this.mathOps.length - 1) {
+          nextChain = this.mathOps[i+1];
+        }
+      }
+    }
+
+    this.mathOps[thisChain-1].disconnect();
+    this.mathOps[thisChain-1].connect(add);
+    add.connect(nextChain);
+    this.mathOps[thisChain] = add;
+    return this;
   };
 
   /**
    *  Multiply the p5.Oscillator's output amplitude
-   *  by a fixed value. This method does not add to the
-   *  oscillator itself, but instead returns a p5.Signal
-   *  object that handles the signal math. This is useful for
+   *  by a fixed value. This is useful for
    *  modulating parameters with an oscillating signal.
    *  
-   *  @method  add
+   *  @method  mult
    *  @param {Number} number Constant number to multiply
-   *  @return {Tone.Multiply} Signal An object from the Tone.js
-   *                            library does the signal math
+   *  @return {p5.Oscillator} Oscillator Returns this oscillator
+   *                                     with multiplied output
    */
   p5.Oscillator.prototype.mult = function(num) {
     var mult = new Mult(num);
-    this.output.connect(mult);
-    return mult;
+    var thisChain = this.mathOps.length;
+    var nextChain = this.panner;
+
+    // if a mult already exists in the chain, replace it
+    for (var i in this.mathOps) {
+      if (this.mathOps[i] instanceof Mult) {
+        this.mathOps[i].dispose();
+        thisChain = i;
+        if (thisChain < this.mathOps.length - 1) {
+          nextChain = this.mathOps[i+1];
+        }
+      }
+    }
+
+    this.mathOps[thisChain-1].disconnect();
+    this.mathOps[thisChain-1].connect(mult);
+    mult.connect(nextChain);
+    this.mathOps[thisChain] = mult;
+
+    return this;
   };
 
   /**
    *  Scale this oscillator's amplitude values to a given
-   *  range, and return the result as an audio signal. Does
-   *  not change the value of the original oscillator,
-   *  instead it returns a new p5.SignalScale.
+   *  range, and return the oscillator.
    *  
    *  @method  scale
    *  @param  {Number} inMin  input range minumum
    *  @param  {Number} inMax  input range maximum
    *  @param  {Number} outMin input range minumum
    *  @param  {Number} outMax input range maximum
-   *  @return {Tone.Scale} Signal An object from the Tone.js
-   *                            library does the signal math
+   *  @return {p5.Oscillator} Oscillator Returns this oscillator
+   *                                     with scaled output
    */
   p5.Oscillator.prototype.scale = function(inMin, inMax, outMin, outMax) {
     var scale = new Scale(inMin, inMax, outMin, outMax);
-    this.output.connect(scale);
-    return scale;
+    var thisChain = this.mathOps.length;
+    var nextChain = this.panner;
+
+    // if a scale already exists in the chain, replace it
+    for (var i in this.mathOps) {
+      if (this.mathOps[i] instanceof Scale) {
+        this.mathOps[i].dispose();
+        thisChain = i;
+        if (thisChain < this.mathOps.length - 1) {
+          nextChain = this.mathOps[i+1];
+        }
+      }
+    }
+
+    this.mathOps[thisChain-1].disconnect();
+    this.mathOps[thisChain-1].connect(scale);
+    scale.connect(nextChain);
+    this.mathOps[thisChain] = scale;
+    return this;
   };
 
 
