@@ -350,7 +350,7 @@ define(function (require) {
     var thisChain = this.mathOps.length;
     var nextChain = this.panner;
 
-    // if a mult already exists in the chain, replace it
+    // if an Add already exists in the chain, replace it
     for (var i in this.mathOps) {
       if (this.mathOps[i] instanceof Add) {
         this.mathOps[i].dispose();
@@ -383,7 +383,7 @@ define(function (require) {
     var thisChain = this.mathOps.length;
     var nextChain = this.panner;
 
-    // if a mult already exists in the chain, replace it
+    // if a Mult already exists in the chain, replace it
     for (var i in this.mathOps) {
       if (this.mathOps[i] instanceof Mult) {
         this.mathOps[i].dispose();
@@ -419,7 +419,7 @@ define(function (require) {
     var thisChain = this.mathOps.length;
     var nextChain = this.panner;
 
-    // if a scale already exists in the chain, replace it
+    // if a Scale already exists in the chain, replace it
     for (var i in this.mathOps) {
       if (this.mathOps[i] instanceof Scale) {
         this.mathOps[i].dispose();

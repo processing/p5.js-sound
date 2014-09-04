@@ -2,6 +2,12 @@ define(function (require) {
   'use strict';
 
   var p5sound = require('master');
+  var Add = require('Tone/signal/Add');
+  var Mult = require('Tone/signal/Multiply');
+  var Scale = require('Tone/signal/Scale');
+
+  var Tone = require('Tone/core/Tone');
+  Tone.setContext( p5sound.audiocontext);
 
   /**
    *  <p>Envelopes are pre-defined amplitude distribution over time. 
@@ -93,6 +99,12 @@ define(function (require) {
     this.timeoutID = null; // store clearThing timeouts
 
     this.connection = null; // store connection
+
+    //array of math operation signal chaining
+    this.mathOps = [this.control];
+
+    // add to the soundArray so we can dispose of the env later
+    p5sound.soundArray.push(this);
   };
 
   /**
@@ -360,22 +372,83 @@ define(function (require) {
   // Signal Math
 
   p5.Env.prototype.add = function(num) {
-    var add = new p5.SignalAdd(num);
-    add.setInput(this.control);
-    return add;
-  };
+    var add = new Add(num);
+    var thisChain = this.mathOps.length;
+    var nextChain = this.output;
+
+    // if an Add already exists in the chain, replace it
+    for (var i in this.mathOps) {
+      if (this.mathOps[i] instanceof Add) {
+        this.mathOps[i].dispose();
+        thisChain = i;
+        if (thisChain < this.mathOps.length - 1) {
+          nextChain = this.mathOps[i+1];
+        }
+      }
+    }
+
+    this.mathOps[thisChain-1].disconnect();
+    this.mathOps[thisChain-1].connect(add);
+    add.connect(nextChain);
+    this.mathOps[thisChain] = add;
+    return this;  };
 
   p5.Env.prototype.mult = function(num) {
-    var mult = new p5.SignalMult(num);
-    mult.setInput(this.control);
-    return mult;
+    var mult = new Mult(num);
+    var thisChain = this.mathOps.length;
+    var nextChain = this.output;
+
+    // if a Mult already exists in the chain, replace it
+    for (var i in this.mathOps) {
+      if (this.mathOps[i] instanceof Mult) {
+        this.mathOps[i].dispose();
+        thisChain = i;
+        if (thisChain < this.mathOps.length - 1) {
+          nextChain = this.mathOps[i+1];
+        }
+      }
+    }
+
+    this.mathOps[thisChain-1].disconnect();
+    this.mathOps[thisChain-1].connect(mult);
+    mult.connect(nextChain);
+    this.mathOps[thisChain] = mult;
+
+    return this;
   };
 
   p5.Env.prototype.scale = function(inMin, inMax, outMin, outMax) {
-    var scale = new p5.SignalScale(inMin, inMax, outMin, outMax);
-    scale.setInput(this.control);
-    return scale;
+    var scale = new Scale(inMin, inMax, outMin, outMax);
+    var thisChain = this.mathOps.length;
+    var nextChain = this.output;
+
+    // if a Scale already exists in the chain, replace it
+    for (var i in this.mathOps) {
+      if (this.mathOps[i] instanceof Scale) {
+        this.mathOps[i].dispose();
+        thisChain = i;
+        if (thisChain < this.mathOps.length - 1) {
+          nextChain = this.mathOps[i+1];
+        }
+      }
+    }
+
+    this.mathOps[thisChain-1].disconnect();
+    this.mathOps[thisChain-1].connect(scale);
+    scale.connect(nextChain);
+    this.mathOps[thisChain] = scale;
+    return this;
   };
 
+  // get rid of the oscillator
+  p5.Env.prototype.dispose = function() {
+    var now = p5sound.audiocontext.currentTime;
+    this.disconnect();
+    this.control.dispose();
+    this.control = null;
+    for (var i = 1; i < this.mathOps.length; i++) {
+      mathOps[i].dispose();
+    }
+  };
 
 });

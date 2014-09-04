@@ -115,7 +115,7 @@ define(function (require) {
    *  
    *  @method  mult
    *  @param {Number} number to multiply
-   *  @return {p5.SignalMult} object
+   *  @return {Tone.Multiply} object
    */
   Signal.prototype.mult = function(num) {
     var mult = new Mult(num);
