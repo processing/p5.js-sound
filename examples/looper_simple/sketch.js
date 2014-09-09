@@ -30,21 +30,23 @@ function setup() {
 
   // add phrases, with a name, a callback,
   // and an array of values that will be passed to the callback if > 0
-  part.addPhrase('snare', playSnare, [0, 0, 1, 0, 0, 2, 0, 1, 0]);/// 0,0,1, 0]);
-  part.addPhrase('melody', playNote, [62, 0, 0, 65, 72,0, 65, 0]);
-
+  part.addPhrase('snare', playSnare, [4, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1]);/// 0,0,1, 0]);
+  part.addPhrase('melody', playNote, [72, 0, 0, 0, 0,0, 0, 70]);
+  part.setBPM(100);
+  // part.onStep = function(time){
+  //   playSnare(time);
+  // };
   // loop the part
   part.loop();
 }
 
 
-function playNote(midiNote) {
-  if (midiNote > 0) {
-    osc.freq(midiToFreq(midiNote));
-    env.play(osc);
-  }
+function playNote(params) {
+  osc.freq(midiToFreq(params));
+  env.play(osc);
 }
 
-function playSnare() {
+function playSnare(params) {
   noiseEnv.play(noise);
+  console.log(params);
 }

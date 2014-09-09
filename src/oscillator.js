@@ -336,9 +336,6 @@ define(function (require) {
    *  Add a value to the p5.Oscillator's output amplitude,
    *  and return the oscillator.
    *  
-   *  p5.Oscillator's amplitude. 
-   *  on this oscillator's signal.
-   *
    *  @method  add
    *  @param {Number} number Constant number to add
    *  @return {p5.Oscillator} Oscillator Returns this oscillator

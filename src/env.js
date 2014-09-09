@@ -371,6 +371,15 @@ define(function (require) {
 
   // Signal Math
 
+  /**
+   *  Add a value to the p5.Oscillator's output amplitude,
+   *  and return the oscillator.
+   *  
+   *  @method  add
+   *  @param {Number} number Constant number to add
+   *  @return {p5.Env} Envelope Returns this envelope
+   *                                     with scaled output
+   */
   p5.Env.prototype.add = function(num) {
     var add = new Add(num);
     var thisChain = this.mathOps.length;
@@ -393,6 +402,15 @@ define(function (require) {
     this.mathOps[thisChain] = add;
     return this;  };
 
+  /**
+   *  Multiply the p5.Env's output amplitude
+   *  by a fixed value.
+   *  
+   *  @method  mult
+   *  @param {Number} number Constant number to multiply
+   *  @return {p5.Env} Envelope Returns this envelope
+   *                                     with scaled output
+   */
   p5.Env.prototype.mult = function(num) {
     var mult = new Mult(num);
     var thisChain = this.mathOps.length;
@@ -417,6 +435,18 @@ define(function (require) {
     return this;
   };
 
+  /**
+   *  Scale this envelope's amplitude values to a given
+   *  range, and return the envelope.
+   *  
+   *  @method  scale
+   *  @param  {Number} inMin  input range minumum
+   *  @param  {Number} inMax  input range maximum
+   *  @param  {Number} outMin input range minumum
+   *  @param  {Number} outMax input range maximum
+   *  @return {p5.Env} Envelope Returns this envelope
+   *                                     with scaled output
+   */
   p5.Env.prototype.scale = function(inMin, inMax, outMin, outMax) {
     var scale = new Scale(inMin, inMax, outMin, outMax);
     var thisChain = this.mathOps.length;

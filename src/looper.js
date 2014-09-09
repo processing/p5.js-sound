@@ -19,8 +19,6 @@ define(function (require) {
 
   var mode;
 
-  // var currentStep = 0;
-  // var currentLoop; // which loop is playing now?
   var activeParts = []; // array of active parts replaces currentLoop
 
   var onStep = function(){};
@@ -54,25 +52,38 @@ define(function (require) {
       console.log('play part bang');
       this.stop();
     };
+
+    this.metro = new p5.Metro();
+    this.metro._init();
   };
 
-  p5.Part.prototype.start = function() {
-    this.partStep = 0;
-    this.isPlaying = true;
-    activeParts.push(this); // set currentLoop to this
+  p5.Part.prototype.setBPM = function(tempo, rampTime) {
+    this.metro.setBPM(tempo, rampTime);
+  };
 
-    if (mode !== 'score') { // start playing
-      nextNoteTime = p5sound.audiocontext.currentTime;
+  p5.Part.prototype.getBPM = function() {
+    return this.metro.getBPM();
+  };
+
+  // time = seconds from now
+  p5.Part.prototype.start = function(time) {
+    if (!this.isPlaying) {
+      this.isPlaying = true;
+      this.metro.resetSync(this);
+      var t = time || 0;
+      this.metro.start(t);
     }
-    scheduler();    // kick off scheduling
-
+    // activeParts.push(this); // set currentLoop to this
+    // if (mode !== 'score') { // start playing
+    //   nextNoteTime = p5sound.audiocontext.currentTime;
+    // }
+    // scheduler();    // kick off scheduling
   };
 
   p5.Part.prototype.loop = function( ) {
     // rest onended function
     this.onended = function() {
       this.partStep = 0;
-      console.log('loop part bang');
       // dont start phrases over, right?
     };
     this.start();
@@ -85,13 +96,15 @@ define(function (require) {
     };
   };
 
-  p5.Part.prototype.stop = function( ) {
-    this.isPlaying = false;
+  p5.Part.prototype.stop = function(time) {
     this.partStep = 0;
+    this.pause(time);
   };
 
-  p5.Part.prototype.pause = function( ) {
+  p5.Part.prototype.pause = function(time) {
     this.isPlaying = false;
+    var t = time || 0;
+    this.metro.stop(t);
   };
 
   // can either be a p5.Phrase or a name, callback, array
@@ -128,6 +141,14 @@ define(function (require) {
     }
   };
 
+  p5.Part.prototype.incrementStep = function() {
+    if (this.partStep >= this.length) {
+      this.onended();
+    }
+    this.partStep +=1;
+    console.log(this.partStep + '/ ' + this.length);
+  };
+
   /**
    *  Fire a callback function every step
    *  @param  {Function} callback [description]
@@ -137,66 +158,66 @@ define(function (require) {
     onStep = callback;
   };
 
-  var nextNote = function() {
-    // Advance current note and time by a 16th note...
-    var secondsPerBeat = 60.0 / bpm;    // Notice this picks up the CURRENT 
-                                          // tempo value to calculate beat length.
-    nextNoteTime += beatLength * secondsPerBeat;    // Add beat length to last beat time
+  // var nextNote = function() {
+  //   // Advance current note and time by a 16th note...
+  //   var secondsPerBeat = 60.0 / bpm;    // Notice this picks up the CURRENT 
+  //                                         // tempo value to calculate beat length.
+  //   nextNoteTime += beatLength * secondsPerBeat;    // Add beat length to last beat time
 
 
-    for (var i in activeParts) {
+  //   for (var i in activeParts) {
 
-      // increment partStep
-      activeParts[i].partStep++;    // Advance the beat number, wrap to zero
-      // fire the current loop's onended function
-      if (activeParts[i].partStep >= activeParts[i].length) {
-        activeParts[i].onended(); 
-        console.log(activeParts[i].partStep +', ' +activeParts[i].length);
-      }
+  //     // increment partStep
+  //     activeParts[i].partStep++;    // Advance the beat number, wrap to zero
+  //     // fire the current loop's onended function
+  //     if (activeParts[i].partStep >= activeParts[i].length) {
+  //       activeParts[i].onended(); 
+  //       console.log(activeParts[i].partStep +', ' +activeParts[i].length);
+  //     }
 
-      if (activeParts[i].partStep >= activeParts[i].length) {
-        activeParts[i].partStep = 0;
-      }
+  //     if (activeParts[i].partStep >= activeParts[i].length) {
+  //       activeParts[i].partStep = 0;
+  //     }
 
-      for (var j in activeParts[i].phrases) {
-        activeParts[i].phrases[j].phraseStep++;    // Advance the beat number, wrap to zero
-        if (activeParts[i].phrases[j].phraseStep >= activeParts[i].phrases[j].array.length) {
-          activeParts[i].phrases[j].phraseStep = 0;
-        }
-      }
-    }
-  };
+  //     for (var j in activeParts[i].phrases) {
+  //       activeParts[i].phrases[j].phraseStep++;    // Advance the beat number, wrap to zero
+  //       if (activeParts[i].phrases[j].phraseStep >= activeParts[i].phrases[j].array.length) {
+  //         activeParts[i].phrases[j].phraseStep = 0;
+  //       }
+  //     }
+  //   }
+  // };
 
-  var scheduleNote = function( beatNumber, time ) {
-    // push the note on the queue, even if we're not playing.
-    notesInQueue.push( { note: beatNumber, time: time } );
+  // var scheduleNote = function( beatNumber, time ) {
+  //   // push the note on the queue, even if we're not playing.
+  //   notesInQueue.push( { note: beatNumber, time: time } );
 
-    onStep();
+  //   onStep();
 
-    for (var i in activeParts) {
-      for (var j = 0; j < activeParts[i].phrases.length; j++) {
-        var thisPhrase = activeParts[i].phrases[j];
-        if (thisPhrase.array[thisPhrase.phraseStep] !== 0) {
-            thisPhrase.callback(thisPhrase.array[thisPhrase.phraseStep]);
-            // console.log(thisPhrase.name +', '+ thisPhrase.array[thisPhrase.phraseStep]);
-        }
-      }
-    }
-  };
+  //   for (var i in activeParts) {
+  //     for (var j = 0; j < activeParts[i].phrases.length; j++) {
+  //       var thisPhrase = activeParts[i].phrases[j];
+  //       if (thisPhrase.array[thisPhrase.phraseStep] !== 0) {
+  //           thisPhrase.callback(thisPhrase.array[thisPhrase.phraseStep]);
+  //           // console.log(thisPhrase.name +', '+ thisPhrase.array[thisPhrase.phraseStep]);
+  //       }
+  //     }
+  //   }
+  // };
 
-  var scheduler = function() {
-    for (var i in activeParts) {
-      if (activeParts[i].isPlaying ) {
-        // while there are notes that will need to play before the next interval, 
-        // schedule them and advance the pointer.
-        while (nextNoteTime < p5sound.audiocontext.currentTime + scheduleAheadTime ) {
-            scheduleNote( activeParts[i].partStep, nextNoteTime );
-            nextNote();
-        }
-        timerID = window.setTimeout( scheduler, lookahead );
-      }
-    }
-  };
+  // var scheduler = function() {
+  //   for (var i in activeParts) {
+  //     if (activeParts[i].isPlaying ) {
+  //       // while there are notes that will need to play before the next interval, 
+  //       // schedule them and advance the pointer.
+  //       while (nextNoteTime < p5sound.audiocontext.currentTime + scheduleAheadTime ) {
+  //           scheduleNote( activeParts[i].partStep, nextNoteTime );
+  //           nextNote();
+  //       }
+  //       timerID = window.setTimeout( scheduler, lookahead );
+  //     }
+  //   }
+  // };
 
   // ===============
   // p5.Score
