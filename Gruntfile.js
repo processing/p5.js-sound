@@ -72,6 +72,7 @@ module.exports = function(grunt) {
           out: 'lib/p5.sound.js',
           paths: {
             'Tone' : 'node_modules/tone/Tone',
+            'panner' : 'src/panner',
             'sndcore': 'src/sndcore',
             'master': 'src/master',
             'helpers': 'src/helpers',

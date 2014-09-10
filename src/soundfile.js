@@ -81,15 +81,7 @@ define(function (require) {
 
     // stereo panning
     this.panPosition = 0.0;
-    this.panner = p5sound.audiocontext.createPanner();
-    this.panner.panningModel = 'equalpower';
-    this.panner.distanceModel = 'linear';
-    this.panner.setPosition(0,0,0);
-
-    this.output.connect(this.panner);
-
-    // by default, the panner is connected to the p5s destination
-    this.panner.connect(p5sound.input);
+    this.panner = new p5.Panner(this.output, p5sound.input);
 
     // it is possible to instantiate a soundfile with no path
     if (this.url) {
@@ -565,15 +557,7 @@ define(function (require) {
    */
   p5.SoundFile.prototype.pan = function(pval) {
     this.panPosition = pval;
-    pval = pval * 90.0;
-    var xDeg = parseInt(pval);
-    var zDeg = xDeg + 90;
-    if (zDeg > 90) {
-      zDeg = 180 - zDeg;
-    }
-    var x = Math.sin(xDeg * (Math.PI / 180));
-    var z = Math.sin(zDeg * (Math.PI / 180));
-    this.panner.setPosition(x, 0, z);
+    this.panner.pan(pval);
   };
 
   /**

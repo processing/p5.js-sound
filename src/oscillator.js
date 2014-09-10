@@ -60,18 +60,11 @@ define(function (require) {
     this.output.gain.value = 0.0;
     this.output.gain.setValueAtTime(0.0, p5sound.audiocontext.currentTime);
 
+    this.oscillator.connect(this.output);
     // stereo panning
     this.panPosition = 0.0;
-    this.panner = p5sound.audiocontext.createPanner();
-    this.panner.panningModel = 'equalpower';
-    this.panner.distanceModel = 'linear';
-    this.panner.setPosition(0,0,0);
-
-    // connect to p5sound by default
-    this.oscillator.connect(this.output);
-    this.output.connect(this.panner);
-    this.panner.connect(p5sound.input);
-    this.connection = p5sound.input;
+    this.panner = new p5.Panner(this.output, p5sound.input);
+    this.connection = p5sound.input; // connect to p5sound by default
 
     //array of math operation signal chaining
     this.mathOps = [this.output];
@@ -273,19 +266,8 @@ define(function (require) {
    *  @param  {Number} panning Number between -1 and 1
    */
   p5.Oscillator.prototype.pan = function(pval) {
-    if (!pval) {
-      pval = 0;
-    }
-      this.panPosition = pval;
-      pval = pval * 90.0;
-      var xDeg = parseInt(pval);
-      var zDeg = xDeg + 90;
-      if (zDeg > 90) {
-        zDeg = 180 - zDeg;
-      }
-      var x = Math.sin(xDeg * (Math.PI / 180));
-      var z = Math.sin(zDeg * (Math.PI / 180));
-      this.panner.setPosition(x, 0, z);
+    this.panPosition = pval;
+    this.panner.pan(pval);
   };
 
   p5.Oscillator.prototype.getPan = function() {
@@ -346,22 +328,7 @@ define(function (require) {
     var add = new Add(num);
     var thisChain = this.mathOps.length;
     var nextChain = this.panner;
-
-    // if an Add already exists in the chain, replace it
-    for (var i in this.mathOps) {
-      if (this.mathOps[i] instanceof Add) {
-        this.mathOps[i].dispose();
-        thisChain = i;
-        if (thisChain < this.mathOps.length - 1) {
-          nextChain = this.mathOps[i+1];
-        }
-      }
-    }
-
-    this.mathOps[thisChain-1].disconnect();
-    this.mathOps[thisChain-1].connect(add);
-    add.connect(nextChain);
-    this.mathOps[thisChain] = add;
+    this.mathChain(add, thisChain, nextChain, Add);
     return this;
   };
 
@@ -379,23 +346,7 @@ define(function (require) {
     var mult = new Mult(num);
     var thisChain = this.mathOps.length;
     var nextChain = this.panner;
-
-    // if a Mult already exists in the chain, replace it
-    for (var i in this.mathOps) {
-      if (this.mathOps[i] instanceof Mult) {
-        this.mathOps[i].dispose();
-        thisChain = i;
-        if (thisChain < this.mathOps.length - 1) {
-          nextChain = this.mathOps[i+1];
-        }
-      }
-    }
-
-    this.mathOps[thisChain-1].disconnect();
-    this.mathOps[thisChain-1].connect(mult);
-    mult.connect(nextChain);
-    this.mathOps[thisChain] = mult;
-
+    this.mathChain(mult, thisChain, nextChain, Mult);
     return this;
   };
 
@@ -415,10 +366,14 @@ define(function (require) {
     var scale = new Scale(inMin, inMax, outMin, outMax);
     var thisChain = this.mathOps.length;
     var nextChain = this.panner;
+    this.mathChain(scale, thisChain, nextChain, Scale);
+    return this;
+  };
 
-    // if a Scale already exists in the chain, replace it
+  p5.Oscillator.prototype.mathChain = function(math, thisChain, nextChain, type){
+    // if this type of math already exists in the chain, replace it
     for (var i in this.mathOps) {
-      if (this.mathOps[i] instanceof Scale) {
+      if (this.mathOps[i] instanceof type) {
         this.mathOps[i].dispose();
         thisChain = i;
         if (thisChain < this.mathOps.length - 1) {
@@ -426,14 +381,11 @@ define(function (require) {
         }
       }
     }
-
     this.mathOps[thisChain-1].disconnect();
-    this.mathOps[thisChain-1].connect(scale);
-    scale.connect(nextChain);
-    this.mathOps[thisChain] = scale;
-    return this;
+    this.mathOps[thisChain-1].connect(math);
+    math.connect(nextChain);
+    this.mathOps[thisChain] = math;
   };
-
 
   // ============================== //
   // SinOsc, TriOsc, SqrOsc, SawOsc //

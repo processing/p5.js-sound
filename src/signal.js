@@ -149,32 +149,4 @@ define(function (require) {
   Mult.prototype.scale =   Signal.prototype.scale;
   Add.prototype.scale =   Signal.prototype.scale;
   Scale.prototype.scale =   Signal.prototype.scale;
-
-
-  // ======================== //
-  // Signal Add, Mult & Scale //
-  // ======================== //
-
-  // these may be deleted
-  p5.SignalAdd = function(num) {
-    var add = new Add(num);
-    return add;
-  };
-
-  p5.SignalMult = function(num, _input) {
-    var mult = new Mult();
-    if (num){
-      mult.setValue(num);
-    }
-    if (_input) {
-      _input.connect(mult);
-    }
-    return mult;
-  };
-
-  p5.SignalScale = function(inMin, inMax, outMin, outMax) {
-    var scale = new Scale(inMin, inMax, outMin, outMax);
-    return scale;
-  };
-
 });

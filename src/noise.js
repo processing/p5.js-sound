@@ -23,13 +23,7 @@ define(function (require) {
 
     // sterep panning
     this.panPosition = 0.0;
-    this.panner = p5sound.audiocontext.createPanner();
-    this.panner.panningModel = 'equalpower';
-    this.panner.distanceModel = 'linear';
-    this.panner.setPosition(0,0,0);
-
-    this.output.connect(this.panner);
-    this.panner.connect(p5sound.input);  // maybe not connected to output default?
+    this.panner = new p5.Panner(this.output, p5sound.input);
 
     // add to soundArray so we can dispose on close
     p5sound.soundArray.push(this);
@@ -154,15 +148,7 @@ define(function (require) {
    */
   p5.Noise.prototype.pan = function(pval) {
     this.panPosition = pval;
-    pval = pval * 90.0;
-    var xDeg = parseInt(pval);
-    var zDeg = xDeg + 90;
-    if (zDeg > 90) {
-      zDeg = 180 - zDeg;
-    }
-    var x = Math.sin(xDeg * (Math.PI / 180));
-    var z = Math.sin(zDeg * (Math.PI / 180));
-    this.panner.setPosition(x, 0, z);
+    this.panner.pan(pval);
   };
 
   /**
