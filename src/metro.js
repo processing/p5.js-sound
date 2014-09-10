@@ -24,7 +24,7 @@ define(function (require) {
     // for all of the active things on the metro:
     for (var i in this.syncedParts) {
       var thisPart = this.syncedParts[i];
-      thisPart.incrementStep();
+      thisPart.incrementStep(tickTime);
       // each synced source keeps track of its own beat number
       for (var j in thisPart.phrases) {
         var thisPhrase = thisPart.phrases[j];
@@ -35,7 +35,6 @@ define(function (require) {
           thisPhrase.callback(phraseArray[bNum], tickTime);
         }
       }
-      thisPart.onStep(tickTime);
     }
     this.metroTicks += 1;
     this.lastTick = tickTime;

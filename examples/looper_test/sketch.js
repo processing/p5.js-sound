@@ -48,13 +48,12 @@ function setup() {
   // a.onStep(fireStep); // set a callback that runs every time through this loop
   b.onStep(fireStep); // set a callback that runs every time through this loop
 
-  var c = new p5.Part(16);
+  var c = new p5.Part(24);
   c.onStep(fireStep); // set a callback that runs every time through this loop
-
 
   setBPM(120);
   // b.loop();
-  mySong = new p5.Score(c, b, a, a);
+  mySong = new p5.Score(c, a, b, a, a, c);
   mySong.loop();
 }
 
@@ -88,13 +87,13 @@ function playMelody(params) {
   envB.triggerAttack(osc);
 }
 
-function fireStep() {
+function fireStep(t) {
   console.log('on step!');
   var x = random(0,1);
   if (x > .55) {
     bass.freq(midiToFreq( round(random(80, 70) ) ) );
     bass.amp(1);
-    envB.play(bass);
+    envB.play(bass, t);
   }
 }
 

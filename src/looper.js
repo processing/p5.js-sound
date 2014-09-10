@@ -49,12 +49,12 @@ define(function (require) {
 
     // what does this looper do when it gets to the last step?
     this.onended = function(){
-      console.log('play part bang');
       this.stop();
     };
 
     this.metro = new p5.Metro();
     this.metro._init();
+    this.callback = function(){};
   };
 
   p5.Part.prototype.setBPM = function(tempo, rampTime) {
@@ -73,11 +73,6 @@ define(function (require) {
       var t = time || 0;
       this.metro.start(t);
     }
-    // activeParts.push(this); // set currentLoop to this
-    // if (mode !== 'score') { // start playing
-    //   nextNoteTime = p5sound.audiocontext.currentTime;
-    // }
-    // scheduler();    // kick off scheduling
   };
 
   p5.Part.prototype.loop = function( ) {
@@ -141,12 +136,13 @@ define(function (require) {
     }
   };
 
-  p5.Part.prototype.incrementStep = function() {
+  p5.Part.prototype.incrementStep = function(time) {
     if (this.partStep >= this.length) {
       this.onended();
     }
     this.partStep +=1;
-    console.log(this.partStep + '/ ' + this.length);
+    this.callback(time);
+    // console.log(this.partStep + '/ ' + this.length);
   };
 
   /**
@@ -155,76 +151,17 @@ define(function (require) {
    *  @return {[type]}            [description]
    */
   p5.Part.prototype.onStep = function(callback) {
-    onStep = callback;
+    // onStep = callback;
+    this.callback = callback;
+    // console.log(this.callback);
   };
 
-  // var nextNote = function() {
-  //   // Advance current note and time by a 16th note...
-  //   var secondsPerBeat = 60.0 / bpm;    // Notice this picks up the CURRENT 
-  //                                         // tempo value to calculate beat length.
-  //   nextNoteTime += beatLength * secondsPerBeat;    // Add beat length to last beat time
-
-
-  //   for (var i in activeParts) {
-
-  //     // increment partStep
-  //     activeParts[i].partStep++;    // Advance the beat number, wrap to zero
-  //     // fire the current loop's onended function
-  //     if (activeParts[i].partStep >= activeParts[i].length) {
-  //       activeParts[i].onended(); 
-  //       console.log(activeParts[i].partStep +', ' +activeParts[i].length);
-  //     }
-
-  //     if (activeParts[i].partStep >= activeParts[i].length) {
-  //       activeParts[i].partStep = 0;
-  //     }
-
-  //     for (var j in activeParts[i].phrases) {
-  //       activeParts[i].phrases[j].phraseStep++;    // Advance the beat number, wrap to zero
-  //       if (activeParts[i].phrases[j].phraseStep >= activeParts[i].phrases[j].array.length) {
-  //         activeParts[i].phrases[j].phraseStep = 0;
-  //       }
-  //     }
-  //   }
-  // };
-
-  // var scheduleNote = function( beatNumber, time ) {
-  //   // push the note on the queue, even if we're not playing.
-  //   notesInQueue.push( { note: beatNumber, time: time } );
-
-  //   onStep();
-
-  //   for (var i in activeParts) {
-  //     for (var j = 0; j < activeParts[i].phrases.length; j++) {
-  //       var thisPhrase = activeParts[i].phrases[j];
-  //       if (thisPhrase.array[thisPhrase.phraseStep] !== 0) {
-  //           thisPhrase.callback(thisPhrase.array[thisPhrase.phraseStep]);
-  //           // console.log(thisPhrase.name +', '+ thisPhrase.array[thisPhrase.phraseStep]);
-  //       }
-  //     }
-  //   }
-  // };
-
-  // var scheduler = function() {
-  //   for (var i in activeParts) {
-  //     if (activeParts[i].isPlaying ) {
-  //       // while there are notes that will need to play before the next interval, 
-  //       // schedule them and advance the pointer.
-  //       while (nextNoteTime < p5sound.audiocontext.currentTime + scheduleAheadTime ) {
-  //           scheduleNote( activeParts[i].partStep, nextNoteTime );
-  //           nextNote();
-  //       }
-  //       timerID = window.setTimeout( scheduler, lookahead );
-  //     }
-  //   }
-  // };
 
   // ===============
   // p5.Score
   // ===============
 
   var score;
-  //parts, currentPart;
 
   p5.Score = function() {
     // for all of the arguments
@@ -236,7 +173,7 @@ define(function (require) {
       this.parts[i] = arguments[i];
       this.parts[i].nextPart = this.parts[i+1];
       this.parts[i].onended = function() {
-        thisScore.resetParts();
+        thisScore.resetPart(i);
         playNextPart(thisScore);
       };
     }
@@ -289,6 +226,14 @@ define(function (require) {
       for (var p in this.parts[i].phrases){
         this.parts[i].phrases[p].phraseStep = 0;
       }
+    }
+  };
+
+  p5.Score.prototype.resetPart = function(i) {
+    this.parts[i].stop();
+    this.parts[i].partStep = 0;
+    for (var p in this.parts[i].phrases){
+      this.parts[i].phrases[p].phraseStep = 0;
     }
   };
 
