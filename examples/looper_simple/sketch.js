@@ -27,11 +27,8 @@ function setup() {
 
   // add phrases, with a name, a callback, and
   // an array of values that will be passed to the callback if > 0
-  part.addPhrase('snare', playSnare, [1, 0, 0, 0,
-                                      1, 0, 0, 0,
-                                      1, 0, 0, 0,
-                                      1, 0, 1, 1]);
-  part.addPhrase('melody', playNote, [72, 0, 0, 0, 70,0, 0, 0]);
+  part.addPhrase('snare', playSnare, [1, 0, 0, 0]);
+  part.addPhrase('melody', playNote, [72, 0, 0, 0, 60,0, 0, 80]);
   part.setBPM(100);
   part.loop();
 }

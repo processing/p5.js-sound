@@ -9,7 +9,6 @@ define(function (require) {
    *  Set the global tempo, in beats per minute, for all
    *  p5.Parts. This method will impact all active p5.Parts.
    *  
-   *  @method  setBPM
    *  @param {Number} BPM      Beats Per Minute
    *  @param {Number} rampTime Seconds from now
    */
@@ -21,48 +20,111 @@ define(function (require) {
   };
 
   /**
-   *  A phrase is a pattern of musical events over time, i.e. a series of notes
-   *  and rests.
+   *  <p>A phrase is a pattern of musical events over time, i.e.
+   *  a series of notes and rests.</p>
    *  
-   *  Phrases must be added to a p5.Part for playback, and each part can play multiple
-   *  phrases at the same time. For example, one Phrase might be a kick drum, another
-   *  could be a snare, and another could be the bassline.
+   *  <p>Phrases must be added to a p5.Part for playback, and
+   *  each part can play multiple phrases at the same time.
+   *  For example, one Phrase might be a kick drum, another
+   *  could be a snare, and another could be the bassline.</p>
    *  
-   *  The first parameter is
-   *  a name so that the phrase can be modified or deleted later. The callback
-   *  is a a function that this phrase will call at every step—for example it might
-   *  be called <code>playNote(value){}</code>. The array determines which value
-   *  is passed into the callback at each step of the phrase. It can be numbers,
-   *  an object with multiple numbers, or a zero (indicates a rest so the callback
-   *  won't be called).
-   *  
-   *
+   *  <p>The first parameter is a name so that the phrase can be
+   *  modified or deleted later. The callback is a a function that
+   *  this phrase will call at every step—for example it might be
+   *  called <code>playNote(value){}</code>. The array determines
+   *  which value is passed into the callback at each step of the
+   *  phrase. It can be numbers, an object with multiple numbers,
+   *  or a zero (0) indicates a rest so the callback won't be called).</p>
+   * 
    *  @class p5.Phrase
    *  @constructor
    *  @param {String}   name     Name so that you can access the Phrase.
    *  @param {Function} callback The name of a function that this phrase
-   *                             will call, typically it will play a sound.
-   *  @param {Array}   array    Array of values to pass into the callback
+   *                             will call. Typically it will play a sound,
+   *                             and accept two parameters: a value from the
+   *                             sequence array, followed by a time at which
+   *                             to play the sound.
+   *  @param {Array}   sequence    Array of values to pass into the callback
    *                            at each step of the phrase.
+   *  @example
+   *  <div><code>
+   *  var mySound;
+   *  var pattern = [1,0,0,2,0,2,0,0];
+   *  
+   *  function preload() {
+   *    mySound = loadSound('assets/beatbox.mp3');
+   *  }
+   *  
+   *  function setup() {
+   *    var myPhrase = new p5.Phrase('bbox', makeSound, pattern);
+   *    var myPart = new p5.Part();
+   *    myPart.addPhrase(myPhrase);
+   *    myPart.setBPM(60);
+   *    myPart.start();
+   *  }
+   *
+   *  function makeSound(playbackRate) {
+   *    mySound.play(playbackRate);
+   *  }
+   *  </code></div>
    */
-  p5.Phrase = function(name, callback, array) {
+  p5.Phrase = function(name, callback, sequence) {
     this.phraseStep = 0;
     this.name = name;
     this.callback = callback;
-    this.array = array;
+    /**
+     * Array of values to pass into the callback
+     * at each step of the phrase. Depending on the callback
+     * function's requirements, these values may be numbers,
+     * strings, or an object with multiple parameters.
+     * Zero (0) indicates a rest.
+     * 
+     * @property sequence
+     * @type {Array}
+     */
+    this.sequence = sequence;
   };
 
   /**
    *  A p5.Part plays back one or more p5.Phrases. Instantiate a part
    *  with steps and tatums. By default, each step represents 1/16th note.
    *  
-   *  @class p5.Phrase
+   *  @class p5.Part
    *  @constructor
    *  @param {Number} [steps]   Steps in the part
    *  @param {Number} [tatums] Divisions of a beat (default is 1/16, a quarter note)
+   *  @example
+   *  <div><code>
+   *  var box, drum;
+   *  var boxPat = [1,0,0,2,0,2,0,0];
+   *  var drumPat = [0,1,1,0,2,0,1,0];
+   *  
+   *  function preload() {
+   *    box = loadSound('assets/beatbox.mp3');
+   *    drum = loadSound('assets/drum.mp3');
+   *  }
+   *  
+   *  function setup() {
+   *    var boxPhrase = new p5.Phrase('box', playBox, boxPat);
+   *    var drumPhrase = new p5.Phrase('drum', playDrum, drumPat);
+   *    var myPart = new p5.Part();
+   *    myPart.addPhrase(boxPhrase);
+   *    myPart.addPhrase(drumPhrase);
+   *    myPart.setBPM(60);
+   *    myPart.start();
+   *  }
+   *
+   *  function playBox(playbackRate) {
+   *    box.play(playbackRate);
+   *  }
+   *  
+   *  function playDrum(playbackRate) {
+   *    drum.play(playbackRate);
+   *  }
+   *  </code></div>
    */
   p5.Part = function(steps, bLength) {
-    this.length = steps || 16; // how many beats
+    this.length = steps || 0; // how many beats
     this.partStep = 0;
     this.phrases = [];
 
@@ -192,8 +254,8 @@ define(function (require) {
     this.phrases.push(p);
 
     // reset the length if phrase is longer than part's existing length
-    if (p.length > this.length) {
-      this.length = p;
+    if (p.sequence.length > this.length) {
+      this.length = p.sequence.length;
     }
   };
 
@@ -228,11 +290,14 @@ define(function (require) {
   };
 
   p5.Part.prototype.incrementStep = function(time) {
-    if (this.partStep >= this.length) {
-      this.onended();
+    if (this.partStep < this.length) {
+      this.callback(time);
+      this.partStep +=1;
     }
-    this.partStep +=1;
-    this.callback(time);
+    else {
+      this.onended();
+      this.partStep = 0;
+    }
   };
 
   /**
@@ -261,6 +326,39 @@ define(function (require) {
    *  @class p5.Score
    *  @constructor
    *  @param {p5.Part} part(s) Parts to add to the score.
+   *  @example
+   *  <div><code>
+   *  var box, drum;
+   *  var boxPat = [1,0,0,2,0,2,0,0];
+   *  var drumPat = [0,1,1,0,2,0,1,0];
+   *  var osc, env;
+   *  
+   *  function preload() {
+   *    box = loadSound('assets/beatbox.mp3');
+   *    drum = loadSound('assets/drum.mp3');
+   *  }
+   *  
+   *  function setup() {
+   *    var boxPhrase = new p5.Phrase('box', playBox, boxPat);
+   *    var drumPhrase = new p5.Phrase('drum', playDrum, drumPat);
+   *    var myPart = new p5.Part();
+   *    myPart.addPhrase(boxPhrase);
+   *    myPart.addPhrase(drumPhrase);
+   *    myPart.setBPM(60);
+   *    myPart.start();
+   *
+   *    osc = new p5.Oscillator();
+   *    env = new p5.Env(0.01, 1, 0.2, 0);
+   *  }
+   *
+   *  function playBox(playbackRate) {
+   *    box.play(playbackRate);
+   *  }
+   *  
+   *  function playDrum(playbackRate) {
+   *    drum.play(playbackRate);
+   *  }
+   *  </code></div>
    */
   p5.Score = function() {
     // for all of the arguments
@@ -281,7 +379,7 @@ define(function (require) {
 
   p5.Score.prototype.onended = function() {
     if (this.looping) {
-      this.resetParts();
+      // this.resetParts();
       this.parts[0].start();
     } else {
       this.parts[this.parts.length - 1].onended = function() {

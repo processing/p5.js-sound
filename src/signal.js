@@ -54,7 +54,7 @@ define(function (require) {
    */
   p5.Signal = function(value) {
     var s = new Signal(value);
-    p5sound.soundArray.push(s);
+    // p5sound.soundArray.push(s);
     return s;
   };
 

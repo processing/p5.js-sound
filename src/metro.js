@@ -27,7 +27,7 @@ define(function (require) {
       // each synced source keeps track of its own beat number
       for (var j in thisPart.phrases) {
         var thisPhrase = thisPart.phrases[j];
-        var phraseArray = thisPhrase.array;
+        var phraseArray = thisPhrase.sequence;
         var bNum = this.metroTicks % (phraseArray.length);
         if (phraseArray[bNum] !== 0 ) {
           thisPhrase.callback(phraseArray[bNum], tickTime);

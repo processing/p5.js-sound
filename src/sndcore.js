@@ -24,11 +24,13 @@
  *  <br/>
  *  <a href="#/p5.Reverb"><b>p5.Reverb</b></a>: Add reverb to a sound by specifying
  *    duration and decay. <br/>
- *  <b><a href="#/p5.Convolver">p5.Convolver:</a></b> Extends
+ *  <b><a href="#/p5.Convolver">p5.Convolver</a>:</b> Extends
  *  <a href="#/p5.Reverb">p5.Reverb</a> to simulate the sound of real
  *    physical spaces through convolution.<br/>
  *  <b><a href="#/p5.SoundRecorder">p5.SoundRecorder</a></b>: Record sound for playback 
  *    / save the .wav file.
+ *  <b><a href="#/p5.Phrase">p5.Phrase</a></b>, <b><a href="#/p5.Part">p5.Part</a></b> and
+ *  <b><a href="#/p5.Score">p5.Score</a></b>: Compose musical sequences.
  *  <br/><br/>
  *  p5.sound is on <a href="https://github.com/therewasaguy/p5.sound/">GitHub</a>.
  *  Download the latest version 
