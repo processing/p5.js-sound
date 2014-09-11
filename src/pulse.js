@@ -10,7 +10,7 @@ define(function (require) {
    *  The pulse is created with two oscillators.
    *  Accepts a parameter for frequency, and to set the
    *  width between the pulses. See <a href="
-   *  http://localhost:8888/p5js.org/reference/#/p5.Oscillator">
+   *  http://p5js.org/reference/#/p5.Oscillator">
    *  <code>p5.Oscillator</code> for a full list of methods.
    *  
    *  @class p5.Pulse
