@@ -44,7 +44,7 @@ Before contributing, you will need to install npm and download node modules. Edi
 
 Dependencies
 =========
-p5.sound imports Signal Math and Clock modules directly from [Tone.js](https://github.com/TONEnoTONE/Tone.js).
+[Tone.js](https://github.com/TONEnoTONE/Tone.js) - p5.sound imports Signal Math and Clock modules directly from this library using require.js. Check it out!
 
 References and Inspiration
 =========
