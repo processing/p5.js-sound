@@ -1,8 +1,18 @@
+
+![](http://p5js.org/img/libraries/sound.jpg)
+
 p5.sound
 ========
 p5.sound brings the [Processing](http://processing.org) approach to [Web Audio](http://w3.org/TR/webaudio/) as an addon for [p5.js](github.com/lmccart/p5.js). 
 
-Documentation
+Examples
+========
+Check out **[p5js.org/learn](http://p5js.org/learn/)**! All the examples have code that you can edit in the browser.
+
+More examples can be found in the [examples](https://github.com/therewasaguy/p5.sound/tree/master/examples) folder and they are online [here](http://jasonsigal.cc/p5sound/examples)
+
+
+Docs
 ============
 [p5js.org](http://p5js.org/reference/#/libraries/p5.sound) has interactive documentation / examples. Here is an overview of what p5.sound offers:
 
@@ -17,15 +27,9 @@ Documentation
 - **p5.Convolver** extends p5.Reverb. Simulate the sound of real physical spaces w/ convolution.
 - **p5.Filter** [[source](https://github.com/therewasaguy/p5.sound/blob/master/src/filter.js) / [docs](http://p5js.org/reference/#/p5.Filter)]: Filter the frequency range of a sound.
 - **p5.Delay** [[source](https://github.com/therewasaguy/p5.sound/blob/master/src/delay.js) / [docs](http://p5js.org/reference/#/p5.Delay)]: Stereo delay effect w/ feedback and a lowpass filter.
-- **p5.Signal** [ [source](https://github.com/therewasaguy/p5.sound/blob/master/src/signal.js) ]: Used behind the scenes to add, multiply and scale signals for modulation
 - **p5.SoundRecorder** [ [source](https://github.com/therewasaguy/p5.sound/blob/master/src/soundrecorder.js) ]: record sound for playback / save the .wav
-- **Metronome / Sequencing** [ [source](https://github.com/therewasaguy/p5.sound/blob/master/src/looper.js) ]: Sequence musical patterns (in development).
+- **p5.Phrase, p5.Part, p5.Score** [ [source](https://github.com/therewasaguy/p5.sound/blob/master/src/looper.js) ]: Sequence musical patterns (in development).
 
-Examples
-========
-Check out **[p5js.org/learn](http://p5js.org/learn/)**! All the examples have code that you can edit in the browser.
-
-More examples can be found in the [examples](https://github.com/therewasaguy/p5.sound/tree/master/examples) folder and they are online [here](http://jasonsigal.cc/p5sound/examples)
 
 Latest Version
 ========
@@ -35,3 +39,21 @@ Contribute
 ========
 If you have contributions, feedback, bug reports, or ideas to share, get involved! Email hello@jasonsigal.cc, or [join the discussion on github](https://github.com/therewasaguy/p5.sound/issues). There is plenty to do, check out the [to do list](https://github.com/therewasaguy/p5.sound/blob/master/todo.md).
 
+Before contributing, you will need to install npm and download node modules. Edit the /src files, and then build the lib files by calling ```grunt``` from the command line. Check out the [p5.js setup instructions](https://github.com/lmccart/p5.js/wiki/Development) for more details.
+
+Dependencies
+=========
+p5.sound imports Signal Math and Clock modules directly from [Tone.js](https://github.com/TONEnoTONE/Tone.js).
+
+References and Inspiration
+=========
+- [Yotam Mann & TONE.js](https://github.com/TONEnoTONE/Tone.js)
+- [Boris Smus Web Audio API book](http://www.apache.org/licenses/LICENSE-2.0)
+- [wavesurfer.js](https://github.com/katspaugh/wavesurfer.js)
+- [Web Audio Components](https://github.com/web-audio-components)
+- [buzz.js](http://buzz.jaysalvat.com/)
+- [Chris Wilson](https://github.com/cwilso/)
+- [Chris Lowis](http://blog.chrislowis.co.uk/)
+- [Kevin Ennis](https://github.com/kevincennis)
+- [Wilm Thoben's Sound library for Processing](https://github.com/processing/processing/tree/master/java/libraries/sound)
+- [Web Audio API](www.w3.org/TR/webaudio/)
