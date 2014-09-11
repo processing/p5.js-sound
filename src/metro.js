@@ -9,14 +9,13 @@ define(function (require) {
 
   var ac = p5sound.audiocontext;
   var upTick = false;
-  var tatums = 4; // lowest possible division of a beat
 
   p5.Metro = function() {
 
     this.clock = new Clock(ac.sampleRate, this.ontick.bind(this));
 
     this.syncedParts = [];
-    this.bpm = 120; // default --> or global bpm?
+    this.bpm = 120; // gets overridden by p5.Part
     this._init();
   };
 
@@ -31,29 +30,26 @@ define(function (require) {
         var phraseArray = thisPhrase.array;
         var bNum = this.metroTicks % (phraseArray.length);
         if (phraseArray[bNum] !== 0 ) {
-          // console.log(phraseArray[bNum]);
           thisPhrase.callback(phraseArray[bNum], tickTime);
         }
       }
     }
     this.metroTicks += 1;
-    this.lastTick = tickTime;
   };
 
   p5.Metro.prototype.setBPM = function(bpm, rampTime) {
-    var beatTime =  60 / (bpm*tatums);
+    var beatTime =  60 / (bpm*this.tatums);
     var ramp = rampTime || 0;
     this.clock.setRate(beatTime, rampTime + p5sound.audiocontext.currentTime);
     this.bpm = bpm;
   };
 
   p5.Metro.prototype.getBPM = function(tempo) {
-    return ( this.clock.getRate() / tatums ) * 60;
+    return ( this.clock.getRate() / this.tatums ) * 60;
   };
 
-  p5.Metro.prototype._init = function(part) {
+  p5.Metro.prototype._init = function() {
     this.metroTicks = 0;
-    this.lastTick = 0;
     this.setBPM(this.bpm);
   };
 
@@ -75,7 +71,13 @@ define(function (require) {
 
   p5.Metro.prototype.stop = function(time) {
     var t = time || 0;
-    this.clock.stop(t);
-  }
+    if (this.clock._oscillator) {
+      this.clock.stop(t);
+    }
+  };
+
+  p5.Metro.prototype.beatLength = function(tatums) {
+    this.tatums = 1/tatums / 4; // lowest possible division of a beat
+  };
 
 });

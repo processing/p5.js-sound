@@ -210,4 +210,25 @@ define(function (require) {
     return path;
   };
 
+  /**
+   *  Used by Osc and Env to chain signal math
+   */
+  p5.prototype._mathChain = function(o, math, thisChain, nextChain, type) {
+    // if this type of math already exists in the chain, replace it
+    for (var i in o.mathOps) {
+      if (o.mathOps[i] instanceof type) {
+        o.mathOps[i].dispose();
+        thisChain = i;
+        if (thisChain < o.mathOps.length - 1) {
+          nextChain = o.mathOps[i+1];
+        }
+      }
+    }
+    o.mathOps[thisChain-1].disconnect();
+    o.mathOps[thisChain-1].connect(math);
+    math.connect(nextChain);
+    o.mathOps[thisChain] = math;
+    return o;
+  };
+
 });

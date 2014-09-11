@@ -39,6 +39,8 @@ define(function (require) {
 
     // an array of all sounds in the sketch
     this.soundArray = [];
+    // an array of all musical parts in the sketch
+    this.parts = [];
 
     // file extensions to search for
     this.extensions = [];

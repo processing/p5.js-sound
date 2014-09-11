@@ -316,7 +316,8 @@ define(function (require) {
 
   /**
    *  Add a value to the p5.Oscillator's output amplitude,
-   *  and return the oscillator.
+   *  and return the oscillator. Calling this method again
+   *  will override the initial add() with a new value.
    *  
    *  @method  add
    *  @param {Number} number Constant number to add
@@ -328,14 +329,13 @@ define(function (require) {
     var add = new Add(num);
     var thisChain = this.mathOps.length;
     var nextChain = this.panner;
-    this.mathChain(add, thisChain, nextChain, Add);
-    return this;
+    return p5.prototype._mathChain(this, add, thisChain, nextChain, Add);
   };
 
   /**
    *  Multiply the p5.Oscillator's output amplitude
-   *  by a fixed value. This is useful for
-   *  modulating parameters with an oscillating signal.
+   *  by a fixed value (i.e. turn it up!). Calling this method
+   *  again will override the initial mult() with a new value.
    *  
    *  @method  mult
    *  @param {Number} number Constant number to multiply
@@ -346,13 +346,13 @@ define(function (require) {
     var mult = new Mult(num);
     var thisChain = this.mathOps.length;
     var nextChain = this.panner;
-    this.mathChain(mult, thisChain, nextChain, Mult);
-    return this;
+    return p5.prototype._mathChain(this, mult, thisChain, nextChain, Mult);
   };
 
   /**
    *  Scale this oscillator's amplitude values to a given
-   *  range, and return the oscillator.
+   *  range, and return the oscillator. Calling this method
+   *  again will override the initial scale() with new values.
    *  
    *  @method  scale
    *  @param  {Number} inMin  input range minumum
@@ -366,25 +366,7 @@ define(function (require) {
     var scale = new Scale(inMin, inMax, outMin, outMax);
     var thisChain = this.mathOps.length;
     var nextChain = this.panner;
-    this.mathChain(scale, thisChain, nextChain, Scale);
-    return this;
-  };
-
-  p5.Oscillator.prototype.mathChain = function(math, thisChain, nextChain, type){
-    // if this type of math already exists in the chain, replace it
-    for (var i in this.mathOps) {
-      if (this.mathOps[i] instanceof type) {
-        this.mathOps[i].dispose();
-        thisChain = i;
-        if (thisChain < this.mathOps.length - 1) {
-          nextChain = this.mathOps[i+1];
-        }
-      }
-    }
-    this.mathOps[thisChain-1].disconnect();
-    this.mathOps[thisChain-1].connect(math);
-    math.connect(nextChain);
-    this.mathOps[thisChain] = math;
+    return p5.prototype._mathChain(this, scale, thisChain, nextChain, Scale);
   };
 
   // ============================== //

@@ -22,21 +22,17 @@ function setup() {
   noise.start();
   noiseEnv = new p5.Env(0.01, 0.5, 0.1, 0);
 
-  // set the tempo
-  setBPM(80);
-
   // create a part with 8 spaces, where each space represents 1/16th note (default)
   part = new p5.Part(8, 1/16);
 
-  // add phrases, with a name, a callback,
-  // and an array of values that will be passed to the callback if > 0
-  part.addPhrase('snare', playSnare, [4, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1]);/// 0,0,1, 0]);
-  part.addPhrase('melody', playNote, [72, 0, 0, 0, 0,0, 0, 70]);
+  // add phrases, with a name, a callback, and
+  // an array of values that will be passed to the callback if > 0
+  part.addPhrase('snare', playSnare, [1, 0, 0, 0,
+                                      1, 0, 0, 0,
+                                      1, 0, 0, 0,
+                                      1, 0, 1, 1]);
+  part.addPhrase('melody', playNote, [72, 0, 0, 0, 70,0, 0, 0]);
   part.setBPM(100);
-  // part.onStep = function(time){
-  //   playSnare(time);
-  // };
-  // loop the part
   part.loop();
 }
 
@@ -48,5 +44,9 @@ function playNote(params) {
 
 function playSnare(params) {
   noiseEnv.play(noise);
-  console.log(params);
+}
+
+function draw() {
+  var bpm = constrain(map(mouseX, 0, width, 50, 100), 5, 400);
+  part.setBPM(bpm);
 }

@@ -34,27 +34,28 @@ function setup() {
   saw = new p5.SawOsc();
 
 
-  var a = new p5.Part(16);
+  var a = new p5.Part(16, 1/4);
   a.addPhrase('kick', playKick, [1,0,2,0,1,0.2,5,2,1,0,2,0,1,0.2,5,2]);
   a.addPhrase('snare', playSnare, [0,0,1,0,0,1,0,0,0,0,1,0,0,1,0,0]);
   a.addPhrase('ding', playDing, [0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,0]);
 
 
-  var b = new p5.Part(16);
+  var b = new p5.Part(16, 1/4);
   b.addPhrase('melody', playMelody, [64,0,0,0,65,0,54,0, 64,0,0,0,65,0,54,0]);
   // b.addPhrase('bass', playBass, [62,0,0,0,57,0,54,0,60,0,0,0,65,0,54,0]);
   b.addPhrase('kick', playKick, [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]);
 
   // a.onStep(fireStep); // set a callback that runs every time through this loop
-  b.onStep(fireStep); // set a callback that runs every time through this loop
+  // b.onStep(fireStep); // set a callback that runs every time through this loop
 
-  var c = new p5.Part(24);
+  var c = new p5.Part(24, 1/4);
   c.onStep(fireStep); // set a callback that runs every time through this loop
 
-  setBPM(120);
-  // b.loop();
-  mySong = new p5.Score(c, a, b, a, a, c);
+  mySong = new p5.Score(a, b);
   mySong.loop();
+  mySong.setBPM(120);
+  b.setBPM(300);
+
 }
 
 function playKick(r) {
@@ -88,7 +89,6 @@ function playMelody(params) {
 }
 
 function fireStep(t) {
-  console.log('on step!');
   var x = random(0,1);
   if (x > .55) {
     bass.freq(midiToFreq( round(random(80, 70) ) ) );

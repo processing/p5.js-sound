@@ -134,7 +134,6 @@ define(function (require) {
     this.rLevel = l4 || 0;
   };
 
-
   /**
    *  
    *  @param  {Object} input       A p5.sound object or
@@ -182,10 +181,8 @@ define(function (require) {
 
     //if unit is an oscillator, set its amp to 0 and stop it
     if (this.connection instanceof p5.Oscillator){
-      // if (this.connection.started) {
       this.connection.stop();
       this.connection.amp(0);
-      // }
     }
 
     // attack
@@ -373,7 +370,8 @@ define(function (require) {
 
   /**
    *  Add a value to the p5.Oscillator's output amplitude,
-   *  and return the oscillator.
+   *  and return the oscillator. Calling this method
+   *  again will override the initial add() with new values.
    *  
    *  @method  add
    *  @param {Number} number Constant number to add
@@ -384,27 +382,13 @@ define(function (require) {
     var add = new Add(num);
     var thisChain = this.mathOps.length;
     var nextChain = this.output;
-
-    // if an Add already exists in the chain, replace it
-    for (var i in this.mathOps) {
-      if (this.mathOps[i] instanceof Add) {
-        this.mathOps[i].dispose();
-        thisChain = i;
-        if (thisChain < this.mathOps.length - 1) {
-          nextChain = this.mathOps[i+1];
-        }
-      }
-    }
-
-    this.mathOps[thisChain-1].disconnect();
-    this.mathOps[thisChain-1].connect(add);
-    add.connect(nextChain);
-    this.mathOps[thisChain] = add;
-    return this;  };
+    return p5.prototype._mathChain(this, add, thisChain, nextChain, Add);
+  };
 
   /**
    *  Multiply the p5.Env's output amplitude
-   *  by a fixed value.
+   *  by a fixed value. Calling this method
+   *  again will override the initial mult() with new values.
    *  
    *  @method  mult
    *  @param {Number} number Constant number to multiply
@@ -415,29 +399,13 @@ define(function (require) {
     var mult = new Mult(num);
     var thisChain = this.mathOps.length;
     var nextChain = this.output;
-
-    // if a Mult already exists in the chain, replace it
-    for (var i in this.mathOps) {
-      if (this.mathOps[i] instanceof Mult) {
-        this.mathOps[i].dispose();
-        thisChain = i;
-        if (thisChain < this.mathOps.length - 1) {
-          nextChain = this.mathOps[i+1];
-        }
-      }
-    }
-
-    this.mathOps[thisChain-1].disconnect();
-    this.mathOps[thisChain-1].connect(mult);
-    mult.connect(nextChain);
-    this.mathOps[thisChain] = mult;
-
-    return this;
+    return p5.prototype._mathChain(this, mult, thisChain, nextChain, Mult);
   };
 
   /**
    *  Scale this envelope's amplitude values to a given
-   *  range, and return the envelope.
+   *  range, and return the envelope. Calling this method
+   *  again will override the initial scale() with new values.
    *  
    *  @method  scale
    *  @param  {Number} inMin  input range minumum
@@ -451,24 +419,9 @@ define(function (require) {
     var scale = new Scale(inMin, inMax, outMin, outMax);
     var thisChain = this.mathOps.length;
     var nextChain = this.output;
-
-    // if a Scale already exists in the chain, replace it
-    for (var i in this.mathOps) {
-      if (this.mathOps[i] instanceof Scale) {
-        this.mathOps[i].dispose();
-        thisChain = i;
-        if (thisChain < this.mathOps.length - 1) {
-          nextChain = this.mathOps[i+1];
-        }
-      }
-    }
-
-    this.mathOps[thisChain-1].disconnect();
-    this.mathOps[thisChain-1].connect(scale);
-    scale.connect(nextChain);
-    this.mathOps[thisChain] = scale;
-    return this;
+    return p5.prototype._mathChain(this, scale, thisChain, nextChain, Scale);
   };
+
 
   // get rid of the oscillator
   p5.Env.prototype.dispose = function() {

@@ -1,33 +1,50 @@
 define(function (require) {
   'use strict';
 
-  // inspiration: https://github.com/cwilso/metronome/blob/master/js/metronome.js
-
   var p5sound = require('master');
 
-  var lookahead = 25.0;       // How frequently to call scheduling function 
-                              //(in milliseconds)
-  var nextNoteTime = 0.0; // when the next note is due.
-  var scheduleAheadTime = 0.1;  // How far ahead to schedule audio (sec)
-                                // This is calculated from lookahead, and overlaps 
-                                // with next interval (in case the timer is late)
-  var timerID = 0;            // setInterval identifier.
-  var notesInQueue = [];
-
   var bpm = 120;
-  var beatLength;
 
-  var mode;
-
-  var activeParts = []; // array of active parts replaces currentLoop
-
-  var onStep = function(){};
-
-  p5.prototype.setBPM = function(BPM) {
+  /**
+   *  Set the global tempo, in beats per minute, for all
+   *  p5.Parts. This method will impact all active p5.Parts.
+   *  
+   *  @method  setBPM
+   *  @param {Number} BPM      Beats Per Minute
+   *  @param {Number} rampTime Seconds from now
+   */
+  p5.prototype.setBPM = function(BPM, rampTime) {
     bpm = BPM;
+    for (var i in p5sound.parts){
+      p5sound.parts[i].setBPM(bpm, rampTime);
+    }
   };
 
-  // Phrase knows its currentStep
+  /**
+   *  A phrase is a pattern of musical events over time, i.e. a series of notes
+   *  and rests.
+   *  
+   *  Phrases must be added to a p5.Part for playback, and each part can play multiple
+   *  phrases at the same time. For example, one Phrase might be a kick drum, another
+   *  could be a snare, and another could be the bassline.
+   *  
+   *  The first parameter is
+   *  a name so that the phrase can be modified or deleted later. The callback
+   *  is a a function that this phrase will call at every step—for example it might
+   *  be called <code>playNote(value){}</code>. The array determines which value
+   *  is passed into the callback at each step of the phrase. It can be numbers,
+   *  an object with multiple numbers, or a zero (indicates a rest so the callback
+   *  won't be called).
+   *  
+   *
+   *  @class p5.Phrase
+   *  @constructor
+   *  @param {String}   name     Name so that you can access the Phrase.
+   *  @param {Function} callback The name of a function that this phrase
+   *                             will call, typically it will play a sound.
+   *  @param {Array}   array    Array of values to pass into the callback
+   *                            at each step of the phrase.
+   */
   p5.Phrase = function(name, callback, array) {
     this.phraseStep = 0;
     this.name = name;
@@ -35,37 +52,67 @@ define(function (require) {
     this.array = array;
   };
 
-  // PARTS
+  /**
+   *  A p5.Part plays back one or more p5.Phrases. Instantiate a part
+   *  with steps and tatums. By default, each step represents 1/16th note.
+   *  
+   *  @class p5.Phrase
+   *  @constructor
+   *  @param {Number} [steps]   Steps in the part
+   *  @param {Number} [tatums] Divisions of a beat (default is 1/16, a quarter note)
+   */
   p5.Part = function(steps, bLength) {
     this.length = steps || 16; // how many beats
     this.partStep = 0;
     this.phrases = [];
 
-    beatLength = bLength*4 || 0.5; // defaults to 4/4
-    this.noteResolution = 0;     // 0 == 16th, 1 == 8th, 2 == quarter note
-
     this.isPlaying = false;
-    // this.parts = [];
 
     // what does this looper do when it gets to the last step?
     this.onended = function(){
       this.stop();
     };
 
+    this.tatums = bLength || 0.0625; // defaults to quarter note
+
     this.metro = new p5.Metro();
     this.metro._init();
+    this.metro.beatLength(this.tatums);
+    this.metro.setBPM(bpm);
+    p5sound.parts.push(this);
+
     this.callback = function(){};
   };
 
+  /**
+   *  Set the tempo of this part, in Beats Per Minute. 
+   *  
+   *  @method  setBPM
+   *  @param {Number} BPM      Beats Per Minute
+   *  @param {Number} [rampTime] Seconds from now
+   */
   p5.Part.prototype.setBPM = function(tempo, rampTime) {
     this.metro.setBPM(tempo, rampTime);
   };
 
+  /**
+   *  Returns the Beats Per Minute of this currently part.
+   *  
+   *  @method getBPM
+   *  @return {Number} 
+   */
   p5.Part.prototype.getBPM = function() {
     return this.metro.getBPM();
   };
 
-  // time = seconds from now
+  /**
+   *  Start playback of this part. It will play
+   *  through all of its phrases at a speed
+   *  determined by setBPM.
+   *  
+   *  @method  start
+   *  @param  {Number} [time] seconds from now
+   */
   p5.Part.prototype.start = function(time) {
     if (!this.isPlaying) {
       this.isPlaying = true;
@@ -75,6 +122,13 @@ define(function (require) {
     }
   };
 
+  /**
+   *  Loop playback of this part. It will begin
+   *  looping through all of its phrases at a speed
+   *  determined by setBPM.
+   *  
+   *  @method  loop
+   */
   p5.Part.prototype.loop = function( ) {
     // rest onended function
     this.onended = function() {
@@ -84,6 +138,11 @@ define(function (require) {
     this.start();
   };
 
+  /**
+   *  Tell the part to stop looping.
+   *
+   *  @method  noLoop
+   */
   p5.Part.prototype.noLoop = function( ) {
     // rest onended function
     this.onended = function() {
@@ -91,18 +150,36 @@ define(function (require) {
     };
   };
 
+  /**
+   *  Stop the part and cue it to step 0.
+   *  
+   *  @method  stop
+   *  @param  {Number} [time] seconds from now
+   */
   p5.Part.prototype.stop = function(time) {
     this.partStep = 0;
     this.pause(time);
   };
 
+  /**
+   *  Pause the part. Playback will resume
+   *  from the current step.
+   *  
+   *  @method  pause
+   *  @param  {Number} time seconds from now
+   */
   p5.Part.prototype.pause = function(time) {
     this.isPlaying = false;
     var t = time || 0;
     this.metro.stop(t);
   };
 
-  // can either be a p5.Phrase or a name, callback, array
+  /**
+   *  Add a p5.Phrase to this Part.
+   *
+   *  @method  addPhrase
+   *  @param {p5.Phrase}   phrase   reference to a p5.Phrase
+   */
   p5.Part.prototype.addPhrase = function(name, callback, array) {
     var p;
     if (arguments.length === 3) {
@@ -120,6 +197,13 @@ define(function (require) {
     }
   };
 
+  /**
+   *  Remove a phrase from this part, based on the name it was
+   *  given when it was created.
+   *  
+   *  @method  removePhrase
+   *  @param  {String} phraseName
+   */
   p5.Part.prototype.removePhrase = function(name) {
     for (var i in this.phrases) {
       if (this.phrases[i].name === name) {
@@ -128,6 +212,13 @@ define(function (require) {
     }
   };
 
+  /**
+   *  Get a phrase from this part, based on the name it was
+   *  given when it was created. Now you can modify its array.
+   *  
+   *  @method  getPhrase
+   *  @param  {String} phraseName
+   */
   p5.Part.prototype.getPhrase = function(name) {
     for (var i in this.phrases) {
       if (this.phrases[i].name === name) {
@@ -142,18 +233,18 @@ define(function (require) {
     }
     this.partStep +=1;
     this.callback(time);
-    // console.log(this.partStep + '/ ' + this.length);
   };
 
   /**
-   *  Fire a callback function every step
-   *  @param  {Function} callback [description]
-   *  @return {[type]}            [description]
+   *  Fire a callback function at every step.
+   *
+   *  @method onStep
+   *  @param  {Function} callback The name of the callback
+   *                              you want to fire
+   *                              on every beat/tatum.
    */
   p5.Part.prototype.onStep = function(callback) {
-    // onStep = callback;
     this.callback = callback;
-    // console.log(this.callback);
   };
 
 
@@ -161,8 +252,16 @@ define(function (require) {
   // p5.Score
   // ===============
 
-  var score;
-
+  /**
+   *  A Score consists of a series of Parts. The parts will
+   *  be played back in order. For example, you could have an
+   *  A part, a B part, and a C part, and play them back in this order
+   *  <code>new p5.Score(a, a, b, a, c)</code>
+   *
+   *  @class p5.Score
+   *  @constructor
+   *  @param {p5.Part} part(s) Parts to add to the score.
+   */
   p5.Score = function() {
     // for all of the arguments
     this.parts = [];
@@ -193,39 +292,60 @@ define(function (require) {
     this.currentPart = 0;
   };
 
+  /**
+   *  Start playback of the score.
+   *  
+   *  @method  start
+   */
   p5.Score.prototype.start = function() {
-    mode = 'score';
-    // score = this;
     this.parts[this.currentPart].start();
     this.scoreStep = 0;
   };
 
+  /**
+   *  Stop playback of the score.
+   *  
+   *  @method  stop
+   */
   p5.Score.prototype.stop = function() {
     this.parts[this.currentPart].stop();
     this.currentPart = 0;
     this.scoreStep = 0;
   };
 
+  /**
+   *  Pause playback of the score.
+   *  
+   *  @method  pause
+   */
   p5.Score.prototype.pause = function() {
     this.parts[this.currentPart].stop();
   };
 
+  /**
+   *  Loop playback of the score.
+   *  
+   *  @method  loop
+   */
   p5.Score.prototype.loop = function() {
     this.looping = true;
     this.start();
   };
 
+  /**
+   *  Stop looping playback of the score. If it
+   *  is currently playing, this will go into effect
+   *  after the current round of playback completes.
+   *  
+   *  @method  noLoop
+   */
   p5.Score.prototype.noLoop = function() {
     this.looping = false;
   };
 
   p5.Score.prototype.resetParts = function() {
     for (var i in this.parts) {
-      this.parts[i].stop();
-      this.parts[i].partStep = 0;
-      for (var p in this.parts[i].phrases){
-        this.parts[i].phrases[p].phraseStep = 0;
-      }
+      this.resetPart(i);
     }
   };
 
@@ -234,6 +354,18 @@ define(function (require) {
     this.parts[i].partStep = 0;
     for (var p in this.parts[i].phrases){
       this.parts[i].phrases[p].phraseStep = 0;
+    }
+  };
+
+  /**
+   *  Set the tempo for all parts in the score
+   *  
+   *  @param {Number} BPM      Beats Per Minute
+   *  @param {Number} rampTime Seconds from now
+   */
+  p5.Score.prototype.setBPM = function(bpm, rampTime) {
+    for (var i in this.parts) {
+      this.parts[i].setBPM(bpm, rampTime);
     }
   };
 
