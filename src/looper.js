@@ -127,7 +127,7 @@ define(function (require) {
     this.length = steps || 0; // how many beats
     this.partStep = 0;
     this.phrases = [];
-
+    this.looping = false;
     this.isPlaying = false;
 
     // what does this looper do when it gets to the last step?
@@ -192,6 +192,7 @@ define(function (require) {
    *  @method  loop
    */
   p5.Part.prototype.loop = function( ) {
+    this.looping = true;
     // rest onended function
     this.onended = function() {
       this.partStep = 0;
@@ -206,6 +207,7 @@ define(function (require) {
    *  @method  noLoop
    */
   p5.Part.prototype.noLoop = function( ) {
+    this.looping = false;
     // rest onended function
     this.onended = function() {
       this.stop();
@@ -295,6 +297,9 @@ define(function (require) {
       this.partStep +=1;
     }
     else {
+      if (this.looping) {
+        this.callback(time);
+      }
       this.onended();
       this.partStep = 0;
     }
