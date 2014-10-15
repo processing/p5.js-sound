@@ -17,6 +17,8 @@ define(function (require) {
     this.syncedParts = [];
     this.bpm = 120; // gets overridden by p5.Part
     this._init();
+
+    this.tickCallback = function(){};
   };
 
   p5.Metro.prototype.ontick = function(tickTime) {
@@ -35,6 +37,7 @@ define(function (require) {
       }
     }
     this.metroTicks += 1;
+    this.tickCallback(tickTime);
   };
 
   p5.Metro.prototype.setBPM = function(bpm, rampTime) {
