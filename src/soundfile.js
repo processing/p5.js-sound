@@ -39,7 +39,7 @@ define(function (require) {
    * 
    * </code></div>
    */
-  p5.SoundFile = function(paths, onload) {
+  p5.SoundFile = function(paths, onload, whileLoading) {
     var path = p5.prototype._checkFileFormats(paths);
 
     // player variables
@@ -90,6 +90,12 @@ define(function (require) {
 
     // add this p5.SoundFile to the soundArray
     p5sound.soundArray.push(this);
+
+    if (typeof(whileLoading) === 'function') {
+      this.whileLoading = whileLoading;
+    } else {
+      this.whileLoading = function() {};
+    }
   };
 
   // register preload handling of loadSound
@@ -109,6 +115,9 @@ define(function (require) {
    *                                    paths to soundfiles in multiple formats
    *                                    i.e. ['sound.ogg', 'sound.mp3']
    *  @param {Function} [callback]   Name of a function to call once file loads
+   *  @param {Function} [callback]   Name of a function to call while file is loading.
+   *                                 This function will receive a percentage from 0.0
+   *                                 to 1.0.
    *  @return {SoundFile}            Returns a p5.SoundFile
    *  @example 
    *  <div><code>
@@ -121,13 +130,13 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.prototype.loadSound = function(path, callback){
+  p5.prototype.loadSound = function(path, callback, whileLoading){
     // if loading locally without a server
     if (window.location.origin.indexOf('file://') > -1) {
       alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
 
-    var s = new p5.SoundFile(path, callback);
+    var s = new p5.SoundFile(path, callback, whileLoading);
     return s;
   };
 
@@ -140,7 +149,11 @@ define(function (require) {
    * @param {Function} [callback]   Name of a function to call once file loads
    */
   p5.SoundFile.prototype.load = function(callback){
+    var sf = this;
     var request = new XMLHttpRequest();
+    request.addEventListener('progress', function(evt) {
+                                          sf._updateProgress(evt);
+                                         }, false);
     request.open('GET', this.url, true);
     request.responseType = 'arraybuffer';
     // decode asyncrohonously
@@ -155,6 +168,18 @@ define(function (require) {
       });
     };
     request.send();
+  };
+
+
+  p5.SoundFile.prototype._updateProgress = function(evt) {
+    if (evt.lengthComputable) {
+      var percentComplete = log(evt.loaded / evt.total * 9.9);
+      this.whileLoading(percentComplete);
+      // ...
+    } else {
+      console.log('size unknown');
+      // Unable to compute progress information since the total size is unknown
+    }
   };
 
   /**

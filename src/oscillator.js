@@ -102,7 +102,9 @@ define(function (require) {
 
       // if other oscillators are already connected to this osc's freq
       for (var i in this._freqMods) {
-        this._freqMods[i].connect(this.oscillator.frequency);
+        if (typeof this._freqMods[i].connect !== 'undefined') {
+          this._freqMods[i].connect(this.oscillator.frequency);
+        }
       }
 
       this.started = true;
