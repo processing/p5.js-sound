@@ -173,7 +173,7 @@ define(function (require) {
 
   p5.SoundFile.prototype._updateProgress = function(evt) {
     if (evt.lengthComputable) {
-      var percentComplete = log(evt.loaded / evt.total * 9.9);
+      var percentComplete = Math.log(evt.loaded / evt.total * 9.9);
       this.whileLoading(percentComplete);
       // ...
     } else {
