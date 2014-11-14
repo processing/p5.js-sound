@@ -3,7 +3,7 @@
 
 p5.sound
 ========
-p5.sound brings the [Processing](http://processing.org) approach to [Web Audio](http://w3.org/TR/webaudio/) as an addon for [p5.js](github.com/lmccart/p5.js). Functionality includes audio input, playback, manipulation, effects, recording, sequencing, analysis and synthesis. The library is designed to be used in tandem with [p5.js](http://p5js.org).
+p5.sound brings the [Processing](http://processing.org) approach to [Web Audio](http://w3.org/TR/webaudio/) as an addon for [p5.js](http://github.com/lmccart/p5.js). Functionality includes audio input, playback, manipulation, effects, recording, sequencing, analysis and synthesis. The library is designed to be used in tandem with [p5.js](http://p5js.org).
 
  Examples
 ========
