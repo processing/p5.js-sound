@@ -56,9 +56,9 @@ define(function (require) {
 
     this._freqMods = []; // modulators connected to this oscillator's frequency
 
-    // set default output gain
-    this.output.gain.value = 0.0;
-    this.output.gain.setValueAtTime(0.0, p5sound.audiocontext.currentTime);
+    // set default output gain to 0.5
+    this.output.gain.value = 0.5;
+    this.output.gain.setValueAtTime(0.5, p5sound.audiocontext.currentTime);
 
     this.oscillator.connect(this.output);
     // stereo panning
@@ -187,7 +187,7 @@ define(function (require) {
    *  </code></div>
    */
   p5.Oscillator.prototype.freq = function(val, rampTime, tFromNow){
-    if (typeof(val) === 'number') {
+    if (typeof(val) === 'number' && !isNan(val)) {
       this.f = val;
       var now = p5sound.audiocontext.currentTime;
       var rampTime = rampTime || 0;
