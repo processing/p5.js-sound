@@ -187,7 +187,7 @@ define(function (require) {
    *  </code></div>
    */
   p5.Oscillator.prototype.freq = function(val, rampTime, tFromNow){
-    if (typeof(val) === 'number' && !isNan(val)) {
+    if (typeof(val) === 'number' && !isNaN(val)) {
       this.f = val;
       var now = p5sound.audiocontext.currentTime;
       var rampTime = rampTime || 0;
