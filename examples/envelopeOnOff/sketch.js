@@ -10,8 +10,8 @@ var a;
 
 // Times and levels for the ADSR envelope
 var attackTime = 0.001;
-var attackLevel = 1;
-var decayTime = 0.3;
+var attackLevel = 0.9;
+var decayTime = 0.2;
 var decayLevel = 0.2;
 var sustainTime = 0.1;
 var sustainLevel = decayLevel;

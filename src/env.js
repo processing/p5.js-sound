@@ -163,7 +163,8 @@ define(function (require) {
   p5.Env.prototype.play = function(unit, secondsFromNow){
     var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
-    var t = now + tFromNow + 0.001;
+    // var t = now + tFromNow + 0.001;
+    var t = now + tFromNow;
 
     if (typeof(this.timeoutID) === 'number') {
       window.clearTimeout(this.timeoutID);
@@ -171,7 +172,7 @@ define(function (require) {
 
     var currentVal =  this.control.getValue();
     this.control.cancelScheduledValues(t);
-    this.control.fade(currentVal, now + tFromNow);
+    this.control.linearRampToValueAtTime(currentVal, t);
 
     if (unit) {
       if (this.connection !== unit) {
@@ -234,9 +235,9 @@ define(function (require) {
       window.clearTimeout(this.timeoutID);
     }
 
-    var currentVal =  this.control.getValue();
+    // var currentVal =  this.control.getValue(); // not working on Firefox
     this.control.cancelScheduledValues(t);
-    this.control.fade(0);
+    // this.control.linearRampToValueAtTime(0.00001, t - 0.0009);
 
     if (unit) {
       if (this.connection !== unit) {
@@ -292,7 +293,6 @@ define(function (require) {
 
     var currentVal =  this.control.getValue();
     this.control.cancelScheduledValues(t);
-    this.control.fade(currentVal, t);
 
     // release based on how much time has passed since this.lastAttack
     if ( (now - this.lastAttack) < (this.aTime) ) {
@@ -306,8 +306,9 @@ define(function (require) {
     else if ( (now - this.lastAttack) < (this.aTime + this.dTime) ) {
       var d = this.aTime + this.dTime - (now - this.lastAttack);
       this.control.linearRampToValueAtTime(this.dLevel, t + d);
-      this.control.linearRampToValueAtTime(this.sLevel, t + d + this.sTime);
-      this.control.linearRampToValueAtTime(this.rLevel, t + d + this.sTime + this.rTime);
+      // this.control.linearRampToValueAtTime(this.sLevel, t + d + this.sTime);
+      this.control.linearRampToValueAtTime(this.sLevel, t + d + 0.01);
+      this.control.linearRampToValueAtTime(this.rLevel, t + d + 0.01 + this.rTime);
       relTime = t + this.sTime + this.rTime;
     } 
     else if ( (now - this.lastAttack) < (this.aTime + this.dTime + this.sTime) ) {
@@ -317,6 +318,7 @@ define(function (require) {
       relTime = t + this.rTime;
     }
     else {
+      this.control.linearRampToValueAtTime(this.sLevel, t);
       this.control.linearRampToValueAtTime(this.rLevel, t + this.rTime);
       relTime = t + this.dTime + this.sTime + this.rTime;
     }
@@ -347,13 +349,12 @@ define(function (require) {
         unit instanceof p5.Reverb ||
         unit instanceof p5.Noise ||
         unit instanceof p5.Filter ||
-        unit instanceof p5.Delay){
+        unit instanceof p5.Delay
+    ){
       unit = unit.output.gain;
-      // unit.value = 0;
     }
     if (unit instanceof AudioParam){
       //set the initial value
-      // unit.value = 0;
       unit.setValueAtTime(0, p5sound.audiocontext.currentTime);
     }
     if (unit instanceof p5.Signal){
