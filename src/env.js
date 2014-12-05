@@ -170,10 +170,6 @@ define(function (require) {
       window.clearTimeout(this.timeoutID);
     }
 
-    var currentVal =  this.control.getValue();
-    this.control.cancelScheduledValues(t);
-    this.control.linearRampToValueAtTime(currentVal, t);
-
     if (unit) {
       if (this.connection !== unit) {
         this.connect(unit);
@@ -185,6 +181,10 @@ define(function (require) {
       this.connection.stop();
       this.connection.amp(0);
     }
+
+    var currentVal =  this.control.getValue();
+    this.control.cancelScheduledValues(t);
+    this.control.linearRampToValueAtTime(0, t);
 
     // attack
     this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
