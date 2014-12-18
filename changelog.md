@@ -1,3 +1,10 @@
+p5.sound.js v0.1.5 2014-12-05
+- p5.Oscillator defauts to 0.5 amp
+- using Tone.Signal for signal math, and Tone.Clock for Transport. 
+- updates to Sequencing objects (p5.Part, p5.Phrase, p5.Score) including documentation for reference pages
+- p5.Panner class
+- various bug fixes
+
 
 p5.sound.js v0.14 2014-08-18
 - added changelog
