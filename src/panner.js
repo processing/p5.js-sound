@@ -7,6 +7,7 @@ define(function (require) {
 
   // Stereo panner
   p5.Panner = function(input, output) {
+    console.log(input);
     this.input = ac.createGain();
     input.connect(this.input);
 
