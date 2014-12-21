@@ -81,7 +81,7 @@ define(function (require) {
 
     // stereo panning
     this.panPosition = 0.0;
-    this.panner = new p5.Panner(this.output, p5sound.input);
+    this.panner = new p5.Panner(this.output, p5sound.input, 2);
 
     // it is possible to instantiate a soundfile with no path
     if (this.url) {
@@ -162,6 +162,7 @@ define(function (require) {
       var ac = p5.prototype.getAudioContext();
       ac.decodeAudioData(request.response, function(buff) {
         self.buffer = buff;
+        self.panner.inputChannels(buff.numberOfChannels);
         if (callback) {
           callback(self);
         }
@@ -590,9 +591,9 @@ define(function (require) {
    *  }
    *  </div></code>
    */
-  p5.SoundFile.prototype.pan = function(pval) {
+  p5.SoundFile.prototype.pan = function(pval, tFromNow) {
     this.panPosition = pval;
-    this.panner.pan(pval);
+    this.panner.pan(pval, tFromNow);
   };
 
   /**
@@ -983,11 +984,16 @@ define(function (require) {
   p5.SoundFile.prototype.setBuffer = function(buf){
     var ac = p5sound.audiocontext;
     var newBuffer = ac.createBuffer(2, buf[0].length, ac.sampleRate);
+    var numChannels = 0;
     for (var channelNum = 0; channelNum < buf.length; channelNum++){
       var channel = newBuffer.getChannelData(channelNum);
       channel.set(buf[channelNum]);
+      numChannels++;
     }
     this.buffer = newBuffer;
+
+    // set numbers of channels on input to the panner
+    this.panner.inputChannels(numChannels);
   };
 
 });

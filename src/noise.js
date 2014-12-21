@@ -23,7 +23,7 @@ define(function (require) {
 
     // sterep panning
     this.panPosition = 0.0;
-    this.panner = new p5.Panner(this.output, p5sound.input);
+    this.panner = new p5.Panner(this.output, p5sound.input, this.buffer.numberOfChannels);
 
     // add to soundArray so we can dispose on close
     p5sound.soundArray.push(this);
@@ -148,9 +148,9 @@ define(function (require) {
    *  @param  {Number} timeFromNow schedule this event to happen
    *                                seconds from now
    */
-  p5.Noise.prototype.pan = function(pval, time) {
+  p5.Noise.prototype.pan = function(pval, timeFromNow) {
     this.panPosition = pval;
-    this.panner.pan(pval, time);
+    this.panner.pan(pval, timeFromNow);
   };
 
   /**

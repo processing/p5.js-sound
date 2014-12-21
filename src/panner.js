@@ -6,8 +6,7 @@ define(function (require) {
   var ac = p5sound.audiocontext;
 
   // Stereo panner
-  p5.Panner = function(input, output) {
-    console.log(input);
+  p5.Panner = function(input, output, numInputChannels) {
     this.input = ac.createGain();
     input.connect(this.input);
 
@@ -16,12 +15,18 @@ define(function (require) {
     this.left.channelInterpretation = "discrete";
     this.right.channelInterpretation = "discrete";
 
-    var splitter = ac.createChannelSplitter(2);
+    // if input is stereo
+    if (numInputChannels > 1) {
+      this.splitter = ac.createChannelSplitter(2);
+      this.input.connect(this.splitter);
 
-    this.input.connect(splitter);
-
-    splitter.connect(this.left, 1);
-    splitter.connect(this.right, 0);
+      this.splitter.connect(this.left, 1);
+      this.splitter.connect(this.right, 0);
+    }
+    else {
+      this.input.connect(this.left);
+      this.input.connect(this.right);
+    }
 
     this.output = ac.createChannelMerger(2);
     this.left.connect(this.output, 0, 1);
@@ -30,13 +35,30 @@ define(function (require) {
   }
 
   // -1 is left, +1 is right
-  p5.Panner.prototype.pan = function(val, t) {
-    var t = ac.currentTime || ac.currentTime + t;
+  p5.Panner.prototype.pan = function(val, tFromNow) {
+    var time = tFromNow || 0;
+    var t = ac.currentTime + time;
     var v = (val + 1) / 2;
     var leftVal = Math.cos(v*Math.PI/2);
     var rightVal = Math.sin(v * Math.PI/2);
     this.left.gain.linearRampToValueAtTime(leftVal, t);
     this.right.gain.linearRampToValueAtTime(rightVal, t);
+  }
+
+  p5.Panner.prototype.inputChannels = function(numChannels) {
+    if (numChannels === 1) {
+      this.input.disconnect();
+      this.input.connect(this.left);
+      this.input.connect(this.right);
+    } else if (numChannels === 2) {
+      if (typeof(this.splitter === 'undefined')){
+        this.splitter = ac.createChannelSplitter(2);
+      }
+      this.input.disconnect();
+      this.input.connect(this.splitter);
+      this.splitter.connect(this.left, 1);
+      this.splitter.connect(this.right, 0);
+    }
   }
 
   p5.Panner.prototype.connect = function(obj) {

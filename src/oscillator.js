@@ -63,7 +63,7 @@ define(function (require) {
     this.oscillator.connect(this.output);
     // stereo panning
     this.panPosition = 0.0;
-    this.panner = new p5.Panner(this.output, p5sound.input);
+    this.panner = new p5.Panner(this.output, p5sound.input, 1);
     this.connection = p5sound.input; // connect to p5sound by default
 
     //array of math operation signal chaining
@@ -269,9 +269,9 @@ define(function (require) {
    *  @param  {Number} timeFromNow schedule this event to happen
    *                                seconds from now
    */
-  p5.Oscillator.prototype.pan = function(pval) {
+  p5.Oscillator.prototype.pan = function(pval, tFromNow) {
     this.panPosition = pval;
-    this.panner.pan(pval);
+    this.panner.pan(pval, tFromNow);
   };
 
   p5.Oscillator.prototype.getPan = function() {
