@@ -145,10 +145,12 @@ define(function (require) {
    *  @method  pan
    *  @param  {Number} panning Number between -1 (left)
    *                           and 1 (right)
+   *  @param  {Number} timeFromNow schedule this event to happen
+   *                                seconds from now
    */
-  p5.Noise.prototype.pan = function(pval) {
+  p5.Noise.prototype.pan = function(pval, time) {
     this.panPosition = pval;
-    this.panner.pan(pval);
+    this.panner.pan(pval, time);
   };
 
   /**
@@ -160,13 +162,21 @@ define(function (require) {
    *                                seconds from now
    */
   p5.Noise.prototype.amp = function(vol, rampTime, tFromNow){
-    var rampTime = rampTime || 0;
-    var tFromNow = tFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
-    var currentVol = this.output.gain.value;
-    this.output.gain.cancelScheduledValues(now);
-    this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow + .001);
-    this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
+    if (typeof(vol) === 'number') {
+      var rampTime = rampTime || 0;
+      var tFromNow = tFromNow || 0;
+      var now = p5sound.audiocontext.currentTime;
+      var currentVol = this.output.gain.value;
+      this.output.gain.cancelScheduledValues(now);
+      this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
+      this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
+    }
+    else if (vol) {
+      vol.connect(this.output.gain);
+    } else {
+      // return the Gain Node
+      return this.output.gain;
+    }
   };
 
   /**

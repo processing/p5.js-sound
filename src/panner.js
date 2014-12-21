@@ -7,6 +7,9 @@ define(function (require) {
 
   // Stereo panner
   p5.Panner = function(input, output) {
+    this.input = ac.createGain();
+    input.connect(this.input);
+
     this.left = ac.createGain();
     this.right = ac.createGain();
     this.left.channelInterpretation = "discrete";
@@ -14,16 +17,15 @@ define(function (require) {
 
     var splitter = ac.createChannelSplitter(2);
 
-    input.connect(splitter);
+    this.input.connect(splitter);
 
     splitter.connect(this.left, 1);
     splitter.connect(this.right, 0);
 
-    var mixer = ac.createChannelMerger(2);
-    this.left.connect(mixer, 0, 1);
-    this.right.connect(mixer, 0, 0);
-    mixer.connect(output);
-    console.log(output);
+    this.output = ac.createChannelMerger(2);
+    this.left.connect(this.output, 0, 1);
+    this.right.connect(this.output, 0, 0);
+    this.output.connect(output);
   }
 
   // -1 is left, +1 is right
@@ -36,6 +38,13 @@ define(function (require) {
     this.right.gain.linearRampToValueAtTime(rightVal, t);
   }
 
+  p5.Panner.prototype.connect = function(obj) {
+    this.output.connect(obj);
+  }
+
+  p5.Panner.prototype.disconnect = function(obj) {
+    this.output.disconnect();
+  }
 
   // 3D panner
   p5.Panner3D = function(input, output) {

@@ -266,6 +266,8 @@ define(function (require) {
    *
    *  @method  pan
    *  @param  {Number} panning Number between -1 and 1
+   *  @param  {Number} timeFromNow schedule this event to happen
+   *                                seconds from now
    */
   p5.Oscillator.prototype.pan = function(pval) {
     this.panPosition = pval;
