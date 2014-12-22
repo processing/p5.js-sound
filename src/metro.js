@@ -25,8 +25,8 @@ define(function (require) {
   var tatumTime = 0;
 
   p5.Metro.prototype.ontick = function(tickTime) {
-    var elapsedTime = (tickTime - prevTick).toFixed(1);
-    if (elapsedTime >= tatumTime) {
+    var elapsedTime = tickTime - prevTick;
+    if (elapsedTime - tatumTime >= -tatumTime/15) {
       prevTick = tickTime;
 
       // for all of the active things on the metro:

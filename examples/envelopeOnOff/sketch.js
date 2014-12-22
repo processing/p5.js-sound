@@ -9,7 +9,7 @@ var env;
 var a;
 
 // Times and levels for the ADSR envelope
-var attackTime = 0.001;
+var attackTime = 0.01;
 var attackLevel = 0.9;
 var decayTime = 0.2;
 var decayLevel = 0.2;
@@ -31,6 +31,7 @@ function setup(){
   trigger = millis();
 
   triOsc = new p5.TriOsc();
+  triOsc.freq(220);
   triOsc.start();
   env = new p5.Env(attackTime, attackLevel, decayTime, decayLevel, sustainTime, sustainLevel, releaseTime);
   triOsc.amp(env);
