@@ -8,12 +8,12 @@ define(function (require) {
   var Clock = require("Tone/core/Clock");
 
   var ac = p5sound.audiocontext;
-  var upTick = false;
+  // var upTick = false;
 
   p5.Metro = function() {
-
+    // this.clock = new Clock(ac.sampleRate, tickle);
+    // this.clock = new Clock();
     this.clock = new Clock(ac.sampleRate, this.ontick.bind(this));
-
     this.syncedParts = [];
     this.bpm = 120; // gets overridden by p5.Part
     this._init();
@@ -21,27 +21,37 @@ define(function (require) {
     this.tickCallback = function(){};
   };
 
+  var prevTick = 0;
+  var tatumTime = 0;
+
   p5.Metro.prototype.ontick = function(tickTime) {
-    // for all of the active things on the metro:
-    for (var i in this.syncedParts) {
-      var thisPart = this.syncedParts[i];
-      thisPart.incrementStep(tickTime);
-      // each synced source keeps track of its own beat number
-      for (var j in thisPart.phrases) {
-        var thisPhrase = thisPart.phrases[j];
-        var phraseArray = thisPhrase.sequence;
-        var bNum = this.metroTicks % (phraseArray.length);
-        if (phraseArray[bNum] !== 0 ) {
-          thisPhrase.callback(phraseArray[bNum], tickTime);
+    var elapsedTime = (tickTime - prevTick).toFixed(1);
+    if (elapsedTime >= tatumTime) {
+      prevTick = tickTime;
+
+      // for all of the active things on the metro:
+      for (var i in this.syncedParts) {
+        var thisPart = this.syncedParts[i];
+        thisPart.incrementStep(tickTime);
+        // each synced source keeps track of its own beat number
+        for (var j in thisPart.phrases) {
+          var thisPhrase = thisPart.phrases[j];
+          var phraseArray = thisPhrase.sequence;
+          var bNum = this.metroTicks % (phraseArray.length);
+          if (phraseArray[bNum] !== 0 ) {
+            thisPhrase.callback(phraseArray[bNum], tickTime);
+          }
         }
       }
+      this.metroTicks += 1;
+      this.tickCallback(tickTime);
     }
-    this.metroTicks += 1;
-    this.tickCallback(tickTime);
   };
 
   p5.Metro.prototype.setBPM = function(bpm, rampTime) {
     var beatTime =  60 / (bpm*this.tatums);
+    tatumTime = beatTime;
+
     var ramp = rampTime || 0;
     this.clock.setRate(beatTime, rampTime + p5sound.audiocontext.currentTime);
     this.bpm = bpm;
@@ -53,7 +63,7 @@ define(function (require) {
 
   p5.Metro.prototype._init = function() {
     this.metroTicks = 0;
-    this.setBPM(this.bpm);
+    // this.setBPM(120);
   };
 
   // clear existing synced parts, add only this one
