@@ -278,7 +278,7 @@ define(function (require) {
 
       // play the sound
       if (this.paused && this.wasUnpaused){
-        this.source.start(0, this.pauseTime, this.endTime);
+        this.source.start(0, this.startTime, this.endTime);
         // flag for whether to use pauseTime or startTime to get currentTime()
         // this.wasUnpaused = true;
       }
@@ -534,7 +534,7 @@ define(function (require) {
       var tFromNow = tFromNow || 0;
       var now = p5sound.audiocontext.currentTime;
       var currentVol = this.output.gain.value;
-      this.output.gain.cancelScheduledValues(now);
+      this.output.gain.cancelScheduledValues(now + tFromNow);
       this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
       this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
     }
@@ -661,13 +661,13 @@ define(function (require) {
       var cPos = this.currentTime();
       var cRate = this.source.playbackRate.value;
 
-      this.pause();
+      // this.pause();
       this.reverseBuffer();
       rate = Math.abs(playbackRate);
 
       var newPos = ( cPos - this.duration() ) / rate;
       this.pauseTime = newPos;
-      this.play();
+      // this.play();
     }
     else if (this.playbackRate > 0 && this.reversed) {
       this.reverseBuffer();
@@ -813,7 +813,7 @@ define(function (require) {
         var sampleSize = buffer.length / length;
         var sampleStep = ~~(sampleSize / 10) || 1;
         var channels = buffer.numberOfChannels;
-        var peaks = new Float32Array(length);
+        var peaks = new Float32Array(Math.round(length));
 
         for (var c = 0; c < channels; c++) {
           var chan = buffer.getChannelData(c);
@@ -866,6 +866,9 @@ define(function (require) {
    * </div>
    */
   p5.SoundFile.prototype.reverseBuffer = function() {
+    var curVol = this.getVolume();
+    this.setVolume(0, 0.01, 0);
+    this.pause();
     if (this.buffer) {
       Array.prototype.reverse.call( this.buffer.getChannelData(0) );
       Array.prototype.reverse.call( this.buffer.getChannelData(1) );
@@ -875,6 +878,8 @@ define(function (require) {
     } else {
       throw 'SoundFile is not done loading';
     }
+    this.setVolume(curVol, 0.01, 0.0101);
+    this.play();
   };
 
   // private function for onended behavior

@@ -31,7 +31,6 @@ function draw() {
   if (peakCount < 8) {
     peakCount = 8;
   }
-
   var waveform = soundFile.getPeaks(peakCount);
   fill(0);
   stroke(0);

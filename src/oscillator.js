@@ -153,6 +153,8 @@ define(function (require) {
       this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
     }
     else if (vol) {
+      // console.log('connecting val');
+      // console.log(vol);
       vol.connect(this.output.gain);
     } else {
       // return the Gain Node
