@@ -17,20 +17,7 @@ define(function (require) {
     delete this.f;
     delete this.freq;
     delete this.oscillator;
-
-    this.started = false;
     this.buffer = _whiteNoise;
-    this.output = p5sound.audiocontext.createGain();
-
-    // set default output gain
-    this.output.gain.value = 0.5;
-
-    // sterep panning
-    this.panPosition = 0.0;
-    this.panner = new p5.Panner(this.output, p5sound.input, this.buffer.numberOfChannels);
-
-    // add to soundArray so we can dispose on close
-    p5sound.soundArray.push(this);
   };
 
   p5.Noise.prototype = Object.create(p5.Oscillator.prototype);
@@ -156,10 +143,6 @@ define(function (require) {
    *  @param  {Number} timeFromNow schedule this event to happen
    *                                seconds from now
    */
-  p5.Noise.prototype.pan = function(pval, timeFromNow) {
-    this.panPosition = pval;
-    this.panner.pan(pval, timeFromNow);
-  };
 
   /**
    *  Set the amplitude of the noise between 0 and 1.0

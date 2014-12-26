@@ -45,9 +45,8 @@ function setup() {
   modulator.amp(1);
 
   // Modulate the carrier's amplitude with the modulator
-  // Optionally, we can scale the signal.
-  // carrier.amp(modulator.scale(-1,1,1,-1));
   carrier.amp(modulator);
+
   // create an fft to analyze the audio
   fft = new p5.FFT();
 }
