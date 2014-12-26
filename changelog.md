@@ -3,6 +3,8 @@ p5.sound.js v0.1.6 2014-12-26
 - updating to latest version of Tone (0.3.0)
 - fixes for new Tone Signal math
 - musical timing (p5.Metro) fix for Firefox
+- revamp the p5.Panner: defaults to stereo, 3D version (and web audio panner) is not used
+- p5.Noise inherits from p5.Oscillator prototype
 
 p5.sound.js v0.1.5 2014-12-05
 - p5.Oscillator defauts to 0.5 amp
