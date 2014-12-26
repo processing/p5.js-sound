@@ -1,3 +1,9 @@
+p5.sound.js v0.1.6 2014-12-26
+- amplitude modulation for p5.Noise and p5.SoundFile
+- updating to latest version of Tone (0.3.0)
+- fixes for new Tone Signal math
+- musical timing (p5.Metro) fix for Firefox
+
 p5.sound.js v0.1.5 2014-12-05
 - p5.Oscillator defauts to 0.5 amp
 - using Tone.Signal for signal math, and Tone.Clock for Transport. 
