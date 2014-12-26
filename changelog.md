@@ -5,6 +5,7 @@ p5.sound.js v0.1.6 2014-12-26
 - musical timing (p5.Metro) fix for Firefox
 - revamp the p5.Panner: defaults to stereo, 3D version (and web audio panner) is not used
 - p5.Noise inherits from p5.Oscillator prototype
+- improvements to p5.Env
 
 p5.sound.js v0.1.5 2014-12-05
 - p5.Oscillator defauts to 0.5 amp
