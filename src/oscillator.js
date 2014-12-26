@@ -129,10 +129,12 @@ define(function (require) {
   };
 
   /**
-   *  Set amplitude (volume) of an oscillator between 0 and 1.0
+   *  Set the amplitude between 0 and 1.0. Or, pass in an object
+   *  such as an oscillator to modulate amplitude with an audio signal.
    *
    *  @method  amp
-   *  @param  {Number} vol between 0 and 1.0
+   *  @param  {Number|Object} vol between 0 and 1.0
+   *                              or a modulating signal/oscillator
    *  @param {Number} [rampTime] create a fade that lasts rampTime 
    *  @param {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
@@ -171,10 +173,12 @@ define(function (require) {
   };
 
   /**
-   *  Set frequency of an oscillator.
+   *  Set frequency of an oscillator to a value. Or, pass in an object
+   *  such as an oscillator to modulate the frequency with an audio signal.
    *
    *  @method  freq
-   *  @param  {Number} Frequency Frequency in Hz
+   *  @param  {Number|Object} Frequency Frequency in Hz
+   *                                        or modulating signal/oscillator
    *  @param  {Number} [rampTime] Ramp time (in seconds)
    *  @param  {Number} [timeFromNow] Schedule this event to happen
    *                                   at x seconds from now

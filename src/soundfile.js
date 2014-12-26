@@ -522,8 +522,12 @@ define(function (require) {
    *  fade, provide a <code>rampTime</code> parameter. For more
    *  complex fades, see the Env class.
    *
+   *  Alternately, you can pass in a signal source such as an
+   *  oscillator to modulate the amplitude with an audio signal.
+   *
    *  @method  setVolume
-   *  @param {Number} volume  Volume (amplitude) between 0.0 and 1.0
+   *  @param {Number|Object} volume  Volume (amplitude) between 0.0
+   *                                     and 1.0 or modulating signal/oscillator
    *  @param {Number} [rampTime]  Fade for t seconds
    *  @param {Number} [timeFromNow]  Schedule this event to happen at
    *                                 t seconds in the future

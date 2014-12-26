@@ -145,9 +145,11 @@ define(function (require) {
    */
 
   /**
-   *  Set the amplitude of the noise between 0 and 1.0
+   *  Set the amplitude of the noise between 0 and 1.0. Or,
+   *  modulate amplitude with an audio signal such as an oscillator.
    *  
-   *  @param  {Number} volume amplitude between 0 and 1.0
+   *  @param  {Number|Object} volume amplitude between 0 and 1.0
+   *                                     or modulating signal/oscillator
    *  @param {Number} [rampTime] create a fade that lasts rampTime 
    *  @param {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
