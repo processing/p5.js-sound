@@ -13,8 +13,12 @@ define(function (require) {
    *  @return {Object}    Noise Object
    */
   p5.Noise = function(type){
-    this.started = false;
+    p5.Oscillator.call(this);
+    delete this.f;
+    delete this.freq;
+    delete this.oscillator;
 
+    this.started = false;
     this.buffer = _whiteNoise;
     this.output = p5sound.audiocontext.createGain();
 
@@ -29,6 +33,8 @@ define(function (require) {
     p5sound.soundArray.push(this);
   };
 
+  p5.Noise.prototype = Object.create(p5.Oscillator.prototype);
+
   // generate noise buffers
   var _whiteNoise = (function() {
     var bufferSize = 2 * p5sound.audiocontext.sampleRate;
@@ -37,6 +43,7 @@ define(function (require) {
     for (var i = 0; i < bufferSize; i++) {
       noiseData[i] = Math.random() * 2 - 1;
     }
+    whiteBuffer.type = 'white';
     return whiteBuffer;
   }());
 
@@ -58,8 +65,9 @@ define(function (require) {
       noiseData[i] *= 0.11; // (roughly) compensate for gain
       b6 = white * 0.115926;
     }
+    pinkBuffer.type = 'pink';
     return pinkBuffer;
-    }());
+  }());
 
   var _brownNoise = (function() {
     var bufferSize = 2 * p5sound.audiocontext.sampleRate;
@@ -72,13 +80,9 @@ define(function (require) {
       lastOut = noiseData[i];
       noiseData[i] *= 3.5;
     }
+    brownBuffer.type = 'brown';
     return brownBuffer;
-    }());
-
-  p5.Noise.prototype.ampMod = function(unit){
-    unit.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
-    this.output.connect(unit.output.gain);
-  };
+  }());
 
   /**
    *  Set type of noise to 'white', 'pink' or 'brown'.
@@ -106,6 +110,10 @@ define(function (require) {
       this.stop(now);
       this.start(now+.01);
     }
+  };
+
+  p5.Noise.prototype.getType = function(){
+    return this.buffer.type;
   };
 
   /**
@@ -161,23 +169,6 @@ define(function (require) {
    *  @param {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
    */
-  p5.Noise.prototype.amp = function(vol, rampTime, tFromNow){
-    if (typeof(vol) === 'number') {
-      var rampTime = rampTime || 0;
-      var tFromNow = tFromNow || 0;
-      var now = p5sound.audiocontext.currentTime;
-      var currentVol = this.output.gain.value;
-      this.output.gain.cancelScheduledValues(now);
-      this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
-      this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
-    }
-    else if (vol) {
-      vol.connect(this.output.gain);
-    } else {
-      // return the Gain Node
-      return this.output.gain;
-    }
-  };
 
   /**
    *  Send output to a p5.sound or web audio object
@@ -185,28 +176,12 @@ define(function (require) {
    *  @method  connect
    *  @param  {Object} unit
    */
-  p5.Noise.prototype.connect = function(unit){
-    if (!unit) {
-      this.panner.connect(p5sound.input);
-    } 
-    else if (unit.hasOwnProperty('input')){
-        this.panner.connect(unit.input);
-    }
-    else {
-      this.panner.connect(unit);
-    }
-  };
 
   /**
    *  Disconnect all output.
    *  
    *  @method disconnect
    */
-  p5.Noise.prototype.disconnect = function(unit){
-    this.output.disconnect();
-    this.panner.disconnect();
-    this.output.connect(this.panner);
-  };
 
   p5.Noise.prototype.dispose = function(){
     var now = p5sound.audiocontext.currentTime;

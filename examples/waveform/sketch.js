@@ -16,7 +16,7 @@ function preload() {
 
 function setup() {
   createCanvas(fftBands, 256);
-  fill(255, 40, 255);
+  noFill();
 
   soundFile.loop();
 

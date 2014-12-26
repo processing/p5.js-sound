@@ -261,7 +261,9 @@ define(function (require) {
    *  @method  disconnect
    */
   p5.Oscillator.prototype.disconnect = function(unit){
+    this.output.disconnect();
     this.panner.disconnect();
+    this.output.connect(this.panner);
     this.oscMods = [];
   };
 

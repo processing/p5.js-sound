@@ -17,6 +17,8 @@ function preload() {
 
 function setup() {
   createCanvas(800, 400);
+  noFill();
+
   soundFile.loop();
   background(0);
   p = createP('peaks to draw: ' + peakCount);
