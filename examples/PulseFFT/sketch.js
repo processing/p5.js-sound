@@ -14,6 +14,7 @@ var oscOn = false;
 
 function setup() {
   createCanvas(800,400);
+  noFill();
 
   widthLabel = createP('Width: ' + w);
   widthSlider = createSlider(0.0, 100.0, w*100);

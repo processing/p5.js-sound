@@ -44,10 +44,9 @@ function setup() {
   modulator.freq(4); // will map to mouseY
   modulator.start();
 
-  //  (amplitude ranges from -1 to 1) by 100, then add 200
+  // multiply amplitude range by 200, then add 100
   carrier.freq(modulator.mult(200).add(100));
-  // scale the modulator's output 
-  // carrier.freq(modulator.scale(-200,200));
+
   // create an fft to analyze the audio
   fft = new p5.FFT();
 }

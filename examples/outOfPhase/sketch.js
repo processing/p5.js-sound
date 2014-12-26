@@ -10,6 +10,7 @@ var phaseSlider;
 
 function setup() {
   createCanvas(800,400);
+  noFill();
 
   osc1 = new p5.SinOsc();
   osc2 = new p5.SinOsc();

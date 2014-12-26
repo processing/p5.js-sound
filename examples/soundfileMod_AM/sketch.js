@@ -33,6 +33,7 @@ function preload() {
 function setup() {
   createCanvas(800,400);
   background(30); // alpha
+  noFill();
 
   // carrier.freq(340);
   carrier.amp(0);
