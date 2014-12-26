@@ -31,6 +31,7 @@ var fft; // we'll visualize the waveform
 
 function setup() {
   createCanvas(800,400);
+  noFill();
 
   carrier = new p5.Oscillator('sine');
   carrier.amp(1); // set amplitude
@@ -43,9 +44,10 @@ function setup() {
   modulator.freq(4); // will map to mouseY
   modulator.start();
 
-  // multiply the modulator's output (amplitude ranges from -1 to 1) by 100, then add 200
-  carrier.freq( modulator.mult(400).add(100) );
-
+  //  (amplitude ranges from -1 to 1) by 100, then add 200
+  carrier.freq(modulator.mult(200).add(100));
+  // scale the modulator's output 
+  // carrier.freq(modulator.scale(-200,200));
   // create an fft to analyze the audio
   fft = new p5.FFT();
 }

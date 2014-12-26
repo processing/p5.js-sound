@@ -142,7 +142,16 @@ define(function (require) {
    *  @return {p5.SignalScale} object
    */
   Signal.prototype.scale = function(inMin, inMax, outMin, outMax) {
-    var scale = new p5.SignalScale(inMin, inMax, outMin, outMax);
+    var mapOutMin, mapOutMax;
+    if (arguments.length === 4){
+      mapOutMin = p5.prototype.map(outMin, inMin, inMax, 0, 1) - 0.5;
+      mapOutMax = p5.prototype.map(outMax, inMin, inMax, 0, 1) - 0.5;
+    }
+    else {
+      mapOutMin = arguments[0];
+      mapOutMax = arguments[1];
+    }
+    var scale = new Scale(mapOutMin, mapOutMax);
     this.connect(scale);
     return scale;
   };

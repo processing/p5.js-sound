@@ -29,6 +29,7 @@ var fft; // we'll visualize the waveform
 function setup() {
   createCanvas(800,400);
   background(30); // alpha
+  noFill();
 
   carrier = new p5.Oscillator(); // connects to master output by default
   carrier.start();

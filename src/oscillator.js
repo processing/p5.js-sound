@@ -203,6 +203,9 @@ define(function (require) {
         this.oscillator.frequency.linearRampToValueAtTime(val, tFromNow + rampTime + now);
       }
     } else if (val) {
+      if (val.output){
+        val = val.output;
+      }
       val.connect(this.oscillator.frequency);
 
       // keep track of what is modulating this param
@@ -319,21 +322,32 @@ define(function (require) {
   // SIGNAL MATH FOR MODULATION //
   // ========================== //
 
-  var sigChain = function(o, math, thisChain, nextChain, type) {
+  // return sigChain(this, scale, thisChain, nextChain, Scale);
+  var sigChain = function(o, mathObj, thisChain, nextChain, type) {
+    var chainSource = o.oscillator;
     // if this type of math already exists in the chain, replace it
     for (var i in o.mathOps) {
       if (o.mathOps[i] instanceof type) {
+        chainSource.disconnect();
         o.mathOps[i].dispose();
         thisChain = i;
-        if (thisChain < o.mathOps.length - 1) {
+        // assume nextChain is output gain node unless...
+        if (thisChain < o.mathOps.length - 2) {
           nextChain = o.mathOps[i+1];
         }
       }
     }
-    o.oscillator.disconnect();
-    o.oscillator.connect(math);
-    math.connect(nextChain);
-    o.mathOps[thisChain] = math;
+    if (thisChain == o.mathOps.length - 1) {
+      o.mathOps.push(nextChain);
+    }
+    // assume source is the oscillator unless i > 0
+    if (i > 0){
+      chainSource = o.mathOps[i-1];
+    } 
+    chainSource.disconnect();
+    chainSource.connect(mathObj);
+    mathObj.connect(nextChain);
+    o.mathOps[thisChain] = mathObj;
     return o;
   };
 
@@ -350,9 +364,9 @@ define(function (require) {
    */
   p5.Oscillator.prototype.add = function(num) {
     var add = new Add(num);
-    var thisChain = this.mathOps.length;
+    var thisChain = this.mathOps.length-1;
     var nextChain = this.output;
-    return p5.prototype._mathChain(this, add, thisChain, nextChain, Add);
+    return sigChain(this, add, thisChain, nextChain, Add);
   };
 
   /**
@@ -367,9 +381,9 @@ define(function (require) {
    */
   p5.Oscillator.prototype.mult = function(num) {
     var mult = new Mult(num);
-    var thisChain = this.mathOps.length;
+    var thisChain = this.mathOps.length-1;
     var nextChain = this.output;
-    return p5.prototype._mathChain(this, mult, thisChain, nextChain, Mult);
+    return sigChain(this, mult, thisChain, nextChain, Mult);
   };
 
   /**
@@ -386,10 +400,22 @@ define(function (require) {
    *                                     with scaled output
    */
   p5.Oscillator.prototype.scale = function(inMin, inMax, outMin, outMax) {
-    var scale = new Scale(inMin, inMax, outMin, outMax);
-    var thisChain = this.mathOps.length;
+    var mapOutMin, mapOutMax;
+    if (arguments.length === 4){
+      mapOutMin = p5.prototype.map(outMin, inMin, inMax, 0, 1) - 0.5;
+      mapOutMax = p5.prototype.map(outMax, inMin, inMax, 0, 1) - 0.5;
+    }
+    else {
+      mapOutMin = arguments[0];
+      mapOutMax = arguments[1];
+    }
+    var scale = new Scale(mapOutMin, mapOutMax);
+    var thisChain = this.mathOps.length-1;
     var nextChain = this.output;
     return sigChain(this, scale, thisChain, nextChain, Scale);
+
+    // this.output.disconnect();
+    // this.output.connect(scale)
   };
 
   // ============================== //
