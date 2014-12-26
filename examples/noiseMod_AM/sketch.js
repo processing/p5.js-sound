@@ -40,12 +40,13 @@ function setup() {
   modulator = new p5.Oscillator('triangle');
   modulator.disconnect();  // disconnect the modulator from master output
   modulator.freq(5);
-  modulator.amp(1);
+  modulator.amp(0.5);
   modulator.start();
 
   // Modulate the carrier's amplitude with the modulator
   // Optionally, we can scale the signal.
   carrier.amp(modulator.scale(-1,1,1,-1));
+  // carrier.amp(modulator);
 
   // create an fft to analyze the audio
   fft = new p5.FFT();

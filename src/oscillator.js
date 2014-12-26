@@ -63,8 +63,8 @@ define(function (require) {
     this.oscillator.connect(this.output);
     // stereo panning
     this.panPosition = 0.0;
-    this.panner = new p5.Panner(this.output, p5sound.input, 1);
     this.connection = p5sound.input; // connect to p5sound by default
+    this.panner = new p5.Panner(this.output, this.connection, 1);
 
     //array of math operation signal chaining
     this.mathOps = [this.output];
@@ -143,6 +143,7 @@ define(function (require) {
    *                              gain/amplitude/volume)
    */
   p5.Oscillator.prototype.amp = function(vol, rampTime, tFromNow){
+    var self = this;
     if (typeof(vol) === 'number') {
       var rampTime = rampTime || 0;
       var tFromNow = tFromNow || 0;
@@ -152,10 +153,9 @@ define(function (require) {
       this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
       this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
     }
+
     else if (vol) {
-      // console.log('connecting val');
-      // console.log(vol);
-      vol.connect(this.output.gain);
+      vol.connect(self.output.gain);
     } else {
       // return the Gain Node
       return this.output.gain;
@@ -258,8 +258,7 @@ define(function (require) {
    *  @method  disconnect
    */
   p5.Oscillator.prototype.disconnect = function(unit){
-    // disconnect from specific mods
-    this.panner.disconnect(unit);
+    this.panner.disconnect();
     this.oscMods = [];
   };
 
@@ -320,6 +319,24 @@ define(function (require) {
   // SIGNAL MATH FOR MODULATION //
   // ========================== //
 
+  var sigChain = function(o, math, thisChain, nextChain, type) {
+    // if this type of math already exists in the chain, replace it
+    for (var i in o.mathOps) {
+      if (o.mathOps[i] instanceof type) {
+        o.mathOps[i].dispose();
+        thisChain = i;
+        if (thisChain < o.mathOps.length - 1) {
+          nextChain = o.mathOps[i+1];
+        }
+      }
+    }
+    o.oscillator.disconnect();
+    o.oscillator.connect(math);
+    math.connect(nextChain);
+    o.mathOps[thisChain] = math;
+    return o;
+  };
+
   /**
    *  Add a value to the p5.Oscillator's output amplitude,
    *  and return the oscillator. Calling this method again
@@ -334,7 +351,7 @@ define(function (require) {
   p5.Oscillator.prototype.add = function(num) {
     var add = new Add(num);
     var thisChain = this.mathOps.length;
-    var nextChain = this.panner;
+    var nextChain = this.output;
     return p5.prototype._mathChain(this, add, thisChain, nextChain, Add);
   };
 
@@ -351,7 +368,7 @@ define(function (require) {
   p5.Oscillator.prototype.mult = function(num) {
     var mult = new Mult(num);
     var thisChain = this.mathOps.length;
-    var nextChain = this.panner;
+    var nextChain = this.output;
     return p5.prototype._mathChain(this, mult, thisChain, nextChain, Mult);
   };
 
@@ -371,8 +388,8 @@ define(function (require) {
   p5.Oscillator.prototype.scale = function(inMin, inMax, outMin, outMax) {
     var scale = new Scale(inMin, inMax, outMin, outMax);
     var thisChain = this.mathOps.length;
-    var nextChain = this.panner;
-    return p5.prototype._mathChain(this, scale, thisChain, nextChain, Scale);
+    var nextChain = this.output;
+    return sigChain(this, scale, thisChain, nextChain, Scale);
   };
 
   // ============================== //

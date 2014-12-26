@@ -32,7 +32,7 @@ define(function (require) {
     this.left.connect(this.output, 0, 1);
     this.right.connect(this.output, 0, 0);
     this.output.connect(output);
-  }
+  };
 
   // -1 is left, +1 is right
   p5.Panner.prototype.pan = function(val, tFromNow) {
@@ -43,7 +43,7 @@ define(function (require) {
     var rightVal = Math.sin(v * Math.PI/2);
     this.left.gain.linearRampToValueAtTime(leftVal, t);
     this.right.gain.linearRampToValueAtTime(rightVal, t);
-  }
+  };
 
   p5.Panner.prototype.inputChannels = function(numChannels) {
     if (numChannels === 1) {
@@ -59,15 +59,15 @@ define(function (require) {
       this.splitter.connect(this.left, 1);
       this.splitter.connect(this.right, 0);
     }
-  }
+  };
 
   p5.Panner.prototype.connect = function(obj) {
     this.output.connect(obj);
-  }
+  };
 
   p5.Panner.prototype.disconnect = function(obj) {
     this.output.disconnect();
-  }
+  };
 
   // 3D panner
   p5.Panner3D = function(input, output) {
