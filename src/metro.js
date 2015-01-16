@@ -11,8 +11,6 @@ define(function (require) {
   // var upTick = false;
 
   p5.Metro = function() {
-    // this.clock = new Clock(ac.sampleRate, tickle);
-    // this.clock = new Clock();
     this.clock = new Clock(ac.sampleRate, this.ontick.bind(this));
     this.syncedParts = [];
     this.bpm = 120; // gets overridden by p5.Part
@@ -26,7 +24,9 @@ define(function (require) {
 
   p5.Metro.prototype.ontick = function(tickTime) {
     var elapsedTime = tickTime - prevTick;
-    if (elapsedTime - tatumTime >= -tatumTime/15) {
+    if (elapsedTime - tatumTime <= -0.02) {
+      return;
+    } else {
       prevTick = tickTime;
 
       // for all of the active things on the metro:
@@ -39,7 +39,7 @@ define(function (require) {
           var phraseArray = thisPhrase.sequence;
           var bNum = this.metroTicks % (phraseArray.length);
           if (phraseArray[bNum] !== 0 ) {
-            thisPhrase.callback(phraseArray[bNum], tickTime);
+            thisPhrase.callback(phraseArray[bNum], tickTime - p5sound.audiocontext.currentTime);
           }
         }
       }

@@ -33,16 +33,23 @@ function setup() {
   // // set tempo (Beats Per Minute) of the part and tell it to loop
   part.setBPM(80);
   part.loop();
+
+  ac = getAudioContext();
 }
 
-function playBass(params) {
+var ac, lastHit = 0;
+
+function playBass(params, time) {
   currentBassNote = params;
-  osc.freq(midiToFreq(params));
-  env.play(osc);
+  osc.freq(midiToFreq(params), 0, time);
+  env.play(osc, time);
 }
 
-function playSnare(params) {
-  noiseEnv.play(noise);
+function playSnare(params, time) {
+  noiseEnv.play(noise, time);
+  var nextHit = ac.currentTime + time;
+  console.log(nextHit - lastHit);
+  lastHit = nextHit;
 }
 
 // draw a ball mapped to current note height
