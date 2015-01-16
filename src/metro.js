@@ -24,27 +24,27 @@ define(function (require) {
 
   p5.Metro.prototype.ontick = function(tickTime) {
     var elapsedTime = tickTime - prevTick;
+    var secondsFromNow = tickTime - p5sound.audiocontext.currentTime;
     if (elapsedTime - tatumTime <= -0.02) {
       return;
     } else {
       prevTick = tickTime;
-
       // for all of the active things on the metro:
       for (var i in this.syncedParts) {
         var thisPart = this.syncedParts[i];
-        thisPart.incrementStep(tickTime);
+        thisPart.incrementStep(secondsFromNow);
         // each synced source keeps track of its own beat number
         for (var j in thisPart.phrases) {
           var thisPhrase = thisPart.phrases[j];
           var phraseArray = thisPhrase.sequence;
           var bNum = this.metroTicks % (phraseArray.length);
           if (phraseArray[bNum] !== 0 ) {
-            thisPhrase.callback(phraseArray[bNum], tickTime - p5sound.audiocontext.currentTime);
+            thisPhrase.callback(phraseArray[bNum], secondsFromNow);
           }
         }
       }
       this.metroTicks += 1;
-      this.tickCallback(tickTime);
+      this.tickCallback(secondsFromNow);
     }
   };
 
