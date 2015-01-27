@@ -201,11 +201,12 @@ define(function (require) {
    * Play the p5.SoundFile
    *
    * @method play
+   * @param {Number} [time]            (optional) startTime in seconds from now.
    * @param {Number} [rate]             (optional) playback rate
    * @param {Number} [amp]              (optional) amplitude (volume)
    *                                     of playback
-   * @param {Number} [startTime]        (optional) startTime in seconds
-   * @param {Number} [endTime]          (optional) endTime in seconds
+   * @param {Number} [cueStart]        (optional) cue start time in seconds
+   * @param {Number} [cueEnd]          (optional) cue end time in seconds
    */
   p5.SoundFile.prototype.play = function(time, rate, amp, startTime, endTime) {
     var now = p5sound.audiocontext.currentTime;
