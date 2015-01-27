@@ -108,13 +108,15 @@ define(function (require) {
    *  @method  set
    *  @param {Number} freq Frequency in Hz, from 10 to 22050
    *  @param {Number} res  Resonance (Q) from 0.001 to 1000
+   *  @param {Number} [timeFromNow] schedule this event to happen
+   *                                seconds from now
    */
-  p5.Filter.prototype.set = function(freq, res) {
+  p5.Filter.prototype.set = function(freq, res, time) {
     if (freq) {
-      this.freq(freq);
+      this.freq(freq, time);
     }
     if (res) {
-      this.res(res);
+      this.res(res, time);
     }
   };
 
@@ -124,15 +126,21 @@ define(function (require) {
    *  range).
    *
    *  @method  freq
-   *  @param  {[Number]} freq Filter Frequency
+   *  @param  {Number} freq Filter Frequency
+   *  @param {Number} [timeFromNow] schedule this event to happen
+   *                                seconds from now
    *  @return {Number} value  Returns the current frequency value
    */
-  p5.Filter.prototype.freq = function(freq) {
+  p5.Filter.prototype.freq = function(freq, time) {
     var self = this;
+    var t = time || 0;
+    if (freq <= 0) {
+      freq = 1;
+    }
     if (typeof(freq) === 'number'){
       self.biquad.frequency.value = freq;
-      self.biquad.frequency.cancelScheduledValues(this.ac.currentTime +.01);
-      self.biquad.frequency.setValueAtTime(freq, this.ac.currentTime + .02);
+      self.biquad.frequency.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      self.biquad.frequency.exponentialRampToValueAtTime(freq, this.ac.currentTime + 0.02 + t);
     } else if (freq) {
       freq.connect(this.biquad.frequency);
     }
@@ -146,14 +154,17 @@ define(function (require) {
    *  @method  res
    *  @param {Number} res  Resonance/Width of filter freq
    *                       from 0.001 to 1000
+   *  @param {Number} [timeFromNow] schedule this event to happen
+   *                                seconds from now
    *  @return {Number} value Returns the current res value
    */
-  p5.Filter.prototype.res = function(res) {
+  p5.Filter.prototype.res = function(res, time) {
     var self = this;
+    var t = time || 0;
     if (typeof(res) == 'number'){
       self.biquad.Q.value = res;
-      self.biquad.Q.cancelScheduledValues(self.ac.currentTime + .01);
-      self.biquad.Q.setValueAtTime(res, self.ac.currentTime + .02);
+      self.biquad.Q.cancelScheduledValues(self.ac.currentTime + 0.01 + t);
+      self.biquad.Q.linearRampToValueAtTime(res, self.ac.currentTime + 0.02 + t);
     } else if (res) {
       freq.connect(this.biquad.Q);
     }

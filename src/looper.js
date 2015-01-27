@@ -63,8 +63,9 @@ define(function (require) {
    *    myPart.start();
    *  }
    *
-   *  function makeSound(playbackRate) {
-   *    mySound.play(playbackRate);
+   *  function makeSound(time, playbackRate) {
+   *    mySound.rate(playbackRate);
+   *    mySound.play(time);
    *  }
    *  </code></div>
    */
@@ -114,12 +115,14 @@ define(function (require) {
    *    myPart.start();
    *  }
    *
-   *  function playBox(playbackRate) {
-   *    box.play(playbackRate);
+   *  function playBox(playbackRate, time) {
+   *    box.rate(playbackRate);
+   *    box.play(time);
    *  }
    *  
-   *  function playDrum(playbackRate) {
-   *    drum.play(playbackRate);
+   *  function playDrum(playbackRate, time) {
+   *    drum.rate(playbackRate);
+   *    drum.play(time);
    *  }
    *  </code></div>
    */
@@ -190,15 +193,17 @@ define(function (require) {
    *  determined by setBPM.
    *  
    *  @method  loop
+   *  @param  {Number} [time] seconds from now
    */
-  p5.Part.prototype.loop = function( ) {
+  p5.Part.prototype.loop = function(time) {
     this.looping = true;
     // rest onended function
     this.onended = function() {
       this.partStep = 0;
       // dont start phrases over, right?
     };
-    this.start();
+    var t = time || 0;
+    this.start(t);
   };
 
   /**
@@ -291,8 +296,26 @@ define(function (require) {
     }
   };
 
+  /**
+   *  Get a phrase from this part, based on the name it was
+   *  given when it was created. Now you can modify its array.
+   *  
+   *  @method  replaceSequence
+   *  @param  {String} phraseName
+   *  @param  {Array} sequence  Array of values to pass into the callback
+   *                            at each step of the phrase.
+   */
+  p5.Part.prototype.replaceSequence = function(name, array) {
+    for (var i in this.phrases) {
+      if (this.phrases[i].name === name) {
+        this.phrases[i].sequence = array;
+      }
+    }
+  };
+
   p5.Part.prototype.incrementStep = function(time) {
-    if (this.partStep < this.length) {
+    console.log(this.partStep);
+    if (this.partStep < this.length-1) {
       this.callback(time);
       this.partStep +=1;
     }
@@ -344,11 +367,9 @@ define(function (require) {
    *  }
    *  
    *  function setup() {
-   *    var boxPhrase = new p5.Phrase('box', playBox, boxPat);
-   *    var drumPhrase = new p5.Phrase('drum', playDrum, drumPat);
    *    var myPart = new p5.Part();
-   *    myPart.addPhrase(boxPhrase);
-   *    myPart.addPhrase(drumPhrase);
+   *    myPart.addPhrase('box', playBox, boxPat);
+   *    myPart.addPhrase('drum', playDrum, drumPat);
    *    myPart.setBPM(60);
    *    myPart.start();
    *
@@ -356,12 +377,14 @@ define(function (require) {
    *    env = new p5.Env(0.01, 1, 0.2, 0);
    *  }
    *
-   *  function playBox(playbackRate) {
-   *    box.play(playbackRate);
+   *  function playBox(playbackRate, time) {
+   *    box.rate(playbackRate);
+   *    box.play(time);
    *  }
    *  
-   *  function playDrum(playbackRate) {
-   *    drum.play(playbackRate);
+   *  function playDrum(playbackRate, time) {
+   *    drum.rate(playbackRate)
+   *    drum.play(time);
    *  }
    *  </code></div>
    */

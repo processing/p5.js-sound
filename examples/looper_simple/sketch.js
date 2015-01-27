@@ -1,6 +1,9 @@
 /**
  *  Create a sequence using a Part.
  *  Add two Phrases to the part, and tell the part to loop.
+ *
+ *  The callback includes parameters (the value at that position in the Phrase array)
+ *  as well as time, which should be used to schedule playback with precision.
  */
 
 var osc, env; // used by playNote
@@ -34,22 +37,12 @@ function setup() {
   part.setBPM(80);
   part.loop();
 
-  ac = getAudioContext();
 }
-
-var ac, lastHit = 0;
-var greatestGap = 0;
-var expectedInterval = 0.1875;
 
 function playBass(params, time) {
   currentBassNote = params;
   osc.freq(midiToFreq(params), 0, time);
   env.play(osc, time);
-  var nextHit = ac.currentTime + time;
-  var gap = Math.abs(nextHit - lastHit) - expectedInterval;
-  greatestGap = Math.max(gap, greatestGap);
-  if (gap > 0.01) {console.log(gap)}
-  lastHit = nextHit;
 }
 
 function playSnare(params, time) {
