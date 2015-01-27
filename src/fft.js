@@ -65,6 +65,7 @@ define(function (require) {
    *    }
    *
    *    var waveform = fft.waveform();
+   *    noStroke();
    *    beginShape();
    *    stroke(255,0,0); // waveform is red
    *    strokeWeight(1);

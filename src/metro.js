@@ -37,8 +37,8 @@ define(function (require) {
         for (var j in thisPart.phrases) {
           var thisPhrase = thisPart.phrases[j];
           var phraseArray = thisPhrase.sequence;
-          var bNum = this.metroTicks % (phraseArray.length);
-          if (phraseArray[bNum] !== 0 ) {
+          var bNum = this.metroTicks % (phraseArray.length );
+          if (phraseArray[bNum] !== 0 && (this.metroTicks < phraseArray.length || !thisPhrase.looping) ) {
             thisPhrase.callback(phraseArray[bNum], secondsFromNow);
           }
         }

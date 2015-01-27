@@ -44,7 +44,7 @@
 
 
 /**
- *  p5.sound developed by Jason Sigal for the Processing Foundation, Google Summer of Code 2014.
+ *  p5.sound developed by Jason Sigal for the Processing Foundation, Google Summer of Code 2014. MIT License.
  *  
  *  http://github.com/therewasaguy/p5.sound
  *

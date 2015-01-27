@@ -34,22 +34,12 @@ function setup() {
   part.setBPM(80);
   part.loop();
 
-  ac = getAudioContext();
 }
-
-var ac, lastHit = 0;
-var greatestGap = 0;
-var expectedInterval = 0.1875;
 
 function playBass(params, time) {
   currentBassNote = params;
   osc.freq(midiToFreq(params), 0, time);
   env.play(osc, time);
-  var nextHit = ac.currentTime + time;
-  var gap = Math.abs(nextHit - lastHit) - expectedInterval;
-  greatestGap = Math.max(gap, greatestGap);
-  if (gap > 0.01) {console.log(gap)}
-  lastHit = nextHit;
 }
 
 function playSnare(params, time) {

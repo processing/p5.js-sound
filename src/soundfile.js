@@ -207,15 +207,21 @@ define(function (require) {
    * @param {Number} [startTime]        (optional) startTime in seconds
    * @param {Number} [endTime]          (optional) endTime in seconds
    */
-  p5.SoundFile.prototype.play = function(rate, amp, startTime, endTime) {
+  p5.SoundFile.prototype.play = function(time, rate, amp, startTime, endTime) {
     var now = p5sound.audiocontext.currentTime;
+    var time = time || 0;
+    if (time < 0) {
+      time = 0;
+    }
+    // var tFromNow = time + now;
+
     // TO DO: if already playing, create array of buffers for easy stop()
     if (this.buffer) {
 
       // handle restart playmode
       if (this.mode === 'restart' && this.buffer && this.source) {
         var now = p5sound.audiocontext.currentTime;
-        this.source.stop(now);
+        this.source.stop(time);
       }
 
       if (startTime) {
@@ -278,16 +284,16 @@ define(function (require) {
 
       // play the sound
       if (this.paused && this.wasUnpaused){
-        this.source.start(0, this.startTime, this.endTime);
+        this.source.start(time, this.pauseTime, this.endTime);
         // flag for whether to use pauseTime or startTime to get currentTime()
         // this.wasUnpaused = true;
       }
       else {
         this.wasUnpaused = false;
         this.pauseTime = 0;
-        this.source.start(0, this.startTime, this.endTime);
+        this.source.start(time, this.startTime, this.endTime);
       }
-      this.startSeconds = now;
+      this.startSeconds = time + now;
       this.playing = true;
       this.paused = false;
 
@@ -381,12 +387,15 @@ define(function (require) {
    *      background(0, 255, 0);
    *    }
    */
-  p5.SoundFile.prototype.pause = function() {
+  p5.SoundFile.prototype.pause = function(time) {
+    var now = p5sound.audiocontext.currentTime;
+    var time = time || 0;
+    var pTime = time + now;
+
     var keepLoop = this.looping;
     if (this.isPlaying() && this.buffer && this.source) {
       this.pauseTime = this.currentTime();
-      var now = p5sound.audiocontext.currentTime;
-      this.source.stop(now);
+      this.source.stop(pTime);
       this.paused = true;
       this.wasUnpaused = false;
       this.playing = false;
@@ -718,6 +727,7 @@ define(function (require) {
       var timeSinceStart = p5sound.audiocontext.currentTime - this.startSeconds + this.startTime + this.pauseTime;
       howLong = ( timeSinceStart * this.playbackRate ) % ( this.duration() * this.playbackRate);
         // howLong = ( (p5sound.audiocontext.currentTime - this.startSeconds + this.startTime) * this.source.playbackRate.value ) % this.duration();
+        console.log('1');
       return howLong;
     }
     else if (this.paused){
