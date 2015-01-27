@@ -1,6 +1,8 @@
 /**
- *  Create a sequence using a Part.
- *  Add two Phrases to the part, and tell the part to loop.
+ *  Create a sequence using a Part with callbacks that play back soundfiles.
+ *  The callback includes parameters (the value at that position in the Phrase array)
+ *  as well as time, which should be used to schedule playback with precision.
+ *  
  */
 
 var click, beatbox;
@@ -26,26 +28,15 @@ function setup() {
   part.addPhrase('kick', playKick, clickPhrase);
   part.addPhrase('snare', playSnare, bboxPhrase);
 
-  // // set tempo (Beats Per Minute) of the part and tell it to loop
+  // set tempo (Beats Per Minute) of the part and tell it to loop
   part.setBPM(80);
   part.loop();
 
-  ac = getAudioContext();
 }
-
-var ac, lastHit = 0;
-var greatestGap = 0;
-var expectedInterval = 0.1875;
 
 function playKick(params, time) {
   click.rate(params);
   click.play(time);
-  var nextHit = ac.currentTime + time;
-  var gap = Math.abs(nextHit - lastHit) - expectedInterval;
-  greatestGap = Math.max(gap, greatestGap);
-  if (gap > 0.01) {console.log(gap)}
-  lastHit = nextHit;
-
 }
 
 function playSnare(params, time) {
@@ -58,3 +49,7 @@ function draw() {
   background(255);
   fill(255, 0, 0);
 }
+
+// UI 
+var hDiv = 2;
+var wDiv = 16;
