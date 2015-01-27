@@ -296,6 +296,23 @@ define(function (require) {
     }
   };
 
+  /**
+   *  Get a phrase from this part, based on the name it was
+   *  given when it was created. Now you can modify its array.
+   *  
+   *  @method  replaceSequence
+   *  @param  {String} phraseName
+   *  @param  {Array} sequence  Array of values to pass into the callback
+   *                            at each step of the phrase.
+   */
+  p5.Part.prototype.replaceSequence = function(name, array) {
+    for (var i in this.phrases) {
+      if (this.phrases[i].name === name) {
+        this.phrases[i].sequence = array;
+      }
+    }
+  };
+
   p5.Part.prototype.incrementStep = function(time) {
     console.log(this.partStep);
     if (this.partStep < this.length-1) {
