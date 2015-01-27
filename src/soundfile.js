@@ -201,7 +201,7 @@ define(function (require) {
    * Play the p5.SoundFile
    *
    * @method play
-   * @param {Number} [time]            (optional) startTime in seconds from now.
+   * @param {Number} [startTime]            (optional) schedule playback to start (in seconds from now).
    * @param {Number} [rate]             (optional) playback rate
    * @param {Number} [amp]              (optional) amplitude (volume)
    *                                     of playback
@@ -363,6 +363,8 @@ define(function (require) {
    *  it will continue to loop after it is unpaused with .play().
    *
    *  @method pause
+   *  @param {Number} [startTime] (optional) schedule event to occur
+   *                               seconds from now
    *  @example
    *  <div><code>
    *  var soundFile;
@@ -410,10 +412,12 @@ define(function (require) {
    * playback rate, playback volume, loopStart, loopEnd.
    *
    * @method loop
-   * @param {Number} [rate]             (optional) playback rate
-   * @param {Number} [amp]              (optional) playback volume
-   * @param {Number} [loopStart]        (optional) startTime in seconds
-   * @param {Number} [loopEnd]          (optional) endTime in seconds
+   * @param {Number} [startTime] (optional) schedule event to occur
+   *                             seconds from now
+   * @param {Number} [rate]        (optional) playback rate
+   * @param {Number} [amp]         (optional) playback volume
+   * @param {Number} [cueLoopStart](optional) startTime in seconds
+   * @param {Number} [cueLoopEnd]  (optional) endTime in seconds
    */
   p5.SoundFile.prototype.loop = function(rate, amp, loopStart, loopEnd) {
     this.looping = true;
@@ -490,8 +494,10 @@ define(function (require) {
    * Stop soundfile playback.
    *
    * @method stop
+   * @param {Number} [startTime] (optional) schedule event to occur
+   *                             in seconds from now
    */
-  p5.SoundFile.prototype.stop = function() {
+  p5.SoundFile.prototype.stop = function(time) {
     if (this.mode == 'sustain') {
       this.stopAll();
       this.playing = false;
@@ -501,7 +507,8 @@ define(function (require) {
     }
     else if (this.buffer && this.source) {
       var now = p5sound.audiocontext.currentTime;
-      this.source.stop(now);
+      var t = time || 0;
+      this.source.stop(now + t);
       this.playing = false;
       this.pauseTime = 0;
       this.wasUnpaused = false;
