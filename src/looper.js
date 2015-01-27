@@ -314,7 +314,6 @@ define(function (require) {
   };
 
   p5.Part.prototype.incrementStep = function(time) {
-    console.log(this.partStep);
     if (this.partStep < this.length-1) {
       this.callback(time);
       this.partStep +=1;
