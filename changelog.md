@@ -1,3 +1,7 @@
+p5.sound.js v0.1.7 2014-01-26
+- p5.SoundFile.play() accepts timeFromNow as first parameter
+- Improvements to p5.Part / scheduling. Sequencing callbacks send a time, which should be used to schedule with precision.
+
 p5.sound.js v0.1.6 2014-12-26
 - amplitude modulation for p5.Noise and p5.SoundFile
 - updating to latest version of Tone (0.3.0)
