@@ -55,7 +55,7 @@ module.exports = function(grunt) {
           findNestedDependencies: true,
           include: ['src/app'],
           onBuildWrite: function( name, path, contents ) {
-            if (path.indexOf('node_modules') > 1) {
+            if (path.indexOf('node_modules/tone/') > -1) {
               return '/** Tone.js module by Yotam Mann, MIT License 2014  http://opensource.org/licenses/MIT **/\n' +
               require('amdclean').clean({
               'code': contents,
