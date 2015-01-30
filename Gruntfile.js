@@ -55,10 +55,13 @@ module.exports = function(grunt) {
           findNestedDependencies: true,
           include: ['src/app'],
           onBuildWrite: function( name, path, contents ) {
-            return require('amdclean').clean({
-              'code':contents,
+            if (path.indexOf('node_modules') > 1) {
+              return '/** Tone.js module by Yotam Mann, MIT License 2014  http://opensource.org/licenses/MIT **/\n' +
+              require('amdclean').clean({
+              'code': contents,
                 'escodegen': {
-                  'comment': true,
+                  'comment': false,
+                  'skipDirOptimize':true,
                   'format': {
                     'indent': {
                       'style': '  ',
@@ -67,6 +70,20 @@ module.exports = function(grunt) {
                   }
                 }
               });
+            } else {
+              return require('amdclean').clean({
+                'code':contents,
+                  'escodegen': {
+                    'comment': true,
+                    'format': {
+                      'indent': {
+                        'style': '  ',
+                        'adjustMultiLineComment': true
+                      }
+                    }
+                  }
+                });
+            }
           },
           optimize: 'none',
           out: 'lib/p5.sound.js',
@@ -122,33 +139,6 @@ module.exports = function(grunt) {
           }
         }
       },
-      yuidoc_theme: {
-        options: {
-          baseUrl: './docs/yuidoc-p5-theme-src/scripts/',
-          mainConfigFile: './docs/yuidoc-p5-theme-src/scripts/config.js',
-          name: 'main',
-          out: './docs/yuidoc-p5-theme/assets/js/reference.js',
-          optimize: 'none',
-          generateSourceMaps: true,
-          findNestedDependencies: true,
-          wrap: true,
-          paths: { 'jquery': 'empty:' }
-        }
-      }
-    },
-    yuidoc: {
-      compile: {
-        name: '<%= pkg.name %>',
-        description: '<%= pkg.description %>',
-        version: '<%= pkg.version %>',
-        url: '<%= pkg.homepage %>',
-        options: {
-          paths: ['src/', 'lib/addons/'],
-          //helpers: [],
-          themedir: 'docs/yuidoc-p5-theme/',
-          outdir: 'docs/reference/'
-        }
-      }
     }
   });
 
