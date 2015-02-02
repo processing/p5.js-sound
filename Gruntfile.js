@@ -111,8 +111,8 @@ module.exports = function(grunt) {
           },
           useStrict: true,
           wrap: {
-            start: '/*! p5.sound.js v<%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
-            end: ''
+            start: '/*! p5.sound.js v<%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n' + grunt.file.read('./fragments/before.frag'),
+            end: grunt.file.read('./fragments/after.frag')
           }
         }
       },
@@ -143,8 +143,8 @@ module.exports = function(grunt) {
           paths: '<%= requirejs.unmin.options.paths %>',
           useStrict: true,
           wrap: {
-            start: '/*! p5.sound.min.js v<%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
-            end: ''
+            start: '/*! p5.sound.min.js v<%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n' + grunt.file.read('./fragments/before.frag'),
+            end: grunt.file.read('./fragments/after.frag')
           }
         }
       },
