@@ -58,7 +58,7 @@ module.exports = function(grunt) {
             if (path.indexOf('node_modules/tone/') > -1) {
               return '/** Tone.js module by Yotam Mann, MIT License 2014  http://opensource.org/licenses/MIT **/\n' +
               require('amdclean').clean({
-              'code': contents,
+              'code': contents.replace(/console.log(.*);/g, ''),
                 'escodegen': {
                   'comment': false,
                   'skipDirOptimize':true,
@@ -122,12 +122,21 @@ module.exports = function(grunt) {
           findNestedDependencies: true,
           include: ['src/app'],
           onBuildWrite: function( name, path, contents ) {
-           return require('amdclean').clean({
-              'code':contents,
+          if (path.indexOf('node_modules/tone/') > -1) {
+            return require('amdclean').clean({
+              'code':contents.replace(/console.log(.*);/g, ''),
                'escodegen': {
                  'comment': false
                }
             });
+          } else {
+             return require('amdclean').clean({
+                'code':contents,
+                 'escodegen': {
+                   'comment': false
+                 }
+              });
+           }
           },
           optimize: 'uglify2',
           out: 'lib/p5.sound.min.js',
