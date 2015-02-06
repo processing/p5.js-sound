@@ -488,7 +488,7 @@ define(function (require) {
    *  its method <code>setType('square')</code>.
    *  See p5.Oscillator for methods.
    *
-   *  @method  p5.SawOsc
+   *  @method  p5.SqrOsc
    *  @param {[Number]} freq Set the frequency
    */
   p5.SqrOsc = function(freq) {
