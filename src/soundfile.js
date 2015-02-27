@@ -225,12 +225,28 @@ define(function (require) {
         this.source.stop(time);
       }
 
+      // make a new source
+      this.source = p5sound.audiocontext.createBufferSource();
+      this.source.buffer = this.buffer;
+
+      // if looping, will restart at original time
+      this.source.loop = this.looping;
+
+      // TO DO: allow jump without resetting the loop points.
+      //        This is not working:
+      // if (this.source.loop === true){
+      //   this.source.loopStart = this.startTime;
+      //   this.source.loopEnd = this.endTime;
+      // }
+
       if (startTime) {
         if (startTime >=0 && startTime < this.buffer.duration){
           this.startTime = startTime;
         } else {
           throw 'start time out of range';
         }
+      } else {
+        this.startTime = 0;
       }
 
       if (endTime) {
@@ -244,27 +260,11 @@ define(function (require) {
           this.endTime = this.buffer.duration;
         }
 
-      // make a new source
-      this.source = p5sound.audiocontext.createBufferSource();
-      this.source.buffer = this.buffer;
-      this.source.loop = this.looping;
-      if (this.source.loop === true){
-        this.source.loopStart = this.startTime;
-        this.source.loopEnd = this.endTime;
-      }
-      this.source.onended = function() {
-        // this was causing errors in Safari
-        // if (this.isPlaying()) {
-        //   this.playing = !this.playing;
-        //   var now = p5sound.audiocontext.currentTime;
-        //   this.stop(now);
-        //  }
-       };
-
       // firefox method of controlling gain without resetting volume
       if (!this.source.gain) {
         this.source.gain = p5sound.audiocontext.createGain();
         this.source.connect(this.source.gain);
+
         // set local amp if provided, otherwise 1
         var a = amp || 1;
         this.source.gain.gain.setValueAtTime(a, p5sound.audiocontext.currentTime);
@@ -406,7 +406,6 @@ define(function (require) {
     }
   };
 
-
   /**
    * Loop the p5.SoundFile. Accepts optional parameters to set the
    * playback rate, playback volume, loopStart, loopEnd.
@@ -419,9 +418,9 @@ define(function (require) {
    * @param {Number} [cueLoopStart](optional) startTime in seconds
    * @param {Number} [cueLoopEnd]  (optional) endTime in seconds
    */
-  p5.SoundFile.prototype.loop = function(rate, amp, loopStart, loopEnd) {
+  p5.SoundFile.prototype.loop = function(startTime, rate, amp, loopStart, loopEnd) {
     this.looping = true;
-    this.play(rate, amp, loopStart, loopEnd);
+    this.play(startTime, rate, amp, loopStart, loopEnd);
   };
 
   /**
@@ -523,9 +522,13 @@ define(function (require) {
   p5.SoundFile.prototype.stopAll = function() {
     if (this.buffer && this.source) {
       for (var i = 0; i < this.sources.length; i++){
-        if (this.sources[i] !== null){
+        if (typeof(this.sources[i]) != undefined){
           var now = p5sound.audiocontext.currentTime;
-          this.sources[i].stop(now);
+          try {
+            this.sources[i].stop(now);
+          } catch(e) {
+            // this was throwing errors only on Safari
+          }
         }
       }
     }
@@ -735,7 +738,6 @@ define(function (require) {
       var timeSinceStart = p5sound.audiocontext.currentTime - this.startSeconds + this.startTime + this.pauseTime;
       howLong = ( timeSinceStart * this.playbackRate ) % ( this.duration() * this.playbackRate);
         // howLong = ( (p5sound.audiocontext.currentTime - this.startSeconds + this.startTime) * this.source.playbackRate.value ) % this.duration();
-        console.log('1');
       return howLong;
     }
     else if (this.paused){
@@ -756,25 +758,23 @@ define(function (require) {
    * @param {Number} endTime    endTime of the soundFile in seconds.
    */
   p5.SoundFile.prototype.jump = function(cueTime, endTime) {
+    var now = p5sound.audiocontext.currentTime;
+
     if (cueTime<0 || cueTime > this.buffer.duration) {
       throw 'jump time out of range';
     }
     if (endTime<cueTime || endTime > this.buffer.duration) {
       throw 'end time out of range';
     }
-    this.startTime = cueTime || 0;
-    if (endTime) {
-      this.endTime = endTime;
-    } else {
-      this.endTime = this.buffer.duration;
+
+    var cTime = cueTime || 0;
+    var eTime = endTime || this.buffer.duration;
+
+    if (this.isPlaying()){
+      this.stop(now);
     }
 
-    // this.endTime = endTime || this.buffer.duration;
-    if (this.isPlaying()){
-      var now = p5sound.audiocontext.currentTime;
-      this.stop(now);
-      this.play(cueTime, this.endTime);
-    }
+    this.play(now + 0.0000001, this.playbackRate, this.output.gain.value, cTime, eTime);
   };
 
   /**
