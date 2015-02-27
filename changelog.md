@@ -1,4 +1,7 @@
-p5.sound.js v0.1.7 2014-01-26
+p5.sound.js v0.1.8 2015-02-27
+- p5.SoundFile.jump() does not impact the start/end time for future .play() or .loop()
+
+p5.sound.js v0.1.7 2015-01-26
 - p5.SoundFile.play() accepts timeFromNow as first parameter
 - Improvements to p5.Part / scheduling. Sequencing callbacks send a time, which should be used to schedule with precision.
 
