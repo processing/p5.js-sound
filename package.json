@@ -4,7 +4,7 @@
     "type": "git",
     "url": "https://github.com/therewasaguy/p5.sound.js.git"
   },
-  "version": "0.1.7",
+  "version": "0.1.8",
   "licenses": [
       {
         "type": "MIT"
@@ -23,6 +23,6 @@
     "almond": "~0.2.7",
     "amdclean": "~2.0",
     "grunt-contrib-sass": "~0.7.2",
-    "tone": "*"
+    "tone": "~0.3"
   }
 }
