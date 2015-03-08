@@ -34,13 +34,13 @@ Here is an overview of what p5.sound offers:
 
 Latest Version
 ========
-[This version](https://github.com/therewasaguy/p5.sound/blob/master/lib) of the library is updated daily. A [stable version](http://p5js.org/download/) comes with p5.js. Here's the [Change Log](https://github.com/therewasaguy/p5.sound/blob/master/changelog.md).
+[This version](https://github.com/therewasaguy/p5.sound/blob/master/lib) of the library is updated most frequently. A [stable version](http://p5js.org/download/) comes with p5.js. Here's the [Change Log](https://github.com/therewasaguy/p5.sound/blob/master/changelog.md).
 
 Contribute
 ========
 If you have contributions, feedback, bug reports, or ideas to share, get involved! Email hello@jasonsigal.cc, or [join the discussion on github](https://github.com/therewasaguy/p5.sound/issues). There is plenty to do, check out the [to do list](https://github.com/therewasaguy/p5.sound/blob/master/todo.md).
 
-Before contributing, you will need to install npm and download node modules. Edit the /src files, and then build the lib files by calling ```grunt``` from the command line. Check out the [p5.js setup instructions](https://github.com/lmccart/p5.js/wiki/Development) for more details.
+Before contributing, you will need to install [node.js](https://nodejs.org/) and run ```npm install``` from the command line. This downloads the node modules that we use to build the p5.sound.js file from the source files in the src folder, as well as modules used for running tests and other tasks. From there, simply edit the module you want to edit by finding its file in the ```/src``` folder, and then build the lib files by calling ```grunt``` from the command line. Check out the [p5.js setup instructions](https://github.com/lmccart/p5.js/wiki/Development) for more details.
 
 Dependencies
 =========
@@ -57,4 +57,4 @@ References and Inspiration
 - [Chris Lowis](http://blog.chrislowis.co.uk/)
 - [Kevin Ennis](https://github.com/kevincennis)
 - [Wilm Thoben's Sound library for Processing](https://github.com/processing/processing/tree/master/java/libraries/sound)
-- [Web Audio API](www.w3.org/TR/webaudio/)
+- [Web Audio API](http://webaudio.github.io/web-audio-api/)
