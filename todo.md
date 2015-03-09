@@ -62,3 +62,5 @@ p5.sound to do list
 
 
 - Improve documentation and examples when you see anything that is unclear.
+
+- Custom callbacks for error in getUserMedia when it is not available (i.e. in Safari)
