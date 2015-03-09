@@ -64,3 +64,7 @@ p5.sound to do list
 - Improve documentation and examples when you see anything that is unclear.
 
 - Custom callbacks for error in getUserMedia when it is not available (i.e. in Safari)
+
+- New method of keeping playback time for soundfile
+
+- Documentation: fix [pause page](http://p5js.org/reference/#/p5.SoundFile/pause) and make sure there are no looping sounds in the reference examples.
