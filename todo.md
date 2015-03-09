@@ -68,3 +68,5 @@ p5.sound to do list
 - New method of keeping playback time for soundfile
 
 - Documentation: fix [pause page](http://p5js.org/reference/#/p5.SoundFile/pause) and make sure there are no looping sounds in the reference examples.
+
+- Update p5.FFT API to reflect [changes in the Processing Sound FFT API](https://github.com/processing/processing-docs/issues/221)
