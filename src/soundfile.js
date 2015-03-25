@@ -171,7 +171,7 @@ define(function (require) {
     request.send();
   };
 
-
+  // TO DO: use this method to create a loading bar that shows progress during file upload/decode.
   p5.SoundFile.prototype._updateProgress = function(evt) {
     if (evt.lengthComputable) {
       var percentComplete = Math.log(evt.loaded / evt.total * 9.9);
@@ -260,7 +260,7 @@ define(function (require) {
           this.endTime = this.buffer.duration;
         }
 
-      // firefox method of controlling gain without resetting volume
+      // method of controlling gain for individual bufferSourceNodes, without resetting overall soundfile volume
       if (!this.source.gain) {
         this.source.gain = p5sound.audiocontext.createGain();
         this.source.connect(this.source.gain);
@@ -270,11 +270,7 @@ define(function (require) {
         this.source.gain.gain.setValueAtTime(a, p5sound.audiocontext.currentTime);
         this.source.gain.connect(this.output); 
       }
-      // chrome method of controlling gain without resetting volume
-      else {
-        this.source.gain.value = amp || 1;
-        this.source.connect(this.output); 
-      }
+
       this.source.playbackRate.cancelScheduledValues(now);
       rate = rate || Math.abs(this.playbackRate);
       this.source.playbackRate.setValueAtTime(rate, now);
@@ -298,8 +294,21 @@ define(function (require) {
       this.playing = true;
       this.paused = false;
 
-      // add the source to sources array
+      // add source to sources array, which is used in stopAll()
       this.sources.push(this.source);
+
+      // deleted this.source from the sources array when it is done playing
+      var self = this;
+      this.source.onended = function(e) {
+        // disconnect the AudioBufferSourceNode
+        self.sources[0].disconnect();
+        self.sources[0].gain.disconnect();
+        self.sources[0].gain = null;
+        self.sources[0] = null;
+
+        // remove first AudioBufferSourceNode from sources array and shift
+        self.sources.shift();
+      }
     }
     // If soundFile hasn't loaded the buffer yet, throw an error
     else {
