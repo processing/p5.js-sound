@@ -398,6 +398,8 @@ define(function (require) {
    *      soundFile.play();
    *      background(0, 255, 0);
    *    }
+   *  </code>
+   *  </div>
    */
   p5.SoundFile.prototype.pause = function(time) {
     var now = p5sound.audiocontext.currentTime;
