@@ -13,6 +13,9 @@ define(function (require) {
   // to save resources if/when it is retriggered
   var sourceToClear = null;
 
+  // set to true if attack is set, then false on release
+  var wasTriggered = false;
+
   /**
    *  <p>Envelopes are pre-defined amplitude distribution over time. 
    *  The p5.Env accepts up to four time/level pairs, where time
@@ -100,8 +103,6 @@ define(function (require) {
 
     this.control.connect(this.output);
 
-    this.timeoutID = null; // store clearThing timeouts
-
     this.connection = null; // store connection
 
     //array of math operation signal chaining
@@ -139,10 +140,19 @@ define(function (require) {
   };
 
   /**
+   *  Assign a parameter to be controlled by this envelope.
+   *  If a p5.Sound object is given, then the p5.Env will control its
+   *  output gain. If multiple inputs are provided, the env will
+   *  control all of them.
    *  
+   *  @method  setInput
+   *  @param  {Object} unit         A p5.sound object or
+   *                                Web Audio Param.
    */
   p5.Env.prototype.setInput = function(unit){
-    this.connect(unit);
+    for (var i = 0; i<arguments.length; i++) {
+      this.connect(arguments[i]);
+    }
   };
 
   p5.Env.prototype.ctrl = function(unit){
@@ -165,11 +175,7 @@ define(function (require) {
   p5.Env.prototype.play = function(unit, secondsFromNow){
     var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
-    var t = now + tFromNow + 0.0001;
-
-    if (typeof(this.timeoutID) === 'number') {
-      window.clearTimeout(this.timeoutID);
-    }
+    var t = now + tFromNow;
 
     if (unit) {
       if (this.connection !== unit) {
@@ -177,8 +183,9 @@ define(function (require) {
       }
     }
 
-    this.control.cancelScheduledValues(t - 0.0001);
-    this.control.linearRampToValueAtTime(0, t -.00005);
+    var currentVal =  this.control.getValue(); 
+    this.control.cancelScheduledValues(t);
+    this.control.linearRampToValueAtTime(currentVal, t);
 
     // attack
     this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
@@ -206,20 +213,17 @@ define(function (require) {
    *  @param  {Number} secondsFromNow time from now (in seconds)
    */
   p5.Env.prototype.triggerAttack = function(unit, secondsFromNow) {
-
-
     var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
-    var t = now + tFromNow + 0.0001;
+    var t = now + tFromNow;
     this.lastAttack = t;
+    wasTriggered = true;
 
-    if (typeof(this.timeoutID) === 'number') {
-      window.clearTimeout(this.timeoutID);
-    }
-
-    var currentVal =  this.control.getValue(); // not working on Firefox, always returns 0
-    this.control.cancelScheduledValues(t - 0.0001);
-    this.control.linearRampToValueAtTime(currentVal, t - 0.00005);
+    // we should set current value, but this is not working on Firefox
+    var currentVal =  this.control.getValue(); 
+    console.log(currentVal);
+    this.control.cancelScheduledValues(t);
+    this.control.linearRampToValueAtTime(currentVal, t);
 
     if (unit) {
       if (this.connection !== unit) {
@@ -248,9 +252,15 @@ define(function (require) {
    *  @param  {Number} secondsFromNow time to trigger the release
    */
   p5.Env.prototype.triggerRelease = function(unit, secondsFromNow) {
+
+    // only trigger a release if an attack was triggered
+    if (!wasTriggered) {
+      return;
+    }
+
     var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
-    var t = now + tFromNow + 0.00001;
+    var t = now + tFromNow;
     var relTime;
 
     if (unit) {
@@ -259,7 +269,7 @@ define(function (require) {
       }
     }
 
-    this.control.cancelScheduledValues(t - 0.00001);
+    this.control.cancelScheduledValues(t);
 
     // ideally would get & set currentValue here,
     // but this.control._scalar.gain.value not working in firefox
@@ -299,16 +309,15 @@ define(function (require) {
     if (this.connection && this.connection.hasOwnProperty('oscillator')) {
       sourceToClear = this.connection.oscillator;
       sourceToClear.stop(clearTime + .01);
-      // this.timeoutID = window.setTimeout( clearThing, clearTime );
-      // this.connection.start();
     } else if (this.connect && this.connection.hasOwnProperty('source')){
       sourceToClear = this.connection.source;
       sourceToClear.stop(clearTime + .01);
     }
+
+    wasTriggered = false;
   };
 
   p5.Env.prototype.connect = function(unit){
-    // this.disconnect();
     this.connection = unit;
 
     // assume we're talking about output gain

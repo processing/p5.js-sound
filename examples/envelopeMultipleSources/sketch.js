@@ -53,8 +53,10 @@ function setup(){
 
   env = new p5.Env(attackTime, attackLevel, decayTime, decayLevel, sustainTime, sustainLevel, releaseTime);
 
-  noise.amp(env);
-  triOsc.amp(env);
+  // noise.amp(env);
+  // triOsc.amp(env);
+
+  env.setInput(noise, triOsc);
   fill(0);
 
   a = new p5.Amplitude();
