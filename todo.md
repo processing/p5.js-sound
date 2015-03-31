@@ -75,3 +75,5 @@ p5.sound to do list
 - Update p5.FFT API to reflect [changes in the Processing Sound FFT API](https://github.com/processing/processing-docs/issues/221)
 
 - Add option to p5.FFT that returns data in decibels (from Float32Array)
+
+- Envelopes should be able to connect to multiple
