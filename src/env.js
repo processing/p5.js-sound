@@ -140,8 +140,6 @@ define(function (require) {
 
   /**
    *  
-   *  @param  {Object} input       A p5.sound object or
-   *                                Web Audio Param
    */
   p5.Env.prototype.setInput = function(unit){
     this.connect(unit);
@@ -310,7 +308,7 @@ define(function (require) {
   };
 
   p5.Env.prototype.connect = function(unit){
-    this.disconnect();
+    // this.disconnect();
     this.connection = unit;
 
     // assume we're talking about output gain
