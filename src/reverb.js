@@ -323,7 +323,7 @@ define(function (require) {
    */
   p5.prototype.createConvolver = function(path, callback){
     // if loading locally without a server
-    if (window.location.origin.indexOf('file://') > -1) {
+    if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined') {
       alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
     var cReverb = new p5.Convolver(path, callback);
@@ -420,7 +420,7 @@ define(function (require) {
    */
   p5.Convolver.prototype.addImpulse = function(path, callback){
     // if loading locally without a server
-    if (window.location.origin.indexOf('file://') > -1) {
+    if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined') {
       alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
     this._loadBuffer(path, callback);
@@ -437,7 +437,7 @@ define(function (require) {
    */
   p5.Convolver.prototype.resetImpulse = function(path, callback){
     // if loading locally without a server
-    if (window.location.origin.indexOf('file://') > -1) {
+    if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined') {
       alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
     this.impulses = [];

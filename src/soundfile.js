@@ -30,7 +30,7 @@ define(function (require) {
    *  @example 
    *  <div><code>
    *  function preload() {
-   *    mySound = loadSound('assets/drum.mp3');
+   *    mySound = loadSound('assets/doorbell.mp3');
    *  }
    *
    *  function setup() {
@@ -122,17 +122,17 @@ define(function (require) {
    *  @example 
    *  <div><code>
    *  function preload() {
-   *   mySound = loadSound('assets/drum.mp3');
+   *   mySound = loadSound('assets/doorbell.mp3');
    *  }
    *
    *  function setup() {
-   *    mySound.loop();
+   *    mySound.play();
    *  }
    *  </code></div>
    */
   p5.prototype.loadSound = function(path, callback, whileLoading){
     // if loading locally without a server
-    if (window.location.origin.indexOf('file://') > -1) {
+    if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined' ) {
       alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
 
