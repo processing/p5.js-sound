@@ -75,3 +75,6 @@ p5.sound to do list
 - Update p5.FFT API to reflect [changes in the Processing Sound FFT API](https://github.com/processing/processing-docs/issues/221)
 
 - Add option to p5.FFT that returns data in decibels (from Float32Array)
+
+- p5.Env should be able to connect to multiple
+- p5.Env takes no action on triggerRelease unless currently playing
