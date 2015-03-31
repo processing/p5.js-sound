@@ -76,4 +76,5 @@ p5.sound to do list
 
 - Add option to p5.FFT that returns data in decibels (from Float32Array)
 
-- Envelopes should be able to connect to multiple
+- p5.Env should be able to connect to multiple
+- p5.Env takes no action on triggerRelease unless currently playing
