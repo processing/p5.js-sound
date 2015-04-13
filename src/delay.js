@@ -32,7 +32,7 @@ define(function (require) {
    *    
    *    // play the noise with an envelope,
    *    // a series of fades ( time / value pairs )
-   *    env = new p5.Env(.01, 1, .2, .1);
+   *    env = new p5.Env(.01, 0.2, .2, .1);
    *    env.play(noise);
    *  }
    *  </code></div>

@@ -400,8 +400,10 @@ define(function (require) {
   p5.Env.prototype.dispose = function() {
     var now = p5sound.audiocontext.currentTime;
     this.disconnect();
-    this.control.dispose();
-    this.control = null;
+    try{
+      this.control.dispose();
+      this.control = null;
+    } catch(e) {}
     for (var i = 1; i < this.mathOps.length; i++) {
       mathOps[i].dispose();
     }
