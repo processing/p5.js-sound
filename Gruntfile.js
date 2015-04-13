@@ -16,6 +16,20 @@ module.exports = function(grunt) {
         src: ['test/unit/**/*.js']
       }
     },
+    yuidoc: {
+      compile: {
+        name: '<%= pkg.name %>',
+        description: '<%= pkg.description %>',
+        version: '<%= pkg.version %>',
+        url: '<%= pkg.homepage %>',
+        options: {
+          paths: ['src/'],
+          //helpers: [],
+          themedir: 'docs/yuidoc-p5-theme/',
+          outdir: 'docs/reference/'
+        }
+      }
+    },
     watch: {
       // p5 dist
       main: {

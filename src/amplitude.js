@@ -22,7 +22,7 @@ define(function (require) {
    *  }
    *  function setup() { 
    *    amplitude = new p5.Amplitude();
-   *    sound.loop();
+   *    sound.play();
    *  }
    *  function draw() {
    *    background(0);
@@ -30,9 +30,6 @@ define(function (require) {
    *    var level = amplitude.getLevel();
    *    var size = map(level, 0, 1, 0, 200);
    *    ellipse(width/2, height/2, size, size);
-   *  }
-   *  function mouseClicked(){
-   *    sound.stop();
    *  }
    *  </code></div>
    */
@@ -91,8 +88,8 @@ define(function (require) {
    *  }
    *  function setup(){
    *    amplitude = new p5.Amplitude();
-   *    sound1.loop();
-   *    sound2.loop();
+   *    sound1.play();
+   *    sound2.play();
    *    amplitude.setInput(sound2);
    *  }
    *  function draw() {
@@ -203,7 +200,7 @@ define(function (require) {
    *  }
    *  function setup() { 
    *    amplitude = new p5.Amplitude();
-   *    sound.loop();
+   *    sound.play();
    *  }
    *  function draw() {
    *    background(0);

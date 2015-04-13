@@ -34,7 +34,7 @@ define(function (require) {
    *  }
    *
    *  function setup() {
-   *    mySound.play();
+   *    mySound.play(0, 0.2, 0.2);
    *  }
    * 
    * </code></div>
