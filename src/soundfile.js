@@ -5,6 +5,8 @@ define(function (require) {
   require('sndcore');
   var p5sound = require('master');
 
+  var looping = false;
+
   /**
    *  <p>SoundFile object with a path to a file.</p>
    *  
@@ -214,7 +216,8 @@ define(function (require) {
     if (time < 0) {
       time = 0;
     }
-    // var tFromNow = time + now;
+
+    time = time + now;
 
     // TO DO: if already playing, create array of buffers for easy stop()
     if (this.buffer) {
@@ -228,9 +231,6 @@ define(function (require) {
       // make a new source
       this.source = p5sound.audiocontext.createBufferSource();
       this.source.buffer = this.buffer;
-
-      // if looping, will restart at original time
-      this.source.loop = this.looping;
 
       // TO DO: allow jump without resetting the loop points.
       //        This is not working:
@@ -314,6 +314,10 @@ define(function (require) {
     else {
       throw 'not ready to play file, buffer has yet to load. Try preload()';
     }
+
+    // if looping, will restart at original time
+    this.source.loop = looping;
+
   };
 
 
@@ -406,7 +410,6 @@ define(function (require) {
     var time = time || 0;
     var pTime = time + now;
 
-    var keepLoop = this.looping;
     if (this.isPlaying() && this.buffer && this.source) {
       this.pauseTime = this.currentTime();
       this.source.stop(pTime);
@@ -430,7 +433,7 @@ define(function (require) {
    * @param {Number} [cueLoopEnd]  (optional) endTime in seconds
    */
   p5.SoundFile.prototype.loop = function(startTime, rate, amp, loopStart, loopEnd) {
-    this.looping = true;
+    looping = true;
     this.play(startTime, rate, amp, loopStart, loopEnd);
   };
 
@@ -443,16 +446,16 @@ define(function (require) {
    */
   p5.SoundFile.prototype.setLoop = function(bool) {
     if (bool === true) {
-      this.looping = true;
+      looping = true;
     }
     else if (bool === false) {
-      this.looping = false;
+      looping = false;
     }
     else {
       throw 'Error: setLoop accepts either true or false';
     }
     if (this.source) {
-      this.source.loop = this.looping;
+      this.source.loop = looping;
     }
   };
 
@@ -465,7 +468,7 @@ define(function (require) {
     if (!this.source) {
       return false;
     }
-    if (this.looping === true && this.isPlaying() === true) {
+    if (looping === true && this.isPlaying() === true) {
       return true;
     }
     return false;
