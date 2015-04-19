@@ -40,7 +40,7 @@ define(function (require) {
 
     // set audio context
     this.audiocontext = p5sound.audiocontext;
-    this.processor = this.audiocontext.createScriptProcessor(this.bufferSize);
+    this.processor = this.audiocontext.createScriptProcessor(this.bufferSize, 2, 1);
 
     // for connections
     this.input = this.processor;
@@ -53,10 +53,15 @@ define(function (require) {
     // the variables to return
     this.volume = 0;
     this.average = 0;
+
+    this.stereoVol = [0,0];
+    this.stereoAvg = [0,0];
+    this.stereoVolNorm = [0,0];
+
     this.volMax = 0.001;
     this.normalize = false;
 
-    this.processor.onaudioprocess = this.volumeAudioProcess.bind(this);
+    this.processor.onaudioprocess = this._audioProcess.bind(this);
 
 
     this.processor.connect(this.output);
@@ -152,39 +157,54 @@ define(function (require) {
     this.output.disconnect();
   };
 
-  // Should this be a private function?
   // TO DO make this stereo / dependent on # of audio channels
-  p5.Amplitude.prototype.volumeAudioProcess = function(event) {
-    // return result
-    var inputBuffer = event.inputBuffer.getChannelData(0);
-    var bufLength = inputBuffer.length;
-    var total = 0;
-    var sum = 0;
-    var x;
+  p5.Amplitude.prototype._audioProcess = function(event) {
 
-    for (var i = 0; i < bufLength; i++) {
-      x = inputBuffer[i];
-      if (this.normalize){
-        total += Math.max(Math.min(x/this.volMax, 1), -1);
-        sum += Math.max(Math.min(x/this.volMax, 1), -1) * Math.max(Math.min(x/this.volMax, 1), -1);
+    for (var channel = 0; channel < event.inputBuffer.numberOfChannels; channel++) {
+      var inputBuffer = event.inputBuffer.getChannelData(channel);
+      var bufLength = inputBuffer.length;
+
+      var total = 0;
+      var sum = 0;
+      var x;
+
+      for (var i = 0; i < bufLength; i++) {
+        x = inputBuffer[i];
+        if (this.normalize){
+          total += Math.max(Math.min(x/this.volMax, 1), -1);
+          sum += Math.max(Math.min(x/this.volMax, 1), -1) * Math.max(Math.min(x/this.volMax, 1), -1);
+        }
+        else {
+          total += x;
+          sum += x * x;
+        }
       }
-      else {
-        total += x;
-        sum += x * x;
-      }
+      var average = total/ bufLength;
+
+      // ... then take the square root of the sum.
+      var rms = Math.sqrt(sum / bufLength);
+
+      this.stereoVol[channel] = Math.max(rms, this.stereoVol[channel] * this.smoothing);
+      this.stereoAvg[channel] = Math.max(average, this.stereoVol[channel] * this.smoothing);
+      this.volMax = Math.max(this.stereoVol[channel], this.volMax);
     }
 
-    var average = total/ bufLength;
+    // add volume from all channels together
+    var self = this;
+    var volSum = this.stereoVol.reduce(function(previousValue, currentValue, index) {
+      self.stereoVolNorm[index - 1] = Math.max(Math.min(self.stereoVol[index - 1]/self.volMax, 1), 0);
+      self.stereoVolNorm[index] = Math.max(Math.min(self.stereoVol[index]/self.volMax, 1), 0);
 
-    // ... then take the square root of the sum.
-    var rms = Math.sqrt(sum / bufLength);
+      return previousValue + currentValue;
+    });
 
-    // this.avgVol = Math.max(average, this.volume*this.smoothing);
-    this.volume = Math.max(rms, this.volume*this.smoothing);
-    this.volMax=Math.max(this.volume, this.volMax);
+    // volume is average of channels
+    this.volume = volSum / this.stereoVol.length;
 
-    // normalized values
+    // normalized value
     this.volNorm = Math.max(Math.min(this.volume/this.volMax, 1), 0);
+
+
   };
 
   /**
@@ -192,6 +212,7 @@ define(function (require) {
    *  For continuous readings, run in the draw loop.
    *
    *  @method getLevel
+   *  @property {Number} [channel] Optionally return only channel 0 (left) or 1 (right)
    *  @return {Number}       Amplitude as a number between 0.0 and 1.0
    *  @example
    *  <div><code>
@@ -214,8 +235,15 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Amplitude.prototype.getLevel = function() {
-    if (this.normalize) {
+  p5.Amplitude.prototype.getLevel = function(channel) {
+    if (typeof(channel) !== 'undefined') {
+      if (this.normalize) {
+        return this.stereoVolNorm[channel];
+      } else {
+        return this.stereoVol[channel];
+      }
+    }
+    else if (this.normalize) {
       return this.volNorm;
     }
     else {
