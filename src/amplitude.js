@@ -54,9 +54,9 @@ define(function (require) {
     this.volume = 0;
     this.average = 0;
 
-    this.stereoVol = [0,0];
-    this.stereoAvg = [0,0];
-    this.stereoVolNorm = [0,0];
+    this.stereoVol = [0, 0];
+    this.stereoAvg = [0, 0];
+    this.stereoVolNorm = [0, 0];
 
     this.volMax = 0.001;
     this.normalize = false;
