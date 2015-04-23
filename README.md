@@ -38,9 +38,13 @@ Latest Version
 
 Contribute
 ========
-If you have contributions, feedback, bug reports, or ideas to share, get involved! Email hello@jasonsigal.cc, or [join the discussion on github](https://github.com/therewasaguy/p5.sound/issues). There is plenty to do, check out the [to do list](https://github.com/therewasaguy/p5.sound/blob/master/todo.md).
+If you have a question, you can email hello@jasonsigal.cc.
 
-Before contributing, you will need to install [node.js](https://nodejs.org/) and run ```npm install``` from the command line. This downloads the node modules that we use to build the p5.sound.js file from the source files in the src folder, as well as modules used for running tests and other tasks. From there, simply edit the module you want to edit by finding its file in the ```/src``` folder, and then build the lib files by calling ```grunt``` from the command line. Check out the [p5.js setup instructions](https://github.com/lmccart/p5.js/wiki/Development) for more details.
+If it's a bug that has to do with the library itself, please look through the [Issues](https://github.com/therewasaguy/p5.sound/issues) to see if anyone is working on it already. If not, you can create a new issue.
+
+This is an open source project, we have an exciting [to do list](https://github.com/therewasaguy/p5.sound/blob/master/todo.md), and you are invited to help!
+
+[Here's a guide](https://github.com/processing/p5.js-sound/wiki/Contribute) to getting started as a contributor.
 
 Dependencies
 =========
