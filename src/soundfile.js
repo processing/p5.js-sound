@@ -300,15 +300,7 @@ define(function (require) {
       this.bufferSourceNode.onended = function(e) {
         var theNode = this;
         setTimeout( function(){
-          // self.bufferSourceNodes[theNode._arrayIndex].gain.disconnect();
-          // self.bufferSourceNodes[theNode._arrayIndex].gain = null;
           self.bufferSourceNodes.splice(theNode._arrayIndex, 1);
-          // try {
-          //   self.bufferSourceNodes[theNode._arrayIndex].disconnect();
-          // } catch(e) {throw 'cant disconnect index ' + theNode._arrayIndex}
-          // try {
-          //   self.bufferSourceNodes[theNode._arrayIndex].gain.disconnect();
-          // } catch(e) {throw 'cant disconnect gain node'}
         }, 1);
       }
     }
@@ -746,21 +738,7 @@ define(function (require) {
    * @return {Number}   currentTime of the soundFile in seconds.
    */
   p5.SoundFile.prototype.currentTime = function() {
-    // TO DO --> make reverse() flip these values appropriately ?
-
-    // var howLong;
-    // if (this.isPlaying()) {
-    //   var timeSinceStart = p5sound.audiocontext.currentTime - this.startSeconds + this.startTime + this.pauseTime;
-    //   howLong = ( timeSinceStart * this.playbackRate ) % ( this.duration() * this.playbackRate);
-    //     // howLong = ( (p5sound.audiocontext.currentTime - this.startSeconds + this.startTime) * this.bufferSourceNode.playbackRate.value ) % this.duration();
-    //   return howLong;
-    // }
-    // else if (this.paused){
-    //   return this.pauseTime;
-    // }
-    // else {
-    //   return this.startTime;
-    // }
+    // TO DO --> make reverse() flip these values appropriately
     return lastPos / ac.sampleRate;
   };
 
