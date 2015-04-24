@@ -4,14 +4,6 @@ define(function (require) {
 
   require('sndcore');
   var p5sound = require('master');
-
-  var looping = false;
-  var playing = false;
-  var paused = false;
-
-  //  position of the most recently played sample
-  var lastPos = 0;
-  var counterNode, _scopeNode;
   var ac = p5sound.audiocontext;
 
   /**
@@ -50,6 +42,16 @@ define(function (require) {
    */
   p5.SoundFile = function(paths, onload, whileLoading) {
     var path = p5.prototype._checkFileFormats(paths);
+
+    this._looping = false;
+    this._playing = false;
+    this._paused = false;
+    this._pauseTime = 0;
+
+    //  position of the most recently played sample
+    this._lastPos = 0;
+    this._counterNode;
+    this._scopeNode;
 
     // player variables
     this.url = path;
@@ -225,25 +227,20 @@ define(function (require) {
     // TO DO: if already playing, create array of buffers for easy stop()
     if (this.buffer) {
 
+      // reset the pause time (if it was paused)
+      this._pauseTime = 0;
+
       // handle restart playmode
       if (this.mode === 'restart' && this.buffer && this.bufferSourceNode) {
         var now = p5sound.audiocontext.currentTime;
         this.bufferSourceNode.stop(time);
-        counterNode.stop(time);
+        this._counterNode.stop(time);
       }
 
       // make a new source and counter. They are automatically assigned playbackRate and buffer
       this.bufferSourceNode = this._initSourceNode();
-      counterNode = this._initCounterNode();
+      this._counterNode = this._initCounterNode();
 
-      // TO DO: allow jump without resetting the loop points.
-      //        This is not working:
-      // if (this.bufferSourceNode.loop === true){
-      //   this.bufferSourceNode.loopStart = this.startTime;
-      //   this.bufferSourceNode.loopEnd = this.endTime;
-      // }
-
-      // parse and set start / end time
       if (_cueStart) {
         if (_cueStart >=0 && _cueStart < this.buffer.duration){
           // this.startTime = cueStart;
@@ -279,18 +276,18 @@ define(function (require) {
 
 
       // if it was paused, play at the pause position
-      if (paused){
+      if (this._paused){
         this.bufferSourceNode.start(time, this.pauseTime, cueEnd);
-        counterNode.start(time, this.pauseTime, cueEnd);
+        this._counterNode.start(time, this.pauseTime, cueEnd);
       }
       else {
         this.pauseTime = 0;
         this.bufferSourceNode.start(time, cueStart, cueEnd);
-        counterNode.start(time, this.pauseTime, cueEnd);
+        this._counterNode.start(time, this.pauseTime, cueEnd);
       }
 
-      playing = true;
-      paused = false;
+      this._playing = true;
+      this._paused = false;
 
       // add source to sources array, which is used in stopAll()
       this.bufferSourceNodes.push(this.bufferSourceNode);
@@ -310,8 +307,16 @@ define(function (require) {
     }
 
     // if looping, will restart at original time
-    this.bufferSourceNode.loop = looping;
-    counterNode.loop = looping;
+    this.bufferSourceNode.loop = this._looping;
+    this._counterNode.loop = this._looping;
+
+    if (this._looping === true){
+      this.bufferSourceNode.loopStart = cueStart;
+      this.bufferSourceNode.loopEnd = cueEnd;
+      this._counterNode.loopStart = cueStart;
+      this._counterNode.loopEnd = cueEnd;
+
+    }
   };
 
 
@@ -407,10 +412,14 @@ define(function (require) {
     if (this.isPlaying() && this.buffer && this.bufferSourceNode) {
       this.pauseTime = this.currentTime();
       this.bufferSourceNode.stop(pTime);
-      counterNode.stop(pTime);
-      paused = true;
-      playing = false;
+      this._counterNode.stop(pTime);
+      this._paused = true;
+      this._playing = false;
+
+      this._pauseTime = this.currentTime();
       // TO DO: make sure play() still starts from orig start position
+    } else {
+      this._pauseTime = 0;
     }
   };
 
@@ -427,7 +436,7 @@ define(function (require) {
    * @param {Number} [cueLoopEnd]  (optional) endTime in seconds
    */
   p5.SoundFile.prototype.loop = function(startTime, rate, amp, loopStart, loopEnd) {
-    looping = true;
+    this._looping = true;
     this.play(startTime, rate, amp, loopStart, loopEnd);
   };
 
@@ -440,17 +449,17 @@ define(function (require) {
    */
   p5.SoundFile.prototype.setLoop = function(bool) {
     if (bool === true) {
-      looping = true;
+      this._looping = true;
     }
     else if (bool === false) {
-      looping = false;
+      this._looping = false;
     }
     else {
       throw 'Error: setLoop accepts either true or false';
     }
     if (this.bufferSourceNode) {
-      this.bufferSourceNode.loop = looping;
-      counterNode.loop = looping;
+      this.bufferSourceNode.loop = this._looping;
+      this._counterNode.loop = this._looping;
     }
   };
 
@@ -463,7 +472,7 @@ define(function (require) {
     if (!this.bufferSourceNode) {
       return false;
     }
-    if (looping === true && this.isPlaying() === true) {
+    if (this._looping === true && this.isPlaying() === true) {
       return true;
     }
     return false;
@@ -477,7 +486,7 @@ define(function (require) {
    *  @return {Boolean}
    */
   p5.SoundFile.prototype.isPlaying = function() {
-    return playing;
+    return this._playing;
   };
 
   /**
@@ -488,7 +497,7 @@ define(function (require) {
    *  @return {Boolean}
    */
   p5.SoundFile.prototype.isPaused = function() {
-    return paused;
+    return this._paused;
   };
 
   /**
@@ -501,9 +510,9 @@ define(function (require) {
   p5.SoundFile.prototype.stop = function(time) {
     if (this.mode == 'sustain') {
       this.stopAll();
-      playing = false;
+      this._playing = false;
       this.pauseTime = 0;
-      paused = false;
+      this._paused = false;
     }
     else if (this.buffer && this.bufferSourceNode) {
       var now = p5sound.audiocontext.currentTime;
@@ -511,9 +520,9 @@ define(function (require) {
       this.pauseTime = 0;
       this.bufferSourceNode.stop(now + t);
 
-      counterNode.stop(now + t);
-      playing = false;
-      paused = false;
+      this._counterNode.stop(now + t);
+      this._playing = false;
+      this._paused = false;
     }
   };
 
@@ -533,7 +542,7 @@ define(function (require) {
           }
         }
       }
-    counterNode.stop(now);
+    this._counterNode.stop(now);
 
     }
   };
@@ -682,7 +691,7 @@ define(function (require) {
     }
     this.playbackRate = playbackRate;
     var rate = playbackRate;
-    if (this.playbackRate === 0 && playing) {
+    if (this.playbackRate === 0 && this._playing) {
       this.pause();
     }
     if (this.playbackRate < 0 && !this.reversed) {
@@ -704,8 +713,8 @@ define(function (require) {
       var now = p5sound.audiocontext.currentTime;
       this.bufferSourceNode.playbackRate.cancelScheduledValues(now);
       this.bufferSourceNode.playbackRate.linearRampToValueAtTime(Math.abs(rate), now);
-      counterNode.playbackRate.cancelScheduledValues(now);
-      counterNode.playbackRate.linearRampToValueAtTime(Math.abs(rate), now);
+      this._counterNode.playbackRate.cancelScheduledValues(now);
+      this._counterNode.playbackRate.linearRampToValueAtTime(Math.abs(rate), now);
 
     }
   };
@@ -739,7 +748,11 @@ define(function (require) {
    */
   p5.SoundFile.prototype.currentTime = function() {
     // TO DO --> make reverse() flip these values appropriately
-    return lastPos / ac.sampleRate;
+    if (this._pauseTime > 0) {
+      return this._pauseTime;
+    } else {
+      return this._lastPos / ac.sampleRate;
+    }
   };
 
   /**
@@ -920,8 +933,8 @@ define(function (require) {
           this.bufferSourceNodes[i] = null;
         }
       }
-      counterNode.stop(now);
-      counterNode = null;
+      this._counterNode.stop(now);
+      this._counterNode = null;
     }
     if (this.output){
       this.output.disconnect();
@@ -1034,26 +1047,26 @@ define(function (require) {
     var cNode = ac.createBufferSource();
 
     // dispose of scope node if it already exists
-    if (_scopeNode) {
-      _scopeNode.disconnect();
-      _scopeNode = null;
+    if (self._scopeNode) {
+      self._scopeNode.disconnect();
+      self._scopeNode = null;
     }
 
-    _scopeNode = ac.createScriptProcessor( 256, 1, 1 );
+    self._scopeNode = ac.createScriptProcessor( 256, 1, 1 );
 
     // create counter buffer of the same length as self.buffer
     cNode.buffer = _createCounterBuffer( self.buffer );
 
     cNode.playbackRate.setValueAtTime(self.playbackRate, now);
 
-    cNode.connect( _scopeNode );
-    _scopeNode.connect( p5.soundOut._silentNode );
+    cNode.connect( self._scopeNode );
+    self._scopeNode.connect( p5.soundOut._silentNode );
 
-    _scopeNode.onaudioprocess = function(processEvent) {
+    self._scopeNode.onaudioprocess = function(processEvent) {
       var inputBuffer = processEvent.inputBuffer.getChannelData( 0 );
-      
+
       // update the lastPos
-      lastPos = inputBuffer[ inputBuffer.length - 1 ] || 0;
+      self._lastPos = inputBuffer[ inputBuffer.length - 1 ] || 0;
     };
 
     return cNode;
