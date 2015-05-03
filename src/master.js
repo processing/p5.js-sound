@@ -19,7 +19,7 @@ define(function (require) {
 
     this.audiocontext = audiocontext;
 
-    this.output.disconnect(this.audiocontext.destination);
+    this.output.disconnect();
 
     // an array of input sources
     this.inputSources = [];
