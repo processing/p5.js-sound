@@ -1,5 +1,5 @@
 p5.sound.js v0.1.9 2015-05-02
-- new approach, more accurate approach to p5.SoundFile.currentTime
+- new, more accurate approach to p5.SoundFile.currentTime
 - fix bug in Chrome 43+
 - fix soundfile loop bug in Chrome
 - SoundFile.pause tweaks
