@@ -78,3 +78,7 @@ p5.sound to do list
 
 - p5.Env should be able to connect to multiple
 - p5.Env takes no action on triggerRelease unless currently playing
+
+- Add a logarithmic scaling option for p5.FFT
+- p5.SoundFile.getPeaks should be able to return stereo peaks. Like [this](https://github.com/olosmusic/olos-soundfile/blob/master/olos-soundfile.html#L379) 
+- Add the ability to decode audio buffer data from a FileReader and add it to a p5.SoundFile buffer, like [this](https://github.com/olosmusic/olos-soundfile/blob/master/olos-soundfile.html#L227)
