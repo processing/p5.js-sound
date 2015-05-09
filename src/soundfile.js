@@ -281,9 +281,9 @@ define(function (require) {
         this._counterNode.start(time, this.pauseTime, duration);
       }
       else {
-        this.pauseTime = 0;
+        // this.pauseTime = 0;
         this.bufferSourceNode.start(time, cueStart, duration);
-        this._counterNode.start(time, this.pauseTime, duration);
+        this._counterNode.start(time, cueStart, duration);
       }
 
       this._playing = true;
