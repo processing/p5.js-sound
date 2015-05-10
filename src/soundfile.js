@@ -310,6 +310,8 @@ define(function (require) {
     this._counterNode.loop = this._looping;
 
     if (this._looping === true){
+      var cueEnd = cueStart + duration;
+      console.log('cueEnd = ' + cueEnd);
       this.bufferSourceNode.loopStart = cueStart;
       this.bufferSourceNode.loopEnd = cueEnd;
       this._counterNode.loopStart = cueStart;
