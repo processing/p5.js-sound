@@ -251,9 +251,8 @@ define(function (require) {
       }
 
       if (duration) {
-        if (duration <= this.buffer.duration - cueStart){
-          duration = duration;
-        } else { throw 'end time out of range'; }
+        // if duration is greater than buffer.duration, just play entire file anyway rather than throw an error
+        duration = duration <= this.buffer.duration - cueStart ? duration : this.buffer.duration;
       } else {
         duration = this.buffer.duration - cueStart;
       }
