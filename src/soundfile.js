@@ -898,8 +898,9 @@ define(function (require) {
     this.setVolume(0, 0.01, 0);
     this.pause();
     if (this.buffer) {
-      Array.prototype.reverse.call( this.buffer.getChannelData(0) );
-      Array.prototype.reverse.call( this.buffer.getChannelData(1) );
+      for (var i = 0; i < this.buffer.numberOfChannels; i++) {
+        Array.prototype.reverse.call( this.buffer.getChannelData(i) );
+      }
     // set reversed flag
     this.reversed = !this.reversed;
     // this.playbackRate = -this.playbackRate;
