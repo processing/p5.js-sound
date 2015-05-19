@@ -924,17 +924,21 @@ define(function (require) {
   };
 
   p5.SoundFile.prototype.dispose = function() {
-    var now = p5sound.audiocontext.currentTime;
+    this.stop(now);
     if (this.buffer && this.bufferSourceNode) {
-      for (var i = 0; i < this.bufferSourceNodes.length - 1; i++){
-        if (this.bufferSourceNodes[i] !== null){
+      for (var i = 0; i < this.bufferSourceNodes.length - 1; i++) {
+        if (this.bufferSourceNodes[i] !== null) {
           // this.bufferSourceNodes[i].disconnect();
           this.bufferSourceNodes[i].stop(now);
           this.bufferSourceNodes[i] = null;
         }
       }
-      this._counterNode.stop(now);
-      this._counterNode = null;
+      if ( this.isPlaying() ) {
+        try {
+          this._counterNode.stop(now);
+        } catch(e){console.log(e)}
+        this._counterNode = null;
+      }
     }
     if (this.output){
       this.output.disconnect();
