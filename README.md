@@ -3,6 +3,10 @@
 
 p5.sound
 ========
+
+[![Join the chat at https://gitter.im/processing/p5.js-sound](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/processing/p5.js-sound?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/therewasaguy/p5.js-sound?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 p5.sound brings the [Processing](http://processing.org) approach to [Web Audio](http://w3.org/TR/webaudio/) as an addon for [p5.js](http://github.com/lmccart/p5.js). Functionality includes audio input, playback, manipulation, effects, recording, sequencing, analysis and synthesis. The library is designed to be used in tandem with [p5.js](http://p5js.org).
 
  Examples
@@ -34,13 +38,17 @@ Here is an overview of what p5.sound offers:
 
 Latest Version
 ========
-[This version](https://github.com/therewasaguy/p5.sound/blob/master/lib) of the library is updated daily. A [stable version](http://p5js.org/download/) comes with p5.js. Here's the [Change Log](https://github.com/therewasaguy/p5.sound/blob/master/changelog.md).
+[This version](https://github.com/therewasaguy/p5.sound/blob/master/lib) of the library is updated most frequently. A [stable version](http://p5js.org/download/) comes with p5.js. Here's the [Change Log](https://github.com/therewasaguy/p5.sound/blob/master/changelog.md).
 
 Contribute
 ========
-If you have contributions, feedback, bug reports, or ideas to share, get involved! Email hello@jasonsigal.cc, or [join the discussion on github](https://github.com/therewasaguy/p5.sound/issues). There is plenty to do, check out the [to do list](https://github.com/therewasaguy/p5.sound/blob/master/todo.md).
+If you have a question, you can email hello@jasonsigal.cc.
 
-Before contributing, you will need to install npm and download node modules. Edit the /src files, and then build the lib files by calling ```grunt``` from the command line. Check out the [p5.js setup instructions](https://github.com/lmccart/p5.js/wiki/Development) for more details.
+If it's a bug that has to do with the library itself, please look through the [Issues](https://github.com/therewasaguy/p5.sound/issues) to see if anyone is working on it already. If not, you can create a new issue.
+
+This is an open source project, we have an exciting [to do list](https://github.com/therewasaguy/p5.sound/blob/master/todo.md), and you are invited to help!
+
+[Here's a guide](https://github.com/processing/p5.js-sound/wiki/Contribute) to getting started as a contributor.
 
 Dependencies
 =========
@@ -57,4 +65,4 @@ References and Inspiration
 - [Chris Lowis](http://blog.chrislowis.co.uk/)
 - [Kevin Ennis](https://github.com/kevincennis)
 - [Wilm Thoben's Sound library for Processing](https://github.com/processing/processing/tree/master/java/libraries/sound)
-- [Web Audio API](www.w3.org/TR/webaudio/)
+- [Web Audio API](http://webaudio.github.io/web-audio-api/)
