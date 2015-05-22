@@ -211,9 +211,9 @@ define(function (require) {
    * @param {Number} [amp]              (optional) amplitude (volume)
    *                                     of playback
    * @param {Number} [cueStart]        (optional) cue start time in seconds
-   * @param {Number} [cueEnd]          (optional) cue end time in seconds
+   * @param {Number} [duration]          (optional) duration of playback in seconds
    */
-  p5.SoundFile.prototype.play = function(time, rate, amp, _cueStart, _cueEnd) {
+  p5.SoundFile.prototype.play = function(time, rate, amp, _cueStart, duration) {
     var self = this;
     var now = p5sound.audiocontext.currentTime;
     var cueStart, cueEnd;
@@ -250,12 +250,11 @@ define(function (require) {
         cueStart = 0;
       }
 
-      if (_cueEnd) {
-        if (_cueEnd >=cueStart && _cueEnd <= this.buffer.duration){
-          cueEnd = _cueEnd;
-        } else { throw 'end time out of range'; }
+      if (duration) {
+        // if duration is greater than buffer.duration, just play entire file anyway rather than throw an error
+        duration = duration <= this.buffer.duration - cueStart ? duration : this.buffer.duration;
       } else {
-        cueEnd = this.buffer.duration;
+        duration = this.buffer.duration - cueStart;
       }
 
       // method of controlling gain for individual bufferSourceNodes, without resetting overall soundfile volume
@@ -277,13 +276,13 @@ define(function (require) {
 
       // if it was paused, play at the pause position
       if (this._paused){
-        this.bufferSourceNode.start(time, this.pauseTime, cueEnd);
-        this._counterNode.start(time, this.pauseTime, cueEnd);
+        this.bufferSourceNode.start(time, this.pauseTime, duration);
+        this._counterNode.start(time, this.pauseTime, duration);
       }
       else {
-        this.pauseTime = 0;
-        this.bufferSourceNode.start(time, cueStart, cueEnd);
-        this._counterNode.start(time, this.pauseTime, cueEnd);
+        // this.pauseTime = 0;
+        this.bufferSourceNode.start(time, cueStart, duration);
+        this._counterNode.start(time, cueStart, duration);
       }
 
       this._playing = true;
@@ -311,6 +310,8 @@ define(function (require) {
     this._counterNode.loop = this._looping;
 
     if (this._looping === true){
+      var cueEnd = cueStart + duration;
+      console.log('cueEnd = ' + cueEnd);
       this.bufferSourceNode.loopStart = cueStart;
       this.bufferSourceNode.loopEnd = cueEnd;
       this._counterNode.loopStart = cueStart;
@@ -433,11 +434,11 @@ define(function (require) {
    * @param {Number} [rate]        (optional) playback rate
    * @param {Number} [amp]         (optional) playback volume
    * @param {Number} [cueLoopStart](optional) startTime in seconds
-   * @param {Number} [cueLoopEnd]  (optional) endTime in seconds
+   * @param {Number} [duration]  (optional) loop duration in seconds
    */
-  p5.SoundFile.prototype.loop = function(startTime, rate, amp, loopStart, loopEnd) {
+  p5.SoundFile.prototype.loop = function(startTime, rate, amp, loopStart, duration) {
     this._looping = true;
-    this.play(startTime, rate, amp, loopStart, loopEnd);
+    this.play(startTime, rate, amp, loopStart, duration);
   };
 
   /**
@@ -531,10 +532,10 @@ define(function (require) {
    *  @private
    */
   p5.SoundFile.prototype.stopAll = function() {
+    var now = p5sound.audiocontext.currentTime;
     if (this.buffer && this.bufferSourceNode) {
       for (var i = 0; i < this.bufferSourceNodes.length; i++){
         if (typeof(this.bufferSourceNodes[i]) != undefined){
-          var now = p5sound.audiocontext.currentTime;
           try {
             this.bufferSourceNodes[i].stop(now);
           } catch(e) {
@@ -762,26 +763,24 @@ define(function (require) {
    *
    * @method jump
    * @param {Number} cueTime    cueTime of the soundFile in seconds.
-   * @param {Number} endTime    endTime of the soundFile in seconds.
+   * @param {Number} uuration    duration in seconds.
    */
-  p5.SoundFile.prototype.jump = function(cueTime, endTime) {
-    var now = p5sound.audiocontext.currentTime;
-
+  p5.SoundFile.prototype.jump = function(cueTime, duration) {
     if (cueTime<0 || cueTime > this.buffer.duration) {
       throw 'jump time out of range';
     }
-    if (endTime<cueTime || endTime > this.buffer.duration) {
+    if (duration > this.buffer.duration - cueTime) {
       throw 'end time out of range';
     }
 
     var cTime = cueTime || 0;
-    var eTime = endTime || this.buffer.duration;
+    var eTime = duration || this.buffer.duration - cueTime;
 
     if (this.isPlaying()){
-      this.stop(now);
+      this.stop();
     }
 
-    this.play(now + 0.0000001, this.playbackRate, this.output.gain.value, cTime, eTime);
+    this.play(0, this.playbackRate, this.output.gain.value, cTime, eTime);
   };
 
   /**
@@ -899,8 +898,9 @@ define(function (require) {
     this.setVolume(0, 0.01, 0);
     this.pause();
     if (this.buffer) {
-      Array.prototype.reverse.call( this.buffer.getChannelData(0) );
-      Array.prototype.reverse.call( this.buffer.getChannelData(1) );
+      for (var i = 0; i < this.buffer.numberOfChannels; i++) {
+        Array.prototype.reverse.call( this.buffer.getChannelData(i) );
+      }
     // set reversed flag
     this.reversed = !this.reversed;
     // this.playbackRate = -this.playbackRate;
@@ -924,17 +924,21 @@ define(function (require) {
   };
 
   p5.SoundFile.prototype.dispose = function() {
+    this.stop(now);
     if (this.buffer && this.bufferSourceNode) {
-      for (var i = 0; i < this.bufferSourceNodes.length - 1; i++){
-        if (this.bufferSourceNodes[i] !== null){
+      for (var i = 0; i < this.bufferSourceNodes.length - 1; i++) {
+        if (this.bufferSourceNodes[i] !== null) {
           // this.bufferSourceNodes[i].disconnect();
-          var now = p5sound.audiocontext.currentTime;
           this.bufferSourceNodes[i].stop(now);
           this.bufferSourceNodes[i] = null;
         }
       }
-      this._counterNode.stop(now);
-      this._counterNode = null;
+      if ( this.isPlaying() ) {
+        try {
+          this._counterNode.stop(now);
+        } catch(e){console.log(e)}
+        this._counterNode = null;
+      }
     }
     if (this.output){
       this.output.disconnect();
