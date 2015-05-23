@@ -41,8 +41,15 @@ define(function (require) {
    * </code></div>
    */
   p5.SoundFile = function(paths, onload, whileLoading) {
-    var path = p5.prototype._checkFileFormats(paths);
-
+    if((typeof paths) == "string"){
+      var path = p5.prototype._checkFileFormats(paths);
+      this.url = path;
+    }
+    else if((typeof paths) == "object"){
+      println("rtrt");
+      this.file = paths;
+    }
+    
     this._looping = false;
     this._playing = false;
     this._paused = false;
@@ -52,9 +59,6 @@ define(function (require) {
     this._lastPos = 0;
     this._counterNode;
     this._scopeNode;
-
-    // player variables
-    this.url = path;
 
     // array of sources so that they can all be stopped!
     this.bufferSourceNodes = [];
@@ -90,7 +94,7 @@ define(function (require) {
     this.panner = new p5.Panner(this.output, p5sound.input, 2);
 
     // it is possible to instantiate a soundfile with no path
-    if (this.url) {
+    if (this.url || this.file) {
       this.load(onload);
     }
 
@@ -155,25 +159,42 @@ define(function (require) {
    * @param {Function} [callback]   Name of a function to call once file loads
    */
   p5.SoundFile.prototype.load = function(callback){
-    var sf = this;
-    var request = new XMLHttpRequest();
-    request.addEventListener('progress', function(evt) {
-                                          sf._updateProgress(evt);
-                                         }, false);
-    request.open('GET', this.url, true);
-    request.responseType = 'arraybuffer';
-    // decode asyncrohonously
-    var self = this;
-    request.onload = function() {
-      ac.decodeAudioData(request.response, function(buff) {
-        self.buffer = buff;
-        self.panner.inputChannels(buff.numberOfChannels);
-        if (callback) {
-          callback(self);
-        }
-      });
-    };
-    request.send();
+    if(this.url != undefined && this.url != ""){
+      var sf = this;
+      var request = new XMLHttpRequest();
+      request.addEventListener('progress', function(evt) {
+                                            sf._updateProgress(evt);
+                                           }, false);
+      request.open('GET', this.url, true);
+      request.responseType = 'arraybuffer';
+      // decode asyncrohonously
+      var self = this;
+      request.onload = function() {
+        ac.decodeAudioData(request.response, function(buff) {
+          self.buffer = buff;
+          self.panner.inputChannels(buff.numberOfChannels);
+          if (callback) {
+            callback(self);
+          }
+        });
+      };
+      request.send();
+    }
+    else if(this.file != undefined){
+      println("DFDFD");
+      var reader = new FileReader();
+      var self = this;
+      reader.onload = function() {
+        ac.decodeAudioData(reader.result, function(buff) {
+          self.buffer = buff;
+          self.panner.inputChannels(buff.numberOfChannels);
+          if (callback) {
+            callback(self);
+          }
+        });
+      };
+      reader.readAsArrayBuffer(this.file);
+    }
   };
 
   // TO DO: use this method to create a loading bar that shows progress during file upload/decode.
