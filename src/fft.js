@@ -88,7 +88,7 @@ define(function (require) {
       SMOOTHING = smoothing;
     }
     var FFT_SIZE = bins*2 || 2048;
-    this.analyser = p5sound.audiocontext.createAnalyser();
+    this.input = this.analyser = p5sound.audiocontext.createAnalyser();
 
     // default connections to p5sound master
     p5sound.output.connect(this.analyser);
