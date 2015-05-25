@@ -46,7 +46,6 @@ define(function (require) {
       this.url = path;
     }
     else if((typeof paths) == "object"){
-      println("rtrt");
       this.file = paths;
     }
     
@@ -181,7 +180,6 @@ define(function (require) {
       request.send();
     }
     else if(this.file != undefined){
-      println("DFDFD");
       var reader = new FileReader();
       var self = this;
       reader.onload = function() {
