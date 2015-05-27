@@ -25,7 +25,8 @@ define(function (require) {
    *  @constructor
    *  @param {String/Array} path   path to a sound file (String). Optionally,
    *                               you may include multiple file formats in
-   *                               an array.
+   *                               an array. Alternately, accepts an object
+   *                               from the HTML5 File API, or a p5.File.
    *  @param {Function} [callback]   Name of a function to call once file loads
    *  @return {Object}    p5.SoundFile Object
    *  @example 
@@ -46,6 +47,16 @@ define(function (require) {
       this.url = path;
     }
     else if((typeof paths) == "object"){
+      if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
+        // The File API isn't supported in this browser 
+        throw('Unable to load file because the File API is not supported');
+      }
+
+      // if type is a p5.File...get the actual file
+      if (paths.file) {
+        paths = paths.file;
+      }
+
       this.file = paths;
     }
     
@@ -122,7 +133,9 @@ define(function (require) {
    *  @method loadSound
    *  @param  {String/Array}   path     Path to the sound file, or an array with
    *                                    paths to soundfiles in multiple formats
-   *                                    i.e. ['sound.ogg', 'sound.mp3']
+   *                                    i.e. ['sound.ogg', 'sound.mp3'].
+   *                                    Alternately, accepts an object: either
+   *                                    from the HTML5 File API, or a p5.File.
    *  @param {Function} [callback]   Name of a function to call once file loads
    *  @param {Function} [callback]   Name of a function to call while file is loading.
    *                                 This function will receive a percentage from 0.0
