@@ -289,9 +289,8 @@ define(function (require) {
 
       // not necessary with _initBufferSource ?
       // this.bufferSourceNode.playbackRate.cancelScheduledValues(now);
-      // rate = rate || Math.abs(this.playbackRate);
-      // this.bufferSourceNode.playbackRate.setValueAtTime(rate, now);
-
+      rate = rate || Math.abs(this.playbackRate);
+      this.bufferSourceNode.playbackRate.setValueAtTime(rate, now);
 
       // if it was paused, play at the pause position
       if (this._paused){
