@@ -342,7 +342,6 @@ define(function (require) {
 
     if (this._looping === true){
       var cueEnd = cueStart + duration;
-      console.log('cueEnd = ' + cueEnd);
       this.bufferSourceNode.loopStart = cueStart;
       this.bufferSourceNode.loopEnd = cueEnd;
       this._counterNode.loopStart = cueStart;
@@ -541,7 +540,7 @@ define(function (require) {
    */
   p5.SoundFile.prototype.stop = function(time) {
     if (this.mode == 'sustain') {
-      this.stopAll();
+      this.stopAll(time);
       this._playing = false;
       this.pauseTime = 0;
       this._paused = false;
@@ -562,19 +561,19 @@ define(function (require) {
    *  Stop playback on all of this soundfile's sources.
    *  @private
    */
-  p5.SoundFile.prototype.stopAll = function() {
+  p5.SoundFile.prototype.stopAll = function(time) {
     var now = p5sound.audiocontext.currentTime;
     if (this.buffer && this.bufferSourceNode) {
       for (var i = 0; i < this.bufferSourceNodes.length; i++){
         if (typeof(this.bufferSourceNodes[i]) != undefined){
           try {
-            this.bufferSourceNodes[i].stop(now);
+            this.bufferSourceNodes[i].stop(now + time);
           } catch(e) {
             // this was throwing errors only on Safari
           }
         }
       }
-    this._counterNode.stop(now);
+    this._counterNode.stop(now + time);
 
     }
   };
