@@ -133,12 +133,12 @@ function groupNeighborsByTempo(intervalCounts, sampleRate) {
 }
 
 
-function preprocess(){
+function preprocess(soundFile){
 	// Create offline context
-	var offlineContext = new OfflineAudioContext(1, source_file.buffer.length, source_file.buffer.sampleRate);
+	var offlineContext = new OfflineAudioContext(1, soundFile.buffer.length, soundFile.buffer.sampleRate);
 	// Create buffer source
 	var source = offlineContext.createBufferSource();
-	source.buffer = source_file.buffer; // copy from source file
+	source.buffer = soundFile.buffer; // copy from source file
 	// Create filter
 	var filter = offlineContext.createBiquadFilter();
 	filter.type = "lowpass";
