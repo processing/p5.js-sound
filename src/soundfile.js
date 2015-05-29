@@ -6,8 +6,6 @@ define(function (require) {
   var p5sound = require('master');
   var ac = p5sound.audiocontext;
 
-  console.log('hi it works');
-
   /**
    *  <p>SoundFile object with a path to a file.</p>
    *  
@@ -540,7 +538,9 @@ define(function (require) {
    * @param {Number} [startTime] (optional) schedule event to occur
    *                             in seconds from now
    */
-  p5.SoundFile.prototype.stop = function(time) {
+  p5.SoundFile.prototype.stop = function(timeFromNow) {
+    var time = timeFromNow || 0;
+
     if (this.mode == 'sustain') {
       this.stopAll(time);
       this._playing = false;
