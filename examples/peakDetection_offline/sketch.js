@@ -65,15 +65,33 @@ var Peak = function(amp, i) {
 
 var allPeaks = [];
 
-function processPeaks(soundFile, callback) {
+
+/**
+ *  processPeaks returns an array of timestamps where it thinks there is a beat.
+ *
+ *  This is an asynchronous function that processes the soundfile in an offline audio context,
+ *  and sends the results to your callback function.
+ *
+ *  The process involves running the soundfile through a lowpass filter, and finding all of the
+ *  peaks above the initial threshold. If the total number of peaks are below the minimum number of peaks,
+ *  it decreases the threshold and re-runs the analysis until either minPeaks or minThreshold are reached.
+ *  
+ *  @param  {p5.SoundFile}   soundFile      a p5.soundfile or object with an audio buffer.
+ *  @param  {Function} callback       a function to call once this data is returned
+ *  @param  {Number}   [initThreshold] initial threshold defaults to 0.9
+ *  @param  {Number}   [minThreshold]   minimum threshold defaults to 0.22
+ *  @param  {Number}   [minPeaks]       minimum number of peaks defaults to 200
+ *  @return {Array}                  Array of timestamped peaks
+ */
+function processPeaks(soundFile, callback, _initThreshold, minThreshold, minPeaks) {
   var bufLen = soundFile.buffer.length;
   var sampleRate = soundFile.buffer.sampleRate;
   var buffer = soundFile.buffer;
 
-  var initialThreshold = 0.9,
+  var initialThreshold = _initThreshold || 0.9,
       threshold = initialThreshold,
-      minThreshold = 0.22,
-      minPeaks = 200;
+      minThreshold = _minThreshold || 0.22,
+      minPeaks = _minPeaks || 200;
 
   // Create offline context
   var offlineContext = new OfflineAudioContext(1, bufLen, sampleRate);
@@ -266,6 +284,7 @@ function getPeaksAtTopTempo(peaksObj, tempo, sampleRate, bpmVariance) {
 
   return peaksAtTopTempo;
 }
+
 
 function mapTempo(theoreticalTempo) {
     // these scenarios create infinite while loop
