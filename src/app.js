@@ -21,6 +21,7 @@ define(function (require) {
   require('metro');
   require('looper');
   require('soundRecorder');
+  require('peakdetect');
 
   return p5SOUND;
 
