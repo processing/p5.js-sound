@@ -25,7 +25,8 @@ define(function (require) {
    *  @constructor
    *  @param {String/Array} path   path to a sound file (String). Optionally,
    *                               you may include multiple file formats in
-   *                               an array.
+   *                               an array. Alternately, accepts an object
+   *                               from the HTML5 File API, or a p5.File.
    *  @param {Function} [callback]   Name of a function to call once file loads
    *  @return {Object}    p5.SoundFile Object
    *  @example 
@@ -46,6 +47,16 @@ define(function (require) {
       this.url = path;
     }
     else if((typeof paths) == "object"){
+      if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
+        // The File API isn't supported in this browser 
+        throw('Unable to load file because the File API is not supported');
+      }
+
+      // if type is a p5.File...get the actual file
+      if (paths.file) {
+        paths = paths.file;
+      }
+
       this.file = paths;
     }
     
@@ -122,7 +133,9 @@ define(function (require) {
    *  @method loadSound
    *  @param  {String/Array}   path     Path to the sound file, or an array with
    *                                    paths to soundfiles in multiple formats
-   *                                    i.e. ['sound.ogg', 'sound.mp3']
+   *                                    i.e. ['sound.ogg', 'sound.mp3'].
+   *                                    Alternately, accepts an object: either
+   *                                    from the HTML5 File API, or a p5.File.
    *  @param {Function} [callback]   Name of a function to call once file loads
    *  @param {Function} [callback]   Name of a function to call while file is loading.
    *                                 This function will receive a percentage from 0.0
@@ -289,9 +302,8 @@ define(function (require) {
 
       // not necessary with _initBufferSource ?
       // this.bufferSourceNode.playbackRate.cancelScheduledValues(now);
-      // rate = rate || Math.abs(this.playbackRate);
-      // this.bufferSourceNode.playbackRate.setValueAtTime(rate, now);
-
+      rate = rate || Math.abs(this.playbackRate);
+      this.bufferSourceNode.playbackRate.setValueAtTime(rate, now);
 
       // if it was paused, play at the pause position
       if (this._paused){
@@ -330,7 +342,6 @@ define(function (require) {
 
     if (this._looping === true){
       var cueEnd = cueStart + duration;
-      console.log('cueEnd = ' + cueEnd);
       this.bufferSourceNode.loopStart = cueStart;
       this.bufferSourceNode.loopEnd = cueEnd;
       this._counterNode.loopStart = cueStart;
@@ -529,7 +540,7 @@ define(function (require) {
    */
   p5.SoundFile.prototype.stop = function(time) {
     if (this.mode == 'sustain') {
-      this.stopAll();
+      this.stopAll(time);
       this._playing = false;
       this.pauseTime = 0;
       this._paused = false;
@@ -550,19 +561,19 @@ define(function (require) {
    *  Stop playback on all of this soundfile's sources.
    *  @private
    */
-  p5.SoundFile.prototype.stopAll = function() {
+  p5.SoundFile.prototype.stopAll = function(time) {
     var now = p5sound.audiocontext.currentTime;
     if (this.buffer && this.bufferSourceNode) {
       for (var i = 0; i < this.bufferSourceNodes.length; i++){
         if (typeof(this.bufferSourceNodes[i]) != undefined){
           try {
-            this.bufferSourceNodes[i].stop(now);
+            this.bufferSourceNodes[i].stop(now + time);
           } catch(e) {
             // this was throwing errors only on Safari
           }
         }
       }
-    this._counterNode.stop(now);
+    this._counterNode.stop(now + time);
 
     }
   };
