@@ -4,7 +4,10 @@ define(function (require) {
   var p5sound = require('master');
 
   /**
-   *  <p>PeakDetect looks for onsets in part of the frequency spectrum.
+   *  <p>PeakDetect works in conjunction with p5.FFT to
+   *  look for onsets in some or all of the frequency spectrum.
+   *  </p>
+   *  <p>
    *  To use p5.PeakDetect, call <code>update</code> in the draw loop
    *  and pass in a p5.FFT object.
    *  </p>
@@ -26,12 +29,52 @@ define(function (require) {
    *  
    *  @class  PeakDetect
    *  @constructor
-   *  @param {Number} [freq1]     lowFrequency - defaults to 40Hz
-   *  @param {Number} [freq2]     highFrequency - defaults to 240 Hz
+   *  @param {Number} [freq1]     lowFrequency - defaults to 20Hz
+   *  @param {Number} [freq2]     highFrequency - defaults to 20000 Hz
    *  @param {Number} [threshold] Threshold for detecting a beat between 0 and 1
    *                            scaled logarithmically where 0.1 is 1/2 the loudness
    *                            of 1.0. Defaults to 0.25.
    *  @param {Number} [framesPerPeak]     Defaults to 5.
+   *  @example
+   *  <div><code>
+   *  
+   *  var cnv, soundFile, fft, peakDetect;
+   *  var ellipseWidth = 10;
+   *
+   *  function setup() {
+   *    cnv = createCanvas(100,100);
+   *
+   *    soundFile = loadSound('assets/beat.mp3');
+   *    fft = new p5.FFT();
+   *    peakDetect = new p5.PeakDetect();
+   *
+   *    setupSound();
+   *  }
+   *
+   *  function draw() {
+   *    background(0);
+   *
+   *    fft.analyze();
+   *    peakDetect.update(fft);
+   *
+   *    if ( peakDetect.isDetected ) {
+   *      ellipseWidth = 50;
+   *    } else {
+   *      ellipseWidth *= 0.95;
+   *    }
+   *
+   *    ellipse(width/2, height/2, ellipseWidth, ellipseWidth);
+   *  }
+   *
+   *  function setupSound() {
+   *    cnv.mouseClicked( function() {
+   *      if (soundFile.isPlaying() ) {
+   *        soundFile.stop();
+   *      } else {
+   *        soundFile.play();
+   *      }
+   *    });
+   *  }
    */
   p5.PeakDetect = function(freq1, freq2, threshold, _framesPerPeak) {
     var framesPerPeak;
@@ -48,10 +91,21 @@ define(function (require) {
 
     this.energy = 0;
     this.penergy = 0;
+
+    /**
+     *  isDetected is set to true when a peak is detected.
+     *  
+     *  @attribute isDetected
+     *  @type {Boolean}
+     *  @default  false
+     */
     this.isDetected = false;
 
     this.f1 = freq1 || 40;
-    this.f2 = freq2 || 240;
+    this.f2 = freq2 || 20000;
+
+    // function to call when a peak is detected
+    this._onPeak = function() {};
   };
 
 
@@ -86,14 +140,44 @@ define(function (require) {
       }
     }
     this.penergy = nrg;
-  }
+  };
 
+  /**
+   *  onPeak accepts two arguments: a function to call when
+   *  a peak is detected, and optionally a value to pass
+   *  into that function.
+   *   
+   *  @param  {Function} callback Name of a function that will
+   *                              be called when a peak is
+   *                              detected.
+   *  @param  {Object}   [val]    Optional value to pass
+   *                              into the function when
+   *                              a peak is detected.
+   *  @example
+   *  <div><code>
+   *  var cnv, soundFile, fft, peakDetect;
+   *  
+   *  function setup() {
+   *    cnv = createCanvas(100,100);
+   *    
+   *    cnv.mouseClicked = function() {
+   *      soundFile.play();
+   *    }
+   *    
+   *  }
+   *
+   *  function draw() {
+   *  
+   *  }
+   *
+   *  </code></div>
+   */
   p5.PeakDetect.prototype.onPeak = function(callback, val) {
     var self = this;
 
     self._onPeak = function() {
       callback(self.energy, val);
     };
-  }
+  };
 
 });
