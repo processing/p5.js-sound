@@ -25,159 +25,242 @@ function setup() {
   source_file.playMode('restart'); 
   println("source duration: " +src_length);
 
-   // prepare our tempo display
-   pg_tempo = createGraphics(width,100);
-   pg_tempo.background(180);
-   pg_tempo.strokeWeight(3);
-   pg_tempo.noFill();
-   pg_tempo.stroke(255);
-   pg_tempo.rect(0,0,width,100);
-   pg_tempo.strokeWeight(1);
-   //prepare our beats graph display
-   pg_beats = createGraphics(width,50);
-   pg_beats.background(180);
-   pg_beats.strokeWeight(3);
-   pg_beats.noFill();
-   pg_beats.stroke(255);
-   pg_beats.rect(0,0,width,50);
-   pg_beats.strokeWeight(1);
+  // prepare our tempo display
+  pg_tempo = createGraphics(width,100);
+  pg_tempo.background(180);
+  pg_tempo.strokeWeight(3);
+  pg_tempo.noFill();
+  pg_tempo.stroke(255);
+  pg_tempo.rect(0,0,width,100);
+  pg_tempo.strokeWeight(1);
+  //prepare our beats graph display
+  pg_beats = createGraphics(width,50);
+  pg_beats.background(180);
+  pg_beats.strokeWeight(3);
+  pg_beats.noFill();
+  pg_beats.stroke(255);
+  pg_beats.rect(0,0,width,50);
+  pg_beats.strokeWeight(1);
 
-   // find beat preprocessing the source file with lowpass
-   preprocess(); // it will draw in pg_beats and pg_tempo
+  // find beat preprocessing the source file with lowpass
+  var beats = processPeaks(source_file, onComplete); // it will draw in pg_beats and pg_tempo
+
 }
 
 function draw() {
 	background(225);
 
-	image(pg_tempo,0,0); // display detected tempi
-	image(pg_beats,0,100); // display filtered beats we found preprocesing with a lp filter
+	// image(pg_tempo,0,0); // display detected tempi
+	// image(pg_beats,0,100); // display filtered beats we found preprocesing with a lp filter
 }
 
-function drawPeaksAtTreshold(data, threshold) {
-  for(var i = 0; i <  data.length;) {	
-    if (data[i] > threshold) {
-      var xpos = map(i,0,data.length,0,width);
-      var intensity = map(data[i],threshold,0.3,0,255);
-      var hei = map(data[i],threshold,0.3,3,50);
-      pg_beats.stroke(intensity,0,0);
-	  pg_beats.line(xpos,3,xpos,47);
-	  // Skip forward ~ 1/8s to get past this peak.
-      i += 6000; 
-    }
-    i++;
+// function drawPeaksAtTreshold(data, threshold) {
+
+//   for(var i = 0; i <  data.length;) {	
+//     if (data[i] > threshold) {
+//       var xpos = map(i,0,data.length,0,width);
+//       var intensity = map(data[i],threshold,0.3,0,255);
+//       var hei = map(data[i],threshold,0.3,3,50);
+//       pg_beats.stroke(intensity,0,0);
+//       pg_beats.line(xpos,3,xpos,47);
+
+//       // Skip forward ~ 1/8s to get past this peak.
+//       i += 6000; 
+//     }
+//     i++;
+//   }
+// }
+
+var Peak = function(amp, i) {
+  this.sampleIndex = i;
+  this.amplitude = amp;
+  this.tempos = [];
+  this.intervals = [];
+}
+
+var allPeaks = [];
+
+function processPeaks(soundFile, callback) {
+  var bufLen = soundFile.buffer.length;
+  var sampleRate = soundFile.buffer.sampleRate;
+  var buffer = soundFile.buffer;
+
+  var initialThreshold = 0.9,
+      threshold = initialThreshold,
+      minThreshold = 0.22,
+      minPeaks = 200;
+
+  // Create offline context
+  var offlineContext = new OfflineAudioContext(1, bufLen, sampleRate);
+
+  // create buffer source
+  var source = offlineContext.createBufferSource();
+  source.buffer = buffer;
+
+  // Create filter. TO DO: allow custom setting of filter
+  var filter = offlineContext.createBiquadFilter();
+  filter.type = "lowpass";
+  source.connect(filter);
+  filter.connect(offlineContext.destination);
+
+  // start playing at time:0
+  source.start(0);  
+  offlineContext.startRendering(); // Render the song
+
+  // act on the result
+  offlineContext.oncomplete = function(e) {
+    var data = {};
+
+    var filteredBuffer = e.renderedBuffer;
+    var bufferData = filteredBuffer.getChannelData(0);
+
+
+    // step 1: 
+    // create Peak instances, add them to array, with strength and sampleIndex
+    do {
+      allPeaks = getPeaksAtThreshold(bufferData, threshold);
+      threshold -= 0.005;
+    } while (Object.keys(allPeaks).length < minPeaks && threshold >= minThreshold);
+
+
+    // step 2:
+    // find intervals for each peak in the sampleIndex, add tempos array
+    var intervalCounts = countIntervalsBetweenNearbyPeaks(allPeaks);
+
+    // step 3: find top tempos
+    var groups = groupNeighborsByTempo(intervalCounts, filteredBuffer.sampleRate);
+
+    // sort top intervals
+    var topTempos = groups.sort(function(intA, intB) {
+       return intB.count - intA.count;
+
+    }).splice(0,5);
+
+    var topTempo = topTempos[0].tempo;
+
+    // step 3:
+    // new array of peaks at top tempo
+    var tempoPeaks = getPeaksAtTopTempo(allPeaks, topTempo);
+
+
+    callback(allPeaks);
   }
+
 }
 
-// Function to identify peaks
+
+
+
+
+
+// 1. Function to identify peaks above a threshold
+// returns an array of peak indexes as frames (samples) of the original soundfile
 function getPeaksAtThreshold(data, threshold) {
-  var peaksArray = [];
+  var peaksObj = {};
   var length = data.length;
-  for(var i = 0; i < length;) {
+
+  for(var i = 0; i < length; i++) {
     if (data[i] > threshold) {
-      peaksArray.push(i);
+      var amp = data[i];
+      var peak = new Peak(amp, i);
+      peaksObj[i] = peak;
       // Skip forward ~ 1/8s to get past this peak.
       i += 6000; 
     }
     i++;
   }
-  return peaksArray;
+
+  return peaksObj;
 }
 
-// Function used to return a histogram of peak intervals
-function countIntervalsBetweenNearbyPeaks(peaks) {
+// 2. 
+function countIntervalsBetweenNearbyPeaks(peaksObj) {
   var intervalCounts = [];
-  peaks.forEach(function(peak, index) {
-    for(var i = 0; i < 10; i++) {
-      var interval = peaks[index + i] - peak;
-      var foundInterval = intervalCounts.some(function(intervalCount) {
-        if (intervalCount.interval === interval)
-          return intervalCount.count++;
-      });
-      // store with JSson like formatting
-      if (!foundInterval) {
-        intervalCounts.push({
-          interval: interval,
-          count: 1
+  var peaksArray = Object.keys(peaksObj).sort();
+
+  for (var index = 0; index < peaksArray.length; index++) {
+
+    // find intervals in comparison to nearby peaks
+    for (var i = 0; i < 10; i++) {
+      var startPeak = peaksObj[peaksArray[index]];
+      var endPeak = peaksObj[peaksArray[index + i]];
+
+      if (startPeak && endPeak) {
+        startPos = startPeak.sampleIndex;
+        endPos = endPeak.sampleIndex;
+        var interval =  endPos - startPos;
+
+        // add a sample interval to the startPeek in the allPeaks array
+        startPeak.intervals.push(interval);
+
+        // tally the intervals and return interval counts
+        var foundInterval = intervalCounts.some(function(intervalCount, p) {
+          if (intervalCount.interval === interval){
+            intervalCount.count++;
+            return intervalCount;
+          }
         });
+
+        // store with JSON like formatting
+        if (!foundInterval) {
+          intervalCounts.push({
+            interval: interval,
+            count: 1,
+          });
+        }
       }
     }
-  });
+  }
+
   return intervalCounts;
 }
 
-// Function used to return a histogram of tempo candidates.
+
+// 3. find tempo
 function groupNeighborsByTempo(intervalCounts, sampleRate) {
-  var tempoCounts = [];
+  var tempoCounts = []
+
   intervalCounts.forEach(function(intervalCount, i) {
-    if (intervalCount.interval !== 0) {
+
+    try {
       // Convert an interval to tempo
       var theoreticalTempo = 60 / (intervalCount.interval / sampleRate );
+
+      if (!isFinite(theoreticalTempo)) {
+        return;
+      };
+
       // Adjust the tempo to fit within the 90-180 BPM range
-      while (theoreticalTempo < 90) theoreticalTempo *= 2;
-      while (theoreticalTempo > 180) theoreticalTempo /= 2;
-      theoreticalTempo = Math.round(theoreticalTempo);
+      while (theoreticalTempo <= 90) theoreticalTempo *= 2;
+      while (theoreticalTempo >= 180) theoreticalTempo /= 2;
+
       var foundTempo = tempoCounts.some(function(tempoCount) {
         if (tempoCount.tempo === theoreticalTempo)
           return tempoCount.count += intervalCount.count;
       });
-      // store with Json like formating
       if (!foundTempo) {
         tempoCounts.push({
-          tempo: theoreticalTempo,
+          tempo: Math.round(theoreticalTempo),
           count: intervalCount.count
         });
       }
+    } catch(e) {
+      throw e;
     }
+
   });
+
   return tempoCounts;
 }
 
+// 4. peaks at top tempo
+function getPeaksAtTopTempo(peaksObj, tempo) {
+  var peaksArray = Object.keys(peaksObj).sort();
 
-function preprocess(soundFile){
-	// Create offline context
-	var offlineContext = new OfflineAudioContext(1, soundFile.buffer.length, soundFile.buffer.sampleRate);
-	// Create buffer source
-	var source = offlineContext.createBufferSource();
-	source.buffer = soundFile.buffer; // copy from source file
-	// Create filter
-	var filter = offlineContext.createBiquadFilter();
-	filter.type = "lowpass";
-	source.connect(filter);
-	filter.connect(offlineContext.destination);
-	// start playing at time:0
-	source.start(0);	
-	offlineContext.startRendering(); // Render the song
+  // TO DO: filter out peaks that have the tempo and return
 
-	// Act on the result
-	offlineContext.oncomplete = function(e) {
-		// Filtered buffer!
-  		var filteredBuffer = e.renderedBuffer;
-  		var lowpeaks = drawPeaksAtTreshold(e.renderedBuffer.getChannelData(0), 0.25); // store and draw peaks
+}
 
-  		// get tempo on a subset of the sample
-  		var peaks,
-                initialThresold = 0.9,
-                thresold = initialThresold,
-                minThresold = 0.22,
-                minPeaks = 200;
-
-            do {
-              peaks = getPeaksAtThreshold(e.renderedBuffer.getChannelData(0), thresold);
-              thresold -= 0.005;
-            } while (peaks.length < minPeaks && thresold >= minThresold);
-         // find and group intervals
-         var intervals = countIntervalsBetweenNearbyPeaks(peaks);
-         var groups = groupNeighborsByTempo(intervals, filteredBuffer.sampleRate);
-         // sort top intervals
-         var top = groups.sort(function(intA, intB) {
-              return intB.count - intA.count;
-            }).splice(0,5);
-         // dsplay them
-         for (var i = 0 ; i < top.length; i++){
-         	pg_tempo.noStroke();
-         	pg_tempo.fill(0);
-         	pg_tempo.textSize(12);
-         	pg_tempo.text("Tempo n"+i+" : " + int(top[i].tempo) + "bpm  /  found " +top[i].count +" times.",5,15+i*18);
-         }
-	};
+function onComplete(data) {
+  console.log(data);
 }
