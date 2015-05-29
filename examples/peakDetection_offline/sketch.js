@@ -43,7 +43,7 @@ function setup() {
   pg_beats.strokeWeight(1);
 
   // find beat preprocessing the source file with lowpass
-  var beats = processPeaks(source_file, onComplete); // it will draw in pg_beats and pg_tempo
+  var beats = source_file.processPeaks(onComplete); // it will draw in pg_beats and pg_tempo
 
 }
 
@@ -76,17 +76,16 @@ var allPeaks = [];
  *  peaks above the initial threshold. If the total number of peaks are below the minimum number of peaks,
  *  it decreases the threshold and re-runs the analysis until either minPeaks or minThreshold are reached.
  *  
- *  @param  {p5.SoundFile}   soundFile      a p5.soundfile or object with an audio buffer.
  *  @param  {Function} callback       a function to call once this data is returned
  *  @param  {Number}   [initThreshold] initial threshold defaults to 0.9
  *  @param  {Number}   [minThreshold]   minimum threshold defaults to 0.22
  *  @param  {Number}   [minPeaks]       minimum number of peaks defaults to 200
  *  @return {Array}                  Array of timestamped peaks
  */
-function processPeaks(soundFile, callback, _initThreshold, minThreshold, minPeaks) {
-  var bufLen = soundFile.buffer.length;
-  var sampleRate = soundFile.buffer.sampleRate;
-  var buffer = soundFile.buffer;
+p5.SoundFile.prototype.processPeaks = function(callback, _initThreshold, _minThreshold, _minPeaks) {
+  var bufLen = this.buffer.length;
+  var sampleRate = this.buffer.sampleRate;
+  var buffer = this.buffer;
 
   var initialThreshold = _initThreshold || 0.9,
       threshold = initialThreshold,
@@ -138,6 +137,9 @@ function processPeaks(soundFile, callback, _initThreshold, minThreshold, minPeak
        return intB.count - intA.count;
 
     }).splice(0,5);
+
+    // set this SoundFile's tempo to the top tempo ??
+    this.tempo = topTempos[0].tempo
 
     // step 4:
     // new array of peaks at top tempo within a bpmVariance
