@@ -48,28 +48,13 @@ function setup() {
 }
 
 function draw() {
-	background(225);
+  background(225);
 
-	// image(pg_tempo,0,0); // display detected tempi
-	// image(pg_beats,0,100); // display filtered beats we found preprocesing with a lp filter
+  // image(pg_tempo,0,0); // display detected tempi
+  // image(pg_beats,0,100); // display filtered beats we found preprocesing with a lp filter
 }
 
-// function drawPeaksAtTreshold(data, threshold) {
 
-//   for(var i = 0; i <  data.length;) {	
-//     if (data[i] > threshold) {
-//       var xpos = map(i,0,data.length,0,width);
-//       var intensity = map(data[i],threshold,0.3,0,255);
-//       var hei = map(data[i],threshold,0.3,3,50);
-//       pg_beats.stroke(intensity,0,0);
-//       pg_beats.line(xpos,3,xpos,47);
-
-//       // Skip forward ~ 1/8s to get past this peak.
-//       i += 6000; 
-//     }
-//     i++;
-//   }
-// }
 
 var Peak = function(amp, i) {
   this.sampleIndex = i;
@@ -136,19 +121,15 @@ function processPeaks(soundFile, callback) {
 
     }).splice(0,5);
 
-    var topTempo = topTempos[0].tempo;
+    // step 4:
+    // new array of peaks at top tempo within a bpmVariance
+    var bpmVariance = 5;
+    var tempoPeaks = getPeaksAtTopTempo(allPeaks, topTempos[0].tempo, filteredBuffer.sampleRate, bpmVariance);
 
-    // step 3:
-    // new array of peaks at top tempo
-    var tempoPeaks = getPeaksAtTopTempo(allPeaks, topTempo);
-
-
-    callback(allPeaks);
+    callback(tempoPeaks);
   }
 
 }
-
-
 
 
 
@@ -191,7 +172,9 @@ function countIntervalsBetweenNearbyPeaks(peaksObj) {
         var interval =  endPos - startPos;
 
         // add a sample interval to the startPeek in the allPeaks array
-        startPeak.intervals.push(interval);
+        if (interval > 0) {
+          startPeak.intervals.push(interval);
+        }
 
         // tally the intervals and return interval counts
         var foundInterval = intervalCounts.some(function(intervalCount, p) {
@@ -224,21 +207,18 @@ function groupNeighborsByTempo(intervalCounts, sampleRate) {
 
     try {
       // Convert an interval to tempo
-      var theoreticalTempo = 60 / (intervalCount.interval / sampleRate );
+      var theoreticalTempo = Math.abs( 60 / (intervalCount.interval / sampleRate ) );
 
-      if (!isFinite(theoreticalTempo)) {
-        return;
-      };
-
-      // Adjust the tempo to fit within the 90-180 BPM range
-      while (theoreticalTempo <= 90) theoreticalTempo *= 2;
-      while (theoreticalTempo >= 180) theoreticalTempo /= 2;
+      theoreticalTempo = mapTempo(theoreticalTempo);
 
       var foundTempo = tempoCounts.some(function(tempoCount) {
         if (tempoCount.tempo === theoreticalTempo)
           return tempoCount.count += intervalCount.count;
       });
       if (!foundTempo) {
+        if (isNaN(theoreticalTempo)) {
+          return;
+        }
         tempoCounts.push({
           tempo: Math.round(theoreticalTempo),
           count: intervalCount.count
@@ -254,11 +234,50 @@ function groupNeighborsByTempo(intervalCounts, sampleRate) {
 }
 
 // 4. peaks at top tempo
-function getPeaksAtTopTempo(peaksObj, tempo) {
+function getPeaksAtTopTempo(peaksObj, tempo, sampleRate, bpmVariance) {
+  var peaksAtTopTempo = [];
   var peaksArray = Object.keys(peaksObj).sort();
 
   // TO DO: filter out peaks that have the tempo and return
+  for (var i = 0; i < peaksArray.length; i++) {
+    var key = peaksArray[i];
+    var peak = peaksObj[key];
 
+    for (var j = 0; j < peak.intervals.length; j++) {
+      var intervalBPM = Math.round(Math.abs( 60 / (peak.intervals[j] / sampleRate) ) );
+
+      intervalBPM = mapTempo(intervalBPM);
+      var dif = intervalBPM - tempo;
+
+      if ( Math.abs(intervalBPM - tempo) < bpmVariance ) {
+        // convert sampleIndex to seconds
+        peaksAtTopTempo.push(peak.sampleIndex/44100);
+      }
+    }
+  }
+
+  // filter out peaks that are very close to each other
+  peaksAtTopTempo = peaksAtTopTempo.filter(function(peakTime, index, arr) {
+    var dif = arr[index + 1] - peakTime;
+    if (dif > 0.01) {
+      return true;
+    }
+  })
+
+  return peaksAtTopTempo;
+}
+
+function mapTempo(theoreticalTempo) {
+    // these scenarios create infinite while loop
+  if (!isFinite(theoreticalTempo) || theoreticalTempo == 0 ) {
+    return;
+  };
+
+  // Adjust the tempo to fit within the 90-180 BPM range
+  while (theoreticalTempo < 90) theoreticalTempo *= 2;
+  while (theoreticalTempo > 180 && theoreticalTempo > 90) theoreticalTempo /= 2;
+
+  return theoreticalTempo;
 }
 
 function onComplete(data) {
