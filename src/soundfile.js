@@ -1141,6 +1141,7 @@ define(function (require) {
    *  peaks above the initial threshold. If the total number of peaks are below the minimum number of peaks,
    *  it decreases the threshold and re-runs the analysis until either minPeaks or minThreshold are reached.
    *  
+   *  @method  processPeaks
    *  @param  {Function} callback       a function to call once this data is returned
    *  @param  {Number}   [initThreshold] initial threshold defaults to 0.9
    *  @param  {Number}   [minThreshold]   minimum threshold defaults to 0.22
@@ -1240,7 +1241,6 @@ define(function (require) {
       }
       i++;
     }
-
     return peaksObj;
   }
 
