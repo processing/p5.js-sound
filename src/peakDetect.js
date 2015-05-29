@@ -26,6 +26,11 @@ define(function (require) {
    *  For example, if the frameRate() = 60, you could detect the beat of a
    *  120 beat-per-minute song with this equation:
    *  <code> framesPerPeak = 60 / (estimatedBPM / 60 );</code>
+   *
+   *  Based on example contribtued by @b2renger, and a simple beat detection
+   *  explanation by <a
+   *  href="http://www.airtightinteractive.com/2013/10/making-audio-reactive-visuals/"
+   *  target="_blank">Felix Turner</a>.
    *  
    *  @class  PeakDetect
    *  @constructor
