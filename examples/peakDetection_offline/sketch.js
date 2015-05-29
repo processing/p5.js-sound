@@ -1,6 +1,6 @@
-// Beat Detection with offline context
-// port of this code : http://tech.beatport.com/2014/web-audio/beat-detection-using-web-audio/
-// and this one too : https://github.com/JMPerez/beats-audio-api
+// Beat Detection with offline context example by @b2renger
+// Building off an example by Joe Sullivan : http://tech.beatport.com/2014/web-audio/beat-detection-using-web-audio/
+// and this example, too : https://github.com/JMPerez/beats-audio-api
 
 
 var file ='../_files/Tripping.mp3'
