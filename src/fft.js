@@ -92,17 +92,15 @@ define(function (require) {
    *  </code></div>
    */
   p5.FFT = function(smoothing, bins) {
-    var SMOOTHING = smoothing || 0.8;
-    if (smoothing === 0) {
-      SMOOTHING = smoothing;
-    }
+    this.smoothing = smoothing || 0.8;
+    this.bins = bins || 1024;
     var FFT_SIZE = bins*2 || 2048;
     this.input = this.analyser = p5sound.audiocontext.createAnalyser();
 
-    // default connections to p5sound master
-    p5sound.output.connect(this.analyser);
+    // default connections to p5sound fftMeter
+    p5sound.fftMeter.connect(this.analyser);
 
-    this.analyser.smoothingTimeConstant = SMOOTHING;
+    this.analyser.smoothingTimeConstant = this.smoothing;
     this.analyser.fftSize = FFT_SIZE;
 
     this.freqDomain = new Uint8Array(this.analyser.frequencyBinCount);
@@ -123,16 +121,17 @@ define(function (require) {
    *
    *  @method  setInput
    *  @param {Object} [source] p5.sound object (or web audio API source node)
-   *  @param {Number} [bins]  Must be a power of two between 16 and 1024
    */
-  p5.FFT.prototype.setInput = function(source, bins) {
-    if (bins) {
-      this.analyser.fftSize = bins*2;
-    }
-    if (source.output){
-      source.output.connect(this.analyser);
+  p5.FFT.prototype.setInput = function(source) {
+    if (!source) {
+      p5sound.fftMeter.connect(this.analyser);
     } else {
-      source.connect(this.analyser);
+      if (source.output) {
+        source.output.connect(this.analyser);
+      } else if (source.connect) {
+        source.connect(this.analyser);
+      }
+      p5sound.fftMeter.disconnect();
     }
   };
 
@@ -145,7 +144,7 @@ define(function (require) {
    *  @method waveform
    *  @param {Number} [bins]    Must be a power of two between
    *                            16 and 1024. Defaults to 1024.
-   *  @return {Array}  Array    Array of amplitude values (0-255)
+   *  @return {Array}  Array    Array of amplitude values (-1 to 1)
    *                            over time. Array length = bins.
    *
    */
@@ -154,9 +153,14 @@ define(function (require) {
       this.analyser.fftSize = bins*2;
     }
     this.analyser.getByteTimeDomainData(this.timeDomain);
-    var  normalArray = Array.apply( [], this.timeDomain );
-    normalArray.length === this.analyser.fftSize;
-    normalArray.constructor === Array;
+
+    // scale values to -1, 1
+    var  normalArray = new Array();
+    for (var i = 0; i < this.timeDomain.length; i++) {
+      var scaled = map(this.timeDomain[i], 0, 255, -1, 1);
+      normalArray.push(scaled);
+    }
+
     return normalArray;
   };
 
