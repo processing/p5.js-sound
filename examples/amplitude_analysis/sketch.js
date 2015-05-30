@@ -78,4 +78,14 @@ function keyPressed(e) {
 
 }
 
+function mouseClicked() {
+if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
+if ( getMasterVolume() == 0) {
+setMasterVolume(0, 1);
+} else {
+setMasterVolume(0.1),1;
+}
+}
+}
+
 
