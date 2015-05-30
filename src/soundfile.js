@@ -31,12 +31,14 @@ define(function (require) {
    *  @return {Object}    p5.SoundFile Object
    *  @example 
    *  <div><code>
+   *  
    *  function preload() {
    *    mySound = loadSound('assets/doorbell.mp3');
    *  }
    *
    *  function setup() {
-   *    mySound.play(0, 0.2, 0.2);
+   *    mySound.setVolume(0.1);
+   *    mySound.play();
    *  }
    * 
    * </code></div>
@@ -414,10 +416,11 @@ define(function (require) {
    *  
    *  function preload() {
    *    soundFormats('ogg', 'mp3');
-   *    soundFile = loadSound('../_files/Damscray_-_Dancing_Tiger_02');
+   *    soundFile = loadSound('assets/Damscray_-_Dancing_Tiger_02.mp3');
    *  }
    *  function setup() {
    *    background(0, 255, 0);
+   *    soundFile.setVolume(0.1);
    *    soundFile.loop();
    *  }
    *  function keyTyped() {
@@ -956,6 +959,7 @@ define(function (require) {
   };
 
   p5.SoundFile.prototype.dispose = function() {
+    var now = p5sound.audiocontext.currentTime;
     this.stop(now);
     if (this.buffer && this.bufferSourceNode) {
       for (var i = 0; i < this.bufferSourceNodes.length - 1; i++) {

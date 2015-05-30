@@ -15,14 +15,14 @@ define(function (require) {
    *  @return {Object}    Amplitude Object
    *  @example
    *  <div><code>
-   *  var sound, amplitude;
+   *  var sound, amplitude, cnv;
    *  
    *  function preload(){
    *    sound = loadSound('assets/beat.mp3');
    *  }
-   *  function setup() { 
+   *  function setup() {
+   *    cnv = createCanvas(100,100);
    *    amplitude = new p5.Amplitude();
-   *    sound.play();
    *  }
    *  function draw() {
    *    background(0);
@@ -30,6 +30,13 @@ define(function (require) {
    *    var level = amplitude.getLevel();
    *    var size = map(level, 0, 1, 0, 200);
    *    ellipse(width/2, height/2, size, size);
+   *  }
+   *  cnv.mouseClicked(function() {
+   *    if (sound.isPlaying() ){
+   *      sound.stop();
+   *    } else {
+   *      sound.play();
+   *    }
    *  }
    *  </code></div>
    */

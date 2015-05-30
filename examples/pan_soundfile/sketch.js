@@ -3,10 +3,14 @@
 // Pan the sound file left when ball hits left edge and vice versa.
 // ====================
 
+
+
 var ball;
 var soundFile;
 
 function preload() {
+
+  console.log(p5);
   soundFormats('mp3', 'ogg');
   soundFile = loadSound( '../_files/drum');
 }

@@ -39,8 +39,8 @@ define(function (require) {
     var time = tFromNow || 0;
     var t = ac.currentTime + time;
     var v = (val + 1) / 2;
-    var leftVal = Math.cos(v*Math.PI/2);
-    var rightVal = Math.sin(v * Math.PI/2);
+    var rightVal = Math.cos(v*Math.PI/2);
+    var leftVal = Math.sin(v * Math.PI/2);
     this.left.gain.linearRampToValueAtTime(leftVal, t);
     this.right.gain.linearRampToValueAtTime(rightVal, t);
   };
