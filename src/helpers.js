@@ -4,31 +4,10 @@ define(function (require) {
 
   var p5sound = require('master');
 
-  /**
-   *  <p>Set the master amplitude (volume) for sound in this sketch.</p>
-   *
-   *  <p>Note that values greater than 1.0 may lead to digital distortion.</p>
-   * 
-   *  <p><b>How This Works</b>: When you load the p5.sound module, it
-   *  creates a single instance of p5sound. All sound objects in this
-   *  module output to p5sound before reaching your computer's output.
-   *  So if you change the amplitude of p5sound, it impacts all of the
-   *  sound in this module.</p>
-   *
-   *  @method masterVolume
-   *  @param {Number} volume   Master amplitude (volume) for sound in
-   *                           this sketch. Should be between 0.0
-   *                           (silence) and 1.0. Values greater than
-   *                           1.0 may lead to digital distortion.
-   *  @example
-   *  <div><code>
-   *  masterVolume(.5);
-   *  </code></div>
-   *   
-   */
-  p5.prototype.masterVolume = function(vol){
-    p5sound.output.gain.value = vol;
-  };
+
+  
+
+
 
 
   /**
@@ -45,11 +24,7 @@ define(function (require) {
     return p5sound.audiocontext.sampleRate;
   };
 
-
-  p5.prototype.getMasterVolume = function(){
-    return p5sound.output.gain.value;
-  };
-
+ 
   /**
    *  Returns the closest MIDI note value for
    *  a given frequency.
