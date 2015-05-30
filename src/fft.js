@@ -151,6 +151,8 @@ define(function (require) {
   p5.FFT.prototype.waveform = function(bins) {
     if (bins) {
       this.analyser.fftSize = bins*2;
+    } else {
+      this.analyser.fftSize = this.bins * 2;
     }
     this.analyser.getByteTimeDomainData(this.timeDomain);
 
@@ -231,6 +233,8 @@ define(function (require) {
   p5.FFT.prototype.analyze = function(bins) {
     if (bins) {
       this.analyser.fftSize = bins*2;
+    } else {
+      this.analyser.fftSize = this.bins*2;
     }
     this.analyser.getByteFrequencyData(this.freqDomain);
     var  normalArray = Array.apply( [], this.freqDomain );
@@ -338,6 +342,9 @@ define(function (require) {
    *                               Defaults to 0.8.
    */
   p5.FFT.prototype.smooth = function(s) {
+    if (s) {
+      this.smoothing = s;
+    }
     this.analyser.smoothingTimeConstant = s;
   };
 
