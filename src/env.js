@@ -54,11 +54,24 @@ define(function (require) {
    *  var triOsc;
    *  
    *  function setup() {
+   *    background(0);
+   *    noStroke();
+   *    fill(255);
+   *    textAlign(CENTER);
+   *    text('click to play', width/2, height/2);
+   *
    *    env = new p5.Env(aT, aL, dT, dL, sT, sL, rT);
    *    triOsc = new p5.Oscillator('triangle');
    *    triOsc.amp(env); // give the env control of the triOsc's amp
    *    triOsc.start();
-   *    env.play();
+   *  }
+   *
+   *  // mouseClick triggers envelope if over canvas
+   *  function mouseClicked() {
+   *    // is mouse over canvas?
+   *    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
+   *      env.play(noise);
+   *    }
    *  }
    *  </code></div>
    */

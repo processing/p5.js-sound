@@ -20,7 +20,14 @@ define(function (require) {
    *  var noise, env, delay;
    *  
    *  function setup() {
+   *    background(0);
+   *    noStroke();
+   *    fill(255);
+   *    textAlign(CENTER);
+   *    text('click to play', width/2, height/2);
+   *    
    *    noise = new p5.Noise('brown');
+   *    noise.amp(0);
    *    noise.start();
    *    
    *    delay = new p5.Delay();
@@ -33,7 +40,14 @@ define(function (require) {
    *    // play the noise with an envelope,
    *    // a series of fades ( time / value pairs )
    *    env = new p5.Env(.01, 0.2, .2, .1);
-   *    env.play(noise);
+   *  }
+   *
+   *  // mouseClick triggers envelope
+   *  function mouseClicked() {
+   *    // is mouse over canvas?
+   *    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
+   *      env.play(noise);
+   *    }
    *  }
    *  </code></div>
    */

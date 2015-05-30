@@ -23,6 +23,15 @@ define(function (require) {
    *  function setup() {
    *    cnv = createCanvas(100,100);
    *    amplitude = new p5.Amplitude();
+   *
+   *    // start / stop the sound when canvas is clicked
+   *    cnv.mouseClicked(function() {
+   *      if (sound.isPlaying() ){
+   *        sound.stop();
+   *      } else {
+   *        sound.play();
+   *      }
+   *    });
    *  }
    *  function draw() {
    *    background(0);
@@ -31,13 +40,7 @@ define(function (require) {
    *    var size = map(level, 0, 1, 0, 200);
    *    ellipse(width/2, height/2, size, size);
    *  }
-   *  cnv.mouseClicked(function() {
-   *    if (sound.isPlaying() ){
-   *      sound.stop();
-   *    } else {
-   *      sound.play();
-   *    }
-   *  }
+   *
    *  </code></div>
    */
   p5.Amplitude = function(smoothing) {
