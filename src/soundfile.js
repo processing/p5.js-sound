@@ -67,6 +67,9 @@ define(function (require) {
     this._paused = false;
     this._pauseTime = 0;
 
+    // cues for scheduling events with addCue() removeCue()
+    this._cues = [];
+
     //  position of the most recently played sample
     this._lastPos = 0;
     this._counterNode;
@@ -1107,6 +1110,10 @@ define(function (require) {
 
       // update the lastPos
       self._lastPos = inputBuffer[ inputBuffer.length - 1 ] || 0;
+
+      // do any callbacks that have been scheduled
+      self._onTimeUpdate(self._lastPos);
+
     };
 
     return cNode;
@@ -1374,5 +1381,130 @@ define(function (require) {
 
     return theoreticalTempo;
   }
+
+
+  /*** SCHEDULE EVENTS ***/
+
+  /**
+   *  Schedule events to trigger every time a MediaElement
+   *  (audio/video) reaches a playback cue point.
+   *
+   *  Accepts a callback function, a time (in seconds) at which to trigger
+   *  the callback, and an optional parameter for the callback.
+   *
+   *  Time will be passed as the first parameter to the callback function,
+   *  and param will be the second parameter.
+   *
+   *
+   *  @method  addCue
+   *  @param {Number}   time     Time in seconds, relative to this media
+   *                             element's playback. For example, to trigger
+   *                             an event every time playback reaches two
+   *                             seconds, pass in the number 2. This will be
+   *                             passed as the first parameter to
+   *                             the callback function.
+   *  @param {Function} callback Name of a function that will be
+   *                             called at the given time. The callback will
+   *                             receive time and (optionally) param as its
+   *                             two parameters.
+   *  @param {Object} [value]    An object to be passed as the
+   *                             second parameter to the
+   *                             callback function.
+   *  @return {Number} id ID of this cue,
+   *                      useful for removeCue(id)
+   *  @example
+   *  <div><code>
+   *  function setup() {
+   *    background(255,255,255);
+   *    
+   *    audioEl = createAudio('assets/beat.mp3');
+   *    audioEl.show();
+   *
+   *    // schedule three calls to changeBackground
+   *    audioEl.addCue(0.50, changeBackground, color(255,0,0) );
+   *    audioEl.addCue(2.02, changeBackground, color(0,255,0) );
+   *    audioEl.addCue(3.02, changeBackground, color(0,0,255) );
+   *  }
+   *
+   *  function changeBackground(val) {
+   *    background(val);
+   *  }
+   *  </code></div>
+   */
+  p5.SoundFile.prototype.addCue = function(time, callback, val) {
+    var id = this._cueIDCounter++;
+
+    var cue = new Cue(callback, time, id, val);
+    this._cues.push(cue);
+
+    // if (!this.elt.ontimeupdate) {
+    //   this.elt.ontimeupdate = this._onTimeUpdate.bind(this);
+    // }
+
+    return id;
+  };
+
+  /**
+   *  Remove a callback based on its ID. The ID is returned by the
+   *  addCue method.
+   *
+   *  @method removeCue
+   *  @param  {Number} id ID of the cue, as returned by addCue
+   */
+  p5.SoundFile.prototype.removeCue = function(id) {
+    for (var i = 0; i < this._cues.length; i++) {
+      var cue = this._cues[i];
+      if (cue.id === id) {
+        this.cues.splice(i, 1);
+      }
+    }
+
+    if (this._cues.length === 0) {
+      // TO DO: remove callback
+      // this.elt.ontimeupdate = null
+    }
+  };
+
+  /**
+   *  Remove all of the callbacks that had originally been scheduled
+   *  via the addCue method.
+   *
+   *  @method  clearCues
+   */
+  p5.SoundFile.prototype.clearCues = function() {
+    this._cues = [];
+    // this.elt.ontimeupdate = null;
+  };
+
+  // private method that checks for cues to be fired if events
+  // have been scheduled using addCue(callback, time).
+  p5.SoundFile.prototype._onTimeUpdate = function(position) {
+    var playbackTime = position/this.buffer.sampleRate;
+
+    for (var i = 0 ; i < this._cues.length; i++) {
+      var callbackTime = this._cues[i].time;
+      var val = this._cues[i].val;
+
+
+      if (this._prevTime < callbackTime && callbackTime <= playbackTime) {
+
+        // pass the scheduled callbackTime as parameter to the callback
+        this._cues[i].callback(val);
+      }
+
+    }
+
+    this._prevTime = playbackTime;
+  };
+
+
+  // Cue inspired by JavaScript setTimeout, and the
+  // Tone.js Transport Timeline Event, MIT License Yotam Mann 2015 tonejs.org
+  var Cue = function(callback, time, id, val) {
+    this.callback = callback;
+    this.time = time;
+    this.id = id;
+    this.val = val;
+  };
 
 });
