@@ -92,17 +92,15 @@ define(function (require) {
    *  </code></div>
    */
   p5.FFT = function(smoothing, bins) {
-    var SMOOTHING = smoothing || 0.8;
-    if (smoothing === 0) {
-      SMOOTHING = smoothing;
-    }
+    this.smoothing = smoothing || 0.8;
+    this.bins = bins || 1024;
     var FFT_SIZE = bins*2 || 2048;
     this.input = this.analyser = p5sound.audiocontext.createAnalyser();
 
-    // default connections to p5sound master
-    p5sound.output.connect(this.analyser);
+    // default connections to p5sound fftMeter
+    p5sound.fftMeter.connect(this.analyser);
 
-    this.analyser.smoothingTimeConstant = SMOOTHING;
+    this.analyser.smoothingTimeConstant = this.smoothing;
     this.analyser.fftSize = FFT_SIZE;
 
     this.freqDomain = new Uint8Array(this.analyser.frequencyBinCount);
@@ -123,21 +121,22 @@ define(function (require) {
    *
    *  @method  setInput
    *  @param {Object} [source] p5.sound object (or web audio API source node)
-   *  @param {Number} [bins]  Must be a power of two between 16 and 1024
    */
-  p5.FFT.prototype.setInput = function(source, bins) {
-    if (bins) {
-      this.analyser.fftSize = bins*2;
-    }
-    if (source.output){
-      source.output.connect(this.analyser);
+  p5.FFT.prototype.setInput = function(source) {
+    if (!source) {
+      p5sound.fftMeter.connect(this.analyser);
     } else {
-      source.connect(this.analyser);
+      if (source.output) {
+        source.output.connect(this.analyser);
+      } else if (source.connect) {
+        source.connect(this.analyser);
+      }
+      p5sound.fftMeter.disconnect();
     }
   };
 
   /**
-   *  Returns an array of amplitude values (between 0-255) that represent
+   *  Returns an array of amplitude values (between -1.0 and +1.0) that represent
    *  a snapshot of amplitude readings in a single buffer. Length will be
    *  equal to bins (defaults to 1024). Can be used to draw the waveform
    *  of a sound. 
@@ -145,19 +144,41 @@ define(function (require) {
    *  @method waveform
    *  @param {Number} [bins]    Must be a power of two between
    *                            16 and 1024. Defaults to 1024.
-   *  @return {Array}  Array    Array of amplitude values (0-255)
+   *  @param {String} [precision] If any value is provided, will return results
+   *                              in a Float32 Array which is more precise
+   *                              than a regular array.
+   *  @return {Array}  Array    Array of amplitude values (-1 to 1)
    *                            over time. Array length = bins.
    *
    */
-  p5.FFT.prototype.waveform = function(bins) {
-    if (bins) {
-      this.analyser.fftSize = bins*2;
+  p5.FFT.prototype.waveform = function() {
+    var bins, mode, normalArray;
+
+    for (var i = 0; i < arguments.length; i++) {
+      if (typeof(arguments[i]) === 'number') {
+        bins = arguments[i];
+        this.analyser.fftSize = bins * 2;
+      } else if (typeof(arguments[i]) === 'string') {
+        mode = arguments[i];
+      }
     }
-    this.analyser.getByteTimeDomainData(this.timeDomain);
-    var  normalArray = Array.apply( [], this.timeDomain );
-    normalArray.length === this.analyser.fftSize;
-    normalArray.constructor === Array;
-    return normalArray;
+
+    // getFloatFrequencyData doesnt work in Safari as of 5/2015
+    if (mode && !p5.prototype._isSafari()) {
+      timeToFloat(this, this.timeDomain);
+      this.analyser.getFloatTimeDomainData(this.timeDomain);
+      return this.timeDomain;
+    } else {
+      timeToInt(this, this.timeDomain);
+      this.analyser.getByteTimeDomainData(this.timeDomain);
+      var  normalArray = new Array();
+      for (var i = 0; i < this.timeDomain.length; i++) {
+        var scaled = map(this.timeDomain[i], 0, 255, -1, 1);
+        normalArray.push(scaled);
+      }
+      return normalArray;
+    }
+
   };
 
   /**
@@ -172,6 +193,10 @@ define(function (require) {
    *  @method analyze
    *  @param {Number} [bins]    Must be a power of two between
    *                             16 and 1024. Defaults to 1024.
+   *  @param {Number} [scale]    If "dB," returns decibel
+   *                             float measurements between
+   *                             -140 and 0 (max).
+   *                             Otherwise returns integers from 0-255.
    *  @return {Array} spectrum    Array of energy (amplitude/volume)
    *                              values across the frequency spectrum.
    *                              Lowest energy (silence) = 0, highest
@@ -224,15 +249,29 @@ define(function (require) {
    *                                   
    *
    */
-  p5.FFT.prototype.analyze = function(bins) {
-    if (bins) {
-      this.analyser.fftSize = bins*2;
+  p5.FFT.prototype.analyze = function() {
+    var bins, mode;
+    for (var i = 0; i < arguments.length; i++) {
+      if (arguments[i] instanceof Number) {
+        bins = this.bins = arguments[i];
+        this.analyser.fftSize = this.bins * 2;
+      } else if (arguments[i] instanceof String) {
+        mode = arguments[i];
+      }
     }
-    this.analyser.getByteFrequencyData(this.freqDomain);
-    var  normalArray = Array.apply( [], this.freqDomain );
-    normalArray.length === this.analyser.fftSize;
-    normalArray.constructor === Array;
-    return normalArray;
+
+    if (mode && mode.toLowerCase() === 'db') {
+      freqToFloat(this);
+      this.analyser.getFloatFrequencyData(this.freqDomain);
+    } else {
+      freqToInt(this, this.freqDomain);
+      this.analyser.getByteFrequencyData(this.freqDomain);
+      var normalArray = Array.apply( [], this.freqDomain );
+      normalArray.length === this.analyser.fftSize;
+      normalArray.constructor === Array;
+      return normalArray;
+    }
+
   };
 
   /**
@@ -334,7 +373,33 @@ define(function (require) {
    *                               Defaults to 0.8.
    */
   p5.FFT.prototype.smooth = function(s) {
+    if (s) {
+      this.smoothing = s;
+    }
     this.analyser.smoothingTimeConstant = s;
   };
+
+  // helper methods to convert type from float (dB) to int (0-255)
+  var freqToFloat = function (fft) {
+    if (fft.freqDomain instanceof Float32Array === false) {
+      fft.freqDomain = new Float32Array(fft.analyser.frequencyBinCount);
+    }
+  };
+  var freqToInt = function (fft) {
+    if (fft.freqDomain instanceof Uint8Array === false) {
+      fft.freqDomain = new Uint8Array(fft.analyser.frequencyBinCount);
+    }
+  };
+  var timeToFloat = function (fft) {
+    if (fft.timeDomain instanceof Float32Array === false) {
+      fft.timeDomain = new Float32Array(fft.analyser.frequencyBinCount);
+    }
+  };
+  var timeToInt = function (fft) {
+    if (fft.timeDomain instanceof Uint8Array === false) {
+      fft.timeDomain = new Uint8Array(fft.analyser.frequencyBinCount);
+    }
+  };
+
 
 });

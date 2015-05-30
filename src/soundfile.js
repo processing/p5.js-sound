@@ -44,11 +44,11 @@ define(function (require) {
    * </code></div>
    */
   p5.SoundFile = function(paths, onload, whileLoading) {
-    if((typeof paths) == "string"){
+    if((typeof paths) == 'string' || typeof paths[0] === 'string'){
       var path = p5.prototype._checkFileFormats(paths);
       this.url = path;
     }
-    else if((typeof paths) == "object"){
+    else if((typeof paths) == 'object'){
       if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
         // The File API isn't supported in this browser 
         throw('Unable to load file because the File API is not supported');

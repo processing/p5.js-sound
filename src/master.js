@@ -30,9 +30,11 @@ define(function (require) {
     // connect limiter to output
     this.limiter.connect(this.output);
 
-    // meter is just for measuring global Amplitude
+    // meter is just for global Amplitude / FFT analysis
     this.meter = audiocontext.createGain();
+    this.fftMeter = audiocontext.createGain();
     this.output.connect(this.meter);
+    this.output.connect(this.fftMeter);
 
     // connect output to destination
     this.output.connect(this.audiocontext.destination);
