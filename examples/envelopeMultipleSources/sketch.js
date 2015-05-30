@@ -43,6 +43,8 @@ function setup(){
 
   trigger = millis();
 
+  masterVolume(0.3);
+
   triOsc = new p5.TriOsc();
   triOsc.amp(0);
   triOsc.start();
@@ -65,7 +67,7 @@ function setup(){
 function draw(){
   var size = 10;
   background(255, 255,255,20);
-  ellipse(map ( (trigger - millis()) % duration, 1000, 0, 0, width), map ( a.getLevel(), 0, .5, height-size, 0), size, size);
+  ellipse(map ( (trigger - millis()) % duration, 1000, 0, 0, width), map ( a.getLevel(), 0, .3, height-size, 0), size, size);
 
   // If the determined trigger moment in time matches up with the computer clock and we if the 
   // sequence of notes hasn't been finished yet the next note gets played.
@@ -85,6 +87,16 @@ function draw(){
     // Loop the sequence, notice the jitter
     if(note == 12) {
       note = 0;
+    }
+  }
+}
+
+function mouseClicked() {
+  if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
+    if ( getMasterVolume() == 0) {
+      setMasterVolume(0.3, 0.5);
+    } else {
+      setMasterVolume(0, 0.5);
     }
   }
 }
