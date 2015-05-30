@@ -122,7 +122,7 @@ define(function (require) {
    */
   p5.Amplitude.prototype.setInput = function(source, smoothing) {
 
-    p5sound.meter.disconnect(this.processor);
+    p5sound.meter.disconnect();
 
     if (smoothing) {
       this.smoothing = smoothing;
