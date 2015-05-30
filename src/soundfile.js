@@ -153,6 +153,7 @@ define(function (require) {
    *  }
    *
    *  function setup() {
+   *    mySound.setVolume(0.1);
    *    mySound.play();
    *  }
    *  </code></div>
@@ -328,11 +329,19 @@ define(function (require) {
       this.bufferSourceNodes.push(this.bufferSourceNode);
       this.bufferSourceNode._arrayIndex = this.bufferSourceNodes.length - 1;
 
+
       // delete this.bufferSourceNode from the sources array when it is done playing:
       this.bufferSourceNode.onended = function(e) {
         var theNode = this;
+
+        // if (self.bufferSourceNodes.length === 1) {
+        this._playing = false;
+        // }
         setTimeout( function(){
           self.bufferSourceNodes.splice(theNode._arrayIndex, 1);
+          if (self.bufferSourceNodes.length === 0) {
+            self._playing = false;
+          }
         }, 1);
       }
     }
@@ -756,6 +765,12 @@ define(function (require) {
       this._counterNode.playbackRate.linearRampToValueAtTime(Math.abs(rate), now);
 
     }
+  };
+
+  // TO DO: document this
+  p5.SoundFile.prototype.setPitch = function(num) {
+    var newPlaybackRate = (midiToFreq(num) / midiToFreq(60));
+    this.rate(newPlaybackRate);
   };
 
   p5.SoundFile.prototype.getPlaybackRate = function() {
@@ -1415,19 +1430,39 @@ define(function (require) {
    *  @example
    *  <div><code>
    *  function setup() {
-   *    background(255,255,255);
+   *    background(0);
+   *    noStroke();
+   *    fill(255);
+   *    textAlign(CENTER);
+   *    text('click to play', width/2, height/2);
    *    
-   *    audioEl = createAudio('assets/beat.mp3');
-   *    audioEl.show();
+   *    mySound = loadSound('assets/beat.mp3');
    *
-   *    // schedule three calls to changeBackground
-   *    audioEl.addCue(0.50, changeBackground, color(255,0,0) );
-   *    audioEl.addCue(2.02, changeBackground, color(0,255,0) );
-   *    audioEl.addCue(3.02, changeBackground, color(0,0,255) );
+   *    // schedule calls to changeText
+   *    mySound.addCue(0.50, changeText, "hello" );
+   *    mySound.addCue(1.00, changeText, "p5" );
+   *    mySound.addCue(1.50, changeText, "what" );
+   *    mySound.addCue(2.00, changeText, "do" );
+   *    mySound.addCue(2.50, changeText, "you" );
+   *    mySound.addCue(3.00, changeText, "want" );
+   *    mySound.addCue(4.00, changeText, "to" );
+   *    mySound.addCue(5.00, changeText, "make" );
+   *    mySound.addCue(6.00, changeText, "?" );
    *  }
    *
-   *  function changeBackground(val) {
-   *    background(val);
+   *  function changeText(val) {
+   *    background(0);
+   *    text(val, width/2, height/2);
+   *  }
+   *
+   *  function mouseClicked() {
+   *    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
+   *      if (mySound.isPlaying() ) {
+   *        mySound.stop();
+   *      } else {
+   *        mySound.play();
+   *      }
+   *    }
    *  }
    *  </code></div>
    */

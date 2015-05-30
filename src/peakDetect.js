@@ -20,19 +20,23 @@ define(function (require) {
    *  scaled between 0 and 1. It is logarithmic, so 0.1 is half as loud
    *  as 1.0.</p>
    *
+   *  <p>
    *  The update method is meant to be run in the draw loop, and
-   *  <code>frames</code> determines how many loops must pass before
+   *  <b>frames</b> determines how many loops must pass before
    *  another peak can be detected.
    *  For example, if the frameRate() = 60, you could detect the beat of a
    *  120 beat-per-minute song with this equation:
    *  <code> framesPerPeak = 60 / (estimatedBPM / 60 );</code>
+   *  </p>
    *
+   *  <p>
    *  Based on example contribtued by @b2renger, and a simple beat detection
    *  explanation by <a
    *  href="http://www.airtightinteractive.com/2013/10/making-audio-reactive-visuals/"
    *  target="_blank">Felix Turner</a>.
+   *  </p>
    *  
-   *  @class  PeakDetect
+   *  @class  p5.PeakDetect
    *  @constructor
    *  @param {Number} [freq1]     lowFrequency - defaults to 20Hz
    *  @param {Number} [freq2]     highFrequency - defaults to 20000 Hz
@@ -47,18 +51,24 @@ define(function (require) {
    *  var ellipseWidth = 10;
    *
    *  function setup() {
-   *    cnv = createCanvas(100,100);
+   *    background(0);
+   *    noStroke();
+   *    fill(255);
+   *    textAlign(CENTER);
    *
    *    soundFile = loadSound('assets/beat.mp3');
+   *
+   *    // p5.PeakDetect requires a p5.FFT
    *    fft = new p5.FFT();
    *    peakDetect = new p5.PeakDetect();
    *
-   *    setupSound();
    *  }
    *
    *  function draw() {
    *    background(0);
+   *    text('click to play/pause', width/2, height/2);
    *
+   *    // peakDetect accepts an fft post-analysis
    *    fft.analyze();
    *    peakDetect.update(fft);
    *
@@ -71,15 +81,17 @@ define(function (require) {
    *    ellipse(width/2, height/2, ellipseWidth, ellipseWidth);
    *  }
    *
-   *  function setupSound() {
-   *    cnv.mouseClicked( function() {
+   *  // toggle play/stop when canvas is clicked
+   *  function mouseClicked() {
+   *    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
    *      if (soundFile.isPlaying() ) {
    *        soundFile.stop();
    *      } else {
    *        soundFile.play();
    *      }
-   *    });
+   *    }
    *  }
+   *  </code></div>
    */
   p5.PeakDetect = function(freq1, freq2, threshold, _framesPerPeak) {
     var framesPerPeak;

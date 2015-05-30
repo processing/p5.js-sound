@@ -59,6 +59,17 @@ define(function (require) {
    *      var h = -height + map(spectrum[i], 0, 255, height, 0);
    *      rect(x, height, width/spectrum.length, h);
    *    }
+   *    
+   *    isMouseOverCanvas();
+   *  }
+   *
+   *  function isMouseOverCanvas() {
+   *    var mX = mouseX, mY = mouseY;
+   *    if (mX > 0 && mX < width && mY < height && mY > 0) {
+   *      noise.amp(0.5, 0.2);
+   *    } else {
+   *      noise.amp(0, 0.2);
+   *    }
    *  }
    *  </code></div>
    */

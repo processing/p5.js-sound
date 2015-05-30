@@ -47,7 +47,8 @@ define(function (require) {
    *  }
    *
    *  function setup(){
-   *    createCanvas(100,100);
+   *    cnv = createCanvas(100,100);
+   *    sound.amp(0);
    *    sound.loop();
    *    fft = new p5.FFT();
    *  }
@@ -75,10 +76,18 @@ define(function (require) {
    *      vertex(x,y);
    *    }
    *    endShape();
+   *
+   *    isMouseOverCanvas();
    *  }
-   *  
-   *  function mouseClicked(){
-   *    sound.stop();
+   *
+   *  // fade sound if mouse is over canvas
+   *  function isMouseOverCanvas() {
+   *    var mX = mouseX, mY = mouseY;
+   *    if (mX > 0 && mX < width && mY < height && mY > 0) {
+   *        sound.amp(0.5, 0.2);
+   *    } else {
+   *      sound.amp(0, 0.2);
+   *    }
    *  }
    *  </code></div>
    */
@@ -175,6 +184,7 @@ define(function (require) {
    *  function setup(){
    *    createCanvas(100,100);
    *    osc = new p5.Oscillator();
+   *    osc.amp(0);
    *    osc.start();
    *    fft = new p5.FFT();
    *  }
@@ -192,11 +202,23 @@ define(function (require) {
    *    for (var i = 0; i< spectrum.length; i++){
    *      var x = map(i, 0, spectrum.length, 0, width);
    *      var h = -height + map(spectrum[i], 0, 255, height, 0);
-   *      rect(x, height, width / spectrum.length, h )
+   *      rect(x, height, width / spectrum.length, h );
    *    }
    *
    *    stroke(255);
    *    text('Freq: ' + round(freq)+'Hz', 10, 10); 
+   *
+   *    isMouseOverCanvas();
+   *  }
+   *
+   *  // only play sound when mouse is over canvas
+   *  function isMouseOverCanvas() {
+   *    var mX = mouseX, mY = mouseY;
+   *    if (mX > 0 && mX < width && mY < height && mY > 0) {
+   *      osc.amp(0.5, 0.2);
+   *    } else {
+   *      osc.amp(0, 0.2);
+   *    }
    *  }
    *  </code></div>
    *                                   
