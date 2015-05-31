@@ -1,3 +1,6 @@
+p5.sound v. 0.2.11
+- Safari patch
+
 p5.sound v. 0.2.1
 
 - p5.PeakDetect class (thx @b2renger !)
