@@ -179,8 +179,10 @@ define(function (require) {
   };
 
   p5.Reverb.prototype.dispose = function() {
-    this.convolverNode.buffer = null;
-    this.convolverNode = null;
+    if (this.convolverNode) {
+      this.convolverNode.buffer = null;
+      this.convolverNode = null;
+    }
     if (typeof(this.output) !== 'undefined'){
       this.output.disconnect();
       this.output = null;
