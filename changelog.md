@@ -1,3 +1,15 @@
+p5.sound v. 0.2.1
+
+- p5.PeakDetect class (thx @b2renger !)
+- p5.SoundFile drag and drop works with p5.File and HTML File API (thx @johnpasquarello !)
+- p5.FFT enhancements
+- ``.waveform()`` always scaled -1 to 1, can return p5 Array or Float32Array ^
+- ``.spectrum()`` db mode
+- p5.SoundFile.setCue()
+- p5.Phrase, Part and Score tweaks for musical timing: callbacks accept time first, then parameter^
+- various bug fixes
+-  ^ breaking changes
+
 p5.sound.js v0.1.9 2015-05-02
 - new, more accurate approach to p5.SoundFile.currentTime
 - fix bug in Chrome 43+
