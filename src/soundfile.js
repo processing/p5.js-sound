@@ -298,18 +298,21 @@ define(function (require) {
         duration = this.buffer.duration - cueStart;
       }
 
+      // TO DO: Fix this. It broke in Safari
+      // 
       // method of controlling gain for individual bufferSourceNodes, without resetting overall soundfile volume
       // if (typeof(this.bufferSourceNode.gain === 'undefined' ) ) {
       //   this.bufferSourceNode.gain = p5sound.audiocontext.createGain();
       // }
       // this.bufferSourceNode.connect(this.bufferSourceNode.gain);
-      // // set local amp if provided, otherwise 1
-      // var a = amp || 1;
+      // set local amp if provided, otherwise 1
+      var a = amp || 1;
       // console.log(a);
       // this.bufferSourceNode.gain.gain.setValueAtTime(a, p5sound.audiocontext.currentTime);
       // this.bufferSourceNode.gain.connect(this.output); 
-      this.bufferSourceNode.connect(this.output); 
 
+      this.bufferSourceNode.connect(this.output); 
+      this.output.gain.value = a;
 
       // not necessary with _initBufferSource ?
       // this.bufferSourceNode.playbackRate.cancelScheduledValues(now);

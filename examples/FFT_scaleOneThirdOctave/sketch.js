@@ -25,8 +25,6 @@ function draw() {
   beginShape();
   for (var i = 0; i < len; i++) {
     var point = smoothPoint(scaledSpectrum, i);
-    // newBuffer.push(point);
-    // var point = scaledSpectrum[i];
     var x = map(i, 0, len, 0, width);
     var y = map(point, 0, 255, height, 0);
     curveVertex(x, y);
