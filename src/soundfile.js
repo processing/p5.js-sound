@@ -190,7 +190,6 @@ define(function (require) {
       // decode asyncrohonously
       var self = this;
       request.onload = function() {
-        console.log('loaded data');
         ac.decodeAudioData(request.response, function(buff) {
           self.buffer = buff;
           self.panner.inputChannels(buff.numberOfChannels);
@@ -307,7 +306,6 @@ define(function (require) {
       // this.bufferSourceNode.connect(this.bufferSourceNode.gain);
       // set local amp if provided, otherwise 1
       var a = amp || 1;
-      // console.log(a);
       // this.bufferSourceNode.gain.gain.setValueAtTime(a, p5sound.audiocontext.currentTime);
       // this.bufferSourceNode.gain.connect(this.output); 
 
@@ -321,14 +319,11 @@ define(function (require) {
 
       // if it was paused, play at the pause position
       if (this._paused){
-        console.log(time, this.pauseTime, duration);
         this.bufferSourceNode.start(time, this.pauseTime, duration);
         this._counterNode.start(time, this.pauseTime, duration);
 
       }
       else {
-        // this.pauseTime = 0;
-        console.log('start');
         this.bufferSourceNode.start(time, cueStart, duration);
         this._counterNode.start(time, cueStart, duration);
       }

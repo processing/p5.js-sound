@@ -32,7 +32,6 @@ define(function (require) {
     this.left.connect(this.output, 0, 1);
     this.right.connect(this.output, 0, 0);
     this.output.connect(output);
-    console.log(input, output);
   };
 
   // -1 is left, +1 is right
