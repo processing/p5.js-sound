@@ -44,14 +44,16 @@ define(function (require) {
    * </code></div>
    */
   p5.SoundFile = function(paths, onload, whileLoading) {
-    if((typeof paths) == 'string' || typeof paths[0] === 'string'){
-      var path = p5.prototype._checkFileFormats(paths);
-      this.url = path;
-    }
-    else if((typeof paths) == 'object'){
-      if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
-        // The File API isn't supported in this browser 
-        throw('Unable to load file because the File API is not supported');
+    if (typeof paths !== 'undefined') {
+      if (typeof paths == 'string' || typeof paths[0] == 'string'){
+        var path = p5.prototype._checkFileFormats(paths);
+        this.url = path;
+      }
+      else if((typeof paths) == 'object'){
+        if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
+          // The File API isn't supported in this browser 
+          throw('Unable to load file because the File API is not supported');
+        }
       }
 
       // if type is a p5.File...get the actual file
@@ -578,8 +580,9 @@ define(function (require) {
    *  Stop playback on all of this soundfile's sources.
    *  @private
    */
-  p5.SoundFile.prototype.stopAll = function(time) {
+  p5.SoundFile.prototype.stopAll = function(_time) {
     var now = p5sound.audiocontext.currentTime;
+    var time = _time || 0;
     if (this.buffer && this.bufferSourceNode) {
       for (var i = 0; i < this.bufferSourceNodes.length; i++){
         if (typeof(this.bufferSourceNodes[i]) != undefined){

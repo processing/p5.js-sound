@@ -62,11 +62,11 @@ define(function (require) {
    *  @method  process
    *  @param  {Object} src     p5.sound / Web Audio object with a sound
    *                           output.
-   *  @param  {[Number]} seconds Duration of the reverb, in seconds.
+   *  @param  {Number} [seconds] Duration of the reverb, in seconds.
    *                           Min: 0, Max: 10. Defaults to 3.
-   *  @param  {[Number]} decayRate Percentage of decay with each echo.
+   *  @param  {Number} [decayRate] Percentage of decay with each echo.
    *                            Min: 0, Max: 100. Defaults to 2.
-   *  @param  {[Boolean]} reverse Play the reverb backwards or forwards.
+   *  @param  {Boolean} [reverse] Play the reverb backwards or forwards.
    */
   p5.Reverb.prototype.process = function(src, seconds, decayRate, reverse) {
     src.connect(this.input);
@@ -91,11 +91,11 @@ define(function (require) {
    *  assigning a new input.
    *  
    *  @method  set
-   *  @param  {[Number]} seconds Duration of the reverb, in seconds.
+   *  @param  {Number} [seconds] Duration of the reverb, in seconds.
    *                           Min: 0, Max: 10. Defaults to 3.
-   *  @param  {[Number]} decayRate Percentage of decay with each echo.
+   *  @param  {Number} [decayRate] Percentage of decay with each echo.
    *                            Min: 0, Max: 100. Defaults to 2.
-   *  @param  {[Boolean]} reverse Play the reverb backwards or forwards.
+   *  @param  {Boolean} [reverse] Play the reverb backwards or forwards.
    */
   p5.Reverb.prototype.set = function(seconds, decayRate, reverse) {
     var rebuild = false;

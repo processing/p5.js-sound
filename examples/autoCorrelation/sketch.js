@@ -10,7 +10,7 @@
  *  Example by Jason Sigal and Golan Levin.
  */
 
-var source, fft, osc;
+var source, fft;
 var bNormalize = true;
 var centerClip = false;
 
@@ -20,9 +20,6 @@ function setup() {
 
   source = new p5.AudioIn();
   source.start();
-
-  osc = new p5.Oscillator();
-  osc.start();
 
   fft = new p5.FFT();
   fft.setInput(source);
@@ -38,7 +35,7 @@ function draw() {
   beginShape();
   for (var i = 0; i < corrBuff.length; i++) {
     var w = map(i, 0, corrBuff.length, 0, width);
-    var h = map(corBuffer[i], -1, 1, height, 0);
+    var h = map(corrBuff[i], -1, 1, height, 0);
     curveVertex(w, h);
   }
   endShape();
@@ -72,7 +69,7 @@ function autoCorrelate(buffer) {
       }
     }
 
-    // -1...1
+    // average to a value between -1 and 1
     newBuffer[lag] = sum/nSamples;
   }
 

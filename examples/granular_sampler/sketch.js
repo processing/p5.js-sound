@@ -17,7 +17,7 @@ var poly_counter = 0;
 var grainDur = 1; // length of the grain
 
 function preload(){
-    source_file = loadSound('../_files/Soni_Ventorum_Wind_Quintet_-_08_-_Danzi_Wind_Quintet_Op_67_No_3_In_E-Flat_Major_4_Allegretto.mp3'); // preload the sound
+  source_file = loadSound('../_files/Soni_Ventorum_Wind_Quintet_-_08_-_Danzi_Wind_Quintet_Op_67_No_3_In_E-Flat_Major_4_Allegretto.mp3'); // preload the sound
 }
 
 function setup() {
@@ -108,11 +108,14 @@ GranularVoice.prototype.playGrain = function(start,rate){
   this.sound.play(0,rate,1,start,this.grainDur+1); // we need to play longer than grainDur because of the rate
 
   // acess the gain node to control it with ramps
-  this.sound.source.gain.gain.cancelScheduledValues(now);
-  this.sound.source.gain.gain.setValueAtTime(0.0, now); // start at zero
-  this.sound.source.gain.gain.linearRampToValueAtTime(this.amp,now + this.attack); // go to amp during attack
-  this.sound.source.gain.gain.linearRampToValueAtTime(this.amp, now + (this.attack + this.grainDur) ); // stay during grain duration
-  this.sound.source.gain.gain.linearRampToValueAtTime(-0.0,now + (this.attack + this.grainDur  + this.release) ); // fo to zero for release  
+  if (this.sound.source) {
+    this.sound.source.gain.gain.cancelScheduledValues(now);
+    this.sound.source.gain.gain.setValueAtTime(0.0, now); // start at zero
+    this.sound.source.gain.gain.linearRampToValueAtTime(this.amp,now + this.attack); // go to amp during attack
+    this.sound.source.gain.gain.linearRampToValueAtTime(this.amp, now + (this.attack + this.grainDur) ); // stay during grain duration
+    this.sound.source.gain.gain.linearRampToValueAtTime(-0.0,now + (this.attack + this.grainDur  + this.release) ); // fo to zero for release  
+  }
+
 }
 
 GranularVoice.prototype.setAmp = function(newamp){

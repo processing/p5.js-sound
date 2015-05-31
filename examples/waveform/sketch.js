@@ -44,7 +44,7 @@ function draw() {
   for (var i = 0; i< waveform.length; i++){
     stroke(5);
     strokeWeight(5);
-    vertex(i*2, waveform[i]);
+    vertex(i*2, map(waveform[i], -1, 1, height, 0) );
   }
   endShape();
 }

@@ -4,12 +4,6 @@ define(function (require) {
 
   var p5sound = require('master');
 
-
-  
-
-
-
-
   /**
    * Returns a number representing the sample rate, in samples per second,
    * of all sound objects in this audio context. It is determined by the

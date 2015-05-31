@@ -98,8 +98,10 @@ function draw() {
   fft.analyze(); 
 
   // display and update our detector objects
-  text("onset detection",350,15);
-  text("beat detection ",750,15);
+  text("peak detection ",750,15);
+  text("40Hz-120Hz", 650, 80);
+  text("140Hz-400Hz", 750, 80);
+  text("400Hz-2.6kHz", 850, 80);
 
   for (var i = 0; i < detectors.length; i++) {
     detectors[i].update(fft);

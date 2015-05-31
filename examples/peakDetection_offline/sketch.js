@@ -12,8 +12,7 @@ var pg_beats; // to draw the beat detection on preprocessed song
 var pg_tempo; // draw our guessed tempi
 
 function preload(){
-    source_file = loadSound(file); // preload the sound
-   // clave = loadSound('cl.wav');
+  source_file = loadSound(file); // preload the sound
 }
 
 
@@ -55,5 +54,13 @@ function draw() {
 }
 
 function onComplete(data) {
-  console.log(data);
+  for (var i = 0; i < data.length; i++) {
+    source_file.addCue(data[i], logBeat);
+  }
+
+  source_file.play();
+}
+
+function logBeat() {
+  console.log('beat!');
 }

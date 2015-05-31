@@ -9,10 +9,8 @@ var ball;
 var soundFile;
 
 function preload() {
-
-  console.log(p5);
   soundFormats('mp3', 'ogg');
-  soundFile = loadSound( '../_files/drum');
+  soundFile = loadSound('../_files/drum');
 }
 
 function setup() {

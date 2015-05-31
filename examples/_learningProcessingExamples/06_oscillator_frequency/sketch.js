@@ -10,7 +10,7 @@ function setup() {
   createCanvas(720, 200);
 
   // Instantiate a Sine Wave Oscillator
-  osc = new p5.SinOsc(this);
+  osc = new p5.SinOsc();
 
   // Tell the Oscillator to start oscillating.
   // We hear the frequency of these oscillators as a pitch.
