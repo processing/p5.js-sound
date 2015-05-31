@@ -173,7 +173,7 @@ define(function (require) {
       this.analyser.getByteTimeDomainData(this.timeDomain);
       var  normalArray = new Array();
       for (var i = 0; i < this.timeDomain.length; i++) {
-        var scaled = map(this.timeDomain[i], 0, 255, -1, 1);
+        var scaled = p5.prototype.map(this.timeDomain[i], 0, 255, -1, 1);
         normalArray.push(scaled);
       }
       return normalArray;
