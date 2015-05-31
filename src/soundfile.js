@@ -190,6 +190,7 @@ define(function (require) {
       // decode asyncrohonously
       var self = this;
       request.onload = function() {
+        console.log('loaded data');
         ac.decodeAudioData(request.response, function(buff) {
           self.buffer = buff;
           self.panner.inputChannels(buff.numberOfChannels);
@@ -298,15 +299,17 @@ define(function (require) {
       }
 
       // method of controlling gain for individual bufferSourceNodes, without resetting overall soundfile volume
-      if (!this.bufferSourceNode.gain) {
-        this.bufferSourceNode.gain = p5sound.audiocontext.createGain();
-        this.bufferSourceNode.connect(this.bufferSourceNode.gain);
+      // if (typeof(this.bufferSourceNode.gain === 'undefined' ) ) {
+      //   this.bufferSourceNode.gain = p5sound.audiocontext.createGain();
+      // }
+      // this.bufferSourceNode.connect(this.bufferSourceNode.gain);
+      // // set local amp if provided, otherwise 1
+      // var a = amp || 1;
+      // console.log(a);
+      // this.bufferSourceNode.gain.gain.setValueAtTime(a, p5sound.audiocontext.currentTime);
+      // this.bufferSourceNode.gain.connect(this.output); 
+      this.bufferSourceNode.connect(this.output); 
 
-        // set local amp if provided, otherwise 1
-        var a = amp || 1;
-        this.bufferSourceNode.gain.gain.setValueAtTime(a, p5sound.audiocontext.currentTime);
-        this.bufferSourceNode.gain.connect(this.output); 
-      }
 
       // not necessary with _initBufferSource ?
       // this.bufferSourceNode.playbackRate.cancelScheduledValues(now);
@@ -315,11 +318,14 @@ define(function (require) {
 
       // if it was paused, play at the pause position
       if (this._paused){
+        console.log(time, this.pauseTime, duration);
         this.bufferSourceNode.start(time, this.pauseTime, duration);
         this._counterNode.start(time, this.pauseTime, duration);
+
       }
       else {
         // this.pauseTime = 0;
+        console.log('start');
         this.bufferSourceNode.start(time, cueStart, duration);
         this._counterNode.start(time, cueStart, duration);
       }
@@ -330,7 +336,6 @@ define(function (require) {
       // add source to sources array, which is used in stopAll()
       this.bufferSourceNodes.push(this.bufferSourceNode);
       this.bufferSourceNode._arrayIndex = this.bufferSourceNodes.length - 1;
-
 
       // delete this.bufferSourceNode from the sources array when it is done playing:
       this.bufferSourceNode.onended = function(e) {
@@ -1079,13 +1084,19 @@ define(function (require) {
    *                     a mono source.
    */
   p5.SoundFile.prototype.setBuffer = function(buf){
-    var newBuffer = ac.createBuffer(2, buf[0].length, ac.sampleRate);
-    var numChannels = 0;
-    for (var channelNum = 0; channelNum < buf.length; channelNum++){
-      var channel = newBuffer.getChannelData(channelNum);
-      channel.set(buf[channelNum]);
-      numChannels++;
+    var numChannels = buf.length;
+    var size = buf[0].length;
+    var newBuffer = ac.createBuffer(numChannels, size, ac.sampleRate);
+
+    if (!buf[0] instanceof Float32Array) {
+      buf[0] = new Float32Array(buf[0]);
     }
+
+    for (var channelNum = 0; channelNum < numChannels; channelNum++){
+      var channel = newBuffer.getChannelData( channelNum );
+      channel.set(buf[channelNum]);
+    }
+
     this.buffer = newBuffer;
 
     // set numbers of channels on input to the panner
