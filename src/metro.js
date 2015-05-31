@@ -39,7 +39,7 @@ define(function (require) {
           var phraseArray = thisPhrase.sequence;
           var bNum = this.metroTicks % (phraseArray.length );
           if (phraseArray[bNum] !== 0 && (this.metroTicks < phraseArray.length || !thisPhrase.looping) ) {
-            thisPhrase.callback(phraseArray[bNum], secondsFromNow);
+            thisPhrase.callback(secondsFromNow, phraseArray[bNum]);
           }
         }
       }

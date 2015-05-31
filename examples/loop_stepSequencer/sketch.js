@@ -34,12 +34,12 @@ function setup() {
 
 }
 
-function playKick(params, time) {
+function playKick(time, params) {
   click.rate(params);
   click.play(time);
 }
 
-function playSnare(params, time) {
+function playSnare(time, params) {
   beatbox.rate(params);
   beatbox.play(time);
 }
