@@ -890,6 +890,7 @@ define(function (require) {
    * @returns {Float32Array} Array of peaks.
    */
   p5.SoundFile.prototype.getPeaks = function(length) {
+
     if (this.buffer) {
       // set length to window's width if no length is provided
       if (!length) {
@@ -917,7 +918,7 @@ define(function (require) {
                 max = value;
               }
             }
-            if (c === 0 || max > peaks[i]) {
+            if (c === 0 || Math.abs(max) > peaks[i]) {
               peaks[i] = max;
             }
           }
@@ -926,6 +927,7 @@ define(function (require) {
         return peaks;
       }
     }
+
     else {
       throw 'Cannot load peaks yet, buffer is not loaded';
     }

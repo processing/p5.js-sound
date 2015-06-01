@@ -158,7 +158,8 @@ define(function (require) {
       if (typeof(arguments[i]) === 'number') {
         bins = arguments[i];
         this.analyser.fftSize = bins * 2;
-      } else if (typeof(arguments[i]) === 'string') {
+      }
+      if (typeof(arguments[i]) === 'string') {
         mode = arguments[i];
       }
     }
@@ -251,11 +252,13 @@ define(function (require) {
    */
   p5.FFT.prototype.analyze = function() {
     var bins, mode;
+
     for (var i = 0; i < arguments.length; i++) {
-      if (arguments[i] instanceof Number) {
+      if (typeof(arguments[i]) === 'number') {
         bins = this.bins = arguments[i];
         this.analyser.fftSize = this.bins * 2;
-      } else if (arguments[i] instanceof String) {
+      }
+      if (typeof(arguments[i]) === 'string') {
         mode = arguments[i];
       }
     }
@@ -263,6 +266,7 @@ define(function (require) {
     if (mode && mode.toLowerCase() === 'db') {
       freqToFloat(this);
       this.analyser.getFloatFrequencyData(this.freqDomain);
+      return this.freqDomain;
     } else {
       freqToInt(this, this.freqDomain);
       this.analyser.getByteFrequencyData(this.freqDomain);
