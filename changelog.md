@@ -1,3 +1,6 @@
+p5.sound v. 0.2.12
+- p5.Gain
+
 p5.sound v. 0.2.11
 - Safari patch
 
