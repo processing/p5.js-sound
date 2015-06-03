@@ -122,7 +122,8 @@ module.exports = function(grunt) {
             'soundRecorder': 'src/soundRecorder',
             'signal': 'src/signal',
             'metro': 'src/metro',
-            'peakdetect': 'src/peakDetect'
+            'peakdetect': 'src/peakDetect',
+            'gain': 'src/gain'
           },
           useStrict: true,
           wrap: {
