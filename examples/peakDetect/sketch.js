@@ -76,9 +76,9 @@ function setup() {
    }
 
    // gui
-   button = createButton('play');
-   button.position(3, 3);
-   button.mousePressed(play);
+  // button = createButton('play');
+   //button.position(3, 3);
+   //button.mousePressed(play);
 }
 
 
@@ -120,7 +120,7 @@ function mouseClicked(){
 		source_file.play();	
 		source_file.play(0,1,1,playpos,src_length);	
 		playing = true;
-		button.html('pause');		
+	//	button.html('pause');		
 	}	
 	return false;//callback for p5js
 }
@@ -135,12 +135,12 @@ function keyTyped(){
 function play(){
 	if(playing){
 		source_file.pause();
-		button.html('play');
+	//	button.html('play');
 		playing = false;
 	}
 	else{
 		source_file.play();
-		button.html('pause');
+	//	button.html('pause');
 		playing = true;
 	}	
 }
