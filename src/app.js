@@ -22,6 +22,7 @@ define(function (require) {
   require('looper');
   require('soundRecorder');
   require('peakdetect');
+  require('gain');
 
   return p5SOUND;
 
