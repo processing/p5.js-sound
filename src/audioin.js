@@ -225,16 +225,8 @@ define(function (require) {
     }
   };
 
-  /**
-   *  Returns a list of available input sources. Some browsers
-   *  give the client the option to set their own media source.
-   *  Others allow JavaScript to determine which source,
-   *  and for this we have listSources() and setSource().<br/>
-   *
-   *  @method  listSources
-   *  @return {Array}
-   */
   p5.AudioIn.prototype.listSources = function() {
+    console.log('listSources is deprecated - please use AudioIn.getSources')
     console.log('input sources: ');
     console.log(p5sound.inputSources);
     if (p5sound.inputSources.length > 0) {
