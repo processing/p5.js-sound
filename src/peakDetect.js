@@ -42,8 +42,8 @@ define(function (require) {
    *  @param {Number} [freq2]     highFrequency - defaults to 20000 Hz
    *  @param {Number} [threshold] Threshold for detecting a beat between 0 and 1
    *                            scaled logarithmically where 0.1 is 1/2 the loudness
-   *                            of 1.0. Defaults to 0.25.
-   *  @param {Number} [framesPerPeak]     Defaults to 5.
+   *                            of 1.0. Defaults to 0.35.
+   *  @param {Number} [framesPerPeak]     Defaults to 20.
    *  @example
    *  <div><code>
    *  
@@ -106,11 +106,14 @@ define(function (require) {
     this.threshold = threshold || 0.35;
     this.cutoff = 0;
 
-    // how much to increase the cutoff
+    // how much to increase the cutoff 
+    // TO DO: document this / figure out how to make it accessible
     this.cutoffMult = 1.5;
 
     this.energy = 0;
     this.penergy = 0;
+
+    // TO DO: document this property / figure out how to make it accessible
     this.currentValue = 0;
 
     /**
