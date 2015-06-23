@@ -42,8 +42,8 @@ define(function (require) {
    *  @param {Number} [freq2]     highFrequency - defaults to 20000 Hz
    *  @param {Number} [threshold] Threshold for detecting a beat between 0 and 1
    *                            scaled logarithmically where 0.1 is 1/2 the loudness
-   *                            of 1.0. Defaults to 0.25.
-   *  @param {Number} [framesPerPeak]     Defaults to 5.
+   *                            of 1.0. Defaults to 0.35.
+   *  @param {Number} [framesPerPeak]     Defaults to 20.
    *  @example
    *  <div><code>
    *  
@@ -99,15 +99,22 @@ define(function (require) {
     // framesPerPeak determines how often to look for a beat.
     // If a beat is provided, try to look for a beat based on bpm
 
-    this.framesPerPeak = _framesPerPeak || 5;
+    this.framesPerPeak = _framesPerPeak || 20;
     this.framesSinceLastPeak = 0;
     this.decayRate = 0.95;
 
-    this.threshold = threshold || 0.25;
+    this.threshold = threshold || 0.35;
     this.cutoff = 0;
+
+    // how much to increase the cutoff 
+    // TO DO: document this / figure out how to make it accessible
+    this.cutoffMult = 1.5;
 
     this.energy = 0;
     this.penergy = 0;
+
+    // TO DO: document this property / figure out how to make it accessible
+    this.currentValue = 0;
 
     /**
      *  isDetected is set to true when a peak is detected.
@@ -145,7 +152,7 @@ define(function (require) {
       this.isDetected = true;
 
       // debounce
-      this.cutoff = nrg * 1.1;
+      this.cutoff = nrg * this.cutoffMult;
       this.framesSinceLastPeak = 0;
     } else {
       this.isDetected = false;
@@ -156,14 +163,17 @@ define(function (require) {
         this.cutoff = Math.max(this.cutoff, this.threshold);
       }
     }
+
+    this.currentValue = nrg;
     this.penergy = nrg;
   };
 
   /**
    *  onPeak accepts two arguments: a function to call when
-   *  a peak is detected, and optionally a value to pass
-   *  into that function.
+   *  a peak is detected. The value of the peak,
+   *  between 0.0 and 1.0, is passed to the callback.
    *   
+   *  @method  onPeak
    *  @param  {Function} callback Name of a function that will
    *                              be called when a peak is
    *                              detected.
@@ -173,20 +183,49 @@ define(function (require) {
    *  @example
    *  <div><code>
    *  var cnv, soundFile, fft, peakDetect;
+   *  var ellipseWidth = 0;
    *  
    *  function setup() {
    *    cnv = createCanvas(100,100);
-   *    
-   *    cnv.mouseClicked = function() {
-   *      soundFile.play();
-   *    }
-   *    
-   *  }
-   *
-   *  function draw() {
+   *    textAlign(CENTER);
    *  
+   *    soundFile = loadSound('assets/beat.mp3');
+   *    fft = new p5.FFT();
+   *    peakDetect = new p5.PeakDetect();
+   *  
+   *    setupSound();
+   *  
+   *    // when a beat is detected, call triggerBeat()
+   *    peakDetect.onPeak(triggerBeat);
    *  }
-   *
+   *  
+   *  function draw() {
+   *    background(0);
+   *    fill(255);
+   *    text('click to play', width/2, height/2);
+   *  
+   *    fft.analyze();
+   *    peakDetect.update(fft);
+   *  
+   *    ellipseWidth *= 0.95;
+   *    ellipse(width/2, height/2, ellipseWidth, ellipseWidth);
+   *  }
+   *  
+   *  // this function is called by peakDetect.onPeak
+   *  function triggerBeat() {
+   *    ellipseWidth = 50;
+   *  }
+   *  
+   *  // mouseclick starts/stops sound
+   *  function setupSound() {
+   *    cnv.mouseClicked( function() {
+   *      if (soundFile.isPlaying() ) {
+   *        soundFile.stop();
+   *      } else {
+   *        soundFile.play();
+   *      }
+   *    });
+   *  }
    *  </code></div>
    */
   p5.PeakDetect.prototype.onPeak = function(callback, val) {
