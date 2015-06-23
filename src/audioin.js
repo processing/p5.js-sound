@@ -241,7 +241,7 @@ define(function (require) {
    * dialogue.
    *
    * @method  getSources
-   * @param  {Function} callback] a callback to handle the sources 
+   * @param  {Function} callback a callback to handle the sources 
    *                               when they have been enumerated
    */
   p5.AudioIn.prototype.getSources = function (callback) {
