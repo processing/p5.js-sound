@@ -59,7 +59,7 @@ define(function (require) {
     // Some browsers let developer determine their input sources
     if (typeof window.MediaStreamTrack === 'undefined'){
       window.alert('This browser does not support MediaStreamTrack');
-    } else if (typeof window.MediaStreamTrack.getSources !== 'undefined') {
+    } else if (typeof window.MediaStreamTrack.getSources === 'function') {
       // Chrome supports getSources to list inputs. Dev picks default
       window.MediaStreamTrack.getSources(this._gotSources);
     } else {
@@ -195,11 +195,12 @@ define(function (require) {
    *  @private
    */
   p5.AudioIn.prototype._gotSources = function(sourceInfos) {
-    for (var i = 0; i!== sourceInfos.length; i++) {
+    for (var i = 0; i< sourceInfos.length; i++) {
       var sourceInfo = sourceInfos[i];
       if (sourceInfo.kind === 'audio') {
         // add the inputs to inputSources
         p5sound.inputSources.push(sourceInfo);
+        return sourceInfo;
       }
     }
   };
@@ -224,25 +225,43 @@ define(function (require) {
     }
   };
 
-  /**
-   *  Returns a list of available input sources. Some browsers
-   *  give the client the option to set their own media source.
-   *  Others allow JavaScript to determine which source,
-   *  and for this we have listSources() and setSource().<br/>
-   *
-   *  @method  listSources
-   *  @return {Array}
-   */
   p5.AudioIn.prototype.listSources = function() {
+    console.log('listSources is deprecated - please use AudioIn.getSources')
     console.log('input sources: ');
     console.log(p5sound.inputSources);
     if (p5sound.inputSources.length > 0) {
-      return p5sound.inputSources;
+      //return p5sound.inputSources;
     } else {
       return 'This browser does not support MediaStreamTrack.getSources()';
     }
   };
-
+  /**
+   * Returns a list of available input sources. Chrome allows the 
+   * the user to access a list of possible media sources. Firefox 
+   * allows the user to choose from input sources in the permissions
+   * dialogue.
+   *
+   * @method  getSources
+   * @param  {Function} callback [a callback to handle the sources 
+   * when they have been enumerated]
+   * @return {[type]}            [description]
+   */
+  p5.AudioIn.prototype.getSources = function (callback) {
+    if(typeof window.MediaStreamTrack.getSources === 'function') {
+      window.MediaStreamTrack.getSources(function (data) {
+        for (var i = 0, max = data.length; i < max; i++) {
+          var sourceInfo = data[i];
+          if (sourceInfo.kind === 'audio') {
+          // add the inputs to inputSources
+          p5sound.inputSources.push(sourceInfo);
+          }
+        }
+        callback(data);
+      });
+    } else {
+      console.log('This browser does not support MediaStreamTrack.getSources()');
+    }
+  };
   /**
    *  Set the input source. Accepts a number representing a
    *  position in the array returned by listSources().
