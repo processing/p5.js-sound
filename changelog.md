@@ -1,3 +1,7 @@
+p5.sound v. 0.2.13
+- add p5.AudioIn getSources(callback) method
+- p5.AudioIn listSources is deprecated.
+
 p5.sound v. 0.2.12
 - p5.Gain
 
