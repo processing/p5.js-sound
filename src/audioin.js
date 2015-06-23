@@ -228,9 +228,8 @@ define(function (require) {
   p5.AudioIn.prototype.listSources = function() {
     console.log('listSources is deprecated - please use AudioIn.getSources')
     console.log('input sources: ');
-    console.log(p5sound.inputSources);
     if (p5sound.inputSources.length > 0) {
-      //return p5sound.inputSources;
+      return p5sound.inputSources;
     } else {
       return 'This browser does not support MediaStreamTrack.getSources()';
     }
@@ -242,9 +241,8 @@ define(function (require) {
    * dialogue.
    *
    * @method  getSources
-   * @param  {Function} callback [a callback to handle the sources 
-   * when they have been enumerated]
-   * @return {[type]}            [description]
+   * @param  {Function} callback] a callback to handle the sources 
+   *                               when they have been enumerated
    */
   p5.AudioIn.prototype.getSources = function (callback) {
     if(typeof window.MediaStreamTrack.getSources === 'function') {
