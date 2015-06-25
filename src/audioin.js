@@ -199,7 +199,7 @@ define(function (require) {
       var sourceInfo = sourceInfos[i];
       if (sourceInfo.kind === 'audio') {
         // add the inputs to inputSources
-        p5sound.inputSources.push(sourceInfo);
+        //p5sound.inputSources.push(sourceInfo);
         return sourceInfo;
       }
     }
@@ -235,14 +235,39 @@ define(function (require) {
     }
   };
   /**
-   * Returns a list of available input sources. Chrome allows the 
-   * the user to access a list of possible media sources. Firefox 
-   * allows the user to choose from input sources in the permissions
-   * dialogue.
+   * Chrome only. Returns a list of available input sources 
+   * and allows the user to set the media source. Firefox allows 
+   * the user to choose from input sources in the permissions dialogue
+   * instead of enumerating available sources and selecting one.
+   * Note: in order to have descriptive media names your page must be 
+   * served over a secure (HTTPS) connection and the page should 
+   * request user media before enumerating devices. Otherwise device 
+   * ID will be a long device ID number and does not specify device 
+   * type. For example see 
+   * https://simpl.info/getusermedia/sources/index.html vs.
+   * http://simpl.info/getusermedia/sources/index.html
    *
    * @method  getSources
    * @param  {Function} callback a callback to handle the sources 
    *                               when they have been enumerated
+   * @example
+   *  <div><code>
+   *  var audiograb;
+   *      
+   *  function setup(){
+   *    //new audioIn
+   *    audioGrab = new p5.AudioIn();
+   *    
+   *    audioGrab.getSources(function(sourceList) {
+   *      //print out the array of available sources
+   *      console.log(sourceList);
+   *      //set the source to the first item in the inputSources array
+   *      audioGrab.setSource(0);
+   *    });
+   *  }
+   *  function draw(){
+   *  }
+   *  </code></div>
    */
   p5.AudioIn.prototype.getSources = function (callback) {
     if(typeof window.MediaStreamTrack.getSources === 'function') {
@@ -254,7 +279,7 @@ define(function (require) {
           p5sound.inputSources.push(sourceInfo);
           }
         }
-        callback(data);
+        callback(p5sound.inputSources);
       });
     } else {
       console.log('This browser does not support MediaStreamTrack.getSources()');
