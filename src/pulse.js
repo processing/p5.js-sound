@@ -55,7 +55,6 @@ define(function (require) {
     this.dcGain = p5sound.audiocontext.createGain();
     this.dcOffset.connect(this.dcGain);
     this.dcGain.connect(this.output);
-
     // set delay time based on PWM width
     this.f = freq || 440;
     var mW = this.w / this.oscillator.frequency.value;
@@ -64,8 +63,6 @@ define(function (require) {
 
     // disconnect osc2 and connect it to delay, which is connected to output
     this.osc2.disconnect();
-    this.osc2.output.gain.minValue = -10;
-    this.osc2.output.gain.maxValue = 10;
     this.osc2.panner.disconnect();
     this.osc2.amp(-1); // inverted amplitude
     this.osc2.output.connect(this.dNode);
