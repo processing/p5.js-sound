@@ -1,3 +1,6 @@
+/*
+This sketch shows how to use the .getSources function of p5.AudioIn()
+ */
 var audioGrab;
 var numSources = 0;
 var fft = [];
@@ -18,6 +21,7 @@ function setup() {
             audioGrabArray[i] = new p5.AudioIn();
             audioGrabArray[i].setSource(i);
             audioGrabArray[i].start();
+            console.log()
 
             //from the FFT example
             fft[i] = new p5.FFT();
