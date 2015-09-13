@@ -126,7 +126,7 @@ define(function (require) {
   };
 
   // register preload handling of loadSound
-  p5.prototype.registerPreloadMethod('loadSound');
+  p5.prototype.registerPreloadMethod('loadSound', p5);
 
   /**
    *  loadSound() returns a new p5.SoundFile from a specified

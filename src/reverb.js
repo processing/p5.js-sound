@@ -285,7 +285,7 @@ define(function (require) {
 
   p5.Convolver.prototype = Object.create(p5.Reverb.prototype);
 
-  p5.prototype.registerPreloadMethod('createConvolver');
+  p5.prototype.registerPreloadMethod('createConvolver', p5);
 
   /**
    *  Create a p5.Convolver. Accepts a path to a soundfile 
