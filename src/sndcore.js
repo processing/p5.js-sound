@@ -160,7 +160,7 @@ define(function (require) {
   var iOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false );
 
   if (iOS) {
-    window.addEventListener('touchstart', function() {
+    window.addEventListener('touchend', function() {
 
     // create empty buffer
     var buffer = audiocontext.createBuffer(1, 1, 22050);
