@@ -88,10 +88,10 @@ define(function (require) {
   // Polyfills & SHIMS (inspired by tone.js and the AudioContext MonkeyPatch https://github.com/cwilso/AudioContext-MonkeyPatch/ (c) 2013 Chris Wilson, Licensed under the Apache License) //
 
   if (typeof audiocontext.createGain !== 'function'){
-    window.audioContext.createGain = window.audioContext.createGainNode;
+    audiocontext.createGain = audiocontext.createGainNode;
   }
   if (typeof audiocontext.createDelay !== 'function'){
-    window.audioContext.createDelay = window.audioContext.createDelayNode;
+    audiocontext.createDelay = audiocontext.createDelayNode;
   }
   if (typeof window.AudioBufferSourceNode.prototype.start !== 'function'){
     window.AudioBufferSourceNode.prototype.start = window.AudioBufferSourceNode.prototype.noteGrainOn;
