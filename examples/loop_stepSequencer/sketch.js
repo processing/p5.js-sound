@@ -14,8 +14,8 @@ var part; // a part we will loop
 
 function preload() {
   soundFormats('mp3', 'ogg');
-  click = loadSound('../_files/drum');
-  beatbox = loadSound('../_files/beatbox');
+  click = loadSound('../files/drum');
+  beatbox = loadSound('../files/beatbox');
 
 }
 

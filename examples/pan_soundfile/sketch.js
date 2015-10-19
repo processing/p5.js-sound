@@ -10,7 +10,7 @@ var soundFile;
 
 function preload() {
   soundFormats('mp3', 'ogg');
-  soundFile = loadSound('../_files/drum');
+  soundFile = loadSound('../files/drum');
 }
 
 function setup() {

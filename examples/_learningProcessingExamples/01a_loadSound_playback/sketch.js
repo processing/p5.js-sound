@@ -4,7 +4,7 @@
 var song;
 
 function setup() {
-  song = loadSound('../../_files/lucky_dragons_-_power_melody.mp3');
+  song = loadSound('../../files/lucky_dragons_-_power_melody.mp3');
   createCanvas(640, 360);
   background(255,0,0);
 }

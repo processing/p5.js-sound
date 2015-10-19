@@ -14,7 +14,7 @@ function setup() {
   // Load the sound file. 
   // We have included both an MP3 and an OGG version.
   soundFormats('mp3', 'ogg');
-  dingdong = loadSound('../../_files/doorbell.mp3');
+  dingdong = loadSound('../../files/doorbell.mp3');
 
   // Create a new doorbell
   doorbell = new Doorbell(width/2, height/2, 64);

@@ -5,7 +5,7 @@
 function setup() {
   createCanvas(400,200);
   soundFormats('ogg', 'mp3');
-  soundFile = loadSound('../_files/Damscray_-_Dancing_Tiger_01', soundReady);
+  soundFile = loadSound('../files/Damscray_-_Dancing_Tiger_01', soundReady);
 }
 
 function soundReady(){

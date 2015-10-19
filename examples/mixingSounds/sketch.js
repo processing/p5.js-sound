@@ -5,8 +5,8 @@ var gain1, gain2, gain3;
 
 function preload(){
   soundFormats('ogg', 'mp3');
-  sound1 = loadSound('../_files/Damscray_-_Dancing_Tiger_01');
-  sound2 = loadSound('../_files/beat.mp3');
+  sound1 = loadSound('../files/Damscray_-_Dancing_Tiger_01');
+  sound2 = loadSound('../files/beat.mp3');
 }
 
 function setup() {

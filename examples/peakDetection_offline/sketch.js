@@ -7,7 +7,7 @@ var source_file; // sound file
 
 
 function preload(){
-  source_file = loadSound('../_files/Tripping.mp3'); // preload the sound
+  source_file = loadSound('../files/Tripping.mp3'); // preload the sound
 }
 
 

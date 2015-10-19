@@ -28,7 +28,7 @@ var frequencySpectrum = [];
 
 function preload() {
   soundFormats('mp3', 'ogg');
-  soundFile = loadSound('../_files/lucky_dragons_-_power_melody');
+  soundFile = loadSound('../files/lucky_dragons_-_power_melody');
 }
 
 function setup() {

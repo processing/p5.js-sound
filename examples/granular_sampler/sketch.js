@@ -17,7 +17,7 @@ var poly_counter = 0;
 var grainDur = 1; // length of the grain
 
 function preload(){
-  source_file = loadSound('../_files/Soni_Ventorum_Wind_Quintet_-_08_-_Danzi_Wind_Quintet_Op_67_No_3_In_E-Flat_Major_4_Allegretto.mp3'); // preload the sound
+  source_file = loadSound('../files/Soni_Ventorum_Wind_Quintet_-_08_-_Danzi_Wind_Quintet_Op_67_No_3_In_E-Flat_Major_4_Allegretto.mp3'); // preload the sound
 }
 
 function setup() {

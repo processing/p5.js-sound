@@ -4,7 +4,7 @@
 var song;
 
 function preload() {
-  song = loadSound('../../_files/lucky_dragons_-_power_melody.mp3');
+  song = loadSound('../../files/lucky_dragons_-_power_melody.mp3');
 }
 
 function setup() {

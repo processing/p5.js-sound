@@ -4,7 +4,7 @@ var ellipseWidth = 10;
 function setup() {
   cnv = createCanvas(100,100);
 
-  soundFile = loadSound('../_files/beat.mp3');
+  soundFile = loadSound('../files/beat.mp3');
   fft = new p5.FFT();
   peakDetect = new p5.PeakDetect();
 

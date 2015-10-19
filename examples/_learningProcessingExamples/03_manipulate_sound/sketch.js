@@ -7,7 +7,7 @@ var song;
 
 function preload() {
   // Load a sound file
-  song = loadSound('../../_files/Damscray_DancingTiger.mp3');
+  song = loadSound('../../files/Damscray_DancingTiger.mp3');
 }
 
 function setup() {

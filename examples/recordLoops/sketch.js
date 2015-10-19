@@ -10,7 +10,7 @@ var kick;
 
 function preload() {
   // load the kick
-  kick = loadSound('../_files/beatbox.mp3');
+  kick = loadSound('../files/beatbox.mp3');
 }
 
 function setup() {

@@ -14,7 +14,7 @@ function preload() {
   soundFormats('mp3', 'ogg');
 
   // load either beatbox.mp3 or beatbox.ogg, depending on the browser
-  soundFile = loadSound('../_files/beatbox.mp3');
+  soundFile = loadSound('../files/beatbox.mp3');
 }
 
 function setup() {

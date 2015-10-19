@@ -18,15 +18,15 @@ function preload() {
   soundFormats('ogg', 'mp3');
 
   // create a p5.Convolver
-  cVerb = createConvolver('../_files/bx-spring');
+  cVerb = createConvolver('../files/bx-spring');
 
   // add Impulse Responses to cVerb.impulses array, in addition to bx-spring
-  cVerb.addImpulse('../_files/small-plate');
-  cVerb.addImpulse('../_files/drum');
-  cVerb.addImpulse('../_files/concrete-tunnel');
+  cVerb.addImpulse('../files/small-plate');
+  cVerb.addImpulse('../files/drum');
+  cVerb.addImpulse('../files/concrete-tunnel');
 
   // load a sound that will be processed by the p5.ConvultionReverb
-  sound = loadSound('../_files/Damscray_DancingTiger');
+  sound = loadSound('../files/Damscray_DancingTiger');
 }
 
 function setup() {
