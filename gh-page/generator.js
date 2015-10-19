@@ -8,6 +8,7 @@ var path = require('path');
 
 // array of example names
 var exampleNames = getDirectories('./examples');
+var learningProcessingExamples = getDirectories('./examples/learningProcessingExamples');
 
 // output --> index.html
 var fileName = 'index.html';
@@ -15,13 +16,12 @@ var fileName = 'index.html';
 var stream = fs.createWriteStream(fileName);
 
 stream.once('open', function(fd) {
-  var html = buildHtml(exampleNames);
+  var html = buildHtml(exampleNames, learningProcessingExamples);
 
   stream.end(html);
 });
 
-
-function buildHtml(examples) {
+function buildHtml(exampleNames, learningProcessingExamples) {
   var header = '<link rel="stylesheet" type="text/css" href="./gh-page/main.css">';
   var body = '<div id="container">\n'
   + '<div id="lockup">\n <a href="http://p5js.org/">\n'
@@ -34,10 +34,15 @@ function buildHtml(examples) {
   + ' ~ <a href="http://github.com/processing/p5.js-sound">Source</a></h2>'
   + '<h3>Examples:</h3>';
 
-  examples.forEach(function(example) {
-    if (example[0] != '_') {
+  exampleNames.forEach(function(example) {
+    // include everything in example folder except for the files and _* folders:
+    if (example != 'files' && example[0] != '_' && example.indexOf('learning') != 0) {
       body += '<div><a href="examples/' + example + '">' + example + '</a></div>\n'
     };
+  });
+
+  learningProcessingExamples.forEach(function(example) {
+    body += '<div><a href="examples/learningProcessingExamples/' + example + '">Learning Processing: ' + example + '</a></div>\n'
   });
 
   body += '</div></div> \n';
