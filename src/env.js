@@ -70,7 +70,7 @@ define(function (require) {
    *  function mouseClicked() {
    *    // is mouse over canvas?
    *    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-   *      env.play(noise);
+   *      env.play(triOsc);
    *    }
    *  }
    *  </code></div>
