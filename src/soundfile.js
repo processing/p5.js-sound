@@ -63,7 +63,10 @@ define(function (require) {
 
       this.file = paths;
     }
-    
+
+    // private _onended callback, set by the method: onended(callback)
+    this._onended = function() {};
+
     this._looping = false;
     this._playing = false;
     this._paused = false;
@@ -339,6 +342,9 @@ define(function (require) {
       this.bufferSourceNode.onended = function(e) {
         var theNode = this;
 
+        // call the onended callback
+        self._onended(self);
+
         // if (self.bufferSourceNodes.length === 1) {
         this._playing = false;
         // }
@@ -590,6 +596,7 @@ define(function (require) {
       for (var i = 0; i < this.bufferSourceNodes.length; i++){
         if (typeof(this.bufferSourceNodes[i]) != undefined){
           try {
+            this.bufferSourceNodes[i].onended = function() {};
             this.bufferSourceNodes[i].stop(now + time);
           } catch(e) {
             // this was throwing errors only on Safari
@@ -597,7 +604,7 @@ define(function (require) {
         }
       }
     this._counterNode.stop(now + time);
-
+    this._onended(this);
     }
   };
 
@@ -972,12 +979,15 @@ define(function (require) {
     this.play();
   };
 
-  // private function for onended behavior
-  p5.SoundFile.prototype._onEnded = function(s) {
-    s.onended = function(s){
-      var now = p5sound.audiocontext.currentTime;
-      s.stop(now);
-    };
+  /**
+   *  Schedule an event to be called when the soundfile
+   *  reaches the end of a buffer.
+   *  
+   *  @param  {Function} callback [description]
+   *  @return {[type]}            [description]
+   */
+  p5.SoundFile.prototype.onended = function(callback) {
+    this._onended = callback;
   };
 
   p5.SoundFile.prototype.add = function() {
