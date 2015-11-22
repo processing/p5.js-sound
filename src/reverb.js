@@ -216,7 +216,8 @@ define(function (require) {
    *  @class p5.Convolver
    *  @constructor
    *  @param  {String}   path     path to a sound file
-   *  @param  {[Function]} callback function (optional)
+   *  @param  {Function} [callback] function to call when loading succeeds
+   *  @param  {Function} [errorCallback] function to call if loading fails
    *  @example
    *  <div><code>
    *  var cVerb, sound;
@@ -245,7 +246,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Convolver = function(path, callback) {
+  p5.Convolver = function(path, callback, errorCallback) {
     this.ac = p5sound.audiocontext;
 
     /**
@@ -269,7 +270,7 @@ define(function (require) {
 
     if (path) {
       this.impulses = [];
-      this._loadBuffer(path, callback);
+      this._loadBuffer(path, callback, errorCallback);
     }
     else {
       // parameters
@@ -339,14 +340,15 @@ define(function (require) {
    *  
    *  @param   {String}   path
    *  @param   {Function} callback
+   *  @param   {Function} errorCallback
    *  @private
    */
-  p5.Convolver.prototype._loadBuffer = function(path, callback){
+  p5.Convolver.prototype._loadBuffer = function(path, callback, errorCallback){
     path = p5.prototype._checkFileFormats(path);
     var request = new XMLHttpRequest();
     request.open('GET', path, true);
     request.responseType = 'arraybuffer';
-    // decode asyncrohonously
+    // decode asynchronously
     var self = this;
     request.onload = function() {
       var ac = p5.prototype.getAudioContext();
@@ -361,6 +363,28 @@ define(function (require) {
           callback(buffer);
         }
       });
+    };
+    request.onreadystatechange = function(e) {
+      if (request.readyState == 4 && request.status > 400) {
+        if (request.status == loggedError) {
+          return;
+        }
+        loggedError = request.status;
+
+        if (errorCallback) {
+          errorCallback(e.target);
+        } else {
+          console.warn('createConvolver could not load ' + request.responseURL + ' because of a ' + request.status + ' error: ' + request.statusText);
+        }
+      }
+      return;
+    };
+    request.onerror = function(e) {
+      if (errorCallback) {
+        errorCallback(e);
+      } else {
+        console.log(e.statusText);
+      }
     };
     request.send();
   };

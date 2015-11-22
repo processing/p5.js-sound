@@ -27,7 +27,13 @@ define(function (require) {
    *                               you may include multiple file formats in
    *                               an array. Alternately, accepts an object
    *                               from the HTML5 File API, or a p5.File.
-   *  @param {Function} [callback]   Name of a function to call once file loads
+   *  @param {Function} [successCallback]   Name of a function to call once file loads
+   *  @param {Function} [errorCallback]   Name of a function to call once file loads
+   *  @param {Function} [whileLoadingCallback]   Name of a function to call while file
+   *                                             is loading. That function will
+   *                                             received percentage loaded as a
+   *                                             parameter.
+   *                                             
    *  @return {Object}    p5.SoundFile Object
    *  @example 
    *  <div><code>
@@ -43,7 +49,7 @@ define(function (require) {
    * 
    * </code></div>
    */
-  p5.SoundFile = function(paths, onload, whileLoading) {
+  p5.SoundFile = function(paths, onload, onerror, whileLoading) {
     if (typeof paths !== 'undefined') {
       if (typeof paths == 'string' || typeof paths[0] == 'string'){
         var path = p5.prototype._checkFileFormats(paths);
@@ -115,7 +121,7 @@ define(function (require) {
 
     // it is possible to instantiate a soundfile with no path
     if (this.url || this.file) {
-      this.load(onload);
+      this.load(onload, onerror);
     }
 
     // add this p5.SoundFile to the soundArray
@@ -146,10 +152,12 @@ define(function (require) {
    *                                    i.e. ['sound.ogg', 'sound.mp3'].
    *                                    Alternately, accepts an object: either
    *                                    from the HTML5 File API, or a p5.File.
-   *  @param {Function} [callback]   Name of a function to call once file loads
-   *  @param {Function} [callback]   Name of a function to call while file is loading.
-   *                                 This function will receive a percentage from 0.0
-   *                                 to 1.0.
+   *  @param {Function} [successCallback]   Name of a function to call once file loads
+   *  @param {Function} [errorCallback]   Name of a function to call if there is
+   *                                      an error loading the file.
+   *  @param {Function} [whileLoading] Name of a function to call while file is loading.
+   *                                 This function will receive the percentage loaded
+   *                                 so far, from 0.0 to 1.0.
    *  @return {SoundFile}            Returns a p5.SoundFile
    *  @example 
    *  <div><code>
@@ -163,13 +171,13 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.prototype.loadSound = function(path, callback, whileLoading){
+  p5.prototype.loadSound = function(path, callback, onerror, whileLoading){
     // if loading locally without a server
     if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined' ) {
       alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
 
-    var s = new p5.SoundFile(path, callback, whileLoading);
+    var s = new p5.SoundFile(path, callback, onerror, whileLoading);
     return s;
   };
 
@@ -180,8 +188,11 @@ define(function (require) {
    *
    * @private
    * @param {Function} [callback]   Name of a function to call once file loads
+   * @param {Function} [callback]   Name of a function to call if there is an error
    */
-  p5.SoundFile.prototype.load = function(callback){
+  p5.SoundFile.prototype.load = function(callback, errorCallback){
+    var loggedError = false;
+
     if(this.url != undefined && this.url != ""){
       var sf = this;
       var request = new XMLHttpRequest();
@@ -190,8 +201,23 @@ define(function (require) {
                                            }, false);
       request.open('GET', this.url, true);
       request.responseType = 'arraybuffer';
-      // decode asyncrohonously
+      // decode asynchronously
       var self = this;
+      request.onreadystatechange = function(e) {
+        if (request.readyState == 4 && request.status > 400) {
+          if (request.status == loggedError) {
+            return;
+          }
+          loggedError = request.status;
+
+          if (errorCallback) {
+            errorCallback(e.target);
+          } else {
+            console.warn('Unable to loadSound ' + request.responseURL + ' because of a ' + request.status + ' error: ' + request.statusText);
+          }
+        }
+        return;
+      };
       request.onload = function() {
         ac.decodeAudioData(request.response, function(buff) {
           self.buffer = buff;
@@ -200,6 +226,13 @@ define(function (require) {
             callback(self);
           }
         });
+      };
+      request.onerror = function(e) {
+        if (errorCallback) {
+          errorCallback(e);
+        } else {
+          console.log(e.statusText);
+        }
       };
       request.send();
     }
@@ -215,6 +248,9 @@ define(function (require) {
           }
         });
       };
+      reader.onerror = function(e) {
+        if (onerror) onerror(e);
+      };
       reader.readAsArrayBuffer(this.file);
     }
   };
@@ -226,8 +262,8 @@ define(function (require) {
       this.whileLoading(percentComplete);
       // ...
     } else {
-      console.log('size unknown');
       // Unable to compute progress information since the total size is unknown
+      this.whileLoading('size unknown');
     }
   };
 
