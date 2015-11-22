@@ -217,7 +217,10 @@ define(function (require) {
    *  @constructor
    *  @param  {String}   path     path to a sound file
    *  @param  {Function} [callback] function to call when loading succeeds
-   *  @param  {Function} [errorCallback] function to call if loading fails
+   *  @param  {Function} [errorCallback] function to call if loading fails.
+   *                                     This function will receive an error or
+   *                                     XMLHttpRequest object with information
+   *                                     about what went wrong.
    *  @example
    *  <div><code>
    *  var cVerb, sound;

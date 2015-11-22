@@ -5,7 +5,7 @@
 function setup() {
   createCanvas(400,200);
   soundFormats('ogg', 'mp3');
-  soundFile = loadSound('../files/Damscray-_Dancing_Tiger_01', soundReady);
+  soundFile = loadSound('../files/Damscray_-_Dancing_Tiger_01', soundReady);
 }
 
 function soundReady(){
@@ -21,12 +21,6 @@ function soundReady(){
     vertex(map(i, 0, peaks.length, 0, width), map(peaks[i], -1, 1, height, 0) );
   }
   endShape();
-}
-
-function soundErr(e, f) {
-  console.log('file not found');
-  console.log(e);
-  console.log(f);
 }
 
 function mousePressed(){

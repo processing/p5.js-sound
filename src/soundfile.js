@@ -28,7 +28,10 @@ define(function (require) {
    *                               an array. Alternately, accepts an object
    *                               from the HTML5 File API, or a p5.File.
    *  @param {Function} [successCallback]   Name of a function to call once file loads
-   *  @param {Function} [errorCallback]   Name of a function to call once file loads
+   *  @param {Function} [errorCallback]   Name of a function to call if file fails to
+   *                                      load. This function will receive an error or
+   *                                     XMLHttpRequest object with information
+   *                                     about what went wrong.
    *  @param {Function} [whileLoadingCallback]   Name of a function to call while file
    *                                             is loading. That function will
    *                                             received percentage loaded as a
