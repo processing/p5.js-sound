@@ -355,17 +355,29 @@ define(function (require) {
     var self = this;
     request.onload = function() {
       var ac = p5.prototype.getAudioContext();
-      ac.decodeAudioData(request.response, function(buff) {
-        var buffer = {};
-        var chunks = path.split('/');
-        buffer.name = chunks[chunks.length - 1];
-        buffer.audioBuffer = buff;
-        self.impulses.push(buffer);
-        self.convolverNode.buffer = buffer.audioBuffer;
-        if (callback) {
-          callback(buffer);
+
+      ac.decodeAudioData(request.response,
+        // success decoding buffer
+        function(buff) {
+          var buffer = {};
+          var chunks = path.split('/');
+          buffer.name = chunks[chunks.length - 1];
+          buffer.audioBuffer = buff;
+          self.impulses.push(buffer);
+          self.convolverNode.buffer = buffer.audioBuffer;
+          if (callback) {
+            callback(buffer);
+          }
+        },
+        // error decoding buffer
+        function(e) {
+          if (errorCallback) {
+            errorCallback(e);
+          } else {
+            console.warn('Error decoding the file ' + path);;
+          }
         }
-      });
+      );
     };
     request.onreadystatechange = function(e) {
       if (request.readyState == 4 && request.status > 400) {

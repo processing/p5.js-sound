@@ -2,14 +2,15 @@
 
 function setup() {
   createCanvas(800,200);
-  soundFile = loadSound('../files/Damscray_-_hello.mp3', soundReady, soundError);
+  soundFile = loadSound('http://files/beatbx.mp3', soundReady, soundError);
+  soundFile2 = loadSound('../files/beatbx.mp3', soundReady, soundError);
+
 }
 
 function soundReady(){
-  soundFile.loop();
+  soundFile.play();
 }
 
 function soundError(e) {
 	console.log(e);
-	text("looks like " + e.responseURL + " doesn't exist", 0, 10);
 }

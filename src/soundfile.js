@@ -34,7 +34,8 @@ define(function (require) {
    *                                     about what went wrong.
    *  @param {Function} [whileLoadingCallback]   Name of a function to call while file
    *                                             is loading. That function will
-   *                                             received percentage loaded as a
+   *                                             receive percentage loaded
+   *                                             (between 0 and 1) as a
    *                                             parameter.
    *                                             
    *  @return {Object}    p5.SoundFile Object
@@ -190,53 +191,74 @@ define(function (require) {
    * as an optional parameter.
    *
    * @private
-   * @param {Function} [callback]   Name of a function to call once file loads
-   * @param {Function} [callback]   Name of a function to call if there is an error
+   * @param {Function} [successCallback]   Name of a function to call once file loads
+   * @param {Function} [errorCallback]   Name of a function to call if there is an error
    */
   p5.SoundFile.prototype.load = function(callback, errorCallback){
     var loggedError = false;
+    var self = this;
+    var errorTrace = new Error().stack;
 
     if(this.url != undefined && this.url != ""){
-      var sf = this;
       var request = new XMLHttpRequest();
       request.addEventListener('progress', function(evt) {
-                                            sf._updateProgress(evt);
+                                            self._updateProgress(evt);
                                            }, false);
       request.open('GET', this.url, true);
       request.responseType = 'arraybuffer';
-      // decode asynchronously
-      var self = this;
-      request.onreadystatechange = function(e) {
-        if (request.readyState == 4 && request.status > 400) {
-          if (request.status == loggedError) {
-            return;
-          }
-          loggedError = request.status;
+
+      request.onload = function() {
+        if (request.status == 200) {
+          // on sucess loading file:
+          ac.decodeAudioData(request.response,
+            // success decoding buffer:
+            function(buff) {
+              self.buffer = buff;
+              self.panner.inputChannels(buff.numberOfChannels);
+              if (callback) {
+                callback(self);
+              }
+            },
+            // error decoding buffer. "e" is undefined in Chrome 11/22/2015
+            function(e) {
+              var err = generateError(errorTrace);
+              var msg = 'AudioContext error at decodeAudioData for ' + self.url;
+              if (errorCallback) {
+                err.msg = msg;
+                errorCallback(err);
+              } else {
+                console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+              }
+            }
+          );
+        }
+        // if request status != 200, it failed
+        else {
+          var err = generateError(errorTrace);
+          var msg = 'Unable to load ' + self.url + ' ' + request.status + ' (' + request.statusText + ')';
 
           if (errorCallback) {
-            errorCallback(e.target);
+            err.message = msg;
+            errorCallback(err);
           } else {
-            console.warn('Unable to loadSound ' + request.responseURL + ' because of a ' + request.status + ' error: ' + request.statusText);
+            console.error(msg +'\n The error stack trace includes: \n' + err.stack);
           }
         }
-        return;
       };
-      request.onload = function() {
-        ac.decodeAudioData(request.response, function(buff) {
-          self.buffer = buff;
-          self.panner.inputChannels(buff.numberOfChannels);
-          if (callback) {
-            callback(self);
-          }
-        });
-      };
+
+      // if there is another error, aside from 404...
       request.onerror = function(e) {
+        var err = generateError(errorTrace);
+        var msg = 'loadSound error: There was no response from the server at ' + self.url + '. Check the url and internet connectivity.';
+
         if (errorCallback) {
-          errorCallback(e);
+          err.message = msg;
+          errorCallback(err);
         } else {
-          console.log(e.statusText);
+          console.error(msg +'\n The error stack trace includes: \n' + err.stack);
         }
       };
+
       request.send();
     }
     else if(this.file != undefined){
@@ -1606,5 +1628,28 @@ define(function (require) {
     this.id = id;
     this.val = val;
   };
+
+  /**
+   *  Helper function to generate an error
+   *  with a custom stack trace that points to the sketch
+   *  and removes other junk.
+   *  
+   *  @param  {String} errorTrace custom error trace
+   *  @return {Error}     returns an Error object.
+   */
+  function generateError(errorTrace) {
+      var err = new Error();
+      err.stack = err.stack + errorTrace;
+
+      // only print the part of the stack trace that refers to the user code:
+      var splitStack = err.stack.split('\n');
+      splitStack = splitStack.filter(function(ln) {
+        return !ln.match(/(p5.|native code|globalInit)/g);
+      });
+      err.stack = splitStack.join('\n');
+
+      return err;
+  };
+
 
 });
