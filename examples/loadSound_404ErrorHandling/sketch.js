@@ -5,8 +5,8 @@ function setup() {
   loadSound('http://badURL.mp3', soundReady, soundError);
   loadSound('../badPath.mp3', soundReady, soundError);
 
-  loadSound('http://badURL.mp3', soundReady);
-  loadSound('../badPath.mp3', soundReady);
+  createConvolver('http://badURL.mp3', soundReady, soundError);
+  createConvolver('../badPath.mp3', soundReady, soundError);
 }
 
 function soundReady(soundFile){
@@ -14,9 +14,10 @@ function soundReady(soundFile){
 }
 
 function soundError(e) {
-	console.log('New error:');
-	console.log('- name: ' + e.name);
-	console.log('- message: ' + e.message);
-	console.log('- stack: ' + e.stack);
-	console.log('- failed path: ' + e.failedPath);
+	console.log(e);
+	// console.log('New error:');
+	// console.log('- name: ' + e.name);
+	// console.log('- message: ' + e.message);
+	// console.log('- stack: ' + e.stack);
+	// console.log('- failed path: ' + e.failedPath);
 }

@@ -133,9 +133,9 @@ define(function (require) {
     p5sound.soundArray.push(this);
 
     if (typeof(whileLoading) === 'function') {
-      this.whileLoading = whileLoading;
+      this._whileLoading = whileLoading;
     } else {
-      this.whileLoading = function() {};
+      this._whileLoading = function() {};
     }
   };
 
@@ -228,7 +228,8 @@ define(function (require) {
                 err.msg = msg;
                 errorCallback(err);
               } else {
-                console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+                throw(err);
+                // console.error(msg +'\n The error stack trace includes: \n' + err.stack);
               }
             }
           );
@@ -242,7 +243,8 @@ define(function (require) {
             err.message = msg;
             errorCallback(err);
           } else {
-            console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+            throw(err);
+            // console.error(msg +'\n The error stack trace includes: \n' + err.stack);
           }
         }
       };
@@ -256,11 +258,16 @@ define(function (require) {
           err.message = msg;
           errorCallback(err);
         } else {
-          console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+          // console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+          throw(err);
         }
       };
 
-      request.send();
+      try {
+        request.send();
+      } catch(e) {
+        console.log('got an errrr');
+      }
     }
     else if(this.file != undefined){
       var reader = new FileReader();
@@ -285,11 +292,11 @@ define(function (require) {
   p5.SoundFile.prototype._updateProgress = function(evt) {
     if (evt.lengthComputable) {
       var percentComplete = Math.log(evt.loaded / evt.total * 9.9);
-      this.whileLoading(percentComplete);
+      this._whileLoading(percentComplete);
       // ...
     } else {
       // Unable to compute progress information since the total size is unknown
-      this.whileLoading('size unknown');
+      this._whileLoading('size unknown');
     }
   };
 

@@ -2,6 +2,7 @@ define(function (require) {
   'use strict';
 
   var p5sound = require('master');
+  var CustomError = require('errorHandler');
   require('sndcore');
 
   /**
@@ -297,7 +298,12 @@ define(function (require) {
    *
    *  @method  createConvolver
    *  @param  {String}   path     path to a sound file
-   *  @param  {[Function]} callback function (optional)
+   *  @param  {Function} [callback] function to call if loading is successful.
+   *                                The object will be passed in as the argument
+   *                                to the callback function.
+   *  @param  {Function} [errorCallback] function to call if loading is not successful.
+   *                                A custom error will be passed in as the argument
+   *                                to the callback function.
    *  @return {p5.Convolver}
    *  @example
    *  <div><code>
@@ -327,12 +333,12 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.prototype.createConvolver = function(path, callback){
+  p5.prototype.createConvolver = function(path, callback, errorCallback){
     // if loading locally without a server
     if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined') {
       alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
-    var cReverb = new p5.Convolver(path, callback);
+    var cReverb = new p5.Convolver(path, callback, errorCallback);
     cReverb.impulses = [];
     return cReverb;
   };
@@ -347,58 +353,67 @@ define(function (require) {
    *  @private
    */
   p5.Convolver.prototype._loadBuffer = function(path, callback, errorCallback){
-    path = p5.prototype._checkFileFormats(path);
+    var path = p5.prototype._checkFileFormats(path);
+    var self = this;
+    var errorTrace = new Error().stack;
+    var ac = p5.prototype.getAudioContext();
+
     var request = new XMLHttpRequest();
     request.open('GET', path, true);
     request.responseType = 'arraybuffer';
-    // decode asynchronously
-    var self = this;
-    request.onload = function() {
-      var ac = p5.prototype.getAudioContext();
 
-      ac.decodeAudioData(request.response,
-        // success decoding buffer
-        function(buff) {
-          var buffer = {};
-          var chunks = path.split('/');
-          buffer.name = chunks[chunks.length - 1];
-          buffer.audioBuffer = buff;
-          self.impulses.push(buffer);
-          self.convolverNode.buffer = buffer.audioBuffer;
-          if (callback) {
-            callback(buffer);
+    request.onload = function() {
+      if (request.status == 200) {
+        // on success loading file:
+        ac.decodeAudioData(request.response,
+          function(buff) {
+            var buffer = {};
+            var chunks = path.split('/');
+            buffer.name = chunks[chunks.length - 1];
+            buffer.audioBuffer = buff;
+            self.impulses.push(buffer);
+            self.convolverNode.buffer = buffer.audioBuffer;
+            if (callback) {
+              callback(buffer);
+            }
+          },
+          // error decoding buffer. "e" is undefined in Chrome 11/22/2015
+          function(e) {
+            var err = new CustomError('decodeAudioData', errorTrace, self.url);
+            var msg = 'AudioContext error at decodeAudioData for ' + self.url;
+            if (errorCallback) {
+              err.msg = msg;
+              errorCallback(err);
+            } else {
+              console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+            }
           }
-        },
-        // error decoding buffer
-        function(e) {
-          if (errorCallback) {
-            errorCallback(e);
-          } else {
-            console.warn('Error decoding the file ' + path);;
-          }
-        }
-      );
-    };
-    request.onreadystatechange = function(e) {
-      if (request.readyState == 4 && request.status > 400) {
-        if (request.status == loggedError) {
-          return;
-        }
-        loggedError = request.status;
+        );
+      }
+      // if request status != 200, it failed
+      else {
+        var err = new CustomError('loadConvolver', errorTrace, self.url);
+        var msg = 'Unable to load ' + self.url + '. The request status was: ' + request.status + ' (' + request.statusText + ')';
 
         if (errorCallback) {
-          errorCallback(e.target);
+          err.message = msg;
+          errorCallback(err);
         } else {
-          console.warn('createConvolver could not load ' + request.responseURL + ' because of a ' + request.status + ' error: ' + request.statusText);
+          console.error(msg +'\n The error stack trace includes: \n' + err.stack);
         }
       }
-      return;
     };
+
+    // if there is another error, aside from 404...
     request.onerror = function(e) {
+      var err = new CustomError('loadConvolver', errorTrace, self.url);
+      var msg = 'There was no response from the server at ' + self.url + '. Check the url and internet connectivity.';
+
       if (errorCallback) {
-        errorCallback(e);
+        err.message = msg;
+        errorCallback(err);
       } else {
-        console.log(e.statusText);
+        console.error(msg +'\n The error stack trace includes: \n' + err.stack);
       }
     };
     request.send();
@@ -457,14 +472,15 @@ define(function (require) {
    *  
    *  @method  addImpulse
    *  @param  {String}   path     path to a sound file
-   *  @param  {[Function]} callback function (optional)
+   *  @param  {Function} callback function (optional)
+   *  @param  {Function} errorCallback function (optional)
    */
-  p5.Convolver.prototype.addImpulse = function(path, callback){
+  p5.Convolver.prototype.addImpulse = function(path, callback, errorCallback){
     // if loading locally without a server
     if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined') {
       alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
-    this._loadBuffer(path, callback);
+    this._loadBuffer(path, callback, errorCallback);
   };
 
   /**
@@ -474,15 +490,16 @@ define(function (require) {
    *
    *  @method  resetImpulse
    *  @param  {String}   path     path to a sound file
-   *  @param  {[Function]} callback function (optional)
+   *  @param  {Function} callback function (optional)
+   *  @param  {Function} errorCallback function (optional)
    */
-  p5.Convolver.prototype.resetImpulse = function(path, callback){
+  p5.Convolver.prototype.resetImpulse = function(path, callback, errorCallback){
     // if loading locally without a server
     if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined') {
       alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
     this.impulses = [];
-    this._loadBuffer(path, callback);
+    this._loadBuffer(path, callback, errorCallback);
   };
 
   /**
