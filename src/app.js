@@ -5,6 +5,7 @@ define(function (require) {
   var p5SOUND = require('sndcore');
   require('master');
   require('helpers');
+  require('errorHandler');
   require('panner');
   require('soundfile');
   require('amplitude');

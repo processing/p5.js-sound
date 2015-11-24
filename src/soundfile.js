@@ -3,6 +3,7 @@ define(function (require) {
   'use strict';
 
   require('sndcore');
+  var CustomError = require('errorHandler');
   var p5sound = require('master');
   var ac = p5sound.audiocontext;
 
@@ -27,7 +28,17 @@ define(function (require) {
    *                               you may include multiple file formats in
    *                               an array. Alternately, accepts an object
    *                               from the HTML5 File API, or a p5.File.
-   *  @param {Function} [callback]   Name of a function to call once file loads
+   *  @param {Function} [successCallback]   Name of a function to call once file loads
+   *  @param {Function} [errorCallback]   Name of a function to call if file fails to
+   *                                      load. This function will receive an error or
+   *                                     XMLHttpRequest object with information
+   *                                     about what went wrong.
+   *  @param {Function} [whileLoadingCallback]   Name of a function to call while file
+   *                                             is loading. That function will
+   *                                             receive percentage loaded
+   *                                             (between 0 and 1) as a
+   *                                             parameter.
+   *                                             
    *  @return {Object}    p5.SoundFile Object
    *  @example 
    *  <div><code>
@@ -43,7 +54,7 @@ define(function (require) {
    * 
    * </code></div>
    */
-  p5.SoundFile = function(paths, onload, whileLoading) {
+  p5.SoundFile = function(paths, onload, onerror, whileLoading) {
     if (typeof paths !== 'undefined') {
       if (typeof paths == 'string' || typeof paths[0] == 'string'){
         var path = p5.prototype._checkFileFormats(paths);
@@ -115,16 +126,16 @@ define(function (require) {
 
     // it is possible to instantiate a soundfile with no path
     if (this.url || this.file) {
-      this.load(onload);
+      this.load(onload, onerror);
     }
 
     // add this p5.SoundFile to the soundArray
     p5sound.soundArray.push(this);
 
     if (typeof(whileLoading) === 'function') {
-      this.whileLoading = whileLoading;
+      this._whileLoading = whileLoading;
     } else {
-      this.whileLoading = function() {};
+      this._whileLoading = function() {};
     }
   };
 
@@ -146,10 +157,12 @@ define(function (require) {
    *                                    i.e. ['sound.ogg', 'sound.mp3'].
    *                                    Alternately, accepts an object: either
    *                                    from the HTML5 File API, or a p5.File.
-   *  @param {Function} [callback]   Name of a function to call once file loads
-   *  @param {Function} [callback]   Name of a function to call while file is loading.
-   *                                 This function will receive a percentage from 0.0
-   *                                 to 1.0.
+   *  @param {Function} [successCallback]   Name of a function to call once file loads
+   *  @param {Function} [errorCallback]   Name of a function to call if there is
+   *                                      an error loading the file.
+   *  @param {Function} [whileLoading] Name of a function to call while file is loading.
+   *                                 This function will receive the percentage loaded
+   *                                 so far, from 0.0 to 1.0.
    *  @return {SoundFile}            Returns a p5.SoundFile
    *  @example 
    *  <div><code>
@@ -163,13 +176,13 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.prototype.loadSound = function(path, callback, whileLoading){
+  p5.prototype.loadSound = function(path, callback, onerror, whileLoading){
     // if loading locally without a server
     if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined' ) {
       alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
 
-    var s = new p5.SoundFile(path, callback, whileLoading);
+    var s = new p5.SoundFile(path, callback, onerror, whileLoading);
     return s;
   };
 
@@ -179,29 +192,82 @@ define(function (require) {
    * as an optional parameter.
    *
    * @private
-   * @param {Function} [callback]   Name of a function to call once file loads
+   * @param {Function} [successCallback]   Name of a function to call once file loads
+   * @param {Function} [errorCallback]   Name of a function to call if there is an error
    */
-  p5.SoundFile.prototype.load = function(callback){
+  p5.SoundFile.prototype.load = function(callback, errorCallback){
+    var loggedError = false;
+    var self = this;
+    var errorTrace = new Error().stack;
+
     if(this.url != undefined && this.url != ""){
-      var sf = this;
       var request = new XMLHttpRequest();
       request.addEventListener('progress', function(evt) {
-                                            sf._updateProgress(evt);
+                                            self._updateProgress(evt);
                                            }, false);
       request.open('GET', this.url, true);
       request.responseType = 'arraybuffer';
-      // decode asyncrohonously
-      var self = this;
+
       request.onload = function() {
-        ac.decodeAudioData(request.response, function(buff) {
-          self.buffer = buff;
-          self.panner.inputChannels(buff.numberOfChannels);
-          if (callback) {
-            callback(self);
+        if (request.status == 200) {
+          // on sucess loading file:
+          ac.decodeAudioData(request.response,
+            // success decoding buffer:
+            function(buff) {
+              self.buffer = buff;
+              self.panner.inputChannels(buff.numberOfChannels);
+              if (callback) {
+                callback(self);
+              }
+            },
+            // error decoding buffer. "e" is undefined in Chrome 11/22/2015
+            function(e) {
+              var err = new CustomError('decodeAudioData', errorTrace, self.url);
+              var msg = 'AudioContext error at decodeAudioData for ' + self.url;
+              if (errorCallback) {
+                err.msg = msg;
+                errorCallback(err);
+              } else {
+                throw(err);
+                // console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+              }
+            }
+          );
+        }
+        // if request status != 200, it failed
+        else {
+          var err = new CustomError('loadSound', errorTrace, self.url);
+          var msg = 'Unable to load ' + self.url + '. The request status was: ' + request.status + ' (' + request.statusText + ')';
+
+          if (errorCallback) {
+            err.message = msg;
+            errorCallback(err);
+          } else {
+            throw(err);
+            // console.error(msg +'\n The error stack trace includes: \n' + err.stack);
           }
-        });
+        }
       };
-      request.send();
+
+      // if there is another error, aside from 404...
+      request.onerror = function(e) {
+        var err = new CustomError('loadSound', errorTrace, self.url);
+        var msg = 'There was no response from the server at ' + self.url + '. Check the url and internet connectivity.';
+
+        if (errorCallback) {
+          err.message = msg;
+          errorCallback(err);
+        } else {
+          // console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+          throw(err);
+        }
+      };
+
+      try {
+        request.send();
+      } catch(e) {
+        console.log('got an errrr');
+      }
     }
     else if(this.file != undefined){
       var reader = new FileReader();
@@ -215,6 +281,9 @@ define(function (require) {
           }
         });
       };
+      reader.onerror = function(e) {
+        if (onerror) onerror(e);
+      };
       reader.readAsArrayBuffer(this.file);
     }
   };
@@ -223,11 +292,11 @@ define(function (require) {
   p5.SoundFile.prototype._updateProgress = function(evt) {
     if (evt.lengthComputable) {
       var percentComplete = Math.log(evt.loaded / evt.total * 9.9);
-      this.whileLoading(percentComplete);
+      this._whileLoading(percentComplete);
       // ...
     } else {
-      console.log('size unknown');
       // Unable to compute progress information since the total size is unknown
+      this._whileLoading('size unknown');
     }
   };
 
@@ -1567,5 +1636,6 @@ define(function (require) {
     this.id = id;
     this.val = val;
   };
+
 
 });
