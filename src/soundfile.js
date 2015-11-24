@@ -3,6 +3,7 @@ define(function (require) {
   'use strict';
 
   require('sndcore');
+  var CustomError = require('errorHandler');
   var p5sound = require('master');
   var ac = p5sound.audiocontext;
 
@@ -221,7 +222,7 @@ define(function (require) {
             },
             // error decoding buffer. "e" is undefined in Chrome 11/22/2015
             function(e) {
-              var err = generateError(errorTrace);
+              var err = new CustomError('decodeAudioData', errorTrace, self.url);
               var msg = 'AudioContext error at decodeAudioData for ' + self.url;
               if (errorCallback) {
                 err.msg = msg;
@@ -234,8 +235,8 @@ define(function (require) {
         }
         // if request status != 200, it failed
         else {
-          var err = generateError(errorTrace);
-          var msg = 'Unable to load ' + self.url + ' ' + request.status + ' (' + request.statusText + ')';
+          var err = new CustomError('loadSound', errorTrace, self.url);
+          var msg = 'Unable to load ' + self.url + '. The request status was: ' + request.status + ' (' + request.statusText + ')';
 
           if (errorCallback) {
             err.message = msg;
@@ -248,8 +249,8 @@ define(function (require) {
 
       // if there is another error, aside from 404...
       request.onerror = function(e) {
-        var err = generateError(errorTrace);
-        var msg = 'loadSound error: There was no response from the server at ' + self.url + '. Check the url and internet connectivity.';
+        var err = new CustomError('loadSound', errorTrace, self.url);
+        var msg = 'There was no response from the server at ' + self.url + '. Check the url and internet connectivity.';
 
         if (errorCallback) {
           err.message = msg;
@@ -1627,28 +1628,6 @@ define(function (require) {
     this.time = time;
     this.id = id;
     this.val = val;
-  };
-
-  /**
-   *  Helper function to generate an error
-   *  with a custom stack trace that points to the sketch
-   *  and removes other junk.
-   *  
-   *  @param  {String} errorTrace custom error trace
-   *  @return {Error}     returns an Error object.
-   */
-  function generateError(errorTrace) {
-      var err = new Error();
-      err.stack = err.stack + errorTrace;
-
-      // only print the part of the stack trace that refers to the user code:
-      var splitStack = err.stack.split('\n');
-      splitStack = splitStack.filter(function(ln) {
-        return !ln.match(/(p5.|native code|globalInit)/g);
-      });
-      err.stack = splitStack.join('\n');
-
-      return err;
   };
 
 

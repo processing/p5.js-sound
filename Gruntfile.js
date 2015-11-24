@@ -107,6 +107,7 @@ module.exports = function(grunt) {
             'sndcore': 'src/sndcore',
             'master': 'src/master',
             'helpers': 'src/helpers',
+            'errorHandler': 'src/errorHandler',
             'soundfile': 'src/soundfile',
             'amplitude': 'src/amplitude',
             'fft': 'src/fft',
