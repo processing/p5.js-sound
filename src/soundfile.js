@@ -228,8 +228,7 @@ define(function (require) {
                 err.msg = msg;
                 errorCallback(err);
               } else {
-                throw(err);
-                // console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+                console.error(msg +'\n The error stack trace includes: \n' + err.stack);
               }
             }
           );
@@ -243,8 +242,7 @@ define(function (require) {
             err.message = msg;
             errorCallback(err);
           } else {
-            throw(err);
-            // console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+            console.error(msg +'\n The error stack trace includes: \n' + err.stack);
           }
         }
       };
@@ -258,16 +256,11 @@ define(function (require) {
           err.message = msg;
           errorCallback(err);
         } else {
-          // console.error(msg +'\n The error stack trace includes: \n' + err.stack);
-          throw(err);
+          console.error(msg +'\n The error stack trace includes: \n' + err.stack);
         }
       };
 
-      try {
-        request.send();
-      } catch(e) {
-        console.log('got an errrr');
-      }
+      request.send();
     }
     else if(this.file != undefined){
       var reader = new FileReader();
