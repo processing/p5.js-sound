@@ -1043,13 +1043,18 @@ define(function (require) {
 
   /**
    *  Schedule an event to be called when the soundfile
-   *  reaches the end of a buffer.
+   *  reaches the end of a buffer. If the soundfile is
+   *  playing through once, this will be called when it
+   *  ends. If it is looping, it will be called when
+   *  stop is called.
    *  
-   *  @param  {Function} callback [description]
-   *  @return {[type]}            [description]
+   *  @method  onended
+   *  @param  {Function} callback function to call when the
+   *                              soundfile has ended.
    */
   p5.SoundFile.prototype.onended = function(callback) {
     this._onended = callback;
+    return this;
   };
 
   p5.SoundFile.prototype.add = function() {
