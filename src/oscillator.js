@@ -81,6 +81,7 @@ define(function (require) {
     this.started = false;
 
     // components
+    this.phaseAmount = undefined;
     this.oscillator = p5sound.audiocontext.createOscillator();
     this.f = freq || 440.0; // frequency
     this.oscillator.frequency.setValueAtTime(this.f, p5sound.audiocontext.currentTime);
@@ -244,6 +245,12 @@ define(function (require) {
       } else {
         this.oscillator.frequency.linearRampToValueAtTime(val, tFromNow + rampTime + now);
       }
+
+      // reset phase if oscillator has a phase
+      if (this.phaseAmount) {
+        this.phase(this.phaseAmount);
+      }
+
     } else if (val) {
       if (val.output){
         val = val.output;
@@ -343,23 +350,30 @@ define(function (require) {
   };
 
   /**
-   *  Set the phase of an oscillator between 0.0 and 1.0
+   *  Set the phase of an oscillator between 0.0 and 1.0.
+   *  In this implementation, phase is a delay time
+   *  based on the oscillator's current frequency.
    *  
    *  @method  phase
    *  @param  {Number} phase float between 0.0 and 1.0
    */
   p5.Oscillator.prototype.phase = function(p){
+    var delayAmt = p5.prototype.map(p, 0, 1.0, 0, 1/this.f);
+    var now = p5sound.audiocontext.currentTime;
+
+    this.phaseAmount = p;
+
     if (!this.dNode) {
       // create a delay node
       this.dNode = p5sound.audiocontext.createDelay();
       // put the delay node in between output and panner
-      this.output.disconnect();
-      this.output.connect(this.dNode);
-      this.dNode.connect(this.panner);
+      this.oscillator.disconnect();
+      this.oscillator.connect(this.dNode);
+      this.dNode.connect(this.output);
     }
-    // set delay time based on PWM width
-    var now = p5sound.audiocontext.currentTime;
-    this.dNode.delayTime.linearRampToValueAtTime( p5.prototype.map(p, 0, 1.0, 0, 1/this.oscillator.frequency.value), now);
+
+    // set delay time to match phase:
+    this.dNode.delayTime.setValueAtTime(delayAmt, now);
   };
 
   // ========================== //
