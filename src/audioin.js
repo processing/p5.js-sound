@@ -2,6 +2,7 @@ define(function (require) {
   'use strict';
 
   var p5sound = require('master');
+  var CustomError = require('errorHandler');
 
   /**
    *  <p>Get audio from an input, i.e. your computer's microphone.</p>
@@ -77,8 +78,14 @@ define(function (require) {
    *  anything unless you use the connect() method.<br/>
    *
    *  @method start
+   *  @param {Function} successCallback Name of a function to call on
+   *                                    success.
+   *  @param {Function} errorCallback Name of a function to call if
+   *                                    there was an error. For example,
+   *                                    some browsers do not support
+   *                                    getUserMedia.
    */
-  p5.AudioIn.prototype.start = function() {
+  p5.AudioIn.prototype.start = function(successCallback, errorCallback) {
     var self = this;
 
     // if _gotSources() i.e. developers determine which source to use
@@ -89,18 +96,19 @@ define(function (require) {
           audio: {
             optional: [{sourceId: audioSource}]
           }};
-      navigator.getUserMedia( constraints,
+      window.navigator.getUserMedia( constraints,
         this._onStream = function(stream) {
         self.stream = stream;
         self.enabled = true;
         // Wrap a MediaStreamSourceNode around the live input
         self.mediaStream = p5sound.audiocontext.createMediaStreamSource(stream);
         self.mediaStream.connect(self.output);
-
+        if (successCallback) successCallback();
         // only send to the Amplitude reader, so we can see it but not hear it.
         self.amplitude.setInput(self.output);
-      }, this._onStreamError = function(stream) {
-        console.error(stream);
+      }, this._onStreamError = function(e) {
+        if (errorCallback) errorCallback(e);
+        else console.error(e);
       });
     } else {
     // if Firefox where users select their source via browser
@@ -115,8 +123,10 @@ define(function (require) {
         self.mediaStream.connect(self.output);
         // only send to the Amplitude reader, so we can see it but not hear it.
         self.amplitude.setInput(self.output);
-      }, this._onStreamError = function(stream) {
-        console.error(stream);
+        if (successCallback) successCallback();
+      }, this._onStreamError = function(e) {
+        if (errorCallback) errorCallback(e);
+        else console.error(e);
       });
     }
   };
@@ -264,8 +274,6 @@ define(function (require) {
    *      //set the source to the first item in the inputSources array
    *      audioGrab.setSource(0);
    *    });
-   *  }
-   *  function draw(){
    *  }
    *  </code></div>
    */
