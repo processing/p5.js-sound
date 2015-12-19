@@ -9,13 +9,6 @@ define(function (require) {
   var Tone = require('Tone/core/Tone');
   Tone.setContext( p5sound.audiocontext);
 
-  // oscillator or buffer source to clear on env complete
-  // to save resources if/when it is retriggered
-  var sourceToClear = null;
-
-  // set to true if attack is set, then false on release
-  var wasTriggered = false;
-
   /**
    *  <p>Envelopes are pre-defined amplitude distribution over time. 
    *  The p5.Env accepts up to four time/level pairs, where time
@@ -120,6 +113,14 @@ define(function (require) {
 
     //array of math operation signal chaining
     this.mathOps = [this.control];
+
+    // oscillator or buffer source to clear on env complete
+    // to save resources if/when it is retriggered
+    this.sourceToClear = null;
+
+    // set to true if attack is set, then false on release
+    this.wasTriggered = false;
+
 
     // add to the soundArray so we can dispose of the env later
     p5sound.soundArray.push(this);
@@ -230,7 +231,7 @@ define(function (require) {
     var tFromNow = secondsFromNow || 0;
     var t = now + tFromNow;
     this.lastAttack = t;
-    wasTriggered = true;
+    this.wasTriggered = true;
 
     // we should set current value, but this is not working on Firefox
     var currentVal =  this.control.getValue(); 
@@ -267,7 +268,7 @@ define(function (require) {
   p5.Env.prototype.triggerRelease = function(unit, secondsFromNow) {
 
     // only trigger a release if an attack was triggered
-    if (!wasTriggered) {
+    if (!this.wasTriggered) {
       return;
     }
 
@@ -320,14 +321,14 @@ define(function (require) {
     var clearTime = (t + this.aTime + this.dTime + this.sTime + this.rTime); // * 1000;
 
     if (this.connection && this.connection.hasOwnProperty('oscillator')) {
-      sourceToClear = this.connection.oscillator;
-      sourceToClear.stop(clearTime + .01);
+      this.sourceToClear = this.connection.oscillator;
+      this.sourceToClear.stop(clearTime + .01);
     } else if (this.connect && this.connection.hasOwnProperty('source')){
-      sourceToClear = this.connection.source;
-      sourceToClear.stop(clearTime + .01);
+      this.sourceToClear = this.connection.source;
+      this.sourceToClear.stop(clearTime + .01);
     }
 
-    wasTriggered = false;
+    this.wasTriggered = false;
   };
 
   p5.Env.prototype.connect = function(unit){
