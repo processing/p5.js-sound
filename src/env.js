@@ -289,7 +289,7 @@ define(function (require) {
     // but this.control._scalar.gain.value not working in firefox
 
     // release based on how much time has passed since this.lastAttack
-    if ( (now - this.lastAttack) < (this.aTime) ) {
+    if ( (t - this.lastAttack) < (this.aTime) ) {
       var a = this.aTime - (t - this.lastAttack);
       this.control.linearRampToValueAtTime(this.aLevel, t + a);
       this.control.linearRampToValueAtTime(this.dLevel, t + a + this.dTime);
@@ -297,7 +297,7 @@ define(function (require) {
       this.control.linearRampToValueAtTime(this.rLevel, t + a + this.dTime + this.sTime + this.rTime);
       relTime = t + this.dTime + this.sTime + this.rTime;
     }
-    else if ( (now - this.lastAttack) < (this.aTime + this.dTime) ) {
+    else if ( (t - this.lastAttack) < (this.aTime + this.dTime) ) {
       var d = this.aTime + this.dTime - (now - this.lastAttack);
       this.control.linearRampToValueAtTime(this.dLevel, t + d);
       // this.control.linearRampToValueAtTime(this.sLevel, t + d + this.sTime);
@@ -305,7 +305,7 @@ define(function (require) {
       this.control.linearRampToValueAtTime(this.rLevel, t + d + 0.01 + this.rTime);
       relTime = t + this.sTime + this.rTime;
     } 
-    else if ( (now - this.lastAttack) < (this.aTime + this.dTime + this.sTime) ) {
+    else if ( (t - this.lastAttack) < (this.aTime + this.dTime + this.sTime) ) {
       var s = this.aTime + this.dTime + this.sTime - (now - this.lastAttack);
       this.control.linearRampToValueAtTime(this.sLevel, t + s);
       this.control.linearRampToValueAtTime(this.rLevel, t + s + this.rTime);
