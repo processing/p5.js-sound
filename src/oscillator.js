@@ -237,14 +237,21 @@ define(function (require) {
       var now = p5sound.audiocontext.currentTime;
       var rampTime = rampTime || 0;
       var tFromNow = tFromNow || 0;
-      var currentFreq = this.oscillator.frequency.value;
-      this.oscillator.frequency.cancelScheduledValues(now);
-      this.oscillator.frequency.setValueAtTime(currentFreq, now + tFromNow);
-      if (val > 0 ){
-        this.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
+      // var currentFreq = this.oscillator.frequency.value;
+      // this.oscillator.frequency.cancelScheduledValues(now);
+
+      if (rampTime == 0) {
+        this.oscillator.frequency.cancelScheduledValues(now);
+        this.oscillator.frequency.setValueAtTime(val, tFromNow + now);
       } else {
-        this.oscillator.frequency.linearRampToValueAtTime(val, tFromNow + rampTime + now);
+        if (val > 0 ){
+          this.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
+        } else {
+          this.oscillator.frequency.linearRampToValueAtTime(val, tFromNow + rampTime + now);
+        }
       }
+
+
 
       // reset phase if oscillator has a phase
       if (this.phaseAmount) {
