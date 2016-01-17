@@ -197,10 +197,6 @@ define(function (require) {
       }
     }
 
-    var currentVal =  this.control.getValue(); 
-    this.control.cancelScheduledValues(t);
-    this.control.linearRampToValueAtTime(currentVal, t);
-
     // attack
     this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
     // decay to decay level
@@ -209,9 +205,6 @@ define(function (require) {
     this.control.linearRampToValueAtTime(this.sLevel, t + this.aTime + this.dTime + this.sTime);
     // release
     this.control.linearRampToValueAtTime(this.rLevel, t + this.aTime + this.dTime + this.sTime + this.rTime);
-
-    var clearTime = (t + this.aTime + this.dTime + this.sTime + this.rTime); //* 1000;
-
   };
 
   /**
@@ -232,12 +225,6 @@ define(function (require) {
     var t = now + tFromNow;
     this.lastAttack = t;
     this.wasTriggered = true;
-
-    // we should set current value, but this is not working on Firefox
-    var currentVal =  this.control.getValue(); 
-    console.log(currentVal);
-    this.control.cancelScheduledValues(t);
-    this.control.linearRampToValueAtTime(currentVal, t);
 
     if (unit) {
       if (this.connection !== unit) {
@@ -282,8 +269,6 @@ define(function (require) {
         this.connect(unit);
       }
     }
-
-    this.control.cancelScheduledValues(t);
 
     // ideally would get & set currentValue here,
     // but this.control._scalar.gain.value not working in firefox
