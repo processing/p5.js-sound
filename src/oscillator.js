@@ -195,7 +195,6 @@ define(function (require) {
     }
 
     else if (vol) {
-      console.log(vol);
       vol.connect(self.output.gain);
     } else {
       // return the Gain Node
@@ -342,6 +341,10 @@ define(function (require) {
 
   // get rid of the oscillator
   p5.Oscillator.prototype.dispose = function() {
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+
     if (this.oscillator){
       var now = p5sound.audiocontext.currentTime;
       this.stop(now);

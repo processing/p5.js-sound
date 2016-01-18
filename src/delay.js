@@ -87,16 +87,6 @@ define(function (require) {
     this._leftFilter.disconnect();
     this._rightFilter.disconnect();
 
-    /**
-     *  Internal filter. Set to lowPass by default, but can be accessed directly.
-     *  See p5.Filter for methods. Or use the p5.Delay.filter() method to change
-     *  frequency and q.
-     *
-     *  @property lowPass
-     *  @type {p5.Filter}
-     */
-    this.lowPass = this._leftFilter;
-
     this._leftFilter.biquad.frequency.setValueAtTime(1200, this.ac.currentTime);
     this._rightFilter.biquad.frequency.setValueAtTime(1200, this.ac.currentTime);
     this._leftFilter.biquad.Q.setValueAtTime(0.3, this.ac.currentTime);
@@ -118,6 +108,9 @@ define(function (require) {
     this.setType(0);
 
     this._maxDelay = this.leftDelay.delayTime.maxValue;
+
+    // add this p5.SoundFile to the soundArray
+    p5sound.soundArray.push(this);
   };
 
   /**
@@ -297,5 +290,33 @@ define(function (require) {
   p5.Delay.prototype.disconnect = function() {
     this.output.disconnect();
   };
+
+  p5.Delay.prototype.dispose = function() {
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+
+    this.input.disconnect();
+    this.output.disconnect();
+    this._split.disconnect();
+    this._leftFilter.disconnect();
+    this._rightFilter.disconnect();
+    this._merge.disconnect();
+    this._leftGain.disconnect();
+    this._rightGain.disconnect();
+    this.leftDelay.disconnect();
+    this.rightDelay.disconnect();
+
+    this.input = undefined;
+    this.output = undefined;
+    this._split = undefined;
+    this._leftFilter = undefined;
+    this._rightFilter = undefined;
+    this._merge = undefined;
+    this._leftGain = undefined;
+    this._rightGain = undefined;
+    this.leftDelay = undefined;
+    this.rightDelay = undefined;
+  }
 
 });

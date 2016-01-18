@@ -117,9 +117,6 @@ define(function (require) {
     // time that playback was started, in millis
     this.startMillis = null;
 
-    this.amplitude = new p5.Amplitude();
-    this.output.connect(this.amplitude.input);
-
     // stereo panning
     this.panPosition = 0.0;
     this.panner = new p5.Panner(this.output, p5sound.input, 2);
@@ -344,6 +341,9 @@ define(function (require) {
 
       // make a new source and counter. They are automatically assigned playbackRate and buffer
       this.bufferSourceNode = this._initSourceNode();
+
+      // garbage collect counterNode and create a new one
+      if (this._counterNode) this._counterNode = undefined;
       this._counterNode = this._initCounterNode();
 
       if (_cueStart) {
@@ -401,22 +401,24 @@ define(function (require) {
       this.bufferSourceNode._arrayIndex = this.bufferSourceNodes.length - 1;
 
       // delete this.bufferSourceNode from the sources array when it is done playing:
-      this.bufferSourceNode.onended = function(e) {
-        var theNode = this;
-
+      var clearOnEnd = function(e) {
+        this._playing = false;
+        this.removeEventListener('ended', clearOnEnd, false);
         // call the onended callback
         self._onended(self);
 
-        // if (self.bufferSourceNodes.length === 1) {
-        this._playing = false;
-        // }
-        setTimeout( function(){
-          self.bufferSourceNodes.splice(theNode._arrayIndex, 1);
-          if (self.bufferSourceNodes.length === 0) {
-            self._playing = false;
+        self.bufferSourceNodes.forEach(function(n, i){
+          if (n._playing === false) {
+            self.bufferSourceNodes.splice(i);
           }
-        }, 1);
-      }
+        });
+
+        if (self.bufferSourceNodes.length === 0) {
+          self._playing = false;
+        }
+      };
+
+      this.bufferSourceNode.onended = clearOnEnd;
     }
     // If soundFile hasn't loaded the buffer yet, throw an error
     else {
@@ -1063,6 +1065,11 @@ define(function (require) {
 
   p5.SoundFile.prototype.dispose = function() {
     var now = p5sound.audiocontext.currentTime;
+
+    // remove reference to soundfile
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+
     this.stop(now);
     if (this.buffer && this.bufferSourceNode) {
       for (var i = 0; i < this.bufferSourceNodes.length - 1; i++) {
@@ -1124,21 +1131,9 @@ define(function (require) {
   };
 
   /**
-   *  Read the Amplitude (volume level) of a p5.SoundFile. The
-   *  p5.SoundFile class contains its own instance of the Amplitude
-   *  class to help make it easy to get a SoundFile's volume level.
-   *  Accepts an optional smoothing value (0.0 < 1.0).
-   *  
-   *  @method  getLevel
-   *  @param  {Number} [smoothing] Smoothing is 0.0 by default.
-   *                               Smooths values based on previous values.
-   *  @return {Number}           Volume level (between 0.0 and 1.0)
    */
   p5.SoundFile.prototype.getLevel = function(smoothing) {
-    if (smoothing) {
-      this.amplitude.smoothing = smoothing;
-    }
-    return this.amplitude.getLevel();
+    console.warn('p5.SoundFile.getLevel has been removed from the library. Use p5.Amplitude instead')
   };
 
   /**
@@ -1200,6 +1195,7 @@ define(function (require) {
     // dispose of scope node if it already exists
     if (self._scopeNode) {
       self._scopeNode.disconnect();
+      self._scopeNode.onaudioprocess = undefined;
       self._scopeNode = null;
     }
 
@@ -1580,7 +1576,8 @@ define(function (require) {
    *  @param  {Number} id ID of the cue, as returned by addCue
    */
   p5.SoundFile.prototype.removeCue = function(id) {
-    for (var i = 0; i < this._cues.length; i++) {
+    var cueLength = this._cues.length;
+    for (var i = 0; i < cueLength; i++) {
       var cue = this._cues[i];
       if (cue.id === id) {
         this.cues.splice(i, 1);
@@ -1608,16 +1605,17 @@ define(function (require) {
   // have been scheduled using addCue(callback, time).
   p5.SoundFile.prototype._onTimeUpdate = function(position) {
     var playbackTime = position/this.buffer.sampleRate;
+    var cueLength = this._cues.length;
 
-    for (var i = 0 ; i < this._cues.length; i++) {
-      var callbackTime = this._cues[i].time;
-      var val = this._cues[i].val;
-
+    for (var i = 0 ; i < cueLength; i++) {
+      var cue = this._cues[i];
+      var callbackTime = cue.time;
+      var val = cue.val;
 
       if (this._prevTime < callbackTime && callbackTime <= playbackTime) {
 
         // pass the scheduled callbackTime as parameter to the callback
-        this._cues[i].callback(val);
+        cue.callback(val);
       }
 
     }

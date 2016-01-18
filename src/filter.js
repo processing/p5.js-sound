@@ -96,6 +96,9 @@ define(function (require) {
     if (type) {
       this.setType(type);
     }
+
+    // add to the soundArray
+    p5sound.soundArray.push(this);
   };
 
   /**
@@ -233,6 +236,22 @@ define(function (require) {
   p5.Filter.prototype.disconnect = function() {
     this.output.disconnect();
   };
+
+  p5.Filter.prototype.dispose = function() {
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+
+    this.input.disconnect();
+    this.input = undefined;
+
+
+    this.output.disconnect();
+    this.output = undefined;
+
+    this.biquad.disconnect();
+    this.biquad = undefined;
+  }
 
   /**
    *  Constructor: <code>new p5.LowPass()</code> Filter.
