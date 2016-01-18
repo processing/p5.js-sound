@@ -5,6 +5,7 @@ define(function (require) {
   var Add = require('Tone/signal/Add');
   var Mult = require('Tone/signal/Multiply');
   var Scale = require('Tone/signal/Scale');
+  var TimelineSignal = require('Tone/signal/TimelineSignal');
 
   var Tone = require('Tone/core/Tone');
   Tone.setContext( p5sound.audiocontext);
@@ -105,7 +106,7 @@ define(function (require) {
 
     this.output = p5sound.audiocontext.createGain();;
 
-    this.control =  new p5.Signal();
+    this.control = new TimelineSignal();
 
     this.control.connect(this.output);
 
@@ -197,6 +198,10 @@ define(function (require) {
       }
     }
 
+    // get and set value to anchor automation
+    var valToSet = this.control.getValueAtTime(t);
+    this.control.setValueAtTime(valToSet, t);
+
     // attack
     this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
     // decay to decay level
@@ -231,6 +236,10 @@ define(function (require) {
         this.connect(unit);
       }
     }
+
+    // get and set value to anchor automation
+    var valToSet = this.control.getValueAtTime(t);
+    this.control.setValueAtTime(valToSet, t);
 
     this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
 
@@ -270,8 +279,9 @@ define(function (require) {
       }
     }
 
-    // ideally would get & set currentValue here,
-    // but this.control._scalar.gain.value not working in firefox
+    // get and set value to anchor automation
+    var valToSet = this.control.getValueAtTime(t);
+    this.control.setValueAtTime(valToSet, t);
 
     // release based on how much time has passed since this.lastAttack
     if ( (t - this.lastAttack) < (this.aTime) ) {
