@@ -5,11 +5,7 @@
     "url": "https://github.com/therewasaguy/p5.sound.js.git"
   },
   "version": "0.2.17",
-  "licenses": [
-      {
-        "type": "MIT"
-      }
-    ],
+  "license": "MIT",
   "devDependencies": {
     "grunt": "~0.4.2",
     "grunt-contrib-jshint": "~0.6.3",
@@ -22,7 +18,10 @@
     "grunt-contrib-yuidoc": "0.5.2",
     "almond": "~0.2.7",
     "amdclean": "~2.0",
-    "grunt-contrib-sass": "~0.7.2",
-    "tone": "~0.3"
+    "grunt-contrib-sass": "~0.7.2"
+  },
+  "dependencies": {
+    "tone": "git+https://github.com/therewasaguy/tone.js.git#tonep5mod",
+    "web-audio-automation-timeline": "therewasaguy/web-audio-automation-timeline"
   }
 }

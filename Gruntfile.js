@@ -103,6 +103,7 @@ module.exports = function(grunt) {
           out: 'lib/p5.sound.js',
           paths: {
             'Tone' : 'node_modules/tone/Tone',
+            'automation-timeline': 'node_modules/web-audio-automation-timeline/build/automation-timeline-amd',
             'panner' : 'src/panner',
             'sndcore': 'src/sndcore',
             'master': 'src/master',
