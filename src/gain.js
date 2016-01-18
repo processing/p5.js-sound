@@ -80,6 +80,9 @@ define(function (require) {
     // otherwise, Safari distorts
     this.input.gain.value = 0.5;
     this.input.connect(this.output);
+
+    // add  to the soundArray
+    p5sound.soundArray.push(this);
 }
 
 /**

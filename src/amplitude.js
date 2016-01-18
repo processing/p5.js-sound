@@ -83,6 +83,8 @@ define(function (require) {
     // connect to p5sound master output by default, unless set by input()
     p5sound.meter.connect(this.processor);
 
+    // add this p5.SoundFile to the soundArray
+    p5sound.soundArray.push(this);
   };
 
   /**

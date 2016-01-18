@@ -96,6 +96,9 @@ define(function (require) {
     if (type) {
       this.setType(type);
     }
+
+    // add to the soundArray
+    p5sound.soundArray.push(this);
   };
 
   /**

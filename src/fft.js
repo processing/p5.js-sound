@@ -113,6 +113,8 @@ define(function (require) {
     this.highMid = [2600, 5200];
     this.treble = [5200, 14000];
 
+    // add this p5.SoundFile to the soundArray
+    p5sound.soundArray.push(this);
   };
 
   /**

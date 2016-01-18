@@ -108,6 +108,9 @@ define(function (require) {
     this.setType(0);
 
     this._maxDelay = this.leftDelay.delayTime.maxValue;
+
+    // add this p5.SoundFile to the soundArray
+    p5sound.soundArray.push(this);
   };
 
   /**

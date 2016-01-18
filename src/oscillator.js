@@ -195,7 +195,6 @@ define(function (require) {
     }
 
     else if (vol) {
-      console.log(vol);
       vol.connect(self.output.gain);
     } else {
       // return the Gain Node
