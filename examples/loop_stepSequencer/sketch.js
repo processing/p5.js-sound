@@ -31,7 +31,6 @@ function setup() {
   // set tempo (Beats Per Minute) of the part and tell it to loop
   part.setBPM(80);
   part.loop();
-
 }
 
 function playKick(time, params) {

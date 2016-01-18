@@ -11,7 +11,9 @@ define(function (require) {
   // var upTick = false;
 
   p5.Metro = function() {
-    this.clock = new Clock(ac.sampleRate, this.ontick.bind(this));
+    this.clock = new Clock({
+      'callback': this.ontick.bind(this)
+    });
     this.syncedParts = [];
     this.bpm = 120; // gets overridden by p5.Part
     this._init();
@@ -50,10 +52,12 @@ define(function (require) {
 
   p5.Metro.prototype.setBPM = function(bpm, rampTime) {
     var beatTime =  60 / (bpm*this.tatums);
+    var now = p5sound.audiocontext.currentTime;
     tatumTime = beatTime;
 
-    var ramp = rampTime || 0;
-    this.clock.setRate(beatTime, rampTime + p5sound.audiocontext.currentTime);
+    var rampTime = rampTime || 0;
+    this.clock.frequency.setValueAtTime(this.clock.frequency.value, now);
+    this.clock.frequency.linearRampToValueAtTime(bpm, now + rampTime);
     this.bpm = bpm;
   };
 
@@ -76,16 +80,18 @@ define(function (require) {
     this.syncedParts.push(part);
   };
 
-  p5.Metro.prototype.start = function(time) {
-    var t = time || 0;
-    this.clock.start(t);
+  p5.Metro.prototype.start = function(timeFromNow) {
+    var t = timeFromNow || 0;
+    var now = p5sound.audiocontext.currentTime;
+    this.clock.start(now + t);
     this.setBPM(this.bpm);
   };
 
-  p5.Metro.prototype.stop = function(time) {
-    var t = time || 0;
+  p5.Metro.prototype.stop = function(timeFromNow) {
+    var t = timeFromNow || 0;
+    var now = p5sound.audiocontext.currentTime;
     if (this.clock._oscillator) {
-      this.clock.stop(t);
+      this.clock.stop(now + t);
     }
   };
 

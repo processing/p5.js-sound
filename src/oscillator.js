@@ -1,3 +1,4 @@
+
 define(function (require) {
   'use strict';
 
@@ -86,6 +87,7 @@ define(function (require) {
     this.f = freq || 440.0; // frequency
     this.oscillator.frequency.setValueAtTime(this.f, p5sound.audiocontext.currentTime);
     this.oscillator.type = type || 'sine';
+
     var o = this.oscillator;
 
     // connections
