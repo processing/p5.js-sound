@@ -402,20 +402,20 @@ define(function (require) {
 
       // delete this.bufferSourceNode from the sources array when it is done playing:
       this.bufferSourceNode.onended = function(e) {
-        var theNode = this;
+        this._playing = false;
 
         // call the onended callback
         self._onended(self);
 
-        // if (self.bufferSourceNodes.length === 1) {
-        this._playing = false;
-        // }
-        setTimeout( function(){
-          self.bufferSourceNodes.splice(theNode._arrayIndex, 1);
-          if (self.bufferSourceNodes.length === 0) {
-            self._playing = false;
+        self.bufferSourceNodes.forEach(function(n, i){
+          if (n._playing === false) {
+            self.bufferSourceNodes.splice(i);
           }
-        }, 1);
+        });
+
+        if (self.bufferSourceNodes.length === 0) {
+          self._playing = false;
+        }
       }
     }
     // If soundFile hasn't loaded the buffer yet, throw an error
