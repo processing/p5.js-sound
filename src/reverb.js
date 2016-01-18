@@ -180,6 +180,10 @@ define(function (require) {
   };
 
   p5.Reverb.prototype.dispose = function() {
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+
     if (this.convolverNode) {
       this.convolverNode.buffer = null;
       this.convolverNode = null;

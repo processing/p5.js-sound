@@ -134,6 +134,16 @@ define(function (require) {
     this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
   };
 
+  p5.Gain.prototype.dispose = function() {
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+    this.output.disconnect();
+    this.input.disconnect();
+    this.output = undefined;
+    this.input = undefined;
+  }
+
 });
 
 

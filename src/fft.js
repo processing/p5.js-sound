@@ -383,6 +383,15 @@ define(function (require) {
     this.analyser.smoothingTimeConstant = s;
   };
 
+  p5.FFT.prototype.dispose = function() {
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+
+    this.analyser.disconnect();
+    this.analyser = undefined;
+  }
+
   // helper methods to convert type from float (dB) to int (0-255)
   var freqToFloat = function (fft) {
     if (fft.freqDomain instanceof Float32Array === false) {

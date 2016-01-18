@@ -419,6 +419,10 @@ define(function (require) {
 
   // get rid of the oscillator
   p5.Env.prototype.dispose = function() {
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+
     var now = p5sound.audiocontext.currentTime;
     this.disconnect();
     try{

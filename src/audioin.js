@@ -317,6 +317,10 @@ define(function (require) {
 
   // private method
   p5.AudioIn.prototype.dispose = function(){
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+
     this.stop();
     if (this.output) {
       this.output.disconnect();
