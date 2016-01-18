@@ -21,7 +21,6 @@
     "grunt-contrib-sass": "~0.7.2"
   },
   "dependencies": {
-    "tone": "therewasaguy/tone.js#p5-dev",
-    "web-audio-automation-timeline": "therewasaguy/web-audio-automation-timeline"
+    "tone": "therewasaguy/tone.js#p5-dev"
   }
 }
