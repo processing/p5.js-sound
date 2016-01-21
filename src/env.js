@@ -70,6 +70,7 @@ define(function (require) {
    *  </code></div>
    */
   p5.Env = function(t1, l1, t2, l2, t3, l3, t4, l4){
+    var now = p5sound.audiocontext.currentTime;
 
     /**
      * @property attackTime
@@ -107,8 +108,8 @@ define(function (require) {
     this.output = p5sound.audiocontext.createGain();;
 
     this.control = new TimelineSignal();
-
     this.control.connect(this.output);
+    this.control.setValueAtTime(0, now);
 
     this.connection = null; // store connection
 
@@ -198,18 +199,45 @@ define(function (require) {
       }
     }
 
-    // get and set value to anchor automation
-    var valToSet = this.control.getValueAtTime(t);
-    this.control.setValueAtTime(valToSet, t);
+    this.triggerAttack(unit, secondsFromNow);
+    this.triggerRelease(unit, secondsFromNow + this.aTime + this.dTime + this.sTime);
 
-    // attack
-    this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
-    // decay to decay level
-    this.control.linearRampToValueAtTime(this.dLevel, t + this.aTime + this.dTime);
-    // hold sustain level
-    this.control.linearRampToValueAtTime(this.sLevel, t + this.aTime + this.dTime + this.sTime);
-    // release
-    this.control.linearRampToValueAtTime(this.rLevel, t + this.aTime + this.dTime + this.sTime + this.rTime);
+    // get and set value (with linear ramp) to anchor automation
+    // var valToSet = this.control.getValueAtTime(t);
+    // this.control.linearRampToValueAtTime(valToSet, t);
+
+    // // after each ramp completes, cancel scheduled values
+    // // (so they can be overridden in case env has been re-triggered)
+    // // then, set current value (with linearRamp to avoid click)
+    // // then, schedule the next automation...
+
+    // // attack
+    // t += this.aTime;
+    // this.control.linearRampToValueAtTime(this.aLevel, t);
+    // valToSet = this.control.getValueAtTime(t);
+    // this.control.cancelScheduledValues(t);
+    // this.control.linearRampToValueAtTime(valToSet, t);
+
+    // // decay to decay level
+    // t += this.dTime;
+    // this.control.linearRampToValueAtTime(this.dLevel, t);
+    // valToSet = this.control.getValueAtTime(t);
+    // this.control.cancelScheduledValues(t);
+    // this.control.linearRampToValueAtTime(valToSet, t);
+
+    // // hold sustain level
+    // t += this.sTime;
+    // this.control.linearRampToValueAtTime(this.sLevel, t);
+    // valToSet = this.control.getValueAtTime(t);
+    // this.control.cancelScheduledValues(t);
+    // this.control.linearRampToValueAtTime(valToSet, t);
+
+    // // release
+    // t += this.rTime;
+    // this.control.linearRampToValueAtTime(this.rLevel, t);
+    // valToSet = this.control.getValueAtTime(t);
+    // this.control.cancelScheduledValues(t);
+    // this.control.linearRampToValueAtTime(valToSet, t);
   };
 
   /**
@@ -237,18 +265,35 @@ define(function (require) {
       }
     }
 
-    // get and set value to anchor automation
+    // get and set value (with linear ramp) to anchor automation
     var valToSet = this.control.getValueAtTime(t);
-    this.control.setValueAtTime(valToSet, t);
+    this.control.linearRampToValueAtTime(valToSet, t);
 
-    this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
+    // after each ramp completes, cancel scheduled values
+    // (so they can be overridden in case env has been re-triggered)
+    // then, set current value (with linearRamp to avoid click)
+    // then, schedule the next automation...
 
     // attack
-    this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
-    // decay to sustain level
-    this.control.linearRampToValueAtTime(this.dLevel, t + this.aTime + this.dTime);
+    t += this.aTime;
+    this.control.linearRampToValueAtTime(this.aLevel, t);
+    valToSet = this.control.getValueAtTime(t);
+    this.control.cancelScheduledValues(t);
+    this.control.linearRampToValueAtTime(valToSet, t);
 
-    this.control.linearRampToValueAtTime(this.sLevel, t + this.aTime + this.dTime + this.sTime);
+    // decay to decay level
+    t += this.dTime;
+    this.control.linearRampToValueAtTime(this.dLevel, t);
+    valToSet = this.control.getValueAtTime(t);
+    this.control.cancelScheduledValues(t);
+    this.control.linearRampToValueAtTime(valToSet, t);
+
+    // hold sustain level
+    t += this.sTime;
+    this.control.linearRampToValueAtTime(this.sLevel, t);
+    valToSet = this.control.getValueAtTime(t);
+    this.control.cancelScheduledValues(t);
+    this.control.linearRampToValueAtTime(valToSet, t);
 
   };
 
@@ -279,49 +324,16 @@ define(function (require) {
       }
     }
 
-    // get and set value to anchor automation
+    // get and set value (with linear ramp) to anchor automation
     var valToSet = this.control.getValueAtTime(t);
-    this.control.setValueAtTime(valToSet, t);
+    this.control.linearRampToValueAtTime(valToSet, t);
 
-    // release based on how much time has passed since this.lastAttack
-    if ( (t - this.lastAttack) < (this.aTime) ) {
-      var a = this.aTime - (t - this.lastAttack);
-      this.control.linearRampToValueAtTime(this.aLevel, t + a);
-      this.control.linearRampToValueAtTime(this.dLevel, t + a + this.dTime);
-      this.control.linearRampToValueAtTime(this.sLevel, t + a + this.dTime + this.sTime);
-      this.control.linearRampToValueAtTime(this.rLevel, t + a + this.dTime + this.sTime + this.rTime);
-      relTime = t + this.dTime + this.sTime + this.rTime;
-    }
-    else if ( (t - this.lastAttack) < (this.aTime + this.dTime) ) {
-      var d = this.aTime + this.dTime - (now - this.lastAttack);
-      this.control.linearRampToValueAtTime(this.dLevel, t + d);
-      // this.control.linearRampToValueAtTime(this.sLevel, t + d + this.sTime);
-      this.control.linearRampToValueAtTime(this.sLevel, t + d + 0.01);
-      this.control.linearRampToValueAtTime(this.rLevel, t + d + 0.01 + this.rTime);
-      relTime = t + this.sTime + this.rTime;
-    } 
-    else if ( (t - this.lastAttack) < (this.aTime + this.dTime + this.sTime) ) {
-      var s = this.aTime + this.dTime + this.sTime - (now - this.lastAttack);
-      this.control.linearRampToValueAtTime(this.sLevel, t + s);
-      this.control.linearRampToValueAtTime(this.rLevel, t + s + this.rTime);
-      relTime = t + this.rTime;
-    }
-    else {
-      this.control.linearRampToValueAtTime(this.sLevel, t);
-      this.control.linearRampToValueAtTime(this.rLevel, t + this.rTime);
-      relTime = t + this.dTime + this.sTime + this.rTime;
-    }
-
-    // clear osc / sources
-    var clearTime = (t + this.aTime + this.dTime + this.sTime + this.rTime); // * 1000;
-
-    if (this.connection && this.connection.hasOwnProperty('oscillator')) {
-      this.sourceToClear = this.connection.oscillator;
-      this.sourceToClear.stop(clearTime + .01);
-    } else if (this.connect && this.connection.hasOwnProperty('source')){
-      this.sourceToClear = this.connection.source;
-      this.sourceToClear.stop(clearTime + .01);
-    }
+    // release
+    t += this.rTime;
+    this.control.linearRampToValueAtTime(this.rLevel, t);
+    valToSet = this.control.getValueAtTime(t);
+    this.control.cancelScheduledValues(t);
+    this.control.linearRampToValueAtTime(valToSet, t);
 
     this.wasTriggered = false;
   };
