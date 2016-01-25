@@ -110,7 +110,10 @@ define(function (require) {
     this.rampLowPercentage = 0.02;
 
     this.rampAttackTime = 0.01;
-    this.rampDecayTime = 0.01;
+    this.rampDecayTime = 0.5;
+
+    this.rampAttackTC = 0.12;
+    this.rampDecayTC = 0.12;
 
     this.output = p5sound.audiocontext.createGain();;
 
@@ -146,6 +149,8 @@ define(function (require) {
     var now = p5sound.audiocontext.currentTime;
     var t = now;
     this.control.setTargetAtTime(0.00001, t, .001);
+    //also, compute the correct time constants
+    this.setRampAD(this.rampAttackTime, this.rampDecayTime)
   };
 
   /**
@@ -189,14 +194,27 @@ define(function (require) {
 
   p5.Env.prototype.setRampAD = function(t1, t2){
     //sets the time constants for simple exponential ramps
-    this.rampAttackTime = t1;
-    this.rampDecayTime = t2;
+    this.rampAttackTime = this.checkExpInput(t1);
+    this.rampDecayTime = this.checkExpInput(t2);
+    var TCDenominator = 1.0;
+    /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
+    TCDenominator = Math.log(1.0 / (this.checkExpInput(1.0 - this.rampHighPercentage)));
+    this.rampAttackTC = (t1 / this.checkExpInput(TCDenominator));
+    TCDenominator = Math.log(1.0 / this.rampLowPercentage);
+    this.rampDecayTC = (t2 / this.checkExpInput(TCDenominator));
   };
 
   p5.Env.prototype.setRampPercentages = function(p1, p2){
     //set the percentages that the simple exponential ramps go to
-    this.rampHighPercentage = p1;
-    this.rampLowPercentage = p2;
+    this.rampHighPercentage = this.checkExpInput(p1);
+    this.rampLowPercentage = this.checkExpInput(p2);
+    var TCDenominator = 1.0;
+    //now re-compute the time constants based on those percentages
+    /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
+    TCDenominator = Math.log(1.0 / (this.checkExpInput(1.0 - this.rampHighPercentage)));
+    this.rampAttackTC = (this.rampAttackTime / this.checkExpInput(TCDenominator));
+    TCDenominator = Math.log(1.0 / this.rampLowPercentage);
+    this.rampDecayTC = (this.rampDecayTime / this.checkExpInput(TCDenominator));
   };
 
 
@@ -446,18 +464,14 @@ define(function (require) {
     //if it's going up
     if(destination > currentVal)
     {
-      /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
-      var rampTC = (this.rampAttackTime / (log((destination - currentVal)/((1.0 - this.rampHighPercentage) * destination))));
-      this.control.setTargetAtTime(destination, t, rampTC);
+      this.control.setTargetAtTime(destination, t, this.rampAttackTC);
     }
 
     //if it's going down
     if(destination < currentVal)
     {
-      /// Aatish Bhatia's calculation for time constant for fall(to adjust 1/1-e calculation to any percentage)
-      //not sure about this one, should it be 1-rampLowPercentage or not?
-      var rampTC = (this.rampDecayTime / (log((currentVal - destination)/((this.rampLowPercentage) * currentVal))));
-      this.control.setTargetAtTime(destination, t, rampTC);
+
+      this.control.setTargetAtTime(destination, t, this.rampDecayTC);
     }
   };
     
@@ -477,7 +491,7 @@ define(function (require) {
       }
     }
 
-    // get and set value (with linear or exponential ramp) to anchor automation
+    //get current value
     var currentVal = this.checkExpInput(this.control.getValueAtTime(t));
 
     this.control.cancelScheduledValues(t); 
@@ -485,41 +499,29 @@ define(function (require) {
     //if it's going up
     if(destination1 > currentVal)
     {
-      /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
-      var rampTC = (this.rampAttackTime / (log((destination1 - currentVal)/((1.0 - this.rampHighPercentage) * destination1))));
-      //console.log("ramp up1 TC = " + rampTC);
-      this.control.setTargetAtTime(destination1, t, rampTC);
+      this.control.setTargetAtTime(destination1, t, this.rampAttackTC);
       t += this.rampAttackTime;
     }
     
     //if it's going down
     else if(destination1 < currentVal)
     {
-      /// Aatish Bhatia's calculation for time constant for fall(to adjust 1/1-e calculation to any percentage)
-      var rampTC = (this.rampDecayTime / (log((currentVal - destination1)/((this.rampLowPercentage) * currentVal))));
-      //console.log("ramp down1 TC = " + rampTC);
-      this.control.setTargetAtTime(destination1, t, rampTC);
+      this.control.setTargetAtTime(destination1, t, this.rampDecayTC);
       t += this.rampDecayTime;
     }
 
-    // second part of envelope begins
+    // Now the second part of envelope begins
 
     //if it's going up
     if(destination2 > destination1)
     {
-      /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
-      var rampTC = (this.rampAttackTime / (log((destination2 - destination1)/((1.0 - this.rampHighPercentage) * destination2))));
-      //console.log("ramp up2 TC = " + rampTC);
-      this.control.setTargetAtTime(destination2, t, rampTC);
+      this.control.setTargetAtTime(destination2, t, this.rampAttackTC);
     }
     
     //if it's going down
     else if(destination2 < destination1)
     {
-      /// Aatish Bhatia's calculation for time constant for fall(to adjust 1/1-e calculation to any percentage)
-      var rampTC = (this.rampDecayTime / (log((destination1 - destination2)/((this.rampLowPercentage) * destination1))));
-      //console.log("ramp down2 TC = " + rampTC);
-      this.control.setTargetAtTime(destination2, t, rampTC);
+      this.control.setTargetAtTime(destination2, t, this.rampDecayTC);
     }
 
 
