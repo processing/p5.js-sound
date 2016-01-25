@@ -2,7 +2,7 @@
 // This example shows a more complex use of the .rampAD function for the envelope. 
 // You can use it to make a simple attack/decay envelope for struck or plucked style notes.
 // Here, we're creating synthetic bells using additive synthesis, and triggering each of their attacks and decays differently to make different harmonics last for different times.
-
+// Have fun! - Jeff Snyder
 var osc = [];
 var envelope = [];
 var fft;
