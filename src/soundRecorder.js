@@ -231,6 +231,11 @@ define(function (require) {
 
   p5.SoundRecorder.prototype.dispose = function() {
     this._clear();
+
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+
     this._callback = function(){};
     if (this.input) {
       this.input.disconnect();

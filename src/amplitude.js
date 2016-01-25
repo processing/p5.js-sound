@@ -83,6 +83,8 @@ define(function (require) {
     // connect to p5sound master output by default, unless set by input()
     p5sound.meter.connect(this.processor);
 
+    // add this p5.SoundFile to the soundArray
+    p5sound.soundArray.push(this);
   };
 
   /**
@@ -296,6 +298,18 @@ define(function (require) {
     } else {
       console.log('Error: smoothing must be between 0 and 1');
     }
+  };
+
+  p5.Amplitude.prototype.dispose = function() {
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+
+    this.input.disconnect();
+    this.output.disconnect();
+
+    this.input = this.processor = undefined;
+    this.output = undefined;
   };
 
 });

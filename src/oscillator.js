@@ -1,3 +1,4 @@
+
 define(function (require) {
   'use strict';
 
@@ -86,6 +87,7 @@ define(function (require) {
     this.f = freq || 440.0; // frequency
     this.oscillator.frequency.setValueAtTime(this.f, p5sound.audiocontext.currentTime);
     this.oscillator.type = type || 'sine';
+
     var o = this.oscillator;
 
     // connections
@@ -195,7 +197,6 @@ define(function (require) {
     }
 
     else if (vol) {
-      console.log(vol);
       vol.connect(self.output.gain);
     } else {
       // return the Gain Node
@@ -237,14 +238,21 @@ define(function (require) {
       var now = p5sound.audiocontext.currentTime;
       var rampTime = rampTime || 0;
       var tFromNow = tFromNow || 0;
-      var currentFreq = this.oscillator.frequency.value;
-      this.oscillator.frequency.cancelScheduledValues(now);
-      this.oscillator.frequency.setValueAtTime(currentFreq, now + tFromNow);
-      if (val > 0 ){
-        this.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
+      // var currentFreq = this.oscillator.frequency.value;
+      // this.oscillator.frequency.cancelScheduledValues(now);
+
+      if (rampTime == 0) {
+        this.oscillator.frequency.cancelScheduledValues(now);
+        this.oscillator.frequency.setValueAtTime(val, tFromNow + now);
       } else {
-        this.oscillator.frequency.linearRampToValueAtTime(val, tFromNow + rampTime + now);
+        if (val > 0 ){
+          this.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
+        } else {
+          this.oscillator.frequency.linearRampToValueAtTime(val, tFromNow + rampTime + now);
+        }
       }
+
+
 
       // reset phase if oscillator has a phase
       if (this.phaseAmount) {
@@ -335,6 +343,10 @@ define(function (require) {
 
   // get rid of the oscillator
   p5.Oscillator.prototype.dispose = function() {
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+
     if (this.oscillator){
       var now = p5sound.audiocontext.currentTime;
       this.stop(now);

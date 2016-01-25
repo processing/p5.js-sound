@@ -80,6 +80,9 @@ define(function (require) {
     // otherwise, Safari distorts
     this.input.gain.value = 0.5;
     this.input.connect(this.output);
+
+    // add  to the soundArray
+    p5sound.soundArray.push(this);
 }
 
 /**
@@ -133,6 +136,16 @@ define(function (require) {
     this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
     this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
   };
+
+  p5.Gain.prototype.dispose = function() {
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+    this.output.disconnect();
+    this.input.disconnect();
+    this.output = undefined;
+    this.input = undefined;
+  }
 
 });
 

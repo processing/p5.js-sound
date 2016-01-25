@@ -206,7 +206,9 @@ define(function (require) {
     }
 
     this.triggerAttack(unit, secondsFromNow);
+
     this.triggerRelease(unit, secondsFromNow + this.aTime + this.dTime);
+
   };
 
   /**
@@ -245,6 +247,7 @@ define(function (require) {
       this.control.linearRampToValueAtTime(valToSet, t);
     }
 
+
     // after each ramp completes, cancel scheduled values
     // (so they can be overridden in case env has been re-triggered)
     // then, set current value (with linearRamp to avoid click)
@@ -252,6 +255,7 @@ define(function (require) {
 
     // attack
     t += this.aTime;
+
 
     if (this.isExponential == true)
     {
@@ -340,6 +344,7 @@ define(function (require) {
       this.control.cancelScheduledValues(t);
       this.control.linearRampToValueAtTime(valToSet, t);
     }
+
 
     this.wasTriggered = false;
   };
