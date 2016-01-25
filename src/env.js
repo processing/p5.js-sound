@@ -5,6 +5,7 @@ define(function (require) {
   var Add = require('Tone/signal/Add');
   var Mult = require('Tone/signal/Multiply');
   var Scale = require('Tone/signal/Scale');
+  var TimelineSignal = require('Tone/signal/TimelineSignal');
 
   var Tone = require('Tone/core/Tone');
   Tone.setContext( p5sound.audiocontext);
@@ -69,6 +70,7 @@ define(function (require) {
    *  </code></div>
    */
   p5.Env = function(t1, l1, t2, l2, t3, l3, t4, l4){
+    var now = p5sound.audiocontext.currentTime;
 
     /**
      * @property attackTime
@@ -83,36 +85,32 @@ define(function (require) {
      */
     this.dTime = t2 || 0;
     /**
-     * @property decayLevel
-     */
-    this.dLevel = l2 || 0;
-    /**
-     * @property sustainTime
-     */
-    this.sTime = t3 || 0;
-    /**
      * @property sustainLevel
      */
-    this.sLevel = l3 || 0;
+    this.sLevel = l2 || 0;
     /**
      * @property releaseTime
      */
-    this.rTime = t4 || 0;
+    this.rTime = t3 || 0;
     /**
      * @property releaseLevel
      */
-    this.rLevel = l4 || 0;
+    this.rLevel = l3 || 0;
+    
 
     this.output = p5sound.audiocontext.createGain();;
 
-    this.control =  new p5.Signal();
-
+    this.control = new TimelineSignal();
     this.control.connect(this.output);
+    this.control.setValueAtTime(0, now);
 
     this.connection = null; // store connection
 
     //array of math operation signal chaining
     this.mathOps = [this.control];
+
+    //whether envelope should be linear or exponential curve
+    this.isExponential = false;
 
     // oscillator or buffer source to clear on env complete
     // to save resources if/when it is retriggered
@@ -135,22 +133,19 @@ define(function (require) {
    *  @param {Number} aLevel    Typically an amplitude between
    *                                 0.0 and 1.0
    *  @param {Number} dTime      Time
-   *  @param {Number} [dLevel]   Amplitude (In a standard ADSR envelope,
+   *  @param {Number} [sLevel]   Amplitude (In a standard ADSR envelope,
    *                                 decayLevel = sustainLevel)
-   *  @param {Number} [sTime]   Time (in seconds)
-   *  @param {Number} [sLevel]  Amplitude 0.0 to 1.0
-   *  @param {Number} [rTime]   Time (in seconds)
+   *  @param {Number} [rTime]   Release Time (in seconds)
    *  @param {Number} [rLevel]  Amplitude 0.0 to 1.0
+
    */
-  p5.Env.prototype.set = function(t1, l1, t2, l2, t3, l3, t4, l4){
+  p5.Env.prototype.set = function(t1, l1, t2, l2, t3, l3){
     this.aTime = t1;
     this.aLevel = l1;
     this.dTime = t2 || 0;
-    this.dLevel = l2 || 0;
-    this.sTime = t3 || 0;
-    this.sLevel = l3 || 0;
-    this.rTime = t4 || 0;
-    this.rLevel = l4 || 0;
+    this.sLevel = l2 || 0;
+    this.rTime = t3 || 0;
+    this.rLevel = l3 || 0;
   };
 
   /**
@@ -167,6 +162,19 @@ define(function (require) {
     for (var i = 0; i<arguments.length; i++) {
       this.connect(arguments[i]);
     }
+  };
+
+  p5.Env.prototype.setExp = function(isExp){
+    this.isExponential = isExp;
+  }
+
+    //protect against zero values being sent to exponential functions
+  p5.Env.prototype.checkExpInput = function(value) {
+    if (value <= 0)
+    {
+      value = 0.0001;
+    }
+    return value;
   };
 
   p5.Env.prototype.ctrl = function(unit){
@@ -197,21 +205,8 @@ define(function (require) {
       }
     }
 
-    var currentVal =  this.control.getValue(); 
-    this.control.cancelScheduledValues(t);
-    this.control.linearRampToValueAtTime(currentVal, t);
-
-    // attack
-    this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
-    // decay to decay level
-    this.control.linearRampToValueAtTime(this.dLevel, t + this.aTime + this.dTime);
-    // hold sustain level
-    this.control.linearRampToValueAtTime(this.sLevel, t + this.aTime + this.dTime + this.sTime);
-    // release
-    this.control.linearRampToValueAtTime(this.rLevel, t + this.aTime + this.dTime + this.sTime + this.rTime);
-
-    var clearTime = (t + this.aTime + this.dTime + this.sTime + this.rTime); //* 1000;
-
+    this.triggerAttack(unit, secondsFromNow);
+    this.triggerRelease(unit, secondsFromNow + this.aTime + this.dTime);
   };
 
   /**
@@ -233,27 +228,62 @@ define(function (require) {
     this.lastAttack = t;
     this.wasTriggered = true;
 
-    // we should set current value, but this is not working on Firefox
-    var currentVal =  this.control.getValue(); 
-    console.log(currentVal);
-    this.control.cancelScheduledValues(t);
-    this.control.linearRampToValueAtTime(currentVal, t);
-
     if (unit) {
       if (this.connection !== unit) {
         this.connect(unit);
       }
     }
 
-    this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
+    // get and set value (with linear ramp) to anchor automation
+    var valToSet = this.control.getValueAtTime(t);
+    if (this.isExponential == true)
+    {
+      this.control.exponentialRampToValueAtTime(this.checkExpInput(valToSet), t);
+    }
+    else
+    {
+      this.control.linearRampToValueAtTime(valToSet, t);
+    }
+
+    // after each ramp completes, cancel scheduled values
+    // (so they can be overridden in case env has been re-triggered)
+    // then, set current value (with linearRamp to avoid click)
+    // then, schedule the next automation...
 
     // attack
-    this.control.linearRampToValueAtTime(this.aLevel, t + this.aTime);
-    // decay to sustain level
-    this.control.linearRampToValueAtTime(this.dLevel, t + this.aTime + this.dTime);
+    t += this.aTime;
 
-    this.control.linearRampToValueAtTime(this.sLevel, t + this.aTime + this.dTime + this.sTime);
+    if (this.isExponential == true)
+    {
+      this.control.exponentialRampToValueAtTime(this.checkExpInput(this.aLevel), t);
+      valToSet = this.checkExpInput(this.control.getValueAtTime(t));
+      this.control.cancelScheduledValues(t);
+      this.control.exponentialRampToValueAtTime(valToSet, t);
+    }
+    else
+    {
+      this.control.linearRampToValueAtTime(this.aLevel, t);
+      valToSet = this.control.getValueAtTime(t);
+      this.control.cancelScheduledValues(t);
+      this.control.linearRampToValueAtTime(valToSet, t);
+    }
 
+    // decay to decay level
+    t += this.dTime;
+    if (this.isExponential == true)
+    {
+      this.control.exponentialRampToValueAtTime(this.checkExpInput(this.sLevel), t);
+      valToSet = this.checkExpInput(this.control.getValueAtTime(t));
+      this.control.cancelScheduledValues(t);
+      this.control.exponentialRampToValueAtTime(valToSet, t);
+    }
+    else
+    {
+      this.control.linearRampToValueAtTime(this.sLevel, t);
+      valToSet = this.control.getValueAtTime(t);
+      this.control.cancelScheduledValues(t);
+      this.control.linearRampToValueAtTime(valToSet, t);
+    }
   };
 
   /**
@@ -275,7 +305,6 @@ define(function (require) {
     var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
     var t = now + tFromNow;
-    var relTime;
 
     if (unit) {
       if (this.connection !== unit) {
@@ -283,49 +312,33 @@ define(function (require) {
       }
     }
 
-    this.control.cancelScheduledValues(t);
-
-    // ideally would get & set currentValue here,
-    // but this.control._scalar.gain.value not working in firefox
-
-    // release based on how much time has passed since this.lastAttack
-    if ( (t - this.lastAttack) < (this.aTime) ) {
-      var a = this.aTime - (t - this.lastAttack);
-      this.control.linearRampToValueAtTime(this.aLevel, t + a);
-      this.control.linearRampToValueAtTime(this.dLevel, t + a + this.dTime);
-      this.control.linearRampToValueAtTime(this.sLevel, t + a + this.dTime + this.sTime);
-      this.control.linearRampToValueAtTime(this.rLevel, t + a + this.dTime + this.sTime + this.rTime);
-      relTime = t + this.dTime + this.sTime + this.rTime;
+    // get and set value (with linear or exponential ramp) to anchor automation
+    var valToSet = this.control.getValueAtTime(t);
+    if (this.isExponential == true)
+    {
+      this.control.exponentialRampToValueAtTime(this.checkExpInput(valToSet), t);
     }
-    else if ( (t - this.lastAttack) < (this.aTime + this.dTime) ) {
-      var d = this.aTime + this.dTime - (now - this.lastAttack);
-      this.control.linearRampToValueAtTime(this.dLevel, t + d);
-      // this.control.linearRampToValueAtTime(this.sLevel, t + d + this.sTime);
-      this.control.linearRampToValueAtTime(this.sLevel, t + d + 0.01);
-      this.control.linearRampToValueAtTime(this.rLevel, t + d + 0.01 + this.rTime);
-      relTime = t + this.sTime + this.rTime;
-    } 
-    else if ( (t - this.lastAttack) < (this.aTime + this.dTime + this.sTime) ) {
-      var s = this.aTime + this.dTime + this.sTime - (now - this.lastAttack);
-      this.control.linearRampToValueAtTime(this.sLevel, t + s);
-      this.control.linearRampToValueAtTime(this.rLevel, t + s + this.rTime);
-      relTime = t + this.rTime;
+    else
+    {
+      this.control.linearRampToValueAtTime(valToSet, t);
     }
-    else {
-      this.control.linearRampToValueAtTime(this.sLevel, t);
-      this.control.linearRampToValueAtTime(this.rLevel, t + this.rTime);
-      relTime = t + this.dTime + this.sTime + this.rTime;
+    
+    // release
+    t += this.rTime;
+
+    if (this.isExponential == true)
+    {
+      this.control.exponentialRampToValueAtTime(this.checkExpInput(this.rLevel), t);
+      valToSet = this.checkExpInput(this.control.getValueAtTime(t));
+      this.control.cancelScheduledValues(t);
+      this.control.exponentialRampToValueAtTime(valToSet, t);
     }
-
-    // clear osc / sources
-    var clearTime = (t + this.aTime + this.dTime + this.sTime + this.rTime); // * 1000;
-
-    if (this.connection && this.connection.hasOwnProperty('oscillator')) {
-      this.sourceToClear = this.connection.oscillator;
-      this.sourceToClear.stop(clearTime + .01);
-    } else if (this.connect && this.connection.hasOwnProperty('source')){
-      this.sourceToClear = this.connection.source;
-      this.sourceToClear.stop(clearTime + .01);
+    else
+    {
+      this.control.linearRampToValueAtTime(this.rLevel, t);
+      valToSet = this.control.getValueAtTime(t);
+      this.control.cancelScheduledValues(t);
+      this.control.linearRampToValueAtTime(valToSet, t);
     }
 
     this.wasTriggered = false;
@@ -359,6 +372,8 @@ define(function (require) {
   p5.Env.prototype.disconnect = function(unit){
     this.output.disconnect();
   };
+
+
 
   // Signal Math
 
@@ -419,6 +434,10 @@ define(function (require) {
 
   // get rid of the oscillator
   p5.Env.prototype.dispose = function() {
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+
     var now = p5sound.audiocontext.currentTime;
     this.disconnect();
     try{
