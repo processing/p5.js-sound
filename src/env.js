@@ -104,13 +104,21 @@ define(function (require) {
      * @property releaseLevel
      */
     this.rLevel = l4 || 0;
-    console.log(t1 + "  " + l1 + "  " + t2 + "  " + l2 + "  " + t3 + "  " + l3 + "  " + t4 + "  " + l4 + "  ")
+
+    this.rampHighPercentage = 0.98;
+
+    this.rampLowPercentage = 0.02;
+
+    this.rampAttackTime = 0.01;
+    this.rampDecayTime = 0.01;
 
     this.output = p5sound.audiocontext.createGain();;
 
     this.control = new TimelineSignal();
-    this.init();
-    this.control.connect(this.output);
+
+    this.init(); // this makes sure the envelope starts at zero
+
+    this.control.connect(this.output); // connect to the output
 
     this.connection = null; // store connection
 
@@ -132,12 +140,14 @@ define(function (require) {
     p5sound.soundArray.push(this);
   };
 
-
+  // this init function just smooths the starting value to zero and gives a start point for the timeline
+  // - it was necessary to remove glitches at the beginning.
   p5.Env.prototype.init = function () {
     var now = p5sound.audiocontext.currentTime;
     var t = now;
     this.control.setTargetAtTime(0.00001, t, .001);
   };
+
   /**
    *  Reset the envelope with a series of time/value pairs.
    *
@@ -164,7 +174,8 @@ define(function (require) {
     this.rLevel = l4 || 0;
   };
 
-
+  // this is a helper function that lets the user enter values more like an ADSR envelope
+  // attack time, attack value, decay time, sustain value, release time, release value
   p5.Env.prototype.setADSR = function(t1, l1, t2, l2, t3, l3){
     this.aTime = t1;
     this.aLevel = l1;
@@ -175,6 +186,19 @@ define(function (require) {
     this.rTime = t3 || 0;
     this.rLevel = l3 || 0;
   };
+
+  p5.Env.prototype.setRampAD = function(t1, t2){
+    //sets the time constants for simple exponential ramps
+    this.rampAttackTime = t1;
+    this.rampDecayTime = t2;
+  };
+
+  p5.Env.prototype.setRampPercentages = function(p1, p2){
+    //set the percentages that the simple exponential ramps go to
+    this.rampHighPercentage = p1;
+    this.rampLowPercentage = p2;
+  };
+
 
   /**
    *  Assign a parameter to be controlled by this envelope.
@@ -194,7 +218,7 @@ define(function (require) {
 
   p5.Env.prototype.setExp = function(isExp){
     this.isExponential = isExp;
-  }
+  };
 
     //protect against zero values being sent to exponential functions
   p5.Env.prototype.checkExpInput = function(value) {
@@ -208,6 +232,7 @@ define(function (require) {
   p5.Env.prototype.ctrl = function(unit){
     this.connect(unit);
   };
+
 
   /**
    *  Play tells the envelope to start acting on a given input.
@@ -398,6 +423,109 @@ define(function (require) {
 
     this.wasTriggered = false;
   };
+
+  //this simply ramps exponentially to whatever value you give it, using the time constants set by setRampAD. 
+  //Going up uses attackTime, going down uses decayTime.
+  p5.Env.prototype.ramp = function(unit, secondsFromNow, v) {
+
+    var now =  p5sound.audiocontext.currentTime;
+    var tFromNow = secondsFromNow || 0;
+    var t = now + tFromNow;
+    var destination = this.checkExpInput(v);
+
+    if (unit) {
+      if (this.connection !== unit) {
+        this.connect(unit);
+      }
+    }
+
+    // get and set value (with linear or exponential ramp) to anchor automation
+    var currentVal = this.checkExpInput(this.control.getValueAtTime(t));
+    this.control.cancelScheduledValues(t); 
+
+    //if it's going up
+    if(destination > currentVal)
+    {
+      /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
+      var rampTC = (this.rampAttackTime / (log((destination - currentVal)/((1.0 - this.rampHighPercentage) * destination))));
+      this.control.setTargetAtTime(destination, t, rampTC);
+    }
+
+    //if it's going down
+    if(destination < currentVal)
+    {
+      /// Aatish Bhatia's calculation for time constant for fall(to adjust 1/1-e calculation to any percentage)
+      //not sure about this one, should it be 1-rampLowPercentage or not?
+      var rampTC = (this.rampDecayTime / (log((currentVal - destination)/((this.rampLowPercentage) * currentVal))));
+      this.control.setTargetAtTime(destination, t, rampTC);
+    }
+  };
+    
+
+  // this is intended as a "pingable" AD trigger. You give it a value to ramp to, and it will use the "simpleAD" time constants to form an exponential ramp up to the value and back down to zero or the 2nd value argument. 
+  p5.Env.prototype.rampAD = function(unit, secondsFromNow, v1, v2) {
+
+    var now =  p5sound.audiocontext.currentTime;
+    var tFromNow = secondsFromNow || 0;
+    var t = now + tFromNow;
+    var destination1 = this.checkExpInput(v1);
+    var destination2 = this.checkExpInput(v2 || 0);
+
+    if (unit) {
+      if (this.connection !== unit) {
+        this.connect(unit);
+      }
+    }
+
+    // get and set value (with linear or exponential ramp) to anchor automation
+    var currentVal = this.checkExpInput(this.control.getValueAtTime(t));
+
+    this.control.cancelScheduledValues(t); 
+
+    //if it's going up
+    if(destination1 > currentVal)
+    {
+      /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
+      var rampTC = (this.rampAttackTime / (log((destination1 - currentVal)/((1.0 - this.rampHighPercentage) * destination1))));
+      //console.log("ramp up1 TC = " + rampTC);
+      this.control.setTargetAtTime(destination1, t, rampTC);
+      t += this.rampAttackTime;
+    }
+    
+    //if it's going down
+    else if(destination1 < currentVal)
+    {
+      /// Aatish Bhatia's calculation for time constant for fall(to adjust 1/1-e calculation to any percentage)
+      var rampTC = (this.rampDecayTime / (log((currentVal - destination1)/((this.rampLowPercentage) * currentVal))));
+      //console.log("ramp down1 TC = " + rampTC);
+      this.control.setTargetAtTime(destination1, t, rampTC);
+      t += this.rampDecayTime;
+    }
+
+    // second part of envelope begins
+
+    //if it's going up
+    if(destination2 > destination1)
+    {
+      /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
+      var rampTC = (this.rampAttackTime / (log((destination2 - destination1)/((1.0 - this.rampHighPercentage) * destination2))));
+      //console.log("ramp up2 TC = " + rampTC);
+      this.control.setTargetAtTime(destination2, t, rampTC);
+    }
+    
+    //if it's going down
+    else if(destination2 < destination1)
+    {
+      /// Aatish Bhatia's calculation for time constant for fall(to adjust 1/1-e calculation to any percentage)
+      var rampTC = (this.rampDecayTime / (log((destination1 - destination2)/((this.rampLowPercentage) * destination1))));
+      //console.log("ramp down2 TC = " + rampTC);
+      this.control.setTargetAtTime(destination2, t, rampTC);
+    }
+
+
+  };
+
+
 
   p5.Env.prototype.connect = function(unit){
     this.connection = unit;
