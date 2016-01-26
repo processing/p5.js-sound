@@ -105,16 +105,31 @@ define(function (require) {
      */
     this.rLevel = l4 || 0;
 
+    this.rampHighPercentage = 0.98;
+
+    this.rampLowPercentage = 0.02;
+
+    this.rampAttackTime = 0.01;
+    this.rampDecayTime = 0.5;
+
+    this.rampAttackTC = 0.12;
+    this.rampDecayTC = 0.12;
+
     this.output = p5sound.audiocontext.createGain();;
 
     this.control = new TimelineSignal();
-    this.control.connect(this.output);
-    this.control.setValueAtTime(0, now);
+
+    this.init(); // this makes sure the envelope starts at zero
+
+    this.control.connect(this.output); // connect to the output
 
     this.connection = null; // store connection
 
     //array of math operation signal chaining
     this.mathOps = [this.control];
+
+    //whether envelope should be linear or exponential curve
+    this.isExponential = false;
 
     // oscillator or buffer source to clear on env complete
     // to save resources if/when it is retriggered
@@ -128,6 +143,16 @@ define(function (require) {
     p5sound.soundArray.push(this);
   };
 
+  // this init function just smooths the starting value to zero and gives a start point for the timeline
+  // - it was necessary to remove glitches at the beginning.
+  p5.Env.prototype.init = function () {
+    var now = p5sound.audiocontext.currentTime;
+    var t = now;
+    this.control.setTargetAtTime(0.00001, t, .001);
+    //also, compute the correct time constants
+    this.setRampAD(this.rampAttackTime, this.rampDecayTime)
+  };
+
   /**
    *  Reset the envelope with a series of time/value pairs.
    *
@@ -137,12 +162,11 @@ define(function (require) {
    *  @param {Number} aLevel    Typically an amplitude between
    *                                 0.0 and 1.0
    *  @param {Number} dTime      Time
-   *  @param {Number} [dLevel]   Amplitude (In a standard ADSR envelope,
+   *  @param {Number} [sLevel]   Amplitude (In a standard ADSR envelope,
    *                                 decayLevel = sustainLevel)
-   *  @param {Number} [sTime]   Time (in seconds)
-   *  @param {Number} [sLevel]  Amplitude 0.0 to 1.0
-   *  @param {Number} [rTime]   Time (in seconds)
+   *  @param {Number} [rTime]   Release Time (in seconds)
    *  @param {Number} [rLevel]  Amplitude 0.0 to 1.0
+
    */
   p5.Env.prototype.set = function(t1, l1, t2, l2, t3, l3, t4, l4){
     this.aTime = t1;
@@ -154,6 +178,45 @@ define(function (require) {
     this.rTime = t4 || 0;
     this.rLevel = l4 || 0;
   };
+
+  // this is a helper function that lets the user enter values more like an ADSR envelope
+  // attack time, attack value, decay time, sustain value, release time, release value
+  p5.Env.prototype.setADSR = function(t1, l1, t2, l2, t3, l3){
+    this.aTime = t1;
+    this.aLevel = l1;
+    this.dTime = t2 || 0;
+    this.dLevel = l2 || 0;
+    this.sTime = 0;
+    this.sLevel = l2 || 0;
+    this.rTime = t3 || 0;
+    this.rLevel = l3 || 0;
+  };
+
+  p5.Env.prototype.setRampAD = function(t1, t2){
+    //sets the time constants for simple exponential ramps
+    this.rampAttackTime = this.checkExpInput(t1);
+    this.rampDecayTime = this.checkExpInput(t2);
+    var TCDenominator = 1.0;
+    /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
+    TCDenominator = Math.log(1.0 / (this.checkExpInput(1.0 - this.rampHighPercentage)));
+    this.rampAttackTC = (t1 / this.checkExpInput(TCDenominator));
+    TCDenominator = Math.log(1.0 / this.rampLowPercentage);
+    this.rampDecayTC = (t2 / this.checkExpInput(TCDenominator));
+  };
+
+  p5.Env.prototype.setRampPercentages = function(p1, p2){
+    //set the percentages that the simple exponential ramps go to
+    this.rampHighPercentage = this.checkExpInput(p1);
+    this.rampLowPercentage = this.checkExpInput(p2);
+    var TCDenominator = 1.0;
+    //now re-compute the time constants based on those percentages
+    /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
+    TCDenominator = Math.log(1.0 / (this.checkExpInput(1.0 - this.rampHighPercentage)));
+    this.rampAttackTC = (this.rampAttackTime / this.checkExpInput(TCDenominator));
+    TCDenominator = Math.log(1.0 / this.rampLowPercentage);
+    this.rampDecayTC = (this.rampDecayTime / this.checkExpInput(TCDenominator));
+  };
+
 
   /**
    *  Assign a parameter to be controlled by this envelope.
@@ -171,9 +234,23 @@ define(function (require) {
     }
   };
 
+  p5.Env.prototype.setExp = function(isExp){
+    this.isExponential = isExp;
+  };
+
+    //protect against zero values being sent to exponential functions
+  p5.Env.prototype.checkExpInput = function(value) {
+    if (value <= 0)
+    {
+      value = 0.0001;
+    }
+    return value;
+  };
+
   p5.Env.prototype.ctrl = function(unit){
     this.connect(unit);
   };
+
 
   /**
    *  Play tells the envelope to start acting on a given input.
@@ -200,7 +277,9 @@ define(function (require) {
     }
 
     this.triggerAttack(unit, secondsFromNow);
+
     this.triggerRelease(unit, secondsFromNow + this.aTime + this.dTime + this.sTime);
+
   };
 
   /**
@@ -230,7 +309,15 @@ define(function (require) {
 
     // get and set value (with linear ramp) to anchor automation
     var valToSet = this.control.getValueAtTime(t);
-    this.control.linearRampToValueAtTime(valToSet, t);
+    this.control.cancelScheduledValues(t); // not sure if this is necessary
+    if (this.isExponential == true)
+    {
+      this.control.exponentialRampToValueAtTime(this.checkExpInput(valToSet), t);
+    }
+    else
+    {
+      this.control.linearRampToValueAtTime(valToSet, t);
+    }
 
     // after each ramp completes, cancel scheduled values
     // (so they can be overridden in case env has been re-triggered)
@@ -239,25 +326,54 @@ define(function (require) {
 
     // attack
     t += this.aTime;
-    this.control.linearRampToValueAtTime(this.aLevel, t);
-    valToSet = this.control.getValueAtTime(t);
-    this.control.cancelScheduledValues(t);
-    this.control.linearRampToValueAtTime(valToSet, t);
+    if (this.isExponential == true)
+    {
+      this.control.exponentialRampToValueAtTime(this.checkExpInput(this.aLevel), t);
+      valToSet = this.checkExpInput(this.control.getValueAtTime(t));
+      this.control.cancelScheduledValues(t);
+      this.control.exponentialRampToValueAtTime(valToSet, t);
+    }
+    else
+    {
+      this.control.linearRampToValueAtTime(this.aLevel, t);
+      valToSet = this.control.getValueAtTime(t);
+      this.control.cancelScheduledValues(t);
+      this.control.linearRampToValueAtTime(valToSet, t);
+    }
 
-    // decay to decay level
+    // decay to decay level (if using ADSR, then decay level == sustain level)
     t += this.dTime;
-    this.control.linearRampToValueAtTime(this.dLevel, t);
-    valToSet = this.control.getValueAtTime(t);
-    this.control.cancelScheduledValues(t);
-    this.control.linearRampToValueAtTime(valToSet, t);
+    if (this.isExponential == true)
+    {
+      this.control.exponentialRampToValueAtTime(this.checkExpInput(this.dLevel), t);
+      valToSet = this.checkExpInput(this.control.getValueAtTime(t));
+      this.control.cancelScheduledValues(t);
+      this.control.exponentialRampToValueAtTime(valToSet, t);
+    }
+    else
+    {
+      this.control.linearRampToValueAtTime(this.dLevel, t);
+      valToSet = this.control.getValueAtTime(t);
+      this.control.cancelScheduledValues(t);
+      this.control.linearRampToValueAtTime(valToSet, t);
+    }
 
-    // hold sustain level
+    // move to sustain level and hold for sustain time (if using ADSR, sustain time is set to 0 and sustain level is set to decay level)
     t += this.sTime;
-    this.control.linearRampToValueAtTime(this.sLevel, t);
-    valToSet = this.control.getValueAtTime(t);
-    this.control.cancelScheduledValues(t);
-    this.control.linearRampToValueAtTime(valToSet, t);
-
+    if (this.isExponential == true)
+    {
+      this.control.exponentialRampToValueAtTime(this.checkExpInput(this.sLevel), t);
+      valToSet = this.checkExpInput(this.control.getValueAtTime(t));
+      this.control.cancelScheduledValues(t);
+      this.control.exponentialRampToValueAtTime(valToSet, t);
+    }
+    else
+    {
+      this.control.linearRampToValueAtTime(this.sLevel, t);
+      valToSet = this.control.getValueAtTime(t);
+      this.control.cancelScheduledValues(t);
+      this.control.linearRampToValueAtTime(valToSet, t);
+    }
   };
 
   /**
@@ -273,13 +389,19 @@ define(function (require) {
 
     // only trigger a release if an attack was triggered
     if (!this.wasTriggered) {
+      // this currently causes a bit of trouble:
+      // if a later release has been scheduled (via the play function)
+      // a new earlier release won't interrupt it, because 
+      // this.wasTriggered has already been set to false.
+      // If we want new earlier releases to override, then we need to 
+      // keep track of the last release time, and if the new release time is 
+      // earlier, then use it.
       return;
     }
 
     var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
     var t = now + tFromNow;
-    var relTime;
 
     if (unit) {
       if (this.connection !== unit) {
@@ -287,19 +409,125 @@ define(function (require) {
       }
     }
 
-    // get and set value (with linear ramp) to anchor automation
+    // get and set value (with linear or exponential ramp) to anchor automation
     var valToSet = this.control.getValueAtTime(t);
-    this.control.linearRampToValueAtTime(valToSet, t);
-
+    this.control.cancelScheduledValues(t); // not sure if this is necessary
+    if (this.isExponential == true)
+    {
+      this.control.exponentialRampToValueAtTime(this.checkExpInput(valToSet), t);
+    }
+    else
+    {
+      this.control.linearRampToValueAtTime(valToSet, t);
+    }
+    
     // release
     t += this.rTime;
-    this.control.linearRampToValueAtTime(this.rLevel, t);
-    valToSet = this.control.getValueAtTime(t);
-    this.control.cancelScheduledValues(t);
-    this.control.linearRampToValueAtTime(valToSet, t);
+
+    if (this.isExponential == true)
+    {
+      this.control.exponentialRampToValueAtTime(this.checkExpInput(this.rLevel), t);
+      valToSet = this.checkExpInput(this.control.getValueAtTime(t));
+      this.control.cancelScheduledValues(t);
+      this.control.exponentialRampToValueAtTime(valToSet, t);
+    }
+    else
+    {
+      this.control.linearRampToValueAtTime(this.rLevel, t);
+      valToSet = this.control.getValueAtTime(t);
+      this.control.cancelScheduledValues(t);
+      this.control.linearRampToValueAtTime(valToSet, t);
+    }
 
     this.wasTriggered = false;
   };
+
+  //this simply ramps exponentially to whatever value you give it, using the time constants set by setRampAD. 
+  //Going up uses attackTime, going down uses decayTime.
+  p5.Env.prototype.ramp = function(unit, secondsFromNow, v) {
+
+    var now =  p5sound.audiocontext.currentTime;
+    var tFromNow = secondsFromNow || 0;
+    var t = now + tFromNow;
+    var destination = this.checkExpInput(v);
+
+    if (unit) {
+      if (this.connection !== unit) {
+        this.connect(unit);
+      }
+    }
+
+    // get and set value (with linear or exponential ramp) to anchor automation
+    var currentVal = this.checkExpInput(this.control.getValueAtTime(t));
+    this.control.cancelScheduledValues(t); 
+
+    //if it's going up
+    if(destination > currentVal)
+    {
+      this.control.setTargetAtTime(destination, t, this.rampAttackTC);
+    }
+
+    //if it's going down
+    if(destination < currentVal)
+    {
+
+      this.control.setTargetAtTime(destination, t, this.rampDecayTC);
+    }
+  };
+    
+
+  // this is intended as a "pingable" AD trigger. You give it a value to ramp to, and it will use the "simpleAD" time constants to form an exponential ramp up to the value and back down to zero or the 2nd value argument. 
+  p5.Env.prototype.rampAD = function(unit, secondsFromNow, v1, v2) {
+
+    var now =  p5sound.audiocontext.currentTime;
+    var tFromNow = secondsFromNow || 0;
+    var t = now + tFromNow;
+    var destination1 = this.checkExpInput(v1);
+    var destination2 = this.checkExpInput(v2 || 0);
+
+    if (unit) {
+      if (this.connection !== unit) {
+        this.connect(unit);
+      }
+    }
+
+    //get current value
+    var currentVal = this.checkExpInput(this.control.getValueAtTime(t));
+
+    this.control.cancelScheduledValues(t); 
+
+    //if it's going up
+    if(destination1 > currentVal)
+    {
+      this.control.setTargetAtTime(destination1, t, this.rampAttackTC);
+      t += this.rampAttackTime;
+    }
+    
+    //if it's going down
+    else if(destination1 < currentVal)
+    {
+      this.control.setTargetAtTime(destination1, t, this.rampDecayTC);
+      t += this.rampDecayTime;
+    }
+
+    // Now the second part of envelope begins
+
+    //if it's going up
+    if(destination2 > destination1)
+    {
+      this.control.setTargetAtTime(destination2, t, this.rampAttackTC);
+    }
+    
+    //if it's going down
+    else if(destination2 < destination1)
+    {
+      this.control.setTargetAtTime(destination2, t, this.rampDecayTC);
+    }
+
+
+  };
+
+
 
   p5.Env.prototype.connect = function(unit){
     this.connection = unit;
@@ -329,6 +557,8 @@ define(function (require) {
   p5.Env.prototype.disconnect = function(unit){
     this.output.disconnect();
   };
+
+
 
   // Signal Math
 
