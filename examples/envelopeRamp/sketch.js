@@ -11,13 +11,13 @@ function setup() {
   createCanvas(710, 200);
   osc = new p5.SinOsc();
   envelope = new p5.Env(); 
-  envelope.setRampAD(.005,0.5);
+  envelope.setRampAD(.005,0.02);
   osc.amp(0.);
   osc.start();
   myPhraseAttack = new p5.Phrase('testerAttack', makeSoundAttack, atPattern);
   myPart = new p5.Part();
   myPart.addPhrase(myPhraseAttack);
-  myPart.setBPM(100);
+  myPart.setBPM(360);
   myPart.loop();
   myPart.start();
   fft = new p5.FFT();

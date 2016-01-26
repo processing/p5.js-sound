@@ -94,9 +94,9 @@ function draw(){
 function mouseClicked() {
   if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
     if ( getMasterVolume() == 0) {
-      setMasterVolume(0.3, 0.5);
+      masterVolume(0.3, 0.5);
     } else {
-      setMasterVolume(0, 0.5);
+      masterVolume(0, 0.5);
     }
   }
 }

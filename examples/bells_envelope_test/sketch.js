@@ -34,7 +34,7 @@ var washedMax = 4;
 function preload()
 {
   // create a p5.Convolver
-  cVerb = createConvolver('/assets/LadyChapelStAlbansCathedral.wav');
+  cVerb = createConvolver('assets/LadyChapelStAlbansCathedral.wav');
     
 }
 
