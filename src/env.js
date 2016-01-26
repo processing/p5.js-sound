@@ -166,7 +166,6 @@ define(function (require) {
    *                                 decayLevel = sustainLevel)
    *  @param {Number} [rTime]   Release Time (in seconds)
    *  @param {Number} [rLevel]  Amplitude 0.0 to 1.0
-
    */
   p5.Env.prototype.set = function(t1, l1, t2, l2, t3, l3, t4, l4){
     this.aTime = t1;
@@ -179,8 +178,20 @@ define(function (require) {
     this.rLevel = l4 || 0;
   };
 
-  // this is a helper function that lets the user enter values more like an ADSR envelope
-  // attack time, attack value, decay time, sustain value, release time, release value
+  /**
+   *  Set values like a traditional
+   *  <a href="https://en.wikipedia.org/wiki/Synthesizer#/media/File:ADSR_parameter.svg">
+   *  ADSR envelope
+   *  </a>.
+   *  
+   *  @method  setADSR
+   *  @param {Number} attackTime    in seconds from now 
+   *  @param {Number} attackVal     value
+   *  @param {Number} [decayTime]    in seconds from now  (defaults to 0)
+   *  @param {Number} [sustainVal]    value (defaults to 0)
+   *  @param {Number} [releaseTime]   in seconds from now (defaults to 0)
+   *  @param {Number} [releaseVal]    value (defaults to 0)
+   */
   p5.Env.prototype.setADSR = function(t1, l1, t2, l2, t3, l3){
     this.aTime = t1;
     this.aLevel = l1;
@@ -192,8 +203,17 @@ define(function (require) {
     this.rLevel = l3 || 0;
   };
 
+  /**
+   *  Set the <a href="https://en.wikipedia.org/wiki/RC_time_constant">
+   *  time constants</a> for simple exponential ramps.
+   *  The larger the time constant value, the slower the
+   *  transition will be.
+   *
+   *  @method  setRampAD
+   *  @param {Number} attackTimeConstant  attack time constant
+   *  @param {Number} decayTimeConstant   decay time constant
+   */
   p5.Env.prototype.setRampAD = function(t1, t2){
-    //sets the time constants for simple exponential ramps
     this.rampAttackTime = this.checkExpInput(t1);
     this.rampDecayTime = this.checkExpInput(t2);
     var TCDenominator = 1.0;
@@ -234,11 +254,19 @@ define(function (require) {
     }
   };
 
+  /**
+   *  Set whether the envelope ramp is linear (default) or exponential.
+   *  Exponential ramps can be useful because we perceive amplitude
+   *  and frequency logarithmically.
+   *  
+   *  @method  setExp
+   *  @param {Boolean} isExp true is exponential, false is linear
+   */
   p5.Env.prototype.setExp = function(isExp){
     this.isExponential = isExp;
   };
 
-    //protect against zero values being sent to exponential functions
+  //helper method to protect against zero values being sent to exponential functions
   p5.Env.prototype.checkExpInput = function(value) {
     if (value <= 0)
     {
@@ -246,11 +274,6 @@ define(function (require) {
     }
     return value;
   };
-
-  p5.Env.prototype.ctrl = function(unit){
-    this.connect(unit);
-  };
-
 
   /**
    *  Play tells the envelope to start acting on a given input.
@@ -442,8 +465,16 @@ define(function (require) {
     this.wasTriggered = false;
   };
 
-  //this simply ramps exponentially to whatever value you give it, using the time constants set by setRampAD. 
-  //Going up uses attackTime, going down uses decayTime.
+  /**
+   *  Exponentially ramp to a value, using the time constants
+   *  set by setRampAD. Going up uses attackTime,
+   *  going down uses decayTime.
+   *
+   *  @method  ramp
+   *  @param  {Object} unit           p5.sound Object or Web Audio Param
+   *  @param  {Number} secondsFromNow When to trigger the ramp
+   *  @param  {Number} v              Target value
+   */
   p5.Env.prototype.ramp = function(unit, secondsFromNow, v) {
 
     var now =  p5sound.audiocontext.currentTime;
@@ -476,7 +507,18 @@ define(function (require) {
   };
     
 
-  // this is intended as a "pingable" AD trigger. You give it a value to ramp to, and it will use the "simpleAD" time constants to form an exponential ramp up to the value and back down to zero or the 2nd value argument. 
+  /**
+   *  rampAD is a "pingable" Attack/Decay trigger. You give it a value
+   *  to ramp to, and it will use the preset "simpleAD" time constants
+   *  to form an exponential ramp up to the value and back down to zero
+   *  or the 2nd value argument.
+   *
+   *  @method  rampAD
+   *  @param  {Object} unit           p5.sound Object or Web Audio Param
+   *  @param  {Number} secondsFromNow When to trigger the ramp
+   *  @param  {Number} level1         Target value 1
+   *  @param  {Number} [level2]       Target value 2 (optional, defaults to zero)
+   */
   p5.Env.prototype.rampAD = function(unit, secondsFromNow, v1, v2) {
 
     var now =  p5sound.audiocontext.currentTime;
