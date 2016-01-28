@@ -371,6 +371,97 @@ define(function (require) {
     var x = this.getEnergy(freq1, freq2);
     return x;
   }
+
+  
+
+  /**
+   *  Returns the 
+   *  <a href="en.wikipedia.org/wiki/Spectral_centroid" target="_blank">
+   *  spectral centroid</a> of the input signal.
+   *  <em>NOTE: analyze() must be called prior to getCentroid(). Analyze()
+   *  tells the FFT to analyze frequency data, and getCentroid() uses
+   *  the results determine the spectral centroid.</em></p>
+   *  
+   *  @method  getCentroid
+   *  @return {Number}   Spectral Centroid Frequency   Frequency of the spectral centroid in Hz.
+   * 
+   *
+   * @example
+   *  <div><code>
+   *
+   *
+   *function setup(){
+   *  cnv = createCanvas(800,400);
+   *  sound = new p5.AudioIn();
+   *  sound.start();
+   *  fft = new p5.FFT();
+   *  sound.connect(fft);
+   *}
+   *
+   *
+   *function draw(){
+   *
+   *  var centroidplot = 0.0;
+   *  var spectralCentroid = 0;
+   *  
+   *  
+   *  background(0);
+   *  stroke(0,255,0);
+   *  var spectrum = fft.analyze(); 
+   *  fill(0,255,0); // spectrum is green
+   *  
+   *  //draw the spectrum
+   *  
+   *  for (var i = 0; i< spectrum.length; i++){
+   *    var x = map(log(i), 0, log(spectrum.length), 0, width);
+   *    var h = map(spectrum[i], 0, 255, 0, height);
+   *    var rectangle_width = (log(i+1)-log(i))*(width/log(spectrum.length));
+   *    rect(x, height, rectangle_width, -h )
+   *  }
+  
+   *  var nyquist = 22050;
+   *  
+   *  // get the centroid
+   *  spectralCentroid = fft.getCentroid();
+   *  
+   *  // the mean_freq_index calculation is for the display.
+   *  var mean_freq_index = spectralCentroid/(nyquist/spectrum.length);
+   *
+   *  centroidplot = map(log(mean_freq_index), 0, log(spectrum.length), 0, width);
+   *
+   *
+   *  stroke(255,0,0); // the line showing where the centroid is will be red
+   *  
+   *  rect(centroidplot, 0, width / spectrum.length, height)
+   *  noStroke();
+   *  fill(255,255,255);  // text is white
+   *  textSize(40);
+   *  text("centroid: "+round(spectralCentroid)+" Hz", 10, 40);
+   *}
+   * </code></div>
+   */
+  p5.FFT.prototype.getCentroid = function() {
+    var nyquist = p5sound.audiocontext.sampleRate/2;
+    var cumulative_sum = 0;
+    var centroid_normalization = 0;
+
+    for (var i = 0; i < this.freqDomain.length; i++)
+    {
+      cumulative_sum += i * this.freqDomain[i];
+      centroid_normalization += this.freqDomain[i];
+    }
+
+    var mean_freq_index = 0;
+
+    if (centroid_normalization != 0)
+    {
+      mean_freq_index = (cumulative_sum / centroid_normalization);
+    }
+
+    var spec_centroid_freq = (mean_freq_index * (nyquist / this.freqDomain.length));
+    return spec_centroid_freq;
+  }
+
   /**
    *  Smooth FFT analysis by averaging with the last analysis frame.
    *  
