@@ -67,7 +67,7 @@ function setup()
         myMaxAttack = washedMax;
         print("washed");
       }
-      envelope[i][j].setRampAD(random(.001, myMaxAttack), random(.01, maxDecay)); // turning sustain level to 0. makes an AD envelope
+      envelope[i][j].setADSR(random(.001, myMaxAttack), random(.01, maxDecay)); // turning sustain level to 0. makes an AD envelope
       osc[i][j].amp(0.);
       oscVols[i][j] = random(.01, .3);
       if (idealOrReal == 0)

@@ -75,15 +75,15 @@ define(function (require) {
     /**
      * @property attackTime
      */
-    this.aTime = t1;
+    this.aTime = t1 || 0.1;
     /**
      * @property attackLevel
      */
-    this.aLevel = l1;
+    this.aLevel = l1 || 1;
     /**
      * @property decayTime
      */
-    this.dTime = t2 || 0;
+    this.dTime = t2 || 0.5;
     /**
      * @property decayLevel
      */
@@ -105,15 +105,10 @@ define(function (require) {
      */
     this.rLevel = l4 || 0;
 
-    this.rampHighPercentage = 0.98;
+    this._rampHighPercentage = 0.98;
 
-    this.rampLowPercentage = 0.02;
+    this._rampLowPercentage = 0.02;
 
-    this.rampAttackTime = 0.01;
-    this.rampDecayTime = 0.5;
-
-    this.rampAttackTC = 0.12;
-    this.rampDecayTC = 0.12;
 
     this.output = p5sound.audiocontext.createGain();;
 
@@ -150,7 +145,7 @@ define(function (require) {
     var t = now;
     this.control.setTargetAtTime(0.00001, t, .001);
     //also, compute the correct time constants
-    this.setRampAD(this.rampAttackTime, this.rampDecayTime)
+    this._setRampAD(this.aTime, this.dTime)
   };
 
   /**
@@ -176,6 +171,9 @@ define(function (require) {
     this.sLevel = l3 || 0;
     this.rTime = t4 || 0;
     this.rLevel = l4 || 0;
+
+    // set time constants for ramp
+    this._setRampAD(t1, t2);
   };
 
   /**
@@ -192,49 +190,52 @@ define(function (require) {
    *  @param {Number} [releaseTime]   in seconds from now (defaults to 0)
    *  @param {Number} [releaseVal]    value (defaults to 0)
    */
-  p5.Env.prototype.setADSR = function(t1, l1, t2, l2, t3, l3){
-    this.aTime = t1;
-    this.aLevel = l1;
-    this.dTime = t2 || 0;
-    this.dLevel = l2 || 0;
-    this.sTime = 0;
-    this.sLevel = l2 || 0;
-    this.rTime = t3 || 0;
-    this.rLevel = l3 || 0;
+  p5.Env.prototype.setADSR = function(aTime, dTime, sPercent, rTime){
+    this.aTime = aTime;
+    this.dTime = dTime || 0;
+    this.sPercent = sPercent;
+    this.rTime = rTime;
+
+    // also set time constants for ramp
+    this._setRampAD(aTime, dTime);
   };
 
-  /**
-   *  Set the <a href="https://en.wikipedia.org/wiki/RC_time_constant">
-   *  time constants</a> for simple exponential ramps.
-   *  The larger the time constant value, the slower the
-   *  transition will be.
-   *
-   *  @method  setRampAD
-   *  @param {Number} attackTimeConstant  attack time constant
-   *  @param {Number} decayTimeConstant   decay time constant
-   */
-  p5.Env.prototype.setRampAD = function(t1, t2){
-    this.rampAttackTime = this.checkExpInput(t1);
-    this.rampDecayTime = this.checkExpInput(t2);
+
+  //  private (undocumented) method called when ADSR is set to set time constants for ramp
+  //
+  //  Set the <a href="https://en.wikipedia.org/wiki/RC_time_constant">
+  //  time constants</a> for simple exponential ramps.
+  //  The larger the time constant value, the slower the
+  //  transition will be.
+  //
+  //  method  _setRampAD
+  //  param {Number} attackTimeConstant  attack time constant
+  //  param {Number} decayTimeConstant   decay time constant
+  //
+  p5.Env.prototype._setRampAD = function(t1, t2){
+    this._rampAttackTime = this.checkExpInput(t1);
+    this._rampDecayTime = this.checkExpInput(t2);
+
     var TCDenominator = 1.0;
     /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
-    TCDenominator = Math.log(1.0 / (this.checkExpInput(1.0 - this.rampHighPercentage)));
-    this.rampAttackTC = (t1 / this.checkExpInput(TCDenominator));
-    TCDenominator = Math.log(1.0 / this.rampLowPercentage);
-    this.rampDecayTC = (t2 / this.checkExpInput(TCDenominator));
+    TCDenominator = Math.log(1.0 / (this.checkExpInput(1.0 - this._rampHighPercentage)));
+    this._rampAttackTC = (t1 / this.checkExpInput(TCDenominator));
+    TCDenominator = Math.log(1.0 / this._rampLowPercentage);
+    this._rampDecayTC = (t2 / this.checkExpInput(TCDenominator));
   };
 
+  // private method
   p5.Env.prototype.setRampPercentages = function(p1, p2){
     //set the percentages that the simple exponential ramps go to
-    this.rampHighPercentage = this.checkExpInput(p1);
-    this.rampLowPercentage = this.checkExpInput(p2);
+    this._rampHighPercentage = this.checkExpInput(p1);
+    this._rampLowPercentage = this.checkExpInput(p2);
     var TCDenominator = 1.0;
     //now re-compute the time constants based on those percentages
     /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
-    TCDenominator = Math.log(1.0 / (this.checkExpInput(1.0 - this.rampHighPercentage)));
-    this.rampAttackTC = (this.rampAttackTime / this.checkExpInput(TCDenominator));
-    TCDenominator = Math.log(1.0 / this.rampLowPercentage);
-    this.rampDecayTC = (this.rampDecayTime / this.checkExpInput(TCDenominator));
+    TCDenominator = Math.log(1.0 / (this.checkExpInput(1.0 - this._rampHighPercentage)));
+    this._rampAttackTC = (this._rampAttackTime / this.checkExpInput(TCDenominator));
+    TCDenominator = Math.log(1.0 / this._rampLowPercentage);
+    this._rampDecayTC = (this._rampDecayTime / this.checkExpInput(TCDenominator));
   };
 
 
@@ -475,6 +476,7 @@ define(function (require) {
    *  @param  {Number} secondsFromNow When to trigger the ramp
    *  @param  {Number} v              Target value
    *  @param  {Number} [v2]           Second target value (optional)
+   *  @example
    */
   p5.Env.prototype.ramp = function(unit, secondsFromNow, v1, v2) {
 
@@ -497,14 +499,14 @@ define(function (require) {
 
     //if it's going up
     if (destination1 > currentVal) {
-      this.control.setTargetAtTime(destination1, t, this.rampAttackTC);
-      t += this.rampAttackTime;
+      this.control.setTargetAtTime(destination1, t, this._rampAttackTC);
+      t += this._rampAttackTime;
     }
     
     //if it's going down
     else if (destination1 < currentVal) {
-      this.control.setTargetAtTime(destination1, t, this.rampDecayTC);
-      t += this.rampDecayTime;
+      this.control.setTargetAtTime(destination1, t, this._rampDecayTC);
+      t += this._rampDecayTime;
     }
 
     // Now the second part of envelope begins
@@ -512,12 +514,12 @@ define(function (require) {
 
     //if it's going up
     if (destination2 > destination1) {
-      this.control.setTargetAtTime(destination2, t, this.rampAttackTC);
+      this.control.setTargetAtTime(destination2, t, this._rampAttackTC);
     }
     
     //if it's going down
     else if (destination2 < destination1) {
-      this.control.setTargetAtTime(destination2, t, this.rampDecayTC);
+      this.control.setTargetAtTime(destination2, t, this._rampDecayTC);
     }
   };
 
