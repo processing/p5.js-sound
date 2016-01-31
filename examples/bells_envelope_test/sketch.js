@@ -1,5 +1,5 @@
 
-// This example shows a more complex use of the .rampAD function for the envelope. 
+// This example shows a more complex use of the .ramp function for the envelope. 
 // You can use it to make a simple attack/decay envelope for struck or plucked style notes.
 // Here, we're creating synthetic bells using additive synthesis, and triggering each of their attacks and decays differently to make different harmonics last for different times.
 // Have fun! - Jeff Snyder
@@ -124,7 +124,7 @@ function makeSoundAttack(time, playbackRate)
   var whichNote = patternArray[note];
   for (var i = 0; i < numOsc; i++)
   {
-    envelope[whichNote][i].rampAD(osc[whichNote][i], time, (oscVols[whichNote][i] * random(.8, 1.0))); // the added randomness just makes each strike a little different.
+    envelope[whichNote][i].ramp(osc[whichNote][i], time, (oscVols[whichNote][i] * random(.8, 1.0)), 0); // the added randomness just makes each strike a little different.
   }
   note = (note + 1) % patternArray.length;
   if (firstNote == 1)

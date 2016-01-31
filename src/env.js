@@ -466,67 +466,25 @@ define(function (require) {
   };
 
   /**
-   *  Exponentially ramp to a value, using the time constants
-   *  set by setRampAD. Going up uses attackTime,
-   *  going down uses decayTime.
+   *  Exponentially ramp to a value using time constants.
+   *  If the value is higher than current value, it uses attackTime,
+   *  while a decrease uses decayTime.
    *
    *  @method  ramp
    *  @param  {Object} unit           p5.sound Object or Web Audio Param
    *  @param  {Number} secondsFromNow When to trigger the ramp
    *  @param  {Number} v              Target value
+   *  @param  {Number} [v2]           Second target value (optional)
    */
-  p5.Env.prototype.ramp = function(unit, secondsFromNow, v) {
-
-    var now =  p5sound.audiocontext.currentTime;
-    var tFromNow = secondsFromNow || 0;
-    var t = now + tFromNow;
-    var destination = this.checkExpInput(v);
-
-    if (unit) {
-      if (this.connection !== unit) {
-        this.connect(unit);
-      }
-    }
-
-    // get and set value (with linear or exponential ramp) to anchor automation
-    var currentVal = this.checkExpInput(this.control.getValueAtTime(t));
-    this.control.cancelScheduledValues(t); 
-
-    //if it's going up
-    if(destination > currentVal)
-    {
-      this.control.setTargetAtTime(destination, t, this.rampAttackTC);
-    }
-
-    //if it's going down
-    if(destination < currentVal)
-    {
-
-      this.control.setTargetAtTime(destination, t, this.rampDecayTC);
-    }
-  };
-    
-
-  /**
-   *  rampAD is a "pingable" Attack/Decay trigger. You give it a value
-   *  to ramp to, and it will use the preset "simpleAD" time constants
-   *  to form an exponential ramp up to the value and back down to zero
-   *  or the 2nd value argument.
-   *
-   *  @method  rampAD
-   *  @param  {Object} unit           p5.sound Object or Web Audio Param
-   *  @param  {Number} secondsFromNow When to trigger the ramp
-   *  @param  {Number} level1         Target value 1
-   *  @param  {Number} [level2]       Target value 2 (optional, defaults to zero)
-   */
-  p5.Env.prototype.rampAD = function(unit, secondsFromNow, v1, v2) {
+  p5.Env.prototype.ramp = function(unit, secondsFromNow, v1, v2) {
 
     var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
     var t = now + tFromNow;
     var destination1 = this.checkExpInput(v1);
-    var destination2 = this.checkExpInput(v2 || 0);
+    var destination2 = typeof(v2) !== 'undefined' ? this.checkExpInput(v2) : undefined;
 
+    // connect env to unit if not already connected
     if (unit) {
       if (this.connection !== unit) {
         this.connect(unit);
@@ -535,40 +493,33 @@ define(function (require) {
 
     //get current value
     var currentVal = this.checkExpInput(this.control.getValueAtTime(t));
-
     this.control.cancelScheduledValues(t); 
 
     //if it's going up
-    if(destination1 > currentVal)
-    {
+    if (destination1 > currentVal) {
       this.control.setTargetAtTime(destination1, t, this.rampAttackTC);
       t += this.rampAttackTime;
     }
     
     //if it's going down
-    else if(destination1 < currentVal)
-    {
+    else if (destination1 < currentVal) {
       this.control.setTargetAtTime(destination1, t, this.rampDecayTC);
       t += this.rampDecayTime;
     }
 
     // Now the second part of envelope begins
+    if (destination2 === undefined) return;
 
     //if it's going up
-    if(destination2 > destination1)
-    {
+    if (destination2 > destination1) {
       this.control.setTargetAtTime(destination2, t, this.rampAttackTC);
     }
     
     //if it's going down
-    else if(destination2 < destination1)
-    {
+    else if (destination2 < destination1) {
       this.control.setTargetAtTime(destination2, t, this.rampDecayTC);
     }
-
-
   };
-
 
 
   p5.Env.prototype.connect = function(unit){

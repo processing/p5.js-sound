@@ -17,7 +17,7 @@ function setup() {
   myPhraseAttack = new p5.Phrase('testerAttack', makeSoundAttack, atPattern);
   myPart = new p5.Part();
   myPart.addPhrase(myPhraseAttack);
-  myPart.setBPM(360);
+  myPart.setBPM(240);
   myPart.loop();
   myPart.start();
   fft = new p5.FFT();
@@ -54,7 +54,7 @@ function makeSoundAttack(time, playbackRate)
   var midiValue = scaleArray[note];
   var freqValue = midiToFreq(midiValue);
   osc.freq(freqValue * 2, .001, time);
-  envelope.rampAD(osc, time, 1 , 0);
+  envelope.ramp(osc, time, 1, 0);
   note = (note + 1) % scaleArray.length;
   setTimeout(redrawWaveform, time * 1000.0);
 }
