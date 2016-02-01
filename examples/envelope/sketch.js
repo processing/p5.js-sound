@@ -2,15 +2,15 @@
 
 /*
 This sketch shows how to use envelopes and oscillators. Envelopes are pre-defined amplitude 
-distribution over time. The sound library provides an ASR envelope which stands for attach, 
-sustain, release. The amplitude rises then sustains at the maximum level and decays slowly 
-depending on pre defined time segments.
+distribution over time. The sound library provides an ADSR envelope which stands for attack, 
+decay, sustain, release. The amplitude rises then decays to a sustain level, then decays slowly 
+toward the release value.
 
-      .________
-     .          ---
-    .              --- 
-   .                  ---
-   A       S        R 
+      .  
+     . . _______
+    .            --- 
+   .                ---
+   A   D  S       R 
 
 */
 
@@ -19,13 +19,13 @@ var env;
 var a;
 
 // Times and levels for the ASR envelope
-var attackTime = 0.01;
-var attackLevel = 0.7;
+var attackTime = 0.001;
+var attackLevel = 0.9;
 var decayTime = 0.3;
-var decayLevel = 0.2;
+var susPercent = 0.2;
 var sustainTime = 0.1;
-var sustainLevel = decayLevel;
 var releaseTime = 0.5;
+var releaseLevel = 0;
 
 var midiSequence = [ 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72 ]; 
 var duration = 1000;
@@ -36,8 +36,8 @@ var trigger;
 var note = 0;
 
 function setup(){
-  createCanvas(600, 600);
-  background(255);
+  createCanvas(600, 400);
+  fill(0, 255, 0);
 
   trigger = millis();
 
@@ -45,15 +45,16 @@ function setup(){
   triOsc.amp(0);
   triOsc.start();
 
-  env = new p5.Env(attackTime, attackLevel, decayTime, decayLevel, sustainTime, sustainLevel, releaseTime);
-  fill(0);
+  env = new p5.Env();
+  env.setADSR(attackTime, decayTime, susPercent, releaseTime);
+  env.setRange(attackLevel, releaseLevel);
 
   a = new p5.Amplitude();
 }
 
 function draw(){
   var size = 10;
-  background(255, 255,255,20);
+  background(20, 20, 20, 70);
   ellipse(map ( (trigger - millis()) % duration, 1000, 0, 0, width), map ( a.getLevel(), 0, .5, height-size, 0), size, size);
 
   // If the determined trigger moment in time matches up with the computer clock and we if the 
@@ -63,7 +64,8 @@ function draw(){
     triOsc.freq(midiToFreq(midiSequence[note]));
 
     // The envelope gets triggered with the oscillator as input and the times and levels we defined earlier
-    env.play(triOsc);
+    // play accepts an object to play, time from now, and a sustain time—how long to hold before the release.
+    env.play(triOsc, 0, sustainTime);
 
     // Create the new trigger according to predefined durations and speed it up by deviding by 1.5
     trigger = millis() + duration;

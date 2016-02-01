@@ -70,7 +70,7 @@ module.exports = function(grunt) {
           include: ['src/app'],
           onBuildWrite: function( name, path, contents ) {
             if (path.indexOf('node_modules/tone/') > -1) {
-              return '/** Tone.js module by Yotam Mann, MIT License 2014  http://opensource.org/licenses/MIT **/\n' +
+              return '/** Tone.js module by Yotam Mann, MIT License 2016  http://opensource.org/licenses/MIT **/\n' +
               require('amdclean').clean({
               'code': contents.replace(/console.log(.*);/g, ''),
                 'escodegen': {
@@ -103,6 +103,7 @@ module.exports = function(grunt) {
           out: 'lib/p5.sound.js',
           paths: {
             'Tone' : 'node_modules/tone/Tone',
+            'automation-timeline': 'node_modules/web-audio-automation-timeline/build/automation-timeline-amd',
             'panner' : 'src/panner',
             'sndcore': 'src/sndcore',
             'master': 'src/master',

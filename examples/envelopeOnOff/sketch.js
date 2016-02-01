@@ -4,18 +4,18 @@
  *  Trigger the Release when the mouse is released.
  */
 
-var triOsc;
+var osc;
 var env;
 var a;
 
 // Times and levels for the ADSR envelope
 var attackTime = 0.001;
-var attackLevel = 0.9;
-var decayTime = 0.25;
-var decayLevel = 0.2;
-var sustainTime = 0.1;
-var sustainLevel = decayLevel;
-var releaseTime = .8;
+var attackLevel = 0.6;
+var decayTime = 0.1;
+var susPercent = 0.2;
+var releaseTime = 0.5;
+var releaseLevel = 0;
+
 var duration = 1000;
 // Set the note trigger
 var trigger;
@@ -25,17 +25,21 @@ var note = 0;
 
 
 function setup(){
-  createCanvas(600, 600);
-  background(255);
+  createCanvas(600, 300);
+  background(20);
+  fill(0,255,0);
 
   trigger = millis();
 
-  triOsc = new p5.TriOsc();
-  triOsc.freq(220);
-  triOsc.start();
-  env = new p5.Env(attackTime, attackLevel, decayTime, decayLevel, sustainTime, sustainLevel, releaseTime);
-  triOsc.amp(env);
-  fill(0);
+  osc = new p5.SinOsc();
+  osc.freq(220);
+  osc.start();
+
+  env = new p5.Env();
+  env.setADSR(attackTime, decayTime, susPercent, releaseTime);
+  env.setRange(attackLevel, releaseLevel);
+
+  osc.amp(env);
   createP('click mouse to triggerAttack, release mouse to triggerRelease');
 
   a = new p5.Amplitude();
@@ -43,14 +47,13 @@ function setup(){
 
 function draw(){
   var size = 10;
-  background(255, 255,255,20);
+  background(20, 20, 20, 70);
   ellipse( map ( (trigger - millis()) % duration, 1000, 0, 0, width) % width, map ( a.getLevel(), 0, .5, height-size, 0), size, size);
 }
 
 function mousePressed(){
-    // The envelope gets triggered with the oscillator as input and the times and levels we defined earlier
-    env.triggerAttack();
-    trigger = millis() + duration;
+  env.triggerAttack();
+  trigger = millis() + duration;
 }
 
 function mouseReleased(){

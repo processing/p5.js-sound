@@ -1,18 +1,18 @@
 // Adapting Wilm Thoben's Envelope example from the Processing Handbook ex2
 
 /*
-This sketch shows how to use envelopes and oscillators. Envelopes are pre-defined amplitude 
-distribution over time. The sound library provides an ASR envelope which stands for attach, 
-sustain, release. The amplitude rises then sustains at the maximum level and decays slowly 
-depending on pre defined time segments.
+This sketch shows how to use envelopes to trigger multiple sources (in this case,noise and oscillator).
 
-      .________
-     .          ---
-    .              --- 
-   .                  ---
-   A       S        R 
+Envelopes are pre-defined amplitude  distribution over time.
+The sound library provides an ADSR envelope which stands for attack, decay, sustain, release.
+The amplitude rises then decays to a sustain level, then decays slowly toward the release value.
 
-In this example, the envelope controls two sources: a Pink Noise and a Triangle Oscillator
+      .  
+     . . _______
+    .            --- 
+   .                ---
+   A   D  S       R 
+
 */
 
 var triOsc;
@@ -38,8 +38,8 @@ var trigger;
 var note = 0;
 
 function setup(){
-  createCanvas(600, 600);
-  background(255);
+  createCanvas(600, 400);
+  fill(0, 255, 0);
 
   trigger = millis();
 
@@ -59,14 +59,13 @@ function setup(){
   // triOsc.amp(env);
 
   env.setInput(noise, triOsc);
-  fill(0);
 
   a = new p5.Amplitude();
 }
 
 function draw(){
   var size = 10;
-  background(255, 255,255,20);
+  background(20, 20, 20, 70);
   ellipse(map ( (trigger - millis()) % duration, 1000, 0, 0, width), map ( a.getLevel(), 0, .3, height-size, 0), size, size);
 
   // If the determined trigger moment in time matches up with the computer clock and we if the 
@@ -94,9 +93,9 @@ function draw(){
 function mouseClicked() {
   if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
     if ( getMasterVolume() == 0) {
-      setMasterVolume(0.3, 0.5);
+      masterVolume(0.3, 0.5);
     } else {
-      setMasterVolume(0, 0.5);
+      masterVolume(0, 0.5);
     }
   }
 }
