@@ -29,8 +29,6 @@ define(function (require) {
    *  @param {Number} dTime      Time
    *  @param {Number} [dLevel]   Amplitude (In a standard ADSR envelope,
    *                                 decayLevel = sustainLevel)
-   *  @param {Number} [sTime]   Time (in seconds)
-   *  @param {Number} [sLevel]  Amplitude 0.0 to 1.0
    *  @param {Number} [rTime]   Time (in seconds)
    *  @param {Number} [rLevel]  Amplitude 0.0 to 1.0
    *  @example
@@ -39,8 +37,6 @@ define(function (require) {
    *  var aL = 0.7; // attack level 0.0 to 1.0
    *  var dT = 0.3; // decay time in seconds
    *  var dL = 0.1; // decay level  0.0 to 1.0
-   *  var sT = 0.2; // sustain time in seconds
-   *  var sL = dL; // sustain level  0.0 to 1.0
    *  var rT = 0.5; // release time in seconds
    *  // release level defaults to zero
    *
@@ -88,14 +84,6 @@ define(function (require) {
      * @property decayLevel
      */
     this.dLevel = l2 || 0;
-    /**
-     * @property sustainTime
-     */
-    this.sTime = t3 || 0;
-    /**
-     * @property sustainLevel
-     */
-    this.sLevel = l3 || 0;
     /**
      * @property releaseTime
      */
@@ -152,23 +140,21 @@ define(function (require) {
    *  Reset the envelope with a series of time/value pairs.
    *
    *  @method  set
-   *  @param {Number} aTime     Time (in seconds) before level
+   *  @param {Number} attackTime     Time (in seconds) before level
    *                                 reaches attackLevel
-   *  @param {Number} aLevel    Typically an amplitude between
+   *  @param {Number} attackLevel    Typically an amplitude between
    *                                 0.0 and 1.0
-   *  @param {Number} dTime      Time
-   *  @param {Number} [sLevel]   Amplitude (In a standard ADSR envelope,
+   *  @param {Number} decayTime      Time
+   *  @param {Number} decayLevel   Amplitude (In a standard ADSR envelope,
    *                                 decayLevel = sustainLevel)
-   *  @param {Number} [rTime]   Release Time (in seconds)
-   *  @param {Number} [rLevel]  Amplitude 0.0 to 1.0
+   *  @param {Number} releaseTime   Release Time (in seconds)
+   *  @param {Number} releaseLevel  Amplitude
    */
-  p5.Env.prototype.set = function(t1, l1, t2, l2, t3, l3, t4, l4){
+  p5.Env.prototype.set = function(t1, l1, t2, l2, t3, l3){
     this.aTime = t1;
     this.aLevel = l1;
     this.dTime = t2 || 0;
     this.dLevel = l2 || 0;
-    this.sTime = t3 || 0;
-    this.sLevel = l3 || 0;
     this.rTime = t4 || 0;
     this.rLevel = l4 || 0;
 
@@ -183,23 +169,47 @@ define(function (require) {
    *  </a>.
    *  
    *  @method  setADSR
-   *  @param {Number} attackTime    in seconds from now 
-   *  @param {Number} attackVal     value
-   *  @param {Number} [decayTime]    in seconds from now  (defaults to 0)
-   *  @param {Number} [sustainVal]    value (defaults to 0)
-   *  @param {Number} [releaseTime]   in seconds from now (defaults to 0)
-   *  @param {Number} [releaseVal]    value (defaults to 0)
+   *  @param {Number} attackTime    Time (in seconds before envelope
+   *                                reaches Attack Level
+   *  @param {Number} [decayTime]    Time (in seconds) before envelope
+   *                                reaches Decay/Sustain Level
+   *  @param {Number} [sustainPercent]    percent between attackLevel and releaseLevel
+   *  @param {Number} [releaseTime]   Time in seconds from now (defaults to 0)
    */
   p5.Env.prototype.setADSR = function(aTime, dTime, sPercent, rTime){
     this.aTime = aTime;
     this.dTime = dTime || 0;
+
+    // lerp
     this.sPercent = sPercent;
-    this.rTime = rTime;
+    this.dLevel = typeof(sPercent) !== 'undefined' ? sPercent * (this.aLevel - this.rLevel) + this.rLevel : 0;
+
+    this.rTime = rTime || 0;
 
     // also set time constants for ramp
     this._setRampAD(aTime, dTime);
   };
 
+  /**
+   *  Set max and min of envelope
+   *  
+   *  @method  setRange
+   *  @param {Number} aLevel attack level (defaults to 1)
+   *  @param {Number} rLevel release level (defaults to 0)
+   */
+  p5.Env.prototype.setRange = function(aLevel, rLevel) {
+    this.aLevel = aLevel || 1;
+    this.rLevel = 0;
+
+    // not sure if this belongs here:
+
+    // {Number} [dLevel] decay/sustain level (optional)
+    // if (typeof(dLevel) !== 'undefined') {
+    //   this.dLevel = dLevel
+    // } else if (this.sPercent) {
+    //   this.dLevel = this.sPercent ? this.sPercent * (this.aLevel - this.rLevel) + this.rLevel : 0;
+    // }
+  }
 
   //  private (undocumented) method called when ADSR is set to set time constants for ramp
   //
@@ -287,12 +297,14 @@ define(function (require) {
    *  @method  play
    *  @param  {Object} unit         A p5.sound object or
    *                                Web Audio Param.
-   *  @param  {Number} secondsFromNow time from now (in seconds)
+   *  @param  {Number} [startTime]  time from now (in seconds) at which to play
+   *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
+
    */
-  p5.Env.prototype.play = function(unit, secondsFromNow){
+  p5.Env.prototype.play = function(unit, secondsFromNow, susTime){
     var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
-    var t = now + tFromNow;
+    var susTime = susTime || 0;
 
     if (unit) {
       if (this.connection !== unit) {
@@ -300,14 +312,14 @@ define(function (require) {
       }
     }
 
-    this.triggerAttack(unit, secondsFromNow);
+    this.triggerAttack(unit, tFromNow);
 
-    this.triggerRelease(unit, secondsFromNow + this.aTime + this.dTime + this.sTime);
+    this.triggerRelease(unit, tFromNow + this.aTime + this.dTime + susTime);
 
   };
 
   /**
-   *  Trigger the Attack, Decay, and Sustain of the Envelope.
+   *  Trigger the Attack, and Decay portion of the Envelope.
    *  Similar to holding down a key on a piano, but it will
    *  hold the sustain level until you let go. Input can be
    *  any p5.sound object, or a <a href="
@@ -377,23 +389,6 @@ define(function (require) {
     else
     {
       this.control.linearRampToValueAtTime(this.dLevel, t);
-      valToSet = this.control.getValueAtTime(t);
-      this.control.cancelScheduledValues(t);
-      this.control.linearRampToValueAtTime(valToSet, t);
-    }
-
-    // move to sustain level and hold for sustain time (if using ADSR, sustain time is set to 0 and sustain level is set to decay level)
-    t += this.sTime;
-    if (this.isExponential == true)
-    {
-      this.control.exponentialRampToValueAtTime(this.checkExpInput(this.sLevel), t);
-      valToSet = this.checkExpInput(this.control.getValueAtTime(t));
-      this.control.cancelScheduledValues(t);
-      this.control.exponentialRampToValueAtTime(valToSet, t);
-    }
-    else
-    {
-      this.control.linearRampToValueAtTime(this.sLevel, t);
       valToSet = this.control.getValueAtTime(t);
       this.control.cancelScheduledValues(t);
       this.control.linearRampToValueAtTime(valToSet, t);
