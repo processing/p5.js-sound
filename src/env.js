@@ -11,87 +11,90 @@ define(function (require) {
   Tone.setContext( p5sound.audiocontext);
 
   /**
-   *  <p>Envelopes are pre-defined amplitude distribution over time. 
-   *  The p5.Env accepts up to four time/level pairs, where time
-   *  determines how long of a ramp before value reaches level.
+   *  <p>Envelopes are pre-defined amplitude distribution over time.
+   *  The p5.Env accepts up to three time/level pairs, where time
+   *  determines the duration until value reaches level.
    *  Typically, envelopes are used to control the output volume
    *  of an object, a series of fades referred to as Attack, Decay,
-   *  Sustain and Release (ADSR). But p5.Env can control any
-   *  Web Audio Param, for example it can be passed to an Oscillator
-   *  frequency like osc.freq(env) </p>
+   *  Sustain and Release (
+   *  <a href="https://upload.wikimedia.org/wikipedia/commons/e/ea/ADSR_parameter.svg">ADSR</a>
+   *  ). But p5.Env can control any Web Audio Param; for example it can be passed to an Oscillator
+   *  frequency like osc.freq(env).</p>
+   *  <p>Use <code>setRange</code> to change the attack/release level.
+   *  Use <code>setADSR</code> to change attackTime, decayTime, sustainPercent and releaseTime.</p>
+   *  <p>Use the play method to play the entire envelope, the ramp method for a pingable trigger,
+   *  or triggerAttack/triggerRelease to trigger noteOn/noteOff.</p>
    *  
    *  @class p5.Env
    *  @constructor
-   *  @param {Number} aTime     Time (in seconds) before level
-   *                                 reaches attackLevel
-   *  @param {Number} aLevel    Typically an amplitude between
-   *                                 0.0 and 1.0
-   *  @param {Number} dTime      Time
-   *  @param {Number} [dLevel]   Amplitude (In a standard ADSR envelope,
-   *                                 decayLevel = sustainLevel)
-   *  @param {Number} [rTime]   Time (in seconds)
-   *  @param {Number} [rLevel]  Amplitude 0.0 to 1.0
    *  @example
    *  <div><code>
-   *  var aT = 0.1; // attack time in seconds
-   *  var aL = 0.7; // attack level 0.0 to 1.0
-   *  var dT = 0.3; // decay time in seconds
-   *  var dL = 0.1; // decay level  0.0 to 1.0
-   *  var rT = 0.5; // release time in seconds
-   *  // release level defaults to zero
+   *  var attackLevel = 1.0;
+   *  var releaseLevel = 0;
    *
-   *  var env;
-   *  var triOsc;
-   *  
+   *  var attackTime = 0.001
+   *  var decayTime = 0.2;
+   *  var susPercent = 0.2;
+   *  var releaseTime = 0.5;
+   *
+   *  var env, triOsc;
+   *
    *  function setup() {
-   *    background(0);
-   *    noStroke();
-   *    fill(255);
+   *    var cnv = createCanvas(100, 100);
+   *
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
    *
-   *    env = new p5.Env(aT, aL, dT, dL, sT, sL, rT);
+   *    env = new p5.Env();
+   *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
+   *    env.setRange(attackLevel, releaseLevel);
+   *
    *    triOsc = new p5.Oscillator('triangle');
-   *    triOsc.amp(env); // give the env control of the triOsc's amp
+   *    triOsc.amp(env);
    *    triOsc.start();
+   *    triOsc.freq(220);
+   *
+   *    cnv.mousePressed(playEnv);
    *  }
    *
-   *  // mouseClick triggers envelope if over canvas
-   *  function mouseClicked() {
-   *    // is mouse over canvas?
-   *    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-   *      env.play(triOsc);
-   *    }
+   *  function playEnv(){
+   *    env.play();
    *  }
    *  </code></div>
    */
-  p5.Env = function(t1, l1, t2, l2, t3, l3, t4, l4){
+  p5.Env = function(t1, l1, t2, l2, t3, l3){
     var now = p5sound.audiocontext.currentTime;
 
     /**
+     * Time until envelope reaches attackLevel
      * @property attackTime
      */
     this.aTime = t1 || 0.1;
     /**
+     * Level once attack is complete.
      * @property attackLevel
      */
     this.aLevel = l1 || 1;
     /**
+     * Time until envelope reaches decayLevel.
      * @property decayTime
      */
     this.dTime = t2 || 0.5;
     /**
+     * Level after decay. The envelope will sustain here until it is released.
      * @property decayLevel
      */
     this.dLevel = l2 || 0;
     /**
+     * Duration of the release portion of the envelope.
      * @property releaseTime
      */
-    this.rTime = t4 || 0;
+    this.rTime = t3 || 0;
     /**
+     * Level at the end of the release.
      * @property releaseLevel
      */
-    this.rLevel = l4 || 0;
+    this.rLevel = l3 || 0;
 
     this._rampHighPercentage = 0.98;
 
@@ -102,7 +105,7 @@ define(function (require) {
 
     this.control = new TimelineSignal();
 
-    this.init(); // this makes sure the envelope starts at zero
+    this._init(); // this makes sure the envelope starts at zero
 
     this.control.connect(this.output); // connect to the output
 
@@ -128,7 +131,7 @@ define(function (require) {
 
   // this init function just smooths the starting value to zero and gives a start point for the timeline
   // - it was necessary to remove glitches at the beginning.
-  p5.Env.prototype.init = function () {
+  p5.Env.prototype._init = function () {
     var now = p5sound.audiocontext.currentTime;
     var t = now;
     this.control.setTargetAtTime(0.00001, t, .001);
@@ -173,15 +176,55 @@ define(function (require) {
    *                                reaches Attack Level
    *  @param {Number} [decayTime]    Time (in seconds) before envelope
    *                                reaches Decay/Sustain Level
-   *  @param {Number} [sustainPercent]    percent between attackLevel and releaseLevel
+   *  @param {Number} [susRatio]    Ratio between attackLevel and releaseLevel, on a scale from 0 to 1,
+   *                                where 1.0 = attackLevel, 0.0 = releaseLevel.
+   *                                The susRatio determines the decayLevel and the level at which the
+   *                                sustain portion of the envelope will sustain.
+   *                                For example, if attackLevel is 0.4, releaseLevel is 0,
+   *                                and susAmt is 0.5, the decayLevel would be 0.2. If attackLevel is
+   *                                increased to 1.0 (using <code>setRange</code>),
+   *                                then decayLevel would increase proportionally, to become 0.5.
    *  @param {Number} [releaseTime]   Time in seconds from now (defaults to 0)
+   *  @example
+   *  <div><code>
+   *  var attackLevel = 1.0;
+   *  var releaseLevel = 0;
+   *
+   *  var attackTime = 0.001
+   *  var decayTime = 0.2;
+   *  var susPercent = 0.2;
+   *  var releaseTime = 0.5;
+   *
+   *  var env, triOsc;
+   *
+   *  function setup() {
+   *    var cnv = createCanvas(100, 100);
+   *
+   *    textAlign(CENTER);
+   *    text('click to play', width/2, height/2);
+   *
+   *    env = new p5.Env();
+   *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
+   *    env.setRange(attackLevel, releaseLevel);
+   *
+   *    triOsc = new p5.Oscillator('triangle');
+   *    triOsc.amp(env);
+   *    triOsc.start();
+   *    triOsc.freq(220);
+   *
+   *    cnv.mousePressed(playEnv);
+   *  }
+   *
+   *  function playEnv(){
+   *    env.play();
+   *  }
    */
   p5.Env.prototype.setADSR = function(aTime, dTime, sPercent, rTime){
     this.aTime = aTime;
     this.dTime = dTime || 0;
 
     // lerp
-    this.sPercent = sPercent;
+    this.sPercent = sPercent || 0;
     this.dLevel = typeof(sPercent) !== 'undefined' ? sPercent * (this.aLevel - this.rLevel) + this.rLevel : 0;
 
     this.rTime = rTime || 0;
@@ -191,15 +234,48 @@ define(function (require) {
   };
 
   /**
-   *  Set max and min of envelope
+   *  Set max (attackLevel) and min (releaseLevel) of envelope.
    *  
    *  @method  setRange
    *  @param {Number} aLevel attack level (defaults to 1)
    *  @param {Number} rLevel release level (defaults to 0)
+   *  @example
+   *  <div><code>
+   *  var attackLevel = 1.0;
+   *  var releaseLevel = 0;
+   *
+   *  var attackTime = 0.001
+   *  var decayTime = 0.2;
+   *  var susPercent = 0.2;
+   *  var releaseTime = 0.5;
+   *
+   *  var env, triOsc;
+   *
+   *  function setup() {
+   *    var cnv = createCanvas(100, 100);
+   *
+   *    textAlign(CENTER);
+   *    text('click to play', width/2, height/2);
+   *
+   *    env = new p5.Env();
+   *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
+   *    env.setRange(attackLevel, releaseLevel);
+   *
+   *    triOsc = new p5.Oscillator('triangle');
+   *    triOsc.amp(env);
+   *    triOsc.start();
+   *    triOsc.freq(220);
+   *
+   *    cnv.mousePressed(playEnv);
+   *  }
+   *
+   *  function playEnv(){
+   *    env.play();
+   *  }
    */
   p5.Env.prototype.setRange = function(aLevel, rLevel) {
     this.aLevel = aLevel || 1;
-    this.rLevel = 0;
+    this.rLevel = rLevel || 0;
 
     // not sure if this belongs here:
 
@@ -329,6 +405,52 @@ define(function (require) {
    *  @method  triggerAttack
    *  @param  {Object} unit p5.sound Object or Web Audio Param
    *  @param  {Number} secondsFromNow time from now (in seconds)
+   *  @example
+   *  <div><code>
+   *  
+   *  var attackLevel = 1.0;
+   *  var releaseLevel = 0;
+   *  
+   *  var attackTime = 0.001
+   *  var decayTime = 0.3;
+   *  var susPercent = 0.4;
+   *  var releaseTime = 0.5;
+   *  
+   *  var env, triOsc;
+   *  
+   *  function setup() {
+   *    var cnv = createCanvas(100, 100);
+   *    background(200);
+   *    textAlign(CENTER);
+   *    text('click to play', width/2, height/2);
+   *  
+   *    env = new p5.Env();
+   *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
+   *    env.setRange(attackLevel, releaseLevel);
+   *  
+   *    triOsc = new p5.Oscillator('triangle');
+   *    triOsc.amp(env);
+   *    triOsc.start();
+   *    triOsc.freq(220);
+   *  
+   *    cnv.mousePressed(envAttack);
+   *  }
+   *  
+   *  function envAttack(){
+   *    console.log('trigger attack');
+   *    env.triggerAttack();
+   *  
+   *    background(0,255,0);
+   *    text('attack!', width/2, height/2);
+   *  }
+   *  
+   *  function mouseReleased() {
+   *    env.triggerRelease();
+   *  
+   *    background(200);
+   *    text('click to play', width/2, height/2);
+   *  }
+   *  </code></div>
    */
   p5.Env.prototype.triggerAttack = function(unit, secondsFromNow) {
     var now =  p5sound.audiocontext.currentTime;
@@ -403,6 +525,52 @@ define(function (require) {
    *  @method  triggerRelease
    *  @param  {Object} unit p5.sound Object or Web Audio Param
    *  @param  {Number} secondsFromNow time to trigger the release
+   *  @example
+   *  <div><code>
+   *  
+   *  var attackLevel = 1.0;
+   *  var releaseLevel = 0;
+   *  
+   *  var attackTime = 0.001
+   *  var decayTime = 0.3;
+   *  var susPercent = 0.4;
+   *  var releaseTime = 0.5;
+   *  
+   *  var env, triOsc;
+   *  
+   *  function setup() {
+   *    var cnv = createCanvas(100, 100);
+   *    background(200);
+   *    textAlign(CENTER);
+   *    text('click to play', width/2, height/2);
+   *  
+   *    env = new p5.Env();
+   *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
+   *    env.setRange(attackLevel, releaseLevel);
+   *  
+   *    triOsc = new p5.Oscillator('triangle');
+   *    triOsc.amp(env);
+   *    triOsc.start();
+   *    triOsc.freq(220);
+   *  
+   *    cnv.mousePressed(envAttack);
+   *  }
+   *  
+   *  function envAttack(){
+   *    console.log('trigger attack');
+   *    env.triggerAttack();
+   *  
+   *    background(0,255,0);
+   *    text('attack!', width/2, height/2);
+   *  }
+   *  
+   *  function mouseReleased() {
+   *    env.triggerRelease();
+   *  
+   *    background(200);
+   *    text('click to play', width/2, height/2);
+   *  }
+   *  </code></div>
    */
   p5.Env.prototype.triggerRelease = function(unit, secondsFromNow) {
 
@@ -472,6 +640,43 @@ define(function (require) {
    *  @param  {Number} v              Target value
    *  @param  {Number} [v2]           Second target value (optional)
    *  @example
+   *  <div><code>
+   *  var env, osc, amp, cnv;
+   *  
+   *  var attackTime = 0.001;
+   *  var decayTime = 0.2;
+   *  var attackLevel = 1;
+   *  var decayLevel = 0;
+   *  
+   *  function setup() {
+   *    cnv = createCanvas(100, 100);
+   *    fill(0,255,0);
+   *    noStroke();
+   *  
+   *    env = new p5.Env();
+   *    env.setADSR(attackTime, decayTime);
+   *  
+   *    osc = new p5.Oscillator();
+   *    osc.amp(env);
+   *    osc.start();
+   *  
+   *    amp = new p5.Amplitude();
+   *  
+   *    cnv.mousePressed(triggerRamp);
+   *  }
+   *  
+   *  function triggerRamp() {
+   *    env.ramp(osc, 0, attackLevel, decayLevel);
+   *  }
+   *  
+   *  function draw() {
+   *    background(20,20,20);
+   *    text('click me', 10, 20);
+   *    var h = map(amp.getLevel(), 0, 0.4, 0, height);;
+   *  
+   *    rect(0, height, width, -h);
+   *  }
+   *  </code></div>
    */
   p5.Env.prototype.ramp = function(unit, secondsFromNow, v1, v2) {
 

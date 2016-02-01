@@ -22,9 +22,10 @@ function setup() {
   delay = new p5.Delay();
   delay.process(noise, .12, .7, 2300); // tell delay to process noise
 
-  // the Env accepts time / value pairs to
-  // create a series of timed fades
-  env = new p5.Env(.01, 1, .2, .1);
+  // the Env ADSR: attackTime, decayTime, sustainLevel, releaseTime
+  env = new p5.Env();
+  env.setADSR(0.01, 0.2, 0.2, 0.1)
+  env.setRange(1, 0);
 
   // p5.Amplitude will analyze all sound in the sketch
   analyzer = new p5.Amplitude();
@@ -52,5 +53,5 @@ function draw() {
 }
 
 function mousePressed() {
-  env.play(noise);
+  env.play(noise, 0, 0.1, 0);
 }
