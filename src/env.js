@@ -242,7 +242,7 @@ define(function (require) {
   p5.Env.prototype.checkExpInput = function(value) {
     if (value <= 0)
     {
-      value = 0.0001;
+      value = 0.00000001;
     }
     return value;
   };
