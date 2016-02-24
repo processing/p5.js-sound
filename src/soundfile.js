@@ -893,7 +893,7 @@ define(function (require) {
    *
    * @method jump
    * @param {Number} cueTime    cueTime of the soundFile in seconds.
-   * @param {Number} uuration    duration in seconds.
+   * @param {Number} duration    duration in seconds.
    */
   p5.SoundFile.prototype.jump = function(cueTime, duration) {
     if (cueTime<0 || cueTime > this.buffer.duration) {
