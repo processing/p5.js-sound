@@ -174,8 +174,8 @@ define(function (require) {
    *
    *  @method  disconnect
    */
-  p5.AudioIn.prototype.disconnect = function(unit) {
-      this.output.disconnect(unit);
+  p5.AudioIn.prototype.disconnect = function() {
+      this.output.disconnect();
       // stay connected to amplitude even if not outputting to p5
       this.output.connect(this.amplitude.input);
   };

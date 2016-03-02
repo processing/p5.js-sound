@@ -1126,8 +1126,8 @@ define(function (require) {
    *
    * @method disconnect
    */
-  p5.SoundFile.prototype.disconnect = function(unit){
-    this.panner.disconnect(unit);
+  p5.SoundFile.prototype.disconnect = function(){
+    this.panner.disconnect();
   };
 
   /**
