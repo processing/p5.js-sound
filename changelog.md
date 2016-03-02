@@ -1,3 +1,32 @@
+p5.sound v. 0.3.0
+- ensure proper dispose methods for all p5.sound classes
+- many improvements to p5.Env
+- new methods for p5.Env:
+  - ``setADSR``
+  - ``setRange``
+  - ``ramp``
+  - ``setExp``
+new methods for p5.FFT: ``getCentroid``
+
+
+p5.sound v. 0.2.17
+- fix soundfile memory leak
+- update osc freq to factor in time
+- add error callback to audioIn
+- add error handler module
+- add error handling for loadSound and createConvolver
+- add onended(callback) to p5.SoundFile
+
+p5.sound v. 0.2.16
+- remove sketch fix for safari
+
+p5.sound v 0.2.15
+- preload fix for loadSound and createConvolver, v0.2.15
+- fix for ios9
+
+p5.sound v 0.2.14
+- fix for new registerPreloadMethod in core library
+
 p5.sound v. 0.2.13
 - add p5.AudioIn getSources(callback) method
 - p5.AudioIn listSources is deprecated.
