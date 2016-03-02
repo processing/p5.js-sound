@@ -45,17 +45,17 @@ define(function (require) {
    *  function preload(){
    *    sound = loadSound('assets/Damscray_DancingTiger.mp3');
    *  }
-   *
+   *  
    *  function setup(){
-   *    cnv = createCanvas(100,100);
-   *    sound.amp(0);
-   *    sound.loop();
+   *    var cnv = createCanvas(100,100);
+   *    cnv.mouseClicked(togglePlay);
    *    fft = new p5.FFT();
+   *    sound.amp(0.2);
    *  }
-   *
+   *  
    *  function draw(){
    *    background(0);
-   *
+   *  
    *    var spectrum = fft.analyze(); 
    *    noStroke();
    *    fill(0,255,0); // spectrum is green
@@ -64,7 +64,7 @@ define(function (require) {
    *      var h = -height + map(spectrum[i], 0, 255, height, 0);
    *      rect(x, height, width / spectrum.length, h )
    *    }
-   *
+   *  
    *    var waveform = fft.waveform();
    *    noFill();
    *    beginShape();
@@ -76,17 +76,16 @@ define(function (require) {
    *      vertex(x,y);
    *    }
    *    endShape();
-   *
-   *    isMouseOverCanvas();
+   *  
+   *    text('click to play/pause', 4, 10);
    *  }
-   *
+   *  
    *  // fade sound if mouse is over canvas
-   *  function isMouseOverCanvas() {
-   *    var mX = mouseX, mY = mouseY;
-   *    if (mX > 0 && mX < width && mY < height && mY > 0) {
-   *        sound.amp(0.5, 0.2);
+   *  function togglePlay() {
+   *    if (sound.isPlaying()) {
+   *      sound.pause();
    *    } else {
-   *      sound.amp(0, 0.2);
+   *      sound.loop();
    *    }
    *  }
    *  </code></div>
@@ -376,7 +375,7 @@ define(function (require) {
 
   /**
    *  Returns the 
-   *  <a href="en.wikipedia.org/wiki/Spectral_centroid" target="_blank">
+   *  <a href="http://en.wikipedia.org/wiki/Spectral_centroid" target="_blank">
    *  spectral centroid</a> of the input signal.
    *  <em>NOTE: analyze() must be called prior to getCentroid(). Analyze()
    *  tells the FFT to analyze frequency data, and getCentroid() uses
