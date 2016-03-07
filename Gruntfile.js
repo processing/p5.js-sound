@@ -125,7 +125,9 @@ module.exports = function(grunt) {
             'signal': 'src/signal',
             'metro': 'src/metro',
             'peakdetect': 'src/peakDetect',
-            'gain': 'src/gain'
+            'gain': 'src/gain',
+            'audiovoice': 'src/audiovoice',
+            'polysynth': 'src/polysynth'
           },
           useStrict: true,
           wrap: {

@@ -24,6 +24,8 @@ define(function (require) {
   require('soundRecorder');
   require('peakdetect');
   require('gain');
+  require('audiovoice');
+  require('polysynth');
 
   return p5SOUND;
 
