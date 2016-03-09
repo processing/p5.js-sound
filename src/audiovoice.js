@@ -14,16 +14,13 @@ define(function (require) {
     *  @constructor
     *  @example 
     *  <div><code>
-    *   var psynthDetune, psynthSquare; 
-    *   var square = true;
+    *   var psynthSquare; 
     *   
     *   function setup() {
     *   
     *     frameRate(25);
     *   
     *     // create a polyphonic synth with 15 voices.
-    *     // this synth will use the DetuneOsc synth definition below
-    *     psynthDetune = new p5.PolySynth(15,DetunedOsc); 
     *     // this synth will use the SquareVoice definition below
     *     psynthSquare = new p5.PolySynth(15,SquareVoice); 
     *     
@@ -40,27 +37,13 @@ define(function (require) {
     *     // play a note when mouse is pressed
     *     var note = int(map(mouseX,0,width,60,84)); // a midi note mapped to x-axis
     *     var length = map(mouseY,0,300,0,5); // a note length parameter mapped to y-axis.
-    *     
-    *     if(square){
-    *       // set the enveloppe with the new note length
-    *       psynthSquare.setADSR(0.021,0.025,length,0.025);
-    *       // set the note to be played
-    *       psynthSquare.setNote(note);
-    *       psynthSquare.play(); // play it !
-    *     }
-    *     else {
-    *       psynthDetune.setADSR(0.021,0.025,length,0.025);
-    *       // set the detune parameters randomely
-    *       var d = int(random(1,12));
-    *       psynthDetune.setParams({detune: d });
-    *       // set the note to be played
-    *       psynthDetune.setNote(note);
-    *       psynthDetune.play(); // play it !
-    *     }   
-    *   }
     *   
-    *   function keyPressed(){
-    *     square = !square;
+    *     // set the enveloppe with the new note length
+    *     psynthSquare.setADSR(0.021,0.025,length,0.025);
+    *     // set the note to be played
+    *     psynthSquare.setNote(note);
+    *     psynthSquare.play(); // play it !
+    *     
     *   }
     *   
     *   
@@ -74,47 +57,16 @@ define(function (require) {
     *     this.oscillator.disconnect();
     *     this.oscillator.start();
     *     // connect the dsp graph to the filtered output of the audiovoice
-    *     this.oscillator.connect(this.filter);
+    *     this.oscillator.connect(this.synthOut);
     *     // override the set note function
     *     this.setNote = function(note){
     *       this.note = note;
     *       this.oscillator.freq(midiToFreq(note));
     *     } 
     *   }
-    *   // make our new synth available for our sketch
+    *   // make our new synth available for our sketch when calling polysynth constructor
     *   SquareVoice.prototype = Object.create(p5.AudioVoice.prototype);  // browsers support ECMAScript 5 ! warning for compatibility with older browsers
     *   SquareVoice.prototype.constructor = SquareVoice;
-    *   
-    *   
-    *   // A second one : a little more complex
-    *   function DetunedOsc(){
-    *   
-    *     p5.AudioVoice.call(this);
-    *     this.osctype = 'sine';
-    *     this.detune = 5;
-    *   
-    *     this.oscOne = new p5.Oscillator(midiToFreq(this.note),this.osctype); 
-    *     this.oscTwo = new p5.Oscillator(midiToFreq(this.note)-this.detune,this.osctype);
-    *     this.oscOne.disconnect();
-    *     this.oscTwo.disconnect();
-    *     this.oscOne.start();
-    *     this.oscTwo.start();
-    *     this.oscOne.connect(this.filter);
-    *     this.oscTwo.connect(this.filter);
-    *   
-    *     this.setNote = function(note){
-    *         this.oscOne.freq(midiToFreq(note));
-    *         this.oscTwo.freq(midiToFreq(note)-this.detune);   
-    *     }
-    *   
-    *     this.setParams = function(params){
-    *         this.detune = params.detune;
-    *     }
-    *   }
-    *   
-    *   DetunedOsc.prototype = Object.create(p5.AudioVoice.prototype); 
-    *   DetunedOsc.prototype.constructor = DetunedOsc;
-    *   
     * </code></div>
     **/
 
@@ -130,40 +82,48 @@ p5.AudioVoice = function (){
   this.release=0.25;
   this.env = new p5.Env(this.attack,this.volume, this.decay,this.volume,  this.sustain, this.volume,this.release);
 
-  this.filter = new p5.LowPass();
-  this.filter.set(22050, 5);
+  this.synthOut = new p5.HighPass();
+  this.synthOut.set(5, 0.001);
   
-  this.env.connect(this.filter);
+  this.env.connect(this.synthOut);
 
 }
 
 
 /**
-   *  Play the envelopp
+   *  Play tells the envelope to start acting on a given input.
+   *  If the input is a p5.sound object (i.e. AudioIn, Oscillator,
+   *  SoundFile), then Env will control its output volume.
+   *  Envelopes can also be used to control any <a href="
+   *  http://docs.webplatform.org/wiki/apis/webaudio/AudioParam">
+   *  Web Audio Audio Param.</a>
    *  
-   *  @method  voicePlay
+   *  @method play
    */  
 
-p5.AudioVoice.prototype.voicePlay = function (){
-  this.env.play(this.filter);
+p5.AudioVoice.prototype.play = function (){
+  this.env.play(this.synthOut);
 }
 
 /**
-   *  Trigger the attack
-   *  
-   *  @method  attackPlay
+   *  Trigger the Attack, and Decay portion of the Envelope.
+   *  Similar to holding down a key on a piano, but it will
+   *  hold the sustain level until you let go. 
+   *
+   *  @method  triggerAttack
    */  
-p5.AudioVoice.prototype.attackPlay = function (){
+p5.AudioVoice.prototype.triggerAttack = function (){
   this.env.triggerAttack(this.oscillator);
 }
 
 /**
-   *  Trigger the release
-   *  
-   *  @method  releasePlay
+   *  Trigger the Release of the Envelope. This is similar to releasing
+   *  the key on a piano and letting the sound fade according to the
+   *  release level and release time.
+   *  @method  triggerRelease
    */  
 
-p5.AudioVoice.prototype.releasePlay = function (){
+p5.AudioVoice.prototype.triggerRelease = function (){
   this.env.triggerRelease(this.oscillator);
 }
 
@@ -225,7 +185,7 @@ p5.AudioVoice.prototype.setADSR = function (a,d,s,r){
   this.sustain=s;
   this.release=r;
   this.env = new p5.Env(this.attack, this.decay,  this.sustain, this.release); 
-  this.env.play(this.filter);
+  //this.env.play(this.synthOut);
 }
 
 });

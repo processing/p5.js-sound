@@ -52,16 +52,13 @@ function keyPressed(){
 function SquareVoice(){
 
   p5.AudioVoice.call(this); // inherit from AudioVoice class
-
   // create a dsp graph
   this.osctype = 'square';
   this.oscillator = new p5.Oscillator(this.note,this.osctype);
   this.oscillator.disconnect();
   this.oscillator.start();
-
   // connect the dsp graph to the filtered output of the audiovoice
-  this.oscillator.connect(this.filter);
-
+  this.oscillator.connect(this.synthOut);
   // override the set note function
   this.setNote = function(note){
     this.note = note;
@@ -77,7 +74,6 @@ SquareVoice.prototype.constructor = SquareVoice;
 function DetunedOsc(){
 
   p5.AudioVoice.call(this);
-
   this.osctype = 'sine';
   this.detune = 5;
 
@@ -88,8 +84,8 @@ function DetunedOsc(){
   this.oscOne.start();
   this.oscTwo.start();
 
-  this.oscOne.connect(this.filter);
-  this.oscTwo.connect(this.filter);
+  this.oscOne.connect(this.synthOut);
+  this.oscTwo.connect(this.synthOut);
 
   this.setNote = function(note){
       this.oscOne.freq(midiToFreq(note));
