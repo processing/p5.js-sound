@@ -103,8 +103,8 @@ p5.PolySynth = function(num,synthVoice){
    *  @method  play
    */  
 
-p5.PolySynth.prototype.play = function (){
-    this.voices[this.poly_counter].play();
+p5.PolySynth.prototype.play = function (susTime){
+    this.voices[this.poly_counter].play(susTime);
     this.poly_counter += 1;
     this.poly_counter = this.poly_counter % this.num_voices;
 }
