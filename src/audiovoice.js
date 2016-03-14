@@ -80,7 +80,12 @@ p5.AudioVoice = function (){
   this.decay=0.25;
   this.sustain=0.95;
   this.release=0.25;
-  this.env = new p5.Env(this.attack,this.volume, this.decay,this.volume,  this.sustain, this.volume,this.release);
+
+
+  this.env = new p5.Env();
+  this.env.setADSR(this.attack, this.decay, this.sustain, this.release);
+  this.env.setRange(1, 0);
+  this.env.setExp(true);
 
   this.synthOut = new p5.HighPass();
   this.synthOut.set(5, 0.001);
@@ -101,8 +106,8 @@ p5.AudioVoice = function (){
    *  @method play
    */  
 
-p5.AudioVoice.prototype.play = function (){
-  this.env.play(this.synthOut);
+p5.AudioVoice.prototype.play = function (susTime){
+  this.env.play(this.synthOut,susTime);
 }
 
 /**
@@ -113,7 +118,7 @@ p5.AudioVoice.prototype.play = function (){
    *  @method  triggerAttack
    */  
 p5.AudioVoice.prototype.triggerAttack = function (){
-  this.env.triggerAttack(this.oscillator);
+  this.env.triggerAttack(this.synthOut);
 }
 
 /**
@@ -124,7 +129,7 @@ p5.AudioVoice.prototype.triggerAttack = function (){
    */  
 
 p5.AudioVoice.prototype.triggerRelease = function (){
-  this.env.triggerRelease(this.oscillator);
+  this.env.triggerRelease(this.synthOut);
 }
 
 /**
