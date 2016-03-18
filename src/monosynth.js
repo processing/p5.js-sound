@@ -5,12 +5,12 @@ define(function (require) {
   require('sndcore');
 
      /**
-    *  An AudioVoice is used as a single voice for sound synthesis.
+    *  An MonoSynth is used as a single voice for sound synthesis.
     *  This is a class to be used in conjonction with the PolySynth
     *  class. Custom synthetisers should be built inheriting from
     *  this class.
     *
-    *  @class p5.AudioVoice
+    *  @class p5.MonoSynth
     *  @constructor
     *  @example 
     *  <div><code>
@@ -47,10 +47,10 @@ define(function (require) {
     *   }
     *   
     *   
-    *   // A typical synth class which inherits from AudioVoice class
+    *   // A typical synth class which inherits from MonoSynth class
     *   function SquareVoice(){
     *   
-    *     p5.AudioVoice.call(this); // inherit from AudioVoice class
+    *     p5.MonoSynth.call(this); // inherit from MonoSynth class
     *     // create a dsp graph
     *     this.osctype = 'square';
     *     this.oscillator = new p5.Oscillator(this.note,this.osctype);
@@ -65,12 +65,12 @@ define(function (require) {
     *     } 
     *   }
     *   // make our new synth available for our sketch when calling polysynth constructor
-    *   SquareVoice.prototype = Object.create(p5.AudioVoice.prototype);  // browsers support ECMAScript 5 ! warning for compatibility with older browsers
+    *   SquareVoice.prototype = Object.create(p5.MonoSynth.prototype);  // browsers support ECMAScript 5 ! warning for compatibility with older browsers
     *   SquareVoice.prototype.constructor = SquareVoice;
     * </code></div>
     **/
 
-p5.AudioVoice = function (){
+p5.MonoSynth = function (){
 
   this.osctype = 'sine';
   this.volume= 0.33;
@@ -102,12 +102,14 @@ p5.AudioVoice = function (){
    *  Envelopes can also be used to control any <a href="
    *  http://docs.webplatform.org/wiki/apis/webaudio/AudioParam">
    *  Web Audio Audio Param.</a>
-   *  
+   *
+   *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
+   *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
    *  @method play
    */  
 
-p5.AudioVoice.prototype.play = function (susTime){
-  this.env.play(this.synthOut,susTime);
+p5.MonoSynth.prototype.play = function (secondsFromNow, susTime){
+  this.env.play(this.synthOut, secondsFromNow, susTime);
 }
 
 /**
@@ -115,34 +117,38 @@ p5.AudioVoice.prototype.play = function (susTime){
    *  Similar to holding down a key on a piano, but it will
    *  hold the sustain level until you let go. 
    *
+   *  @param  {Number} secondsFromNow time from now (in seconds)
    *  @method  triggerAttack
    */  
-p5.AudioVoice.prototype.triggerAttack = function (){
-  this.env.triggerAttack(this.synthOut);
+p5.MonoSynth.prototype.triggerAttack = function (secondsFromNow){
+  this.env.triggerAttack(this.synthOut, secondsFromNow);
 }
 
 /**
    *  Trigger the Release of the Envelope. This is similar to releasing
    *  the key on a piano and letting the sound fade according to the
    *  release level and release time.
+   *  
+   *  @param  {Number} secondsFromNow time to trigger the release
    *  @method  triggerRelease
    */  
 
-p5.AudioVoice.prototype.triggerRelease = function (){
-  this.env.triggerRelease(this.synthOut);
+p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow){
+  this.env.triggerRelease(this.synthOut, secondsFromNow);
 }
 
 /**
-   *  Set the note to be played.
+   *  Set the note to be played with a MIDI value, where 60 is
+   *  middle C.
+   *  
    *  This method can be overriden when creating custom synth
    *  
    *  @method  setNote
    *  @param  {Number} Midi note to be played (from 0 to 127).
    * 
-   */  
-
-p5.AudioVoice.prototype.setNote = function(note){
-  this.oscillator.freq(midiToFreq(note));
+   */
+p5.MonoSynth.prototype.setNote = function(note){
+  this.oscillator.freq( midiToFreq(note) );
 }
 
 /**
@@ -158,7 +164,7 @@ p5.AudioVoice.prototype.setNote = function(note){
    * 
    */  
 
-p5.AudioVoice.prototype.setParams = function(params){
+p5.MonoSynth.prototype.setParams = function(params){
 
 }
 
@@ -184,7 +190,7 @@ p5.AudioVoice.prototype.setParams = function(params){
    *  @param {Number} [releaseTime]   Time in seconds from now (defaults to 0)
    **/
 
-p5.AudioVoice.prototype.setADSR = function (a,d,s,r){
+p5.MonoSynth.prototype.setADSR = function (a,d,s,r){
   this.attack = a;
   this.decay=d;
   this.sustain=s;
