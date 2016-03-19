@@ -72,10 +72,6 @@ define(function (require) {
 
 p5.MonoSynth = function (){
 
-  this.osctype = 'sine';
-  this.volume= 0.33;
-  this.note = 60;
-
   this.attack = 0.25;
   this.decay=0.25;
   this.sustain=0.95;
