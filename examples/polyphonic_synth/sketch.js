@@ -7,7 +7,7 @@ function setup() {
 
   // create a polyphonic synth with 15 voices.
   // this synth will use the DetuneOsc synth definition below
-  psynthDetune = new p5.PolySynth(15,AdditiveSynth); 
+  psynthDetune = new p5.PolySynth(15,DetuneOsc); 
   // this synth will use the SquareVoice definition below
   psynthSquare = new p5.PolySynth(15,SquareVoice); 
   
@@ -30,7 +30,7 @@ function mousePressed(){
   	psynthSquare.setADSR(0.021,0.025,length,0.025);
     // set the note to be played
   	psynthSquare.setNote(note);
-    psynthSquare.play(); // play it !
+    psynthSquare.play(0,0); // play it !
   }
   else {
     psynthDetune.setADSR(0.021,0.025,length,0.025);
@@ -41,7 +41,7 @@ function mousePressed(){
                           });
     // set the note to be played
     psynthDetune.setNote(note);
-    psynthDetune.play(); // play it !
+    psynthDetune.play(0,0); // play it !
   }   
 }
 
@@ -53,7 +53,7 @@ function keyPressed(){
 // A typical synth class which inherits from AudioVoice class
 function SquareVoice(){
 
-  p5.AudioVoice.call(this); // inherit from AudioVoice class
+  p5.MonoSynth.call(this); // inherit from AudioVoice class
   // create a dsp graph
   this.osctype = 'square';
   this.oscillator = new p5.Oscillator(this.note,this.osctype);
@@ -68,14 +68,14 @@ function SquareVoice(){
   } 
 }
 // make our new synth available for our sketch
-SquareVoice.prototype = Object.create(p5.AudioVoice.prototype);  // browsers support ECMAScript 5 ! warning for compatibility with older browsers
+SquareVoice.prototype = Object.create(p5.MonoSynth.prototype);  // browsers support ECMAScript 5 ! warning for compatibility with older browsers
 SquareVoice.prototype.constructor = SquareVoice;
 
 
 // A second one : a little more complex
 function DetunedOsc(){
 
-  p5.AudioVoice.call(this);
+  p5.MonoSynth.call(this);
   this.osctype = 'sine';
   this.detune = 5;
 
@@ -99,13 +99,13 @@ function DetunedOsc(){
   }
 }
 
-DetunedOsc.prototype = Object.create(p5.AudioVoice.prototype); 
+DetunedOsc.prototype = Object.create(p5.MonoSynth.prototype); 
 DetunedOsc.prototype.constructor = DetunedOsc;
 
 
 /////////////////////////////////////////////////////////////////
 function AdditiveSynth(){
-  p5.AudioVoice.call(this);
+  p5.MonoSynth.call(this);
 
   this.osctype = 'triangle';
   this.harmonics = [1,2,4,6,8];
@@ -154,5 +154,5 @@ function AdditiveSynth(){
   
 
 }
-AdditiveSynth.prototype = Object.create(p5.AudioVoice.prototype); 
+AdditiveSynth.prototype = Object.create(p5.MonoSynth.prototype); 
 AdditiveSynth.prototype.constructor = AdditiveSynth;

@@ -51,9 +51,9 @@ function mousePressed(){
   if(mouseX < width && mouseX > 0 && mouseY > 0 && mouseY < height){
     // play a note when mouse is pressed
     var note = int(map(mouseX,0,width,60,84)); // a midi note mapped to x-axis
-    var noteLength = map(mouseY,height,0,0.5,5);
+    var noteLength = map(mouseY,height,0,2,0.05);
   
-    psynth.setADSR(0.051,0.025,noteLength,0.125);
+    psynth.setADSR(0.25,0.25,0.3,0.25);
  
     // set the parameters
     psynth.setParams({
@@ -66,17 +66,15 @@ function mousePressed(){
 
     // set the note to be played
     psynth.setNote(note);
-    console.log(psynth.poly_counter);
-    console.log(noteLength);
-    console.log(psynth.voices[psynth.poly_counter].env);
-    psynth.play(); // play it !
+    
+    psynth.play(0.0,noteLength); // play it !
 
   }
 }
 
 /////////////////////////////////////////////////////////////////
 function AdditiveSynth(){
-  p5.AudioVoice.call(this);
+  p5.MonoSynth.call(this);
 
   this.osctype = 'sine';
   this.harmonics = [1,3,5,7,9];
@@ -84,6 +82,7 @@ function AdditiveSynth(){
 
   this.oscbank =[];
   this.amplitude =  new p5.Amplitude();
+  this.env.setRange(0.2,0);
  
 
   for (var i = 0 ; i < this.harmonics.length; i++){
@@ -125,11 +124,11 @@ function AdditiveSynth(){
   }
 
   this.draw = function(){
-    this.radius = this.amplitude.getLevel()*10000;
+    this.radius = this.amplitude.getLevel()*1000;
     fill(255,75,75,200);
     noStroke();
     ellipse(this.x,this.y,this.radius,this.radius);
   }
 }
-AdditiveSynth.prototype = Object.create(p5.AudioVoice.prototype); 
+AdditiveSynth.prototype = Object.create(p5.MonoSynth.prototype); 
 AdditiveSynth.prototype.constructor = AdditiveSynth;
