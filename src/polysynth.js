@@ -131,7 +131,9 @@ p5.PolySynth.prototype.play = function (secondsFromNow, susTime){
    *  @param {Number} [releaseTime]   Time in seconds from now (defaults to 0)
    **/
 p5.PolySynth.prototype.setADSR = function (a,d,s,r){
-  this.voices[this.poly_counter].setADSR(a,d,s,r);
+  for (var i = 0 ; i < this.num_voices ; i++){
+   this.voices[this.poly_counter].setADSR(a,d,s,r);
+  }
 }
 
 /**
@@ -143,7 +145,9 @@ p5.PolySynth.prototype.setADSR = function (a,d,s,r){
    * 
    */
 p5.PolySynth.prototype.setNote = function (note){
-  this.voices[this.poly_counter].setNote(note);
+  for (var i = 0 ; i < this.num_voices ; i++){
+   this.voices[this.poly_counter].setNote(note);
+  }
 }
 
 
@@ -159,7 +163,9 @@ p5.PolySynth.prototype.setNote = function (note){
    *
    */  
 p5.PolySynth.prototype.setParams = function (params){
-  this.voices[this.poly_counter].setParams(params);
+  for (var i = 0 ; i < this.num_voices ; i++){
+    this.voices[this.poly_counter].setParams(params);
+  }
 }
 
 });
