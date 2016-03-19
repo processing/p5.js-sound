@@ -88,9 +88,9 @@ p5.MonoSynth = function (){
   this.env.setExp(true);
 
   this.synthOut = new p5.HighPass();
-  this.synthOut.set(5, 0.001);
+  this.synthOut.set(5, 1);
   
-  this.env.connect(this.synthOut);
+  this.env.setInput(this.synthOut);
 
 }
 
@@ -121,7 +121,7 @@ p5.MonoSynth.prototype.play = function (secondsFromNow, susTime){
    *  @method  triggerAttack
    */  
 p5.MonoSynth.prototype.triggerAttack = function (secondsFromNow){
-  this.env.triggerAttack(this.synthOut, secondsFromNow);
+  this.env.triggerAttack(this.synthOut,secondsFromNow);
 }
 
 /**
@@ -134,7 +134,7 @@ p5.MonoSynth.prototype.triggerAttack = function (secondsFromNow){
    */  
 
 p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow){
-  this.env.triggerRelease(this.synthOut, secondsFromNow);
+  this.env.triggerRelease( this.synthOut,secondsFromNow);
 }
 
 /**
@@ -195,8 +195,7 @@ p5.MonoSynth.prototype.setADSR = function (a,d,s,r){
   this.decay=d;
   this.sustain=s;
   this.release=r;
-  this.env = new p5.Env(this.attack, this.decay,  this.sustain, this.release); 
-  //this.env.play(this.synthOut);
+  this.env.setADSR(this.attack, this.decay,  this.sustain, this.release); 
 }
 
 });
