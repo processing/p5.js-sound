@@ -3,9 +3,9 @@ define(function (require) {
 
   var p5sound = require('master');
   require('sndcore');
-  require('audiovoice');
+  require('polysynth');
 
-       /**
+  /**
     *  An AudioVoice is used as a single voice for sound synthesis.
     *  The PolySynth class holds an array of AudioVoice, and deals
     *  with voices allocations, with setting notes to be played, and
@@ -85,8 +85,6 @@ define(function (require) {
     *   
     * </code></div>
     **/
-    
-
 p5.PolySynth = function(num,synthVoice){
   this.voices = [];
   this.num_voices = num;
@@ -101,10 +99,11 @@ p5.PolySynth = function(num,synthVoice){
    *  Play a note.
    *  
    *  @method  play
-   */  
-
-p5.PolySynth.prototype.play = function (susTime){
-    this.voices[this.poly_counter].play(susTime);
+   *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
+   *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
+   */
+p5.PolySynth.prototype.play = function (secondsFromNow, susTime){
+    this.voices[this.poly_counter].play(secondsFromNow, susTime);
     this.poly_counter += 1;
     this.poly_counter = this.poly_counter % this.num_voices;
 }
@@ -131,7 +130,6 @@ p5.PolySynth.prototype.play = function (susTime){
    *                                then decayLevel would increase proportionally, to become 0.5.
    *  @param {Number} [releaseTime]   Time in seconds from now (defaults to 0)
    **/
-
 p5.PolySynth.prototype.setADSR = function (a,d,s,r){
   this.voices[this.poly_counter].setADSR(a,d,s,r);
 }
@@ -143,8 +141,7 @@ p5.PolySynth.prototype.setADSR = function (a,d,s,r){
    *  @method  setNote
    *  @param  {Number} Midi note to be played (from 0 to 127).
    * 
-   */  
-
+   */
 p5.PolySynth.prototype.setNote = function (note){
   this.voices[this.poly_counter].setNote(note);
 }
