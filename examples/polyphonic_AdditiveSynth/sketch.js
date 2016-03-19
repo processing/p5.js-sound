@@ -82,8 +82,7 @@ function AdditiveSynth(){
 
   this.oscbank =[];
   this.amplitude =  new p5.Amplitude();
-  this.env.setRange(0.2,0);
- 
+   
 
   for (var i = 0 ; i < this.harmonics.length; i++){
     this.oscbank.push(new p5.Oscillator(midiToFreq(this.note),this.osctype) );

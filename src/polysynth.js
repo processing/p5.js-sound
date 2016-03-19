@@ -89,9 +89,11 @@ p5.PolySynth = function(num,synthVoice){
   this.voices = [];
   this.num_voices = num;
   this.poly_counter=0;
+  this.maxRange = 1/num;
 
   for (var i = 0 ; i < this.num_voices ; i++){
        this.voices.push(new synthVoice());
+       this.voices[i].env.setRange(this.maxRange,0);
   }
 }
 
