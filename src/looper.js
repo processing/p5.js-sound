@@ -170,13 +170,9 @@ define(function (require) {
     this.length = steps || 0; // how many beats
     this.partStep = 0;
     this.phrases = [];
-    this.looping = false;
     this.isPlaying = false;
 
-    // what does this looper do when it gets to the last step?
-    this.onended = function(){
-      this.stop();
-    };
+    this.noLoop();
 
     this.tatums = bLength || 0.0625; // defaults to quarter note
 
@@ -359,11 +355,11 @@ define(function (require) {
       this.partStep +=1;
     }
     else {
-      if (this.looping) {
-        this.callback(time);
+      if (!this.looping && this.partStep == this.length-1) {
+      console.log('done');
+        // this.callback(time);
+        this.onended();
       }
-      this.onended();
-      this.partStep = 0;
     }
   };
 

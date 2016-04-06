@@ -34,6 +34,7 @@ define(function (require) {
       // for all of the active things on the metro:
       for (var i in this.syncedParts) {
         var thisPart = this.syncedParts[i];
+        if (!thisPart.isPlaying) return;
         thisPart.incrementStep(secondsFromNow);
         // each synced source keeps track of its own beat number
         for (var j in thisPart.phrases) {
