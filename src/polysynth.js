@@ -85,29 +85,28 @@ define(function (require) {
     *   
     * </code></div>
     **/
-p5.PolySynth = function(num,synthVoice){
-  this.voices = [];
-  this.num_voices = num;
-  this.poly_counter=0;
-  this.maxRange = 1/num;
+p5.PolySynth = function(synthVoice){
+  this.voices = {};
+  this.synthVoice = synthVoice;
 
-  for (var i = 0 ; i < this.num_voices ; i++){
-       this.voices.push(new synthVoice());
-       this.voices[i].env.setRange(this.maxRange,0);
-  }
+  p5sound.soundArray.push(this);
 }
 
 /**
    *  Play a note.
    *  
    *  @method  play
+   *  @param  {Number} [note] midi note to play (ranging from 0 to 127 - 60 being a middle C)
    *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
    *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
    */
-p5.PolySynth.prototype.play = function (secondsFromNow, susTime){
-    this.voices[this.poly_counter].play(secondsFromNow, susTime);
-    this.poly_counter += 1;
-    this.poly_counter = this.poly_counter % this.num_voices;
+p5.PolySynth.prototype.play = function (note, secondsFromNow, susTime){    
+    if (this.voices[note] != null) {
+       this.voices[note].play(note, secondsFromNow, susTime);
+     }
+     else{
+      this.voices[note] = new this.synthVoice();
+    }
 }
 
 
@@ -117,10 +116,14 @@ p5.PolySynth.prototype.play = function (secondsFromNow, susTime){
    *  ADSR envelope
    *  </a>.
    *  
-   *  @method  setADSR
-   *  @param {Number} attackTime    Time (in seconds before envelope
+   *  It works like other implementation of setADSR in p5.sound but it needs a note parameter
+   *  to know which monoSynth should be affected.
+   *  
+   *  @method  noteADSR
+   *  @param {Number} [note]        Midi note on which ADSR should be set.
+   *  @param {Number} [attackTime]  Time (in seconds before envelope
    *                                reaches Attack Level
-   *  @param {Number} [decayTime]    Time (in seconds) before envelope
+   *  @param {Number} [decayTime]   Time (in seconds) before envelope
    *                                reaches Decay/Sustain Level
    *  @param {Number} [susRatio]    Ratio between attackLevel and releaseLevel, on a scale from 0 to 1,
    *                                where 1.0 = attackLevel, 0.0 = releaseLevel.
@@ -132,25 +135,52 @@ p5.PolySynth.prototype.play = function (secondsFromNow, susTime){
    *                                then decayLevel would increase proportionally, to become 0.5.
    *  @param {Number} [releaseTime]   Time in seconds from now (defaults to 0)
    **/
-p5.PolySynth.prototype.setADSR = function (a,d,s,r){
-  for (var i = 0 ; i < this.num_voices ; i++){
-   this.voices[this.poly_counter].setADSR(a,d,s,r);
-  }
+p5.PolySynth.prototype.noteADSR = function (note,a,d,s,r){
+    if (this.voices[note] != null) {
+       this.voices[note].setADSR(a,d,s,r);
+     }
+     else{
+      this.voices[note] = new this.synthVoice();
+    }
 }
 
 /**
-   *  Set the note to be played.
-   *  This method can be overriden when creating custom synth.
+   *  Trigger the Attack, and Decay portion of a MonoSynth.
+   *  Similar to holding down a key on a piano, but it will
+   *  hold the sustain level until you let go. 
+   *
+   *  @method  noteAttack
+   *  @param  {Number} [note]           midi note on which attack should be triggered.
+   *  @param  {Number} [secondsFromNow] time from now (in seconds)
    *  
-   *  @method  setNote
-   *  @param  {Number} Midi note to be played (from 0 to 127).
-   * 
-   */
-p5.PolySynth.prototype.setNote = function (note){
-  for (var i = 0 ; i < this.num_voices ; i++){
-   this.voices[this.poly_counter].setNote(note);
-  }
+   */  
+p5.PolySynth.prototype.noteAttack = function (note, nsecondsFromNow){ 
+    if (this.voices[note] != null) {
+       this.voices[note].triggerAttack(secondsFromNow);
+     }
+     else {
+      this.voices[note] = new this.synthVoice();
+     }
 }
+
+/**
+   *  Trigger the Release of a MonoSynth. This is similar to releasing
+   *  the key on a piano and letting the sound fade according to the
+   *  release level and release time.
+   *  
+   *  @method  noteRelease
+   *  @param  {Number} [note]           midi note on which attack should be triggered.
+   *  @param  {Number} [secondsFromNow] time to trigger the release
+   *  
+   */  
+
+p5.PolySynth.prototype.noteRelease = function (secondsFromNow){
+    if (this.voices[note] != null) {
+       this.voices[note].triggerRelease(secondsFromNow);
+       delete this.voices[note];
+    }
+}
+
 
 
 /**
@@ -166,7 +196,7 @@ p5.PolySynth.prototype.setNote = function (note){
    */  
 p5.PolySynth.prototype.setParams = function (params){
   for (var i = 0 ; i < this.num_voices ; i++){
-    this.voices[this.poly_counter].setParams(params);
+    this.voices[i].setParams(params);
   }
 }
 

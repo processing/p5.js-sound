@@ -72,6 +72,8 @@ define(function (require) {
 
 p5.MonoSynth = function (){
 
+
+
   this.attack = 0.25;
   this.decay=0.25;
   this.sustain=0.95;
@@ -88,23 +90,23 @@ p5.MonoSynth = function (){
   
   this.env.setInput(this.synthOut);
 
+  this.synthOut.connect(p5.soundOut);
+  p5sound.soundArray.push(this);
 }
 
 
 /**
-   *  Play tells the envelope to start acting on a given input.
-   *  If the input is a p5.sound object (i.e. AudioIn, Oscillator,
-   *  SoundFile), then Env will control its output volume.
-   *  Envelopes can also be used to control any <a href="
-   *  http://docs.webplatform.org/wiki/apis/webaudio/AudioParam">
-   *  Web Audio Audio Param.</a>
-   *
+   *  Play tells the MonoSynth to start playing a note
+   *  
+   *  @method playNote 
+   *  @param  {Number} [note] midi note to play (ranging from 0 to 127 - 60 being a middle C)
    *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
    *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
-   *  @method play
+   *  
    */  
 
-p5.MonoSynth.prototype.play = function (secondsFromNow, susTime){
+p5.MonoSynth.prototype.play = function (note, secondsFromNow, susTime){
+  this.oscillator.freq( midiToFreq(note) );
   this.env.play(this.synthOut, secondsFromNow, susTime);
 }
 
@@ -133,19 +135,6 @@ p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow){
   this.env.triggerRelease( this.synthOut,secondsFromNow);
 }
 
-/**
-   *  Set the note to be played with a MIDI value, where 60 is
-   *  middle C.
-   *  
-   *  This method can be overriden when creating custom synth
-   *  
-   *  @method  setNote
-   *  @param  {Number} Midi note to be played (from 0 to 127).
-   * 
-   */
-p5.MonoSynth.prototype.setNote = function(note){
-  this.oscillator.freq( midiToFreq(note) );
-}
 
 /**
    *  Set cutoms parameters to a specific synth implementation.
