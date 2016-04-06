@@ -11,6 +11,8 @@ var noise, noiseEnv; // used by playSnare
 var part; // a part we will loop
 var currentBassNote = 47;
 
+var prevTime = 0;
+
 function setup() {
   // prepare the osc and env used by playNote()
   env = new p5.Env(0.01, 0.8, 0.2, 0);
@@ -34,16 +36,20 @@ function setup() {
   part.addPhrase('bass', playBass, [47, 42, 45, 47, 45,42, 40, 42]);
 
   // // set tempo (Beats Per Minute) of the part and tell it to loop
-  part.setBPM(80);
+  part.setBPM(60);
   part.loop();
 
 }
 
 function playBass(time, params) {
+  console.log( (getAudioContext().currentTime + time) - prevTime);
+  prevTime = time + getAudioContext().currentTime;
+
   currentBassNote = params;
   osc.freq(midiToFreq(params), 0, time);
   env.play(osc, time);
 }
+
 
 function playSnare(time, params) {
   noiseEnv.play(noise, time);

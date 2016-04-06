@@ -362,7 +362,9 @@ define(function (require) {
       if (this.looping) {
         this.callback(time);
       }
-      this.onended();
+      else {
+        this.onended();
+      }
       this.partStep = 0;
     }
   };
