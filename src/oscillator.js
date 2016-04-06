@@ -91,7 +91,6 @@ define(function (require) {
     var o = this.oscillator;
 
     // connections
-    this.input = p5sound.audiocontext.createGain();
     this.output = p5sound.audiocontext.createGain();
 
     this._freqMods = []; // modulators connected to this oscillator's frequency
@@ -164,6 +163,8 @@ define(function (require) {
       var t = time || 0;
       var now = p5sound.audiocontext.currentTime;
       this.oscillator.stop(t + now);
+      this.oscillator.disconnect();
+      this.oscillator = undefined;
       this.started = false;
     }
   };

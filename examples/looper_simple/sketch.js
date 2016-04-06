@@ -37,12 +37,12 @@ function setup() {
 
   // // set tempo (Beats Per Minute) of the part and tell it to loop
   part.setBPM(60);
-  part.loop();
+  part.noLoop();
+  part.start();
 
 }
 
 function playBass(time, params) {
-  console.log( (getAudioContext().currentTime + time) - prevTime);
   prevTime = time + getAudioContext().currentTime;
 
   currentBassNote = params;
