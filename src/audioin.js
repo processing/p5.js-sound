@@ -16,7 +16,8 @@ define(function (require) {
    *  feedback.</p> 
    *
    *  <p><em>Note: This uses the <a href="http://caniuse.com/stream">getUserMedia/
-   *  Stream</a> API, which is not supported by certain browsers.</em></p>
+   *  Stream</a> API, which is not supported by certain browsers. Access in Chrome browser
+   *  is limited to localhost and https, but access over http may be limited.</em></p>
    *
    *  @class p5.AudioIn
    *  @constructor
@@ -85,6 +86,11 @@ define(function (require) {
    *  is not connected to p5.sound's output. So you won't hear
    *  anything unless you use the connect() method.<br/>
    *
+   *  Certain browsers limit access to the user's microphone. For example,
+   *  Chrome only allows access from localhost and over https. For this reason,
+   *  you may want to include an errorCallback—a function that is called in case
+   *  the browser won't provide mic access.
+   *
    *  @method start
    *  @param {Function} successCallback Name of a function to call on
    *                                    success.
@@ -95,6 +101,9 @@ define(function (require) {
    */
   p5.AudioIn.prototype.start = function(successCallback, errorCallback) {
     var self = this;
+
+    // if stream was already started...
+
 
     // if _gotSources() i.e. developers determine which source to use
     if (p5sound.inputSources[self.currentSource]) {
