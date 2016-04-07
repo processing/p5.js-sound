@@ -357,7 +357,6 @@ define(function (require) {
       var now = p5sound.audiocontext.currentTime;
       this.stop(now);
       this.disconnect();
-      this.oscillator.disconnect();
       this.panner = null;
       this.oscillator = null;
     }
