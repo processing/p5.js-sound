@@ -85,8 +85,8 @@ define(function (require) {
     this.phaseAmount = undefined;
     this.oscillator = p5sound.audiocontext.createOscillator();
     this.f = freq || 440.0; // frequency
-    this.oscillator.frequency.setValueAtTime(this.f, p5sound.audiocontext.currentTime);
     this.oscillator.type = type || 'sine';
+    this.oscillator.frequency.setValueAtTime(this.f, p5sound.audiocontext.currentTime);
 
     var o = this.oscillator;
 
@@ -129,6 +129,10 @@ define(function (require) {
     if (!this.started){
       var freq = f || this.f;
       var type = this.oscillator.type;
+
+      // set old osc free to be garbage collected (memory)
+      this.oscillator = undefined;
+
       // var detune = this.oscillator.frequency.value;
       this.oscillator = p5sound.audiocontext.createOscillator();
       this.oscillator.frequency.exponentialRampToValueAtTime(Math.abs(freq), p5sound.audiocontext.currentTime);
@@ -164,7 +168,6 @@ define(function (require) {
       var now = p5sound.audiocontext.currentTime;
       this.oscillator.stop(t + now);
       this.oscillator.disconnect();
-      this.oscillator = undefined;
       this.started = false;
     }
   };
