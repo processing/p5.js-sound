@@ -16,10 +16,15 @@ define(function (require) {
    *  feedback.</p> 
    *
    *  <p><em>Note: This uses the <a href="http://caniuse.com/stream">getUserMedia/
-   *  Stream</a> API, which is not supported by certain browsers.</em></p>
+   *  Stream</a> API, which is not supported by certain browsers. Access in Chrome browser
+   *  is limited to localhost and https, but access over http may be limited.</em></p>
    *
    *  @class p5.AudioIn
    *  @constructor
+   *  @param {Function} [errorCallback] A function to call if there is an error
+   *                                    accessing the AudioIn. For example,
+   *                                    Safari and iOS devices do not
+   *                                    currently allow microphone access.
    *  @return {Object} AudioIn
    *  @example
    *  <div><code>
@@ -35,7 +40,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.AudioIn = function() {
+  p5.AudioIn = function(errorCallback) {
     // set up audio input
     this.input = p5sound.audiocontext.createGain();
     this.output = p5sound.audiocontext.createGain();
@@ -59,7 +64,11 @@ define(function (require) {
 
     // Some browsers let developer determine their input sources
     if (typeof window.MediaStreamTrack === 'undefined'){
-      window.alert('This browser does not support MediaStreamTrack');
+      if (errorCallback) {
+        errorCallback();
+      } else {
+        window.alert('This browser does not support AudioIn');        
+      }
     } else if (typeof window.MediaStreamTrack.getSources === 'function') {
       // Chrome supports getSources to list inputs. Dev picks default
       window.MediaStreamTrack.getSources(this._gotSources);
@@ -77,6 +86,11 @@ define(function (require) {
    *  is not connected to p5.sound's output. So you won't hear
    *  anything unless you use the connect() method.<br/>
    *
+   *  Certain browsers limit access to the user's microphone. For example,
+   *  Chrome only allows access from localhost and over https. For this reason,
+   *  you may want to include an errorCallback—a function that is called in case
+   *  the browser won't provide mic access.
+   *
    *  @method start
    *  @param {Function} successCallback Name of a function to call on
    *                                    success.
@@ -87,6 +101,9 @@ define(function (require) {
    */
   p5.AudioIn.prototype.start = function(successCallback, errorCallback) {
     var self = this;
+
+    // if stream was already started...
+
 
     // if _gotSources() i.e. developers determine which source to use
     if (p5sound.inputSources[self.currentSource]) {
@@ -116,29 +133,31 @@ define(function (require) {
       // Only get the audio stream.
       window.navigator.getUserMedia( {'audio':true},
         this._onStream = function(stream) {
-        self.stream = stream;
-        self.enabled = true;
-        // Wrap a MediaStreamSourceNode around the live input
-        self.mediaStream = p5sound.audiocontext.createMediaStreamSource(stream);
-        self.mediaStream.connect(self.output);
-        // only send to the Amplitude reader, so we can see it but not hear it.
-        self.amplitude.setInput(self.output);
-        if (successCallback) successCallback();
-      }, this._onStreamError = function(e) {
-        if (errorCallback) errorCallback(e);
-        else console.error(e);
-      });
+          self.stream = stream;
+          self.enabled = true;
+          // Wrap a MediaStreamSourceNode around the live input
+          self.mediaStream = p5sound.audiocontext.createMediaStreamSource(stream);
+          self.mediaStream.connect(self.output);
+          // only send to the Amplitude reader, so we can see it but not hear it.
+          self.amplitude.setInput(self.output);
+          if (successCallback) successCallback();
+        }, this._onStreamError = function(e) {
+          if (errorCallback) errorCallback(e);
+          else console.error(e);
+        });
     }
   };
 
   /**
-   *  Turn the AudioIn off. If the AudioIn is stopped, it cannot getLevel().<br/>
+   *  Turn the AudioIn off. If the AudioIn is stopped, it cannot getLevel().
+   *  If re-starting, the user may be prompted for permission access.
    *
    *  @method stop
    */
   p5.AudioIn.prototype.stop = function() {
     if (this.stream) {
-      this.stream.stop();
+      // assume only one track
+      this.stream.getTracks()[0].stop();
     }
   };
 
