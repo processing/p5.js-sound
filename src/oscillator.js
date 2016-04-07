@@ -131,7 +131,10 @@ define(function (require) {
       var type = this.oscillator.type;
 
       // set old osc free to be garbage collected (memory)
-      this.oscillator = undefined;
+      if (this.oscillator) {
+        this.oscillator.disconnect();
+        this.oscillator = undefined;
+      }
 
       // var detune = this.oscillator.frequency.value;
       this.oscillator = p5sound.audiocontext.createOscillator();
@@ -167,7 +170,6 @@ define(function (require) {
       var t = time || 0;
       var now = p5sound.audiocontext.currentTime;
       this.oscillator.stop(t + now);
-      this.oscillator.disconnect();
       this.started = false;
     }
   };
