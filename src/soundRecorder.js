@@ -252,8 +252,16 @@ define(function (require) {
    *  @param  {String} name      name of the resulting .wav file.
    */
   p5.prototype.saveSound = function(soundFile, name) {
-    var leftChannel = soundFile.buffer.getChannelData(0);
-    var rightChannel = soundFile.buffer.getChannelData(1);
+    var leftChannel, rightChannel;
+    leftChannel = soundFile.buffer.getChannelData(0);
+
+    // handle mono files
+    if (soundFile.buffer.numberOfChannels > 1) {
+      rightChannel = soundFile.buffer.getChannelData(1);
+    } else {
+      rightChannel = leftChannel;
+    }
+
     var interleaved = interleave(leftChannel,rightChannel);
 
     // create the buffer and view to create the .WAV file
