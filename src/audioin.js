@@ -124,29 +124,31 @@ define(function (require) {
       // Only get the audio stream.
       window.navigator.getUserMedia( {'audio':true},
         this._onStream = function(stream) {
-        self.stream = stream;
-        self.enabled = true;
-        // Wrap a MediaStreamSourceNode around the live input
-        self.mediaStream = p5sound.audiocontext.createMediaStreamSource(stream);
-        self.mediaStream.connect(self.output);
-        // only send to the Amplitude reader, so we can see it but not hear it.
-        self.amplitude.setInput(self.output);
-        if (successCallback) successCallback();
-      }, this._onStreamError = function(e) {
-        if (errorCallback) errorCallback(e);
-        else console.error(e);
-      });
+          self.stream = stream;
+          self.enabled = true;
+          // Wrap a MediaStreamSourceNode around the live input
+          self.mediaStream = p5sound.audiocontext.createMediaStreamSource(stream);
+          self.mediaStream.connect(self.output);
+          // only send to the Amplitude reader, so we can see it but not hear it.
+          self.amplitude.setInput(self.output);
+          if (successCallback) successCallback();
+        }, this._onStreamError = function(e) {
+          if (errorCallback) errorCallback(e);
+          else console.error(e);
+        });
     }
   };
 
   /**
-   *  Turn the AudioIn off. If the AudioIn is stopped, it cannot getLevel().<br/>
+   *  Turn the AudioIn off. If the AudioIn is stopped, it cannot getLevel().
+   *  If re-starting, the user may be prompted for permission access.
    *
    *  @method stop
    */
   p5.AudioIn.prototype.stop = function() {
     if (this.stream) {
-      this.stream.stop();
+      // assume only one track
+      this.stream.getTracks()[0].stop();
     }
   };
 
