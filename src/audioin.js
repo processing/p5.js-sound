@@ -20,6 +20,10 @@ define(function (require) {
    *
    *  @class p5.AudioIn
    *  @constructor
+   *  @param {Function} [errorCallback] A function to call if there is an error
+   *                                    accessing the AudioIn. For example,
+   *                                    Safari and iOS devices do not
+   *                                    currently allow microphone access.
    *  @return {Object} AudioIn
    *  @example
    *  <div><code>
@@ -35,7 +39,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.AudioIn = function() {
+  p5.AudioIn = function(errorCallback) {
     // set up audio input
     this.input = p5sound.audiocontext.createGain();
     this.output = p5sound.audiocontext.createGain();
@@ -59,7 +63,11 @@ define(function (require) {
 
     // Some browsers let developer determine their input sources
     if (typeof window.MediaStreamTrack === 'undefined'){
-      window.alert('This browser does not support MediaStreamTrack');
+      if (errorCallback) {
+        errorCallback();
+      } else {
+        window.alert('This browser does not support AudioIn');        
+      }
     } else if (typeof window.MediaStreamTrack.getSources === 'function') {
       // Chrome supports getSources to list inputs. Dev picks default
       window.MediaStreamTrack.getSources(this._gotSources);
