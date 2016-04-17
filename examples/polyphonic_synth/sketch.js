@@ -1,16 +1,9 @@
-var psynthDetune, psynthSquare; 
-var square = true;
+var psynth; 
+var keys = {S:60,E:61,D:62,R:63,F:64,G:65,Y:66,H:67,U:68,J:69,I:70,K:71,L:72}
 
 function setup() {
-
   frameRate(25);
-
-  // create a polyphonic synth with 15 voices.
-  // this synth will use the DetuneOsc synth definition below
-  psynthDetune = new p5.PolySynth(DetunedOsc); 
-  // this synth will use the SquareVoice definition below
-  psynthSquare = new p5.PolySynth(SquareVoice); 
-  
+  psynth = new p5.PolySynth(Simple); 
 }
 
 function draw() {
@@ -24,80 +17,54 @@ function mousePressed(){
   // play a note when mouse is pressed
   var note = int(map(mouseX,0,width,60,84)); // a midi note mapped to x-axis
   var length = map(mouseY,0,300,0,6); // a note length parameter mapped to y-axis.
-  
-  if(square){
-    // set the enveloppe with the new note length
-  	psynthSquare.noteADSR(note,0.21,0.25,1,0.25);
-    // set the note to be played
-    psynthSquare.play(note,0,length); // play it !
-  }
-  else {
-    psynthDetune.noteADSR(note, 0.21,0.25,1.0,0.25);
-    // set the detune parameters randomely
-    var d = int(random(1,12));
-    psynthDetune.setParams({
-                            detune: d ,
-                            osctype: 'triangle'
-                          });
-    // set the note to be played
-    psynthDetune.play(note,0,length); // play it !
-  }   
+  // set the enveloppe with the new note length
+  psynth.noteADSR(note,0.21,1,1,5);
+  psynth.noteParams(note,{osctype: 'square'});
+  // set the note to be played
+   psynth.play(note,0.05,0,length); // play it !  
 }
 
 function keyPressed(){
-  square = !square;
+  if (keys[key]){
+    note = keys[key]
+    psynth.noteParams(note,{osctype: 'sine'});
+    psynth.noteAttack(note,1);
+  }
+}
+
+function keyReleased(){
+  if (keys[key]){
+    note = keys[key]
+    psynth.noteRelease(note);
+  }  
 }
 
 
 // A typical synth class which inherits from AudioVoice class
-function SquareVoice(){
+function Simple(){
 
   p5.MonoSynth.call(this); // inherit from AudioVoice class
   // create a dsp graph
-  this.osctype = 'square';
+  this.osctype = 'sine';
   this.oscillator = new p5.Oscillator(this.note,this.osctype);
   this.oscillator.disconnect();
   this.oscillator.start();
   // connect the dsp graph to the filtered output of the audiovoice
   this.oscillator.connect(this.synthOut);
-  
-}
-// make our new synth available for our sketch
-SquareVoice.prototype = Object.create(p5.MonoSynth.prototype);  // browsers support ECMAScript 5 ! warning for compatibility with older browsers
-SquareVoice.prototype.constructor = SquareVoice;
 
-
-// A second one : a little more complex
-function DetunedOsc(){
-
-  p5.MonoSynth.call(this);
-  this.osctype = 'sine';
-  this.detune = 5;
-
-  this.oscOne = new p5.Oscillator(midiToFreq(this.note),this.osctype); 
-  this.oscTwo = new p5.Oscillator(midiToFreq(this.note)-this.detune,this.osctype);
-  this.oscOne.disconnect();
-  this.oscTwo.disconnect();
-  this.oscOne.start();
-  this.oscTwo.start();
-
-  this.oscOne.connect(this.synthOut);
-  this.oscTwo.connect(this.synthOut);
-
-  this.play = function(note, secondsFromNow, susTime){
-    this.oscOne.freq( midiToFreq(note-this.detune) );
-    this.oscOne.freq( midiToFreq(note) );
-    this.env.play(this.synthOut, secondsFromNow, susTime);
+  this._setNote = function(note){
+     this.oscillator.freq( midiToFreq(note) );
   }
 
   this.setParams = function(params){
-      this.detune = params.detune;
-      this.osctype = params.osctype;
+    this.osctype = params.osctype;
+    this.oscillator.setType(this.osctype);
   }
+  
 }
-
-DetunedOsc.prototype = Object.create(p5.MonoSynth.prototype); 
-DetunedOsc.prototype.constructor = DetunedOsc;
+// make our new synth available for our sketch
+Simple.prototype = Object.create(p5.MonoSynth.prototype);  // browsers support ECMAScript 5 ! warning for compatibility with older browsers
+Simple.prototype.constructor = Simple;
 
 
 /////////////////////////////////////////////////////////////////
@@ -108,42 +75,31 @@ function AdditiveSynth(){
   this.harmonics = [1,2,4,6,8];
   this.note = 60;
 
-  this.osc1 = new p5.Oscillator(midiToFreq(this.note),this.osctype); 
-  this.osc2 = new p5.Oscillator(midiToFreq(this.note),this.osctype); 
-  this.osc3 = new p5.Oscillator(midiToFreq(this.note),this.osctype); 
-  this.osc4 = new p5.Oscillator(midiToFreq(this.note),this.osctype); 
-  this.osc5 = new p5.Oscillator(midiToFreq(this.note),this.osctype); 
+  this.oscbank =[];
+  for (var i = 0 ; i < this.harmonics.length; i++){
+    this.oscbank.push(new p5.Oscillator(midiToFreq(this.note),this.osctype) );
+  }
 
-  this.osc1.disconnect(); 
-  this.osc2.disconnect(); 
-  this.osc3.disconnect(); 
-  this.osc4.disconnect(); 
-  this.osc5.disconnect(); 
+  for (var i = 0 ; i < this.harmonics.length ; i++){
+    this.oscbank[i].disconnect();
+    this.oscbank[i].start();
+    this.oscbank[i].connect(this.synthOut);
+  }
 
-  this.osc1.start(); 
-  this.osc2.start(); 
-  this.osc3.start(); 
-  this.osc4.start(); 
-  this.osc5.start(); 
-
-  this.osc1.connect(this.synthOut);
-  this.osc2.connect(this.synthOut);
-  this.osc3.connect(this.synthOut);
-  this.osc4.connect(this.synthOut);
-  this.osc5.connect(this.synthOut);
-
-  this.play = function(note, secondsFromNow, susTime){
-    this.osc1.freq(midiToFreq(note+this.harmonics[0]*12)); 
-    this.osc2.freq(midiToFreq(note+this.harmonics[1]*12)); 
-    this.osc3.freq(midiToFreq(note+this.harmonics[2]*12)); 
-    this.osc4.freq(midiToFreq(note+this.harmonics[3]*12)); 
-    this.osc5.freq(midiToFreq(note+this.harmonics[4]*12)); 
-    this.env.play(this.synthOut, secondsFromNow, susTime);
+  this._setNote = function(note){
+    for (var i = 0 ; i < this.harmonics.length ; i++){
+      this.oscbank[i].freq(midiToFreq(note+this.harmonics[i]*12)); 
+    }
   }
 
   this.setParams = function(params){
-      this.harmonics = params.harmonics;
+    if(params.harmonics != null) this.harmonics = params.harmonics;
+    if (params.osctype != null) {
       this.osctype = params.osctype;
+      for (var i = 0 ; i < this.harmonics.length ; i++){
+        this.oscbank[i].setType(params.osctype);
+      }
+    }  
   }
 }
 AdditiveSynth.prototype = Object.create(p5.MonoSynth.prototype); 
