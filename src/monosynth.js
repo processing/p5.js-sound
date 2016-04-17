@@ -12,62 +12,7 @@ define(function (require) {
     *
     *  @class p5.MonoSynth
     *  @constructor
-    *  @example 
-    *  <div><code>
-    *   var psynthSquare; 
-    *   
-    *   function setup() {
-    *   
-    *     frameRate(25);
-    *   
-    *     // create a polyphonic synth with 15 voices.
-    *     // this synth will use the SquareVoice definition below
-    *     psynthSquare = new p5.PolySynth(15,SquareVoice); 
-    *     
-    *   }
-    *   
-    *   function draw() {
-    *     background(0);
-    *     fill(255);  
-    *     textAlign(CENTER,CENTER);
-    *     text("Click Me !",width/2,height/2);
-    *   }
-    *   
-    *   function mousePressed(){
-    *     // play a note when mouse is pressed
-    *     var note = int(map(mouseX,0,width,60,84)); // a midi note mapped to x-axis
-    *     var length = map(mouseY,0,300,0,5); // a note length parameter mapped to y-axis.
-    *   
-    *     // set the enveloppe with the new note length
-    *     psynthSquare.setADSR(0.021,0.025,length,0.025);
-    *     // set the note to be played
-    *     psynthSquare.setNote(note);
-    *     psynthSquare.play(); // play it !
-    *     
-    *   }
-    *   
-    *   
-    *   // A typical synth class which inherits from MonoSynth class
-    *   function SquareVoice(){
-    *   
-    *     p5.MonoSynth.call(this); // inherit from MonoSynth class
-    *     // create a dsp graph
-    *     this.osctype = 'square';
-    *     this.oscillator = new p5.Oscillator(this.note,this.osctype);
-    *     this.oscillator.disconnect();
-    *     this.oscillator.start();
-    *     // connect the dsp graph to the filtered output of the audiovoice
-    *     this.oscillator.connect(this.synthOut);
-    *     // override the set note function
-    *     this.setNote = function(note){
-    *       this.note = note;
-    *       this.oscillator.freq(midiToFreq(note));
-    *     } 
-    *   }
-    *   // make our new synth available for our sketch when calling polysynth constructor
-    *   SquareVoice.prototype = Object.create(p5.MonoSynth.prototype);  // browsers support ECMAScript 5 ! warning for compatibility with older browsers
-    *   SquareVoice.prototype.constructor = SquareVoice;
-    * </code></div>
+    *  
     **/
 
 p5.MonoSynth = function (){
@@ -91,6 +36,11 @@ p5.MonoSynth = function (){
   this.env.setInput(this.synthOut);
 
   this.synthOut.connect(p5.soundOut);
+
+
+  this._setNote= function(note){
+
+  }
   p5sound.soundArray.push(this);
 }
 
@@ -100,13 +50,14 @@ p5.MonoSynth = function (){
    *  
    *  @method playNote 
    *  @param  {Number} [note] midi note to play (ranging from 0 to 127 - 60 being a middle C)
+   *  @param  {Number} [velocity] velocity of the note to play (ranging from 0 to 1)
    *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
    *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
    *  
    */  
 
 p5.MonoSynth.prototype.play = function (note, secondsFromNow, susTime){
-  this.oscillator.freq( midiToFreq(note) );
+  this._setNote(note);
   this.env.play(this.synthOut, secondsFromNow, susTime);
 }
 
