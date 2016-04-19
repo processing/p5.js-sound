@@ -44,6 +44,10 @@ function keyReleased(){
 function Simple(){
 
   p5.MonoSynth.call(this); // inherit from AudioVoice class
+
+  // dispose of default oscillator
+  this.oscillator.dispose();
+
   // create a dsp graph
   this.osctype = 'sine';
   this.oscillator = new p5.Oscillator(this.note,this.osctype);
