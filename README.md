@@ -9,9 +9,9 @@ p5.sound brings the [Processing](http://processing.org) approach to [Web Audio](
 
  Examples
 ========
-#### [>> p5js.org/learn](http://p5js.org/tutorials/)  ***<-- interactive examples!***
+#### [>> p5js.org/learn](http://p5js.org/examples/)  ***<-- interactive examples!***
 
-#### [>> examples on github](https://github.com/therewasaguy/p5.sound/tree/master/examples)
+#### [>> examples on github](http://processing.github.io/p5.js-sound/)
 
 
 Docs
