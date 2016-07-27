@@ -776,7 +776,7 @@ define(function (require) {
    *  @method rate
    *  @param {Number} [playbackRate]     Set the playback rate. 1.0 is normal,
    *                                     .5 is half-speed, 2.0 is twice as fast.
-   *                                     Must be greater than zero.
+   *                                     Values less than zero play backwards.
    *  @example
    *  <div><code>
    *  var song;
