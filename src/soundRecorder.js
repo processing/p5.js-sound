@@ -272,7 +272,7 @@ define(function (require) {
     // check spec at: https://ccrma.stanford.edu/courses/422/projects/WaveFormat/
     // RIFF chunk descriptor
     writeUTFBytes(view, 0, 'RIFF');
-    view.setUint32(4, 44 + interleaved.length * 2, true);
+    view.setUint32(4, 36 + interleaved.length * 2, true);
     writeUTFBytes(view, 8, 'WAVE');
     // FMT sub-chunk
     writeUTFBytes(view, 12, 'fmt ');
