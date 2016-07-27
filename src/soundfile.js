@@ -35,9 +35,12 @@ define(function (require) {
    *                                     about what went wrong.
    *  @param {Function} [whileLoadingCallback]   Name of a function to call while file
    *                                             is loading. That function will
-   *                                             receive percentage loaded
-   *                                             (between 0 and 1) as a
-   *                                             parameter.
+   *                                             receive progress of the request to
+   *                                             load the sound file
+   *                                             (between 0 and 1) as its first
+   *                                             parameter. This progress
+   *                                             does not account for the additional
+   *                                             time needed to decode the audio data.
    *                                             
    *  @return {Object}    p5.SoundFile Object
    *  @example 
@@ -281,8 +284,8 @@ define(function (require) {
   // TO DO: use this method to create a loading bar that shows progress during file upload/decode.
   p5.SoundFile.prototype._updateProgress = function(evt) {
     if (evt.lengthComputable) {
-      var percentComplete = Math.log(evt.loaded / evt.total * 9.9);
-      this._whileLoading(percentComplete);
+      var percentComplete = evt.loaded / evt.total * .99;
+      this._whileLoading(percentComplete, evt);
       // ...
     } else {
       // Unable to compute progress information since the total size is unknown
