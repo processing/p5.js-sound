@@ -152,6 +152,41 @@ define(function (require) {
    *                                 decayLevel = sustainLevel)
    *  @param {Number} releaseTime   Release Time (in seconds)
    *  @param {Number} releaseLevel  Amplitude
+   *  @example
+   *  <div><code>
+   *  var t1 = 0.1; // attack time in seconds
+   *  var l1 = 0.7; // attack level 0.0 to 1.0
+   *  var t2 = 0.3; // decay time in seconds
+   *  var l2 = 0.1; // decay level  0.0 to 1.0
+   *  var t3 = 0.2; // sustain time in seconds
+   *  var l3 = dL; // sustain level  0.0 to 1.0
+   *  // release level defaults to zero
+   *
+   *  var env;
+   *  var triOsc;
+   *
+   *  function setup() {
+   *    background(0);
+   *    noStroke();
+   *    fill(255);
+   *    textAlign(CENTER);
+   *    text('click to play', width/2, height/2);
+   *
+   *    env = new p5.Env(t1, l1, t2, l2, t3, l3);
+   *    triOsc = new p5.Oscillator('triangle');
+   *    triOsc.amp(env); // give the env control of the triOsc's amp
+   *    triOsc.start();
+   *  }
+   *
+   *  // mouseClick triggers envelope if over canvas
+   *  function mouseClicked() {
+   *    // is mouse over canvas?
+   *    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
+   *      env.play(triOsc);
+   *    }
+   *  }
+   *  </code></div>
+   *
    */
   p5.Env.prototype.set = function(t1, l1, t2, l2, t3, l3){
     this.aTime = t1;
