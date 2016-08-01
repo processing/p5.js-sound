@@ -525,6 +525,7 @@ define(function (require) {
    *      soundFile.play();
    *      background(0, 255, 0);
    *    }
+   *  }
    *  </code>
    *  </div>
    */
