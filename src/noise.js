@@ -13,11 +13,20 @@ define(function (require) {
    *  @return {Object}    Noise Object
    */
   p5.Noise = function(type){
+    var assignType;
     p5.Oscillator.call(this);
     delete this.f;
     delete this.freq;
     delete this.oscillator;
-    this.buffer = _whiteNoise;
+
+    if (type === "brown") {
+      assignType = _brownNoise;
+    } else if (type === "pink") {
+      assignType = _pinkNoise;
+    } else {
+      assignType = _whiteNoise;
+    }
+    this.buffer = assignType;    
   };
 
   p5.Noise.prototype = Object.create(p5.Oscillator.prototype);
@@ -147,24 +156,24 @@ define(function (require) {
   /**
    *  Set the amplitude of the noise between 0 and 1.0. Or,
    *  modulate amplitude with an audio signal such as an oscillator.
-   *  
+   *
    *  @param  {Number|Object} volume amplitude between 0 and 1.0
    *                                     or modulating signal/oscillator
-   *  @param {Number} [rampTime] create a fade that lasts rampTime 
+   *  @param {Number} [rampTime] create a fade that lasts rampTime
    *  @param {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
    */
 
   /**
    *  Send output to a p5.sound or web audio object
-   *  
+   *
    *  @method  connect
    *  @param  {Object} unit
    */
 
   /**
    *  Disconnect all output.
-   *  
+   *
    *  @method disconnect
    */
 
