@@ -15,7 +15,7 @@ define(function (require) {
     //put a hard limiter on the output
     this.limiter = audiocontext.createDynamicsCompressor();
     this.limiter.threshold.value = 0;
-    this.limiter.ratio.value = 100;
+    this.limiter.ratio.value = 20;
 
     this.audiocontext = audiocontext;
 
@@ -46,10 +46,9 @@ define(function (require) {
 
     // file extensions to search for
     this.extensions = [];
-
   };
 
-   
+
 
 
   // create a single instance of the p5Sound / master output for use within this sketch
@@ -57,9 +56,9 @@ define(function (require) {
 
 
    /**
-   * Returns a number representing the master amplitude (volume) for sound 
+   * Returns a number representing the master amplitude (volume) for sound
    * in this sketch.
-   * 
+   *
    * @method getMasterVolume
    * @return {Number} Master amplitude (volume) for sound in this sketch.
    *                  Should be between 0.0 (silence) and 1.0.
@@ -114,10 +113,10 @@ define(function (require) {
 
   /**
    *  p5.soundOut is the p5.sound master output. It sends output to
-   *  the destination of this window's web audio context. It contains 
+   *  the destination of this window's web audio context. It contains
    *  Web Audio API nodes including a dyanmicsCompressor (<code>.limiter</code>),
    *  and Gain Nodes for <code>.input</code> and <code>.output</code>.
-   *  
+   *
    *  @property p5.soundOut
    *  @type {Object}
    */
@@ -127,7 +126,7 @@ define(function (require) {
    *  a silent connection to the DesinationNode
    *  which will ensure that anything connected to it
    *  will not be garbage collected
-   *  
+   *
    *  @private
    */
   p5.soundOut._silentNode = p5sound.audiocontext.createGain();
@@ -136,5 +135,4 @@ define(function (require) {
 
 
   return p5sound;
-  });
-
+});
