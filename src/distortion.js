@@ -3,7 +3,6 @@ define(function (require) {
 
   var p5sound = require('master');
 
-
   /*
    * Adapted from [Kevin Ennis on StackOverflow](http://stackoverflow.com/questions/22312841/waveshaper-node-in-webaudio-how-to-emulate-distortion)
    */
@@ -58,6 +57,7 @@ define(function (require) {
      */
      this.waveShaperNode = this.ac.createWaveShaper();
 
+     this.amount = amount;
      this.waveShaperNode.curve = makeDistortionCurve(amount);
      this.waveShaperNode.oversample = oversample;
 
@@ -84,11 +84,20 @@ define(function (require) {
    */
   p5.Distortion.prototype.set = function(amount, oversample) {
     if (amount) {
+      this.amount = amount;
       this.waveShaperNode.curve = makeDistortionCurve(amount);
     }
     if (oversample) {
       this.waveShaperNode.oversample = oversample;
     }
+  }
+
+  p5.Distortion.prototype.getAmount = function() {
+    return this.amount;
+  }
+
+  p5.Distortion.prototype.getOversample = function() {
+    return this.waveShaperNode.oversample;
   }
 
   /**
@@ -115,8 +124,7 @@ define(function (require) {
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
-    this.waveShaperNode.curve = null;
-    this.waveShaperNode.oversample = null;
+    this.waveShaperNode = null;
 
     if (typeof this.output !== 'undefined') {
       this.output.disconnect();
