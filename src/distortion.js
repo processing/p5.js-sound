@@ -48,7 +48,7 @@ define(function (require) {
     this.output = this.ac.createGain();
 
     /**
-     *  The p5.Filter is built with a
+     *  The p5.Distortion is built with a
      *  <a href="http://www.w3.org/TR/webaudio/#WaveShaperNode">
      *  Web Audio WaveShaper Node</a>.
      *
