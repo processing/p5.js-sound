@@ -120,6 +120,7 @@ module.exports = function(grunt) {
             'delay': 'src/delay',
             'filter': 'src/filter',
             'reverb': 'src/reverb',
+            'distortion': 'src/distortion',
             'looper': 'src/looper',
             'soundRecorder': 'src/soundRecorder',
             'signal': 'src/signal',

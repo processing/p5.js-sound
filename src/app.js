@@ -24,6 +24,7 @@ define(function (require) {
   require('soundRecorder');
   require('peakdetect');
   require('gain');
+  require('distortion');
 
   return p5SOUND;
 
