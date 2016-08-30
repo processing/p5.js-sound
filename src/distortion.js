@@ -25,15 +25,15 @@ define(function (require) {
    *
    * @class p5.Distortion
    * @constructor
-   * @param {Number} [amount=400] Unbounded distortion amount.
-   *                                Normal values range from 0-2000.
+   * @param {Number} [amount=0.25] Unbounded distortion amount.
+   *                                Normal values range from 0-1.
    * @param {String} [oversample='none'] 'none', '2x', or '4x'.
    *
    * @return {Object}   Distortion object
    */
   p5.Distortion = function(amount, oversample) {
     if (typeof amount === 'undefined') {
-      amount = 400;
+      amount = 0.25;
     } if (typeof amount !== 'number') {
       throw new Error('amount must be a number');
     } if (typeof oversample === 'undefined') {
@@ -42,6 +42,7 @@ define(function (require) {
       throw new Error('oversample must be a String')
     }
 
+    var curveAmount = map(amount, 0.0, 1.0, 0, 2000);
     this.ac = p5sound.audiocontext;
 
     this.input = this.ac.createGain();
@@ -57,8 +58,8 @@ define(function (require) {
      */
      this.waveShaperNode = this.ac.createWaveShaper();
 
-     this.amount = amount;
-     this.waveShaperNode.curve = makeDistortionCurve(amount);
+     this.amount = curveAmount;
+     this.waveShaperNode.curve = makeDistortionCurve(curveAmount);
      this.waveShaperNode.oversample = oversample;
 
      this.input.connect(this.waveShaperNode);
@@ -84,8 +85,9 @@ define(function (require) {
    */
   p5.Distortion.prototype.set = function(amount, oversample) {
     if (amount) {
-      this.amount = amount;
-      this.waveShaperNode.curve = makeDistortionCurve(amount);
+      var curveAmount = map(amount, 0.0, 1.0, 0, 2000);
+      this.amount = curveAmount;
+      this.waveShaperNode.curve = makeDistortionCurve(curveAmount);
     }
     if (oversample) {
       this.waveShaperNode.oversample = oversample;

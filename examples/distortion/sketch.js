@@ -24,7 +24,7 @@ function setup() {
   osc.disconnect(); // Disconnect from output to process through distortion
 
   // Create a waveshaper distortion with 2x oversampling
-  distortion = new p5.Distortion(2000, '4x');
+  distortion = new p5.Distortion(1, '4x');
   osc.connect(distortion);
 }
 
