@@ -21,7 +21,9 @@ define(function (require) {
   }
 
   /**
-   * A waveshaper Distortion effect
+   * A Distortion effect created with a Waveshaper Node,
+   * with an approach adapted from
+   * [Kevin Ennis](http://stackoverflow.com/questions/22312841/waveshaper-node-in-webaudio-how-to-emulate-distortion)
    *
    * @class p5.Distortion
    * @constructor
@@ -42,7 +44,7 @@ define(function (require) {
       throw new Error('oversample must be a String')
     }
 
-    var curveAmount = map(amount, 0.0, 1.0, 0, 2000);
+    var curveAmount = p5.prototype.map(amount, 0.0, 1.0, 0, 2000);
     this.ac = p5sound.audiocontext;
 
     this.input = this.ac.createGain();
@@ -77,15 +79,17 @@ define(function (require) {
   }
 
   /**
-   * Set the waveform type of the waveshaper. Types include:
-   * 'sine' (default), 'triangle', 'sawtooh', 'square'.
+   * Set the amount and oversample of the waveshaper distortion.
    *
    * @method setType
+   * @param {Number} [amount=0.25] Unbounded distortion amount.
+   *                                Normal values range from 0-1.
+   * @param {String} [oversample='none'] 'none', '2x', or '4x'.
    * @param {String}
    */
   p5.Distortion.prototype.set = function(amount, oversample) {
     if (amount) {
-      var curveAmount = map(amount, 0.0, 1.0, 0, 2000);
+      var curveAmount = p5.prototype.map(amount, 0.0, 1.0, 0, 2000);
       this.amount = curveAmount;
       this.waveShaperNode.curve = makeDistortionCurve(curveAmount);
     }
@@ -94,10 +98,22 @@ define(function (require) {
     }
   }
 
+  /**
+   *  Return the distortion amount, typically between 0-1.
+   *  
+   *  @method  getAmount
+   *  @return {Number} Unbounded distortion amount.
+   *                   Normal values range from 0-1.
+   */
   p5.Distortion.prototype.getAmount = function() {
     return this.amount;
   }
 
+  /**
+   *  Return the oversampling.
+   *  
+   *  @return {String} Oversample can either be 'none', '2x', or '4x'.
+   */
   p5.Distortion.prototype.getOversample = function() {
     return this.waveShaperNode.oversample;
   }
@@ -126,6 +142,9 @@ define(function (require) {
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
+    this.input.disconnect();
+    this.waveShaperNode.disconnect();
+    this.input = null;
     this.waveShaperNode = null;
 
     if (typeof this.output !== 'undefined') {
