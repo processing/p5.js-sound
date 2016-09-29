@@ -342,6 +342,9 @@ define(function (require) {
         this._counterNode.stop(time);
       }
 
+      // set playback rate
+      if (rate) this.playbackRate = rate;
+
       // make a new source and counter. They are automatically assigned playbackRate and buffer
       this.bufferSourceNode = this._initSourceNode();
 
@@ -379,11 +382,6 @@ define(function (require) {
 
       this.bufferSourceNode.connect(this.output); 
       this.output.gain.value = a;
-
-      // not necessary with _initBufferSource ?
-      // this.bufferSourceNode.playbackRate.cancelScheduledValues(now);
-      rate = rate || Math.abs(this.playbackRate);
-      this.bufferSourceNode.playbackRate.setValueAtTime(rate, now);
 
       // if it was paused, play at the pause position
       if (this._paused){
@@ -1233,7 +1231,7 @@ define(function (require) {
     var now = ac.currentTime;
     var bufferSourceNode = ac.createBufferSource();
     bufferSourceNode.buffer = self.buffer;
-    bufferSourceNode.playbackRate.setValueAtTime(self.playbackRate, now);
+    bufferSourceNode.playbackRate.value = self.playbackRate;
     return bufferSourceNode;
   };
 
