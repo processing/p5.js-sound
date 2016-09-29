@@ -17,6 +17,10 @@
   //////////////////////////////////////////////////
 */
 
+* {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 #lockup > a {
   position: relative;
   display: block;
@@ -890,11 +894,11 @@ ul.statement-list {
     /* while local dev */
     @font-face{
     font-family:"AvenirNextLTW01-Medium";
-    src:url("f/AvenirNextLTW01-Medium.eot?#iefix");
-    src:url("f/AvenirNextLTW01-Medium.eot?#iefix") format("eot"),
-    url("f/AvenirNextLTW01-Medium.woff") format("woff"),
-    url("f/AvenirNextLTW01-Medium.ttf") format("truetype"),
-    url("f/AvenirNextLTW01-Medium.svg#a89d6ad1-a04f-4a8f-b140-e55478dbea80") format("svg");
+    // src:url("f/AvenirNextLTW01-Medium.eot?#iefix");
+    // src:url("f/AvenirNextLTW01-Medium.eot?#iefix") format("eot"),
+    // url("f/AvenirNextLTW01-Medium.woff") format("woff"),
+    // url("f/AvenirNextLTW01-Medium.ttf") format("truetype"),
+    // url("f/AvenirNextLTW01-Medium.svg#a89d6ad1-a04f-4a8f-b140-e55478dbea80") format("svg");
     font-weight: normal;
     font-style: normal;
     }
@@ -902,11 +906,11 @@ ul.statement-list {
     /* always */
     @font-face {
     font-family: 'inconsolatamedium';
-    src: url('f/inconsolata.eot');
-    src: url('f/inconsolata.eot?#iefix') format('embedded-opentype'),
-         url('f/inconsolata.woff') format('woff'),
-         url('f/inconsolata.ttf') format('truetype'),
-         url('f/inconsolata.svg#inconsolatamedium') format('svg');
+    // src: url('f/inconsolata.eot');
+    // src: url('f/inconsolata.eot?#iefix') format('embedded-opentype'),
+    //      url('f/inconsolata.woff') format('woff'),
+    //      url('f/inconsolata.ttf') format('truetype'),
+    //      url('f/inconsolata.svg#inconsolatamedium') format('svg');
     font-weight: normal;
     font-style: normal;
     }
