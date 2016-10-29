@@ -369,9 +369,7 @@ define(function (require) {
     console.log('getFreq() is deprecated. Please use getEnergy() instead.');
     var x = this.getEnergy(freq1, freq2);
     return x;
-  }
-
-  
+  };
 
   /**
    *  Returns the 
@@ -459,7 +457,7 @@ define(function (require) {
 
     var spec_centroid_freq = (mean_freq_index * (nyquist / this.freqDomain.length));
     return spec_centroid_freq;
-  }
+  };
 
   /**
    *  Smooth FFT analysis by averaging with the last analysis frame.
@@ -482,7 +480,7 @@ define(function (require) {
 
     this.analyser.disconnect();
     this.analyser = undefined;
-  }
+  };
 
   /**
    *  Returns an array of average amplitude values for a given number
@@ -520,7 +518,7 @@ define(function (require) {
     }
 
     return (linearAverages);
-  }
+  };
 
   /**
    *  Returns an array of average amplitude values of the spectrum, for a given 
@@ -558,7 +556,7 @@ define(function (require) {
     }
 
     return (logAverages);
-  }
+  };
 
   /**
    *  Calculates and Returns the 1/N
@@ -598,7 +596,7 @@ define(function (require) {
     }
 
   return (octaveBands);
-  }
+  };
 
   // helper methods to convert type from float (dB) to int (0-255)
   var freqToFloat = function (fft) {
