@@ -369,9 +369,7 @@ define(function (require) {
     console.log('getFreq() is deprecated. Please use getEnergy() instead.');
     var x = this.getEnergy(freq1, freq2);
     return x;
-  }
-
-  
+  };
 
   /**
    *  Returns the 
@@ -459,7 +457,7 @@ define(function (require) {
 
     var spec_centroid_freq = (mean_freq_index * (nyquist / this.freqDomain.length));
     return spec_centroid_freq;
-  }
+  };
 
   /**
    *  Smooth FFT analysis by averaging with the last analysis frame.
@@ -482,7 +480,123 @@ define(function (require) {
 
     this.analyser.disconnect();
     this.analyser = undefined;
-  }
+  };
+
+  /**
+   *  Returns an array of average amplitude values for a given number
+   *  of frequency bands split equally. N defaults to 16.
+   *  <em>NOTE: analyze() must be called prior to linAverages(). Analyze()
+   *  tells the FFT to analyze frequency data, and linAverages() uses
+   *  the results to group them into a smaller set of averages.</em></p>
+   *  
+   *  @method  linAverages
+   *  @param  {Number}  N                Number of returned frequency groups 
+   *  @return {Array}   linearAverages   Array of average amplitude values for each group
+   */
+  p5.FFT.prototype.linAverages = function(N) {
+    var N = N || 16; // This prevents undefined, null or 0 values of N
+
+    var spectrum = this.freqDomain;
+    var spectrumLength = spectrum.length;
+    var spectrumStep = Math.floor(spectrumLength / N);
+
+    var linearAverages = new Array(N);
+    // Keep a second index for the current average group and place the values accordingly
+    // with only one loop in the spectrum data
+    var groupIndex = 0;
+
+    for (var specIndex = 0; specIndex < spectrumLength; specIndex++) {
+
+      linearAverages[groupIndex] = (linearAverages[groupIndex] !== undefined)
+                                ? (linearAverages[groupIndex] + spectrum[specIndex]) / 2
+                                : spectrum[specIndex];
+
+      // Increase the group index when the last element of the group is processed
+      if ((specIndex % spectrumStep) == (spectrumStep - 1)) {
+        groupIndex++;
+      }
+    }
+
+    return (linearAverages);
+  };
+
+  /**
+   *  Returns an array of average amplitude values of the spectrum, for a given 
+   *  set of <a href="https://en.wikipedia.org/wiki/Octave_band" target="_blank">
+   *  Octave Bands</a>
+   *  <em>NOTE: analyze() must be called prior to logAverages(). Analyze()
+   *  tells the FFT to analyze frequency data, and logAverages() uses
+   *  the results to group them into a smaller set of averages.</em></p>
+   *  
+   *  @method  logAverages
+   *  @param  {Array}   octaveBands    Array of Octave Bands objects for grouping
+   *  @return {Array}   logAverages    Array of average amplitude values for each group
+   */
+  p5.FFT.prototype.logAverages = function(octaveBands) {
+    var nyquist = p5sound.audiocontext.sampleRate / 2;
+    var spectrum = this.freqDomain;
+    var spectrumLength = spectrum.length;
+
+    var logAverages = new Array(octaveBands.length);
+    // Keep a second index for the current average group and place the values accordingly
+    // With only one loop in the spectrum data
+    var octaveIndex = 0;
+
+    for (var specIndex = 0; specIndex < spectrumLength; specIndex++) {
+      var specIndexFrequency = Math.round((specIndex * nyquist) / this.freqDomain.length);
+      
+      // Increase the group index if the current frequency exceeds the limits of the band
+      if (specIndexFrequency > octaveBands[octaveIndex].hi) {
+        octaveIndex++;
+      }
+
+      logAverages[octaveIndex] = (logAverages[octaveIndex] !== undefined) 
+                              ? (logAverages[octaveIndex] + spectrum[specIndex]) / 2 
+                              : spectrum[specIndex];
+    }
+
+    return (logAverages);
+  };
+
+  /**
+   *  Calculates and Returns the 1/N
+   *  <a href="https://en.wikipedia.org/wiki/Octave_band" target="_blank">Octave Bands</a>
+   *  N defaults to 3 and minimum central frequency to 15.625Hz. 
+   *  (1/3 Octave Bands ~= 31 Frequency Bands)
+   *  Setting fCtr0 to a central value of a higher octave will ignore the lower bands
+   *  and produce less frequency groups.
+   * 
+   *  @method   getOctaveBands
+   *  @param  {Number}  N             Specifies the 1/N type of generated octave bands
+   *  @param  {Number}  fCtr0         Minimum central frequency for the lowest band
+   *  @return {Array}   octaveBands   Array of octave band objects with their bounds
+   */
+  p5.FFT.prototype.getOctaveBands = function(N, fCtr0) {
+    var N = N || 3;               // Default to 1/3 Octave Bands
+    var fCtr0 = fCtr0 || 15.625;  // Minimum central frequency, defaults to 15.625Hz 
+    
+    var octaveBands = [];
+    var lastFrequencyBand = {
+      lo: fCtr0 / Math.pow(2, 1 / (2*N)),
+      ctr: fCtr0,
+      hi: fCtr0 * Math.pow(2, 1 / (2*N)),
+    };
+    octaveBands.push(lastFrequencyBand);
+
+    var nyquist = p5sound.audiocontext.sampleRate / 2;
+    while (lastFrequencyBand.hi < nyquist) {
+
+      var newFrequencyBand = {};
+      newFrequencyBand.lo = lastFrequencyBand.hi,
+      newFrequencyBand.ctr = lastFrequencyBand.ctr * Math.pow(2, 1 / N),
+      newFrequencyBand.hi = newFrequencyBand.ctr * Math.pow(2, 1 / (2*N)), 
+
+      octaveBands.push(newFrequencyBand);
+      lastFrequencyBand = newFrequencyBand;
+    }
+
+  return (octaveBands);
+  };
 
   // helper methods to convert type from float (dB) to int (0-255)
   var freqToFloat = function (fft) {
