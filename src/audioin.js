@@ -69,9 +69,9 @@ define(function (require) {
       } else {
         window.alert('This browser does not support AudioIn');        
       }
-    } else if (typeof window.MediaStreamTrack.getSources === 'function') {
+    } else if (typeof window.MediaDevices.enumerateDevices === 'function') {
       // Chrome supports getSources to list inputs. Dev picks default
-      window.MediaStreamTrack.getSources(this._gotSources);
+      window.MediaDevices.enumerateDevices(this._gotSources);
     } else {
       // Firefox has no getSources() but lets user choose their input
     }
