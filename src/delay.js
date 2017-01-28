@@ -7,10 +7,11 @@ define(function (require) {
    *  Delay is an echo effect. It processes an existing sound source,
    *  and outputs a delayed version of that sound. The p5.Delay can
    *  produce different effects depending on the delayTime, feedback,
-   *  filter, and type. In the example below, a feedback of 0.5 will
-   *  produce a looping delay that decreases in volume by
-   *  50% each repeat. A filter will cut out the high frequencies so
-   *  that the delay does not sound as piercing as the original source.
+   *  filter, and type. In the example below, a feedback of 0.5 (the
+   *  defaul value) will produce a looping delay that decreases in 
+   *  volume by 50% each repeat. A filter will cut out the high
+   *  frequencies so that the delay does not sound as piercing as the
+   *  original source.
    *  
    *  @class p5.Delay
    *  @constructor
@@ -109,6 +110,9 @@ define(function (require) {
 
     this._maxDelay = this.leftDelay.delayTime.maxValue;
 
+    // set initial feedback to 0.5
+    this.feedback(0.5);
+
     // add this p5.SoundFile to the soundArray
     p5sound.soundArray.push(this);
   };
@@ -142,8 +146,8 @@ define(function (require) {
     src.connect(this.input);
     this.leftDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
     this.rightDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
-    this._leftGain.gain.setValueAtTime(feedback, this.ac.currentTime);
-    this._rightGain.gain.setValueAtTime(feedback, this.ac.currentTime);
+    this._leftGain.gain.value = feedback;
+    this._rightGain.gain.value = feedback;
 
     if (_filter) {
       this._leftFilter.freq(_filter);
@@ -178,26 +182,31 @@ define(function (require) {
    *  in a loop. The feedback amount determines how much signal to send each
    *  time through the loop. A feedback greater than 1.0 is not desirable because
    *  it will increase the overall output each time through the loop,
-   *  creating an infinite feedback loop.
+   *  creating an infinite feedback loop. The default value is 0.5
    *  
    *  @method  feedback
    *  @param {Number|Object} feedback 0.0 to 1.0, or an object such as an
    *                                  Oscillator that can be used to
    *                                  modulate this param
+   *  @returns {Number} Feedback value
+   *                                  
    */
   p5.Delay.prototype.feedback = function(f) {
     // if f is an audio node...
-    if (typeof(f) !== 'number'){
+    if (f && typeof(f) !== 'number'){
       f.connect(this._leftGain.gain);
       f.connect(this._rightGain.gain);
     }
     else if (f >= 1.0) {
       throw new Error('Feedback value will force a positive feedback loop.');
     }
-    else {
-      this._leftGain.gain.exponentialRampToValueAtTime(f, this.ac.currentTime);
-      this._rightGain.gain.exponentialRampToValueAtTime(f, this.ac.currentTime);
+    else if (typeof (f) === 'number') {
+      this._leftGain.gain.value = f;
+      this._rightGain.gain.value = f;
     }
+
+    // return value of feedback
+    return this._leftGain.gain.value;
   };
 
   /**
