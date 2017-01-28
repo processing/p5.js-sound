@@ -34,33 +34,9 @@ module.exports = function(grunt) {
       // p5 dist
       main: {
         files: ['src/**/*.js'],
-        tasks: ['jshint', 'requirejs'],
+        tasks: ['requirejs'],
         options: { livereload: true }
-      },
-      // reference
-      reference_build: {
-        files: ['docs/yuidoc-p5-theme/**/*'],
-        tasks: ['yuidoc'],
-        options: { livereload: true, interrupt: true }
-      },
-      // scripts for yuidoc/reference theme
-      yuidoc_theme_build: {
-        files: ['docs/yuidoc-p5-theme-src/scripts/**/*'],
-        tasks: ['requirejs:yuidoc_theme']
       }
-    },
-    mocha: {
-      test: {
-        src: ['test/*.html'],
-        // src: ['test/**/*.html'],
-        options: {
-          // reporter: 'test/reporter/simple.js',
-          reporter: 'Nyan',
-          run: true,
-          log: true,
-          logErrors: true
-        }
-      },
     },
     requirejs: {
       unmin: {
@@ -167,6 +143,28 @@ module.exports = function(grunt) {
           }
         }
       },
+    },
+    open: {
+      testChrome: {
+        path: 'http://localhost:8000/test',
+        app: 'Chrome'
+      },
+      testFirefox : {
+        path: 'http://localhost:8000/test',
+        app: 'Firefox'
+      },
+      testSafari : {
+        path: 'http://localhost:8000/test',
+        app: 'Safari'
+      }
+    },
+    connect: {
+      server: {
+        options: {
+          port: 8000,
+          hostname: '*'
+        }
+      }
     }
   });
 
@@ -174,8 +172,14 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-contrib-yuidoc');
   grunt.registerTask('yui', ['yuidoc']);
-  // grunt.loadNpmTasks('grunt-mocha');
+
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-open');
 
   grunt.registerTask('default', ['requirejs']);
-
+  grunt.registerTask('dev', ['connect','requirejs', 'watch']);
+  grunt.registerTask('serve', 'connect:server:keepalive');
+  grunt.registerTask('run-tests', ['serve', 'open']);
 };
