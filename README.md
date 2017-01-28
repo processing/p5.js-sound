@@ -1,5 +1,5 @@
 
-![](http://p5js.org/img/libraries/sound.jpg)
+![](https://cloud.githubusercontent.com/assets/504124/19908328/2cd874ea-a059-11e6-847c-e5da5e957a2f.jpg)
 
 p5.sound
 ========

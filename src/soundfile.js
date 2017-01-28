@@ -889,8 +889,8 @@ define(function (require) {
   };
 
   /**
-   * Move the playhead of the song to a position, in seconds. Start
-   * and Stop time. If none are given, will reset the file to play
+   * Move the playhead of the song to a position, in seconds. Start timing
+   * and playback duration. If none are given, will reset the file to play
    * entire duration from start to finish.
    *
    * @method jump
@@ -906,13 +906,13 @@ define(function (require) {
     }
 
     var cTime = cueTime || 0;
-    var eTime = duration || this.buffer.duration - cueTime;
+    var dur = duration || this.buffer.duration - cueTime;
 
     if (this.isPlaying()){
       this.stop();
     }
 
-    this.play(0, this.playbackRate, this.output.gain.value, cTime, eTime);
+    this.play(0, this.playbackRate, this.output.gain.value, cTime, dur);
   };
 
   /**
