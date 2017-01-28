@@ -138,7 +138,7 @@ define(function (require) {
 
       // var detune = this.oscillator.frequency.value;
       this.oscillator = p5sound.audiocontext.createOscillator();
-      this.oscillator.frequency.exponentialRampToValueAtTime(Math.abs(freq), p5sound.audiocontext.currentTime);
+      this.oscillator.frequency.value = Math.abs(freq);
       this.oscillator.type = type;
       // this.oscillator.detune.value = detune;
       this.oscillator.connect(this.output);
@@ -257,8 +257,6 @@ define(function (require) {
           this.oscillator.frequency.linearRampToValueAtTime(val, tFromNow + rampTime + now);
         }
       }
-
-
 
       // reset phase if oscillator has a phase
       if (this.phaseAmount) {

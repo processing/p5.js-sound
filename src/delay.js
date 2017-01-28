@@ -142,8 +142,8 @@ define(function (require) {
     src.connect(this.input);
     this.leftDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
     this.rightDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
-    this._leftGain.gain.setValueAtTime(feedback, this.ac.currentTime);
-    this._rightGain.gain.setValueAtTime(feedback, this.ac.currentTime);
+    this._leftGain.gain.value = feedback;
+    this._rightGain.gain.value = feedback;
 
     if (_filter) {
       this._leftFilter.freq(_filter);
@@ -195,8 +195,8 @@ define(function (require) {
       throw new Error('Feedback value will force a positive feedback loop.');
     }
     else {
-      this._leftGain.gain.exponentialRampToValueAtTime(f, this.ac.currentTime);
-      this._rightGain.gain.exponentialRampToValueAtTime(f, this.ac.currentTime);
+      this._leftGain.gain.value = f;
+      this._rightGain.gain.value = f;
     }
   };
 
