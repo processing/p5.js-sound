@@ -29,7 +29,7 @@ define(function (require) {
    */
   p5.prototype.freqToMidi = function(f){
     var mathlog2 = Math.log(f/440) / Math.log(2);
-    var m = Math.round(12*mathlog2)+57;
+    var m = Math.round(12*mathlog2)+69;
     return m;
   };
 
