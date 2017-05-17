@@ -18,19 +18,20 @@ define(function (require) {
     this.bpm = 120; // gets overridden by p5.Part
     this._init();
 
+    this.prevTick = 0;
+    this.tatumTime = 0;
+
     this.tickCallback = function(){};
   };
 
-  var prevTick = 0;
-  var tatumTime = 0;
-
   p5.Metro.prototype.ontick = function(tickTime) {
-    var elapsedTime = tickTime - prevTick;
+    var elapsedTime = tickTime - this.prevTick;
     var secondsFromNow = tickTime - p5sound.audiocontext.currentTime;
-    if (elapsedTime - tatumTime <= -0.02) {
+    if (elapsedTime - this.tatumTime <= -0.02) {
       return;
     } else {
-      prevTick = tickTime;
+      // console.log('ok', this.syncedParts[0].phrases[0].name);
+      this.prevTick = tickTime;
       // for all of the active things on the metro:
       for (var i in this.syncedParts) {
         var thisPart = this.syncedParts[i];
@@ -54,7 +55,7 @@ define(function (require) {
   p5.Metro.prototype.setBPM = function(bpm, rampTime) {
     var beatTime =  60 / (bpm*this.tatums);
     var now = p5sound.audiocontext.currentTime;
-    tatumTime = beatTime;
+    this.tatumTime = beatTime;
 
     var rampTime = rampTime || 0;
     this.clock.frequency.setValueAtTime(this.clock.frequency.value, now);
@@ -91,9 +92,7 @@ define(function (require) {
   p5.Metro.prototype.stop = function(timeFromNow) {
     var t = timeFromNow || 0;
     var now = p5sound.audiocontext.currentTime;
-    if (this.clock._oscillator) {
-      this.clock.stop(now + t);
-    }
+    this.clock.stop(now + t);
   };
 
   p5.Metro.prototype.beatLength = function(tatums) {
