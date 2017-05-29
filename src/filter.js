@@ -2,6 +2,7 @@ define(function (require) {
   'use strict';
 
   var p5sound = require('master');
+  var Effect = require('effect');
 
   /**
    *  A p5.Filter uses a Web Audio Biquad Filter to filter
@@ -73,34 +74,37 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Filter = function(type) {
-    this.ac = p5sound.audiocontext;
 
-    this.input = this.ac.createGain();
-    this.output = this.ac.createGain();
+
+
+//constructor with inheritance
+  p5.Filter = function (type) {
+
+    Effect.call(this);
+    //add extend Effect by adding a Biquad Filter
 
     /**
-     *  The p5.Filter is built with a
-     *  <a href="http://www.w3.org/TR/webaudio/#BiquadFilterNode">
-     *  Web Audio BiquadFilter Node</a>.
-     *  
-     *  @property biquadFilter
-     *  @type {Object}  Web Audio Delay Node
-     */
+      *  The p5.Filter is built with a
+      *  <a href="http://www.w3.org/TR/webaudio/#BiquadFilterNode">
+      *  Web Audio BiquadFilter Node</a>.
+      *  
+      *  @property biquadFilter
+      *  @type {Object}  Web Audio Delay Node
+	  */
+
     this.biquad = this.ac.createBiquadFilter();
 
     this.input.connect(this.biquad);
-    this.biquad.connect(this.output);
 
-    this.connect();
+    this.biquad.connect(this.wet);
+
     if (type) {
       this.setType(type);
-    }
-
-    // add to the soundArray
-    p5sound.soundArray.push(this);
+     }
   };
-
+  p5.Filter.prototype = Object.create(Effect.prototype);
+  
+  
   /**
    *  Filter an audio signal according to a set
    *  of filter parameters.
@@ -111,10 +115,11 @@ define(function (require) {
    *  @param {[Number]} res Resonance/Width of the filter frequency
    *                        from 0.001 to 1000
    */
-  p5.Filter.prototype.process = function(src, freq, res) {
+  p5.Filter.prototype.process = function(src, freq, res, time) {
     src.connect(this.input);
-    this.set(freq, res);
+    this.set(freq, res, time);
   };
+
 
   /**
    *  Set the frequency and the resonance of the filter.
@@ -217,37 +222,10 @@ define(function (require) {
     this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
   };
 
-  /**
-   *  Send output to a p5.sound or web audio object
-   *  
-   *  @method connect
-   *  @param  {Object} unit
-   */
-  p5.Filter.prototype.connect = function(unit) {
-    var u = unit || p5.soundOut.input;
-    this.output.connect(u);
-  };
-
-  /**
-   *  Disconnect all output.
-   *  
-   *  @method disconnect
-   */
-  p5.Filter.prototype.disconnect = function() {
-    this.output.disconnect();
-  };
-
   p5.Filter.prototype.dispose = function() {
     // remove reference from soundArray
-    var index = p5sound.soundArray.indexOf(this);
-    p5sound.soundArray.splice(index, 1);
 
-    this.input.disconnect();
-    this.input = undefined;
-
-
-    this.output.disconnect();
-    this.output = undefined;
+    Effect.prototype.dispose.apply(this);
 
     this.biquad.disconnect();
     this.biquad = undefined;
@@ -291,5 +269,4 @@ define(function (require) {
     p5.Filter.call(this, 'bandpass');
   };
   p5.BandPass.prototype = Object.create(p5.Filter.prototype);
-
 });

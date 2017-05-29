@@ -6,7 +6,9 @@ require.config({
 	}
 });
 
-var allTests = ['tests/p5.SoundFile', 'tests/p5.Amplitude', 'tests/p5.Oscillator', 'tests/p5.Distortion'];
+var allTests = ['tests/p5.SoundFile', 'tests/p5.Amplitude', 
+	'tests/p5.Oscillator', 'tests/p5.Distortion', 
+	'tests/p5.Effect','tests/p5.Filter'];
 
 p5.prototype.masterVolume(0);
 
