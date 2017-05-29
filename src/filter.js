@@ -2,6 +2,7 @@ define(function (require) {
   'use strict';
 
   var p5sound = require('master');
+  //require('effect');
 
   /**
    *  A p5.Filter uses a Web Audio Biquad Filter to filter
@@ -291,5 +292,12 @@ define(function (require) {
     p5.Filter.call(this, 'bandpass');
   };
   p5.BandPass.prototype = Object.create(p5.Filter.prototype);
+
+
+
+  // p5.Filter = function () {
+  //   p5.Effect.call(this, 'Filter');
+  // };
+  // p5.Filter.prototype = Object.create(p5.Filter.protoype);
 
 });
