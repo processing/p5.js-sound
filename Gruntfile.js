@@ -94,6 +94,7 @@ module.exports = function(grunt) {
             'audioin': 'src/audioin',
             'env': 'src/env',
             'delay': 'src/delay',
+            'effect': 'src/effect',
             'filter': 'src/filter',
             'reverb': 'src/reverb',
             'distortion': 'src/distortion',
