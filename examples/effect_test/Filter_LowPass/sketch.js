@@ -17,7 +17,7 @@ function preload() {
   soundFormats('mp3', 'ogg');
   soundFile = loadSound('../../files/beat');
   console.log("hi");
-  
+
 }
 
 function setup() {
@@ -28,8 +28,8 @@ function setup() {
   soundFile.loop();
 
   //filter = new p5.LowPass();
-  //filter = new p5.Filter();
-  filter = new p5.LowPass();
+  filter = new p5.Filter();
+  
 
 
   // Disconnect soundfile from master output.
@@ -53,7 +53,7 @@ function draw() {
   // Map mouseY to resonance/width
   filterRes = map(mouseY, 0, height, 15, 5);
   // set filter parameters
-  //filter.set(filterFreq, filterRes);
+  filter.set(filterFreq, filterRes);
 
   // Draw every value in the FFT spectrum analysis where
   // x = lowest (10Hz) to highest (22050Hz) frequencies,

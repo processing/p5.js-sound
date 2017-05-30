@@ -46,7 +46,7 @@ define(function (require) {
 	};
 
 	p5.Effect.prototype.disconnect = function() {
-		this.out.disconnect();
+		this.output.disconnect();
 	};
 
 	p5.Effect.prototype.dispose = function() {
@@ -60,7 +60,7 @@ define(function (require) {
 		this.output = undefined;
 	};
 
-	
+
 	//effects necessary for all effects
 
 
