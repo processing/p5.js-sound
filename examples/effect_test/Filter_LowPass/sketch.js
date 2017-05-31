@@ -18,10 +18,14 @@ function preload() {
   soundFile = loadSound('../../files/beat');
   console.log("hi");
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
   
 >>>>>>> 44caab4... added effect to gruntfile
+=======
+
+>>>>>>> 1a4ef51... p5.Filter with inheritance from p5.Effect
 }
 
 function setup() {
@@ -33,12 +37,17 @@ function setup() {
 
   //filter = new p5.LowPass();
 <<<<<<< HEAD
+<<<<<<< HEAD
   filter = new p5.Filter();
   
 =======
   //filter = new p5.Filter();
   filter = new p5.LowPass();
 >>>>>>> 44caab4... added effect to gruntfile
+=======
+  filter = new p5.Filter();
+  
+>>>>>>> 1a4ef51... p5.Filter with inheritance from p5.Effect
 
 
   // Disconnect soundfile from master output.
@@ -63,10 +72,14 @@ function draw() {
   filterRes = map(mouseY, 0, height, 15, 5);
   // set filter parameters
 <<<<<<< HEAD
+<<<<<<< HEAD
   filter.set(filterFreq, filterRes);
 =======
   //filter.set(filterFreq, filterRes);
 >>>>>>> 44caab4... added effect to gruntfile
+=======
+  filter.set(filterFreq, filterRes);
+>>>>>>> 1a4ef51... p5.Filter with inheritance from p5.Effect
 
   // Draw every value in the FFT spectrum analysis where
   // x = lowest (10Hz) to highest (22050Hz) frequencies,

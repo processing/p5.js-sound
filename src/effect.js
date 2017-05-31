@@ -47,9 +47,12 @@ define(function (require) {
 
 	p5.Effect.prototype.disconnect = function() {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		this.output.disconnect();
 =======
 >>>>>>> 44caab4... added effect to gruntfile
+=======
+>>>>>>> 1a4ef51... p5.Filter with inheritance from p5.Effect
 	};
 
 	p5.Effect.prototype.dispose = function() {
@@ -63,7 +66,7 @@ define(function (require) {
 		this.output = undefined;
 	};
 
-	
+
 	//effects necessary for all effects
 
 

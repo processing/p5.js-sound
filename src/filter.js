@@ -78,6 +78,7 @@ define(function (require) {
 
 
 
+<<<<<<< HEAD
 
     
    
@@ -88,6 +89,9 @@ define(function (require) {
     this.biquad = this.ac.createBiquadFilter();
 
     //correct the conections
+=======
+
+>>>>>>> 1a4ef51... p5.Filter with inheritance from p5.Effect
     this.input.disconnect();
     this.input.connect(this.biquad);
     this.biquad.connect(this.output);
@@ -341,9 +345,5 @@ define(function (require) {
 
 
 
-  // p5.Filter = function () {
-  //   p5.Effect.call(this, 'Filter');
-  // };
-  // p5.Filter.prototype = Object.create(p5.Filter.protoype);
 
 >>>>>>> 44caab4... added effect to gruntfile
