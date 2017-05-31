@@ -46,7 +46,10 @@ define(function (require) {
 	};
 
 	p5.Effect.prototype.disconnect = function() {
+<<<<<<< HEAD
 		this.output.disconnect();
+=======
+>>>>>>> 44caab4... added effect to gruntfile
 	};
 
 	p5.Effect.prototype.dispose = function() {
@@ -60,7 +63,7 @@ define(function (require) {
 		this.output = undefined;
 	};
 
-
+	
 	//effects necessary for all effects
 
 
@@ -68,6 +71,16 @@ define(function (require) {
 	// p5.Effect.prototype.process = function(src, amt) {
 	// 	src.connect(this.input);
 
+<<<<<<< HEAD
+	//effects necessary for all effects
+
+
+	// //set up the connection to src and output
+	// p5.Effect.prototype.process = function(src, amt) {
+	// 	src.connect(this.input);
+
+=======
+>>>>>>> 44caab4... added effect to gruntfile
 	// 	//set the wetdry value
 	// 	//this.wetdry(amt);
 	// };

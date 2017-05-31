@@ -17,7 +17,11 @@ function preload() {
   soundFormats('mp3', 'ogg');
   soundFile = loadSound('../../files/beat');
   console.log("hi");
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> 44caab4... added effect to gruntfile
 }
 
 function setup() {
@@ -28,8 +32,13 @@ function setup() {
   soundFile.loop();
 
   //filter = new p5.LowPass();
+<<<<<<< HEAD
   filter = new p5.Filter();
   
+=======
+  //filter = new p5.Filter();
+  filter = new p5.LowPass();
+>>>>>>> 44caab4... added effect to gruntfile
 
 
   // Disconnect soundfile from master output.
@@ -53,7 +62,11 @@ function draw() {
   // Map mouseY to resonance/width
   filterRes = map(mouseY, 0, height, 15, 5);
   // set filter parameters
+<<<<<<< HEAD
   filter.set(filterFreq, filterRes);
+=======
+  //filter.set(filterFreq, filterRes);
+>>>>>>> 44caab4... added effect to gruntfile
 
   // Draw every value in the FFT spectrum analysis where
   // x = lowest (10Hz) to highest (22050Hz) frequencies,
