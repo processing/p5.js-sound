@@ -76,15 +76,6 @@ define(function (require) {
 
 
 
-//constructor with inheritance
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> a60f112... cleaned up filter.js
-
-    
-   
   p5.Filter = function (type) {
     p5.Effect.call(this, 'Filter');
 
@@ -92,12 +83,6 @@ define(function (require) {
     this.biquad = this.ac.createBiquadFilter();
 
     //correct the conections
-<<<<<<< HEAD
-=======
-
->>>>>>> 1a4ef51... p5.Filter with inheritance from p5.Effect
-=======
->>>>>>> a60f112... cleaned up filter.js
     this.input.disconnect();
     this.input.connect(this.biquad);
     this.biquad.connect(this.output);
@@ -108,6 +93,57 @@ define(function (require) {
      }
   };
   p5.Filter.prototype = Object.create(p5.Effect.prototype);
+    if (type) {
+      this.setType(type);
+     }
+
+    //add the filter to the prototype
+  };
+  p5.Filter.prototype = Object.create(p5.Effect.prototype);
+
+ 
+
+  // p5.Filter.prototype.setup = function(type) {
+    
+  //   this.input.disconnect();
+  //   this.input.connect(biquad);
+  //   this.biquad.connect(this.output);
+
+  //   if (type) {
+  //     this.setType(type);
+  //    }
+
+  //   // body...
+  // };
+
+  // p5.Filter = function(type) {
+  //   //this.ac = p5sound.audiocontext;
+
+  //   //this.input = this.ac.createGain();
+  //   // this.output = this.ac.createGain();
+
+  //   *
+  //    *  The p5.Filter is built with a
+  //    *  <a href="http://www.w3.org/TR/webaudio/#BiquadFilterNode">
+  //    *  Web Audio BiquadFilter Node</a>.
+  //    *  
+  //    *  @property biquadFilter
+  //    *  @type {Object}  Web Audio Delay Node
+     
+  //   // this.biquad = this.ac.createBiquadFilter();
+
+  //   // this.input.connect(this.biquad);
+  //   this.biquad.connect(this.output);
+
+  //   // this.connect();
+  //    if (type) {
+  //     this.setType(type);
+  //   }
+
+  //   // add to the soundArray
+  //   p5sound.soundArray.push(this);
+  // };
+>>>>>>> 57347e0... resolving conflicts
 
   /**
    *  Filter an audio signal according to a set
@@ -225,6 +261,28 @@ define(function (require) {
     this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
   };
 
+  /**
+   *  Send output to a p5.sound or web audio object
+   *  
+   *  @method connect
+   *  @param  {Object} unit
+   */
+
+  // p5.Filter.prototype.connect = function(unit) {
+  //   var u = unit || p5.soundOut.input;
+  //   this.output.connect(u);
+  // };
+
+  /**
+   *  Disconnect all output.
+   *  
+   *  @method disconnect
+   */
+
+  // p5.Filter.prototype.disconnect = function() {
+  //   this.output.disconnect();
+  // };
+
   p5.Filter.prototype.dispose = function() {
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
@@ -279,14 +337,4 @@ define(function (require) {
     p5.Filter.call(this, 'bandpass');
   };
   p5.BandPass.prototype = Object.create(p5.Filter.prototype);
-<<<<<<< HEAD
-=======
-
-<<<<<<< HEAD
-
-
-
->>>>>>> 44caab4... added effect to gruntfile
-=======
 });
->>>>>>> a60f112... cleaned up filter.js
