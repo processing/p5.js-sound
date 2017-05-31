@@ -77,15 +77,6 @@ define(function (require) {
 
 
 
-<<<<<<< HEAD
-
-  p5.Filter = function (type) {
-    p5.Effect.call(this, 'Filter');
-
-    this.biquad = this.ac.createBiquadFilter();
-
-=======
-//constructor with inheritance
 
 
     
@@ -97,12 +88,10 @@ define(function (require) {
     this.biquad = this.ac.createBiquadFilter();
 
     //correct the conections
->>>>>>> a60f1128249aabc02c3d85ff12bf5f70d344f817
     this.input.disconnect();
     this.input.connect(this.biquad);
     this.biquad.connect(this.output);
 
-<<<<<<< HEAD
     if (type) {
       this.setType(type);
      }
@@ -153,14 +142,6 @@ define(function (require) {
   //   // add to the soundArray
   //   p5sound.soundArray.push(this);
   // };
-=======
-    //set Web Audio Filter type
-    if (type) {
-      this.setType(type);
-     }
-  };
-  p5.Filter.prototype = Object.create(p5.Effect.prototype);
->>>>>>> a60f1128249aabc02c3d85ff12bf5f70d344f817
 
   /**
    *  Filter an audio signal according to a set
@@ -278,7 +259,6 @@ define(function (require) {
     this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
   };
 
-<<<<<<< HEAD
   /**
    *  Send output to a p5.sound or web audio object
    *  
@@ -301,8 +281,6 @@ define(function (require) {
   //   this.output.disconnect();
   // };
 
-=======
->>>>>>> a60f1128249aabc02c3d85ff12bf5f70d344f817
   p5.Filter.prototype.dispose = function() {
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
@@ -357,8 +335,4 @@ define(function (require) {
     p5.Filter.call(this, 'bandpass');
   };
   p5.BandPass.prototype = Object.create(p5.Filter.prototype);
-
-
-
-
 });
