@@ -93,13 +93,6 @@ define(function (require) {
      }
   };
   p5.Filter.prototype = Object.create(p5.Effect.prototype);
-    if (type) {
-      this.setType(type);
-     }
-
-    //add the filter to the prototype
-  };
-  p5.Filter.prototype = Object.create(p5.Effect.prototype);
 
  
 
@@ -143,7 +136,6 @@ define(function (require) {
   //   // add to the soundArray
   //   p5sound.soundArray.push(this);
   // };
->>>>>>> 57347e0... resolving conflicts
 
   /**
    *  Filter an audio signal according to a set
