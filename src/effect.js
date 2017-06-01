@@ -3,7 +3,7 @@ define(function (require) {
 
 	var p5sound = require('master');
 
-	p5.Effect = function(type) {
+	p5.Effect = function() {
 		//everything points to the same audiocontext
 		this.type = type;
 		
@@ -30,11 +30,6 @@ define(function (require) {
 
 		//connects to audiocontext destination
 		this.connect();
-
-		if (type) {
-			// determine the type of effect?
-			console.log(type);
-		}
 
 		p5sound.soundArray.push(this);
 	};
