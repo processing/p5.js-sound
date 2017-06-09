@@ -38,6 +38,27 @@ define(function (require) {
 	};
 
 	/**
+	 *  Set the output level of the filter.
+	 *  
+	 *  @method  amp
+	 *  @param {Number} volume amplitude between 0 and 1.0
+	 *  @param {Number} [rampTime] create a fade that lasts rampTime 
+	 *  @param {Number} [timeFromNow] schedule this event to happen
+	 *                                seconds from now
+	 */
+
+	p5.Effect.prototype.amp = function(vol, rampTime, tFromNow){
+	  var rampTime = rampTime || 0;
+	  var tFromNow = tFromNow || 0;
+	  var now = p5sound.audiocontext.currentTime;
+	  var currentVol = this.output.gain.value;
+	  this.output.gain.cancelScheduledValues(now);
+	  this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow + .001);
+	  this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
+	};
+
+
+	/**
 	 *	Send output to a p5.sound or web audio object	
 	 *	
 	 *	@method connect 
