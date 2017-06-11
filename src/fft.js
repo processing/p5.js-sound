@@ -472,6 +472,17 @@ define(function (require) {
     }
     this.analyser.smoothingTimeConstant = s;
   };
+  
+  /**
+   * Changes the length of the resulting array, the bin size and in turn the fftSize of the analyser.
+   * 
+   * @method setBins
+   * @param {Number} bins    Must be a power of two between 16 and 1024.
+   */
+  p5.FFT.prototype.setBins = function(b) {
+    this.bins = b;
+    this.analyser.fftSize = b * 2;
+  }
 
   p5.FFT.prototype.dispose = function() {
     // remove reference from soundArray
