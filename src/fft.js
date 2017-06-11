@@ -467,9 +467,7 @@ define(function (require) {
    *                               Defaults to 0.8.
    */
   p5.FFT.prototype.smooth = function(s) {
-    if (s) {
-      this.smoothing = s;
-    }
+    this.smoothing = s;
     this.analyser.smoothingTimeConstant = s;
   };
 
