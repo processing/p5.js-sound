@@ -3,6 +3,7 @@ define(function (require) {
 
   var p5sound = require('master');
   var CustomError = require('errorHandler');
+  var Effect = require('effect');
   require('sndcore');
 
   /**
@@ -34,18 +35,18 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Reverb = function() {
-    this.ac = p5sound.audiocontext;
-    this.convolverNode = this.ac.createConvolver();
 
-    this.input = this.ac.createGain();
-    this.output = this.ac.createGain();
+
+  p5.Reverb = function() {
+	Effect.call(this);
+
+    this.convolverNode = this.ac.createConvolver();
 
     // otherwise, Safari distorts
     this.input.gain.value = 0.5;
 
     this.input.connect(this.convolverNode);
-    this.convolverNode.connect(this.output);
+    this.convolverNode.connect(this.wet);
 
     // default params
     this._seconds = 3;
@@ -53,10 +54,10 @@ define(function (require) {
     this._reverse = false;
 
     this._buildImpulse();
-    this.connect();
-    p5sound.soundArray.push(this);
+
   };
 
+p5.Reverb.prototype = Object.create(Effect.prototype);
   /**
    *  Connect a source to the reverb, and assign reverb parameters.
    *  
@@ -115,44 +116,6 @@ define(function (require) {
     }
   };
 
-  /**
-   *  Set the output level of the delay effect.
-   *  
-   *  @method  amp
-   *  @param  {Number} volume amplitude between 0 and 1.0
-   *  @param  {Number} [rampTime] create a fade that lasts rampTime 
-   *  @param  {Number} [timeFromNow] schedule this event to happen
-   *                                seconds from now
-   */
-  p5.Reverb.prototype.amp = function(vol, rampTime, tFromNow) {
-    var rampTime = rampTime || 0;
-    var tFromNow = tFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
-    var currentVol = this.output.gain.value;
-    this.output.gain.cancelScheduledValues(now);
-    this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow + .001);
-    this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
-  };
-
-  /**
-   *  Send output to a p5.sound or web audio object
-   *  
-   *  @method  connect
-   *  @param  {Object} unit
-   */
-  p5.Reverb.prototype.connect = function(unit) {
-    var u = unit || p5.soundOut.input;
-    this.output.connect(u.input ? u.input : u);
-  };
-
-  /**
-   *  Disconnect all output.
-   *  
-   *  @method disconnect
-   */
-  p5.Reverb.prototype.disconnect = function() {
-    this.output.disconnect();
-  };
 
   /**
    *  Inspired by Simple Reverb by Jordan Santell
@@ -180,10 +143,8 @@ define(function (require) {
   };
 
   p5.Reverb.prototype.dispose = function() {
-    // remove reference from soundArray
-    var index = p5sound.soundArray.indexOf(this);
-    p5sound.soundArray.splice(index, 1);
 
+	 Effect.prototype.dispose.apply(this);
     if (this.convolverNode) {
       this.convolverNode.buffer = null;
       this.convolverNode = null;
@@ -255,7 +216,7 @@ define(function (require) {
    *  </code></div>
    */
   p5.Convolver = function(path, callback, errorCallback) {
-    this.ac = p5sound.audiocontext;
+ 	  Effect.call(this);
 
     /**
      *  Internally, the p5.Convolver uses the a
@@ -267,14 +228,13 @@ define(function (require) {
      */
     this.convolverNode = this.ac.createConvolver();
 
-    this.input = this.ac.createGain();
-    this.output = this.ac.createGain();
+
 
     // otherwise, Safari distorts
     this.input.gain.value = 0.5;
 
     this.input.connect(this.convolverNode);
-    this.convolverNode.connect(this.output);
+    this.convolverNode.connect(this.wet);
 
     if (path) {
       this.impulses = [];
@@ -288,8 +248,7 @@ define(function (require) {
 
       this._buildImpulse();
     }
-    this.connect();
-    p5sound.soundArray.push(this);
+
   };
 
   p5.Convolver.prototype = Object.create(p5.Reverb.prototype);
@@ -541,7 +500,10 @@ define(function (require) {
 
   p5.Convolver.prototype.dispose = function() {
     // remove all the Impulse Response buffers
-    for (var i in this.impulses) {
+    
+	Effect.prototype.dispose.apply(this);
+	
+	for (var i in this.impulses) {
       this.impulses[i] = null;
     }
     this.convolverNode.disconnect();
