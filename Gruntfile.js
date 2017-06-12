@@ -98,6 +98,7 @@ module.exports = function(grunt) {
             'filter': 'src/filter',
             'reverb': 'src/reverb',
             'distortion': 'src/distortion',
+            'compressor': 'src/compressor',
             'looper': 'src/looper',
             'soundRecorder': 'src/soundRecorder',
             'signal': 'src/signal',

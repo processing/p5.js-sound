@@ -3,6 +3,7 @@ define(function (require) {
 
 	var p5sound = require('master');
 	var Effect = require('effect');
+  var CustomError = require('errorHandler');
 
 	p5.Compressor = function() {
 		Effect.call(this);
@@ -25,11 +26,20 @@ define(function (require) {
 
   p5.Compressor.prototype.set = function (attack, knee, 
                                 ratio, threshold, release) {
-    attack ? this.attack(attack);
-    knee ? this.knee(knee);
-    ratio ? this.ratio(ratio);
-    threshold ? this.threshold(threshold);
-    release ? this.release(release);
+
+    var self = this;
+    var errorTrace = new Error().stack;
+
+    0 <= attack <= 1 ? this.attack(attack) : console.error("Attack should be a" +
+                                              " float between 0 and 1");
+    0 <= knee <= 40 ? this.knee(knee) : console.error("Knee should be a" +
+                                              " float between 0 and 40");
+    1 <= ratio <= 20 ? this.ratio(ratio) : console.error("ratio should be a" +
+                                              " float between 1 and 20");
+    0 <= threshold <= 40 ? this.threshold(threshold) : console.error("threshold should be a" +
+                                              " float between 0 and 1");
+    -100 <= release <= 0 ? this.release(release) : console.error("Release should be a" +
+                                              " float between -100 and 0");
   };
 
   p5.Compressor.prototype.attack = function (attack){
@@ -59,15 +69,14 @@ define(function (require) {
 
   p5.Compressor.prototype.reduction =function() {
     return this.compressor.reduction.value;
-  }
+  };
 
 	p5.Compressor.prototype.dispose = function() {
 		Effect.prototype.dispose.apply(this);
 
 		this.compressor.disconnect();
 		this.compressor = undefined;
-	}
+	};
 
 
-  return 
 });
