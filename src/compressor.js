@@ -15,10 +15,9 @@ define(function (require) {
 
 	p5.Compressor.prototype = Object.create(Effect.prototype);
 
-	p5.Compressor.prototype.process = 
-      function(src, attack, knee, ratio, threshold, release) {
+	p5.Compressor.prototype.process = function(src, attack, knee, 
+                                      ratio, threshold, release) {
 		src.connect(this.input);
-
 
 		this.set(attack, knee, ratio, threshold, release);
 	};
@@ -30,16 +29,11 @@ define(function (require) {
     var self = this;
     var errorTrace = new Error().stack;
 
-    0 <= attack <= 1 ? this.attack(attack) : console.error("Attack should be a" +
-                                              " float between 0 and 1");
-    0 <= knee <= 40 ? this.knee(knee) : console.error("Knee should be a" +
-                                              " float between 0 and 40");
-    1 <= ratio <= 20 ? this.ratio(ratio) : console.error("ratio should be a" +
-                                              " float between 1 and 20");
-    0 <= threshold <= 40 ? this.threshold(threshold) : console.error("threshold should be a" +
-                                              " float between 0 and 1");
-    -100 <= release <= 0 ? this.release(release) : console.error("Release should be a" +
-                                              " float between -100 and 0");
+    if (attack) {this.attack(attack);}
+    if (knee) {this.knee(knee);}
+    if (ratio) {this.ratio(ratio);}
+    if (threshold) {this.threshold(threshold);}
+    if (release) {this.release(release);}
   };
 
   p5.Compressor.prototype.attack = function (attack){
