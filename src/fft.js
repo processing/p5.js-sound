@@ -91,6 +91,17 @@ define(function (require) {
    *  </code></div>
    */
   p5.FFT = function(smoothing, bins) {
+    Object.defineProperty(this, 'bins', {
+      get: function () {
+        return this.analyser.fftSize / 2;
+      },
+      set: function (b) {
+        this.analyser.fftSize = b * 2;
+      },
+      configurable: true,
+      enumerable: true
+    });
+    
     this.smoothing = smoothing || 0.8;
     this.bins = bins || 1024;
     var FFT_SIZE = bins*2 || 2048;
@@ -472,17 +483,6 @@ define(function (require) {
     }
     this.analyser.smoothingTimeConstant = s;
   };
-  
-  /**
-   * Changes the length of the resulting array, the bin size and in turn the fftSize of the analyser.
-   * 
-   * @method setBins
-   * @param {Number} bins    Must be a power of two between 16 and 1024.
-   */
-  p5.FFT.prototype.setBins = function(b) {
-    this.bins = b;
-    this.analyser.fftSize = b * 2;
-  }
 
   p5.FFT.prototype.dispose = function() {
     // remove reference from soundArray
