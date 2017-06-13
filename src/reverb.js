@@ -38,7 +38,7 @@ define(function (require) {
 
 
   p5.Reverb = function() {
-	Effect.call(this);
+	 Effect.call(this);
 
     this.convolverNode = this.ac.createConvolver();
 

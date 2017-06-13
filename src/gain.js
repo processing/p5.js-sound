@@ -2,8 +2,8 @@ define(function (require) {
   'use strict';
 
   var p5sound = require('master');
-  
   require('sndcore');
+  
 
   
    /**
