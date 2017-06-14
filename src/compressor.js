@@ -8,7 +8,7 @@ define(function (require) {
 	p5.Compressor = function() {
 		Effect.call(this);
 
-		this.compressor = this.ac.createDynamicsCompressorNode();
+		this.compressor = this.ac.createDynamicsCompressor();
     this.input.connect(this.compressor);
     this.compressor.connect(this.wet);
 	};
@@ -26,8 +26,8 @@ define(function (require) {
   p5.Compressor.prototype.set = function (attack, knee, 
                                 ratio, threshold, release) {
 
-    var self = this;
-    var errorTrace = new Error().stack;
+    // var self = this;
+    // var errorTrace = new Error().stack;
 
     if (attack) {this.attack(attack);}
     if (knee) {this.knee(knee);}
@@ -37,27 +37,27 @@ define(function (require) {
   };
 
   p5.Compressor.prototype.attack = function (attack){
-    this.compressor.attack.value = attack;
+    if (attack) {this.compressor.attack.value = attack;}
     return this.compressor.attack.value;
   };
 
   p5.Compressor.prototype.knee = function (knee){
-    this.compressor.knee.value = knee;
+    if (knee) {this.compressor.knee.value = knee;}
     return this.compressor.knee.value;
   };
 
   p5.Compressor.prototype.ratio = function (ratio){
-    this.compressor.ratio.value = ratio;
+    if (ratio) {this.compressor.ratio.value = ratio;}
     return this.compressor.ratio.value;
   };
 
   p5.Compressor.prototype.threshold = function (threshold){
-    this.compressor.threshold.value = threshold;
+    if (threshold) {this.compressor.threshold.value = threshold;}
     return this.compressor.threshold.value;
   };
 
   p5.Compressor.prototype.release = function (release){
-    this.compressor.release.value = release;
+    if (release) {this.compressor.release.value = release;}
     return this.compressor.release.value;
   };
 
