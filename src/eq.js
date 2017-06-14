@@ -5,35 +5,37 @@ define(function (require)) {
   var Effect = require('effect');
 
 
+
   p5.EQ = function() {
     Effect.call(this);
 
     this._eqIn = this.ac.createGain();
     this._eqOut = this.ac.createGain();
 
-    this.one = this.ac.createBiquadFilter();
-    this.one.setType('bandpass');
+    this.one = new p5.BandPass();
+    this.one.set(50, 50);
 
-    this.two = this.ac.createBiquadFilter();
-    this.two.setType('bandpass');
+    this.two = new p5.BandPass();
+    this.two.set(100,50);
 
-    this.three = this.ac.createBiquadFilter();
-    this.three.setType('bandpass');
+    this.three = new p5.BandPass();
+    this.three.set(500,50);
 
-    this.four = this.ac.createBiquadFilter();
-    this.four.setType('bandpass');
+    this.four = new p5.BandPass();
+    this.four.set(1000,50);
 
-    this.five = this.ac.createBiquadFilter();
-    this.five.setType('bandpass');
+    this.five = new p5.BandPass();
+    this.five.set(2500,50);
 
-    this.six = this.ac.createBiquadFilter();
-    this.six.setType('bandpass');
+    this.six = new p5.BandPass();
+    this.six.set.(5000,50)
 
-    this.seven = this.ac.createBiquadFilter();
-    this.seven.setType('bandpass');
 
-    this.eight = this.ac.createBiquadFilter();
-    this.eight.setType('bandpass');
+    this.seven = new p5.BandPass();
+    this.set(10000,50);
+
+    this.eight = new p5.BandPass();
+    this.set(20000,50)
 
 
     this.input.connect(this._eqIn);
@@ -47,7 +49,9 @@ define(function (require)) {
     this.five.connect(this.six);
     this.six.connect(this.seven);
     this.seven.connect(this.eight);
-
-
   }
+
+
+
+
 }
