@@ -10,7 +10,9 @@ define(['chai'],
       effect.dispose();
     });
 
-    it('has initial drywet value of 0.5', function(){
+
+
+    it('drywet value can be changed', function(){
       var effect = new p5.Effect();
 
       expect(effect.drywet(0.5)).to.equal(0.5);
