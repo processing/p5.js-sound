@@ -18,6 +18,7 @@ define(function (require) {
   require('audioin');
 //  require('effect');
   require('filter');
+  require('eq');
   require('delay');
   require('reverb');
   require('metro');

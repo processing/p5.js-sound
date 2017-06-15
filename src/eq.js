@@ -171,6 +171,28 @@ define(function (require) {
     }
   };
 
+  p5.EQ.dispose = function (argument) {
+    Effect.prototype.dispose.apply(this);
+
+    this.one.disconnect();
+    this.one = undefined;
+    this.two.disconnect();
+    this.two = undefined;
+    this.three.disconnect();
+    this.three = undefined;
+    this.four.disconnect();
+    this.four = undefined;
+    this.five.disconnect();
+    this.five = undefined;
+    this.six.disconnect();
+    this.six = undefined;
+    this.seven.disconnect();
+    this.seven = undefined;
+    this.eight.disconnect();
+    this.eight = undefined;
+   
+  }
+
 
 
 });
