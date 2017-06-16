@@ -12,38 +12,46 @@ define(function (require) {
     this._eqIn = this.ac.createGain();
     this._eqOut = this.ac.createGain();
 
-    this.one = new p5.BandPass();
+    this.one = new p5.Filter();
+    this.one.setType('peaking');
     this.one.toggle = true;
     this.one.set(50, 50);
 
-    this.two = new p5.BandPass();
-    this.one.toggle = true;
+    this.two = new p5.Filter();
+    this.two.setType('peaking');
+    this.two.toggle = true;
     this.two.set(100,50);
 
-    this.three = new p5.BandPass();
-    this.eight .toggle = true;
+    this.three = new p5.Filter();
+    this.three.setType('peaking');
+    this.three.toggle = true;
     this.three.set(500,50);
 
-    this.four = new p5.BandPass();
-    this.eight.toggle = true;
+    this.four = new p5.Filter();
+    this.four.setType('peaking');
+    this.four.toggle = true;
     this.four.set(1000,50);
 
-    this.five = new p5.BandPass();
-    this.eight.toggle = true;
+    this.five = new p5.Filter();
+    this.five.setType('peaking');
+    this.five.toggle = true;
     this.five.set(2500,50);
 
-    this.six = new p5.BandPass();
+    this.six = new p5.Filter();
+    this.six.setType('peaking');
+    this.six.toggle = true;
+    this.six.set(5000,50);
+
+
+    this.seven = new p5.Filter();
+    this.seven.setType('peaking');
+    this.seven.toggle = true;
+    this.seven.set(10000,50);
+
+    this.eight = new p5.Filter();
+    this.eight.setType('peaking');
     this.eight.toggle = true;
-    this.six.set.(5000,50)
-
-
-    this.seven = new p5.BandPass();
-    this.one.toggle = true;
-    this.set(10000,50);
-
-    this.eight = new p5.BandPass();
-    this.eight.toggle = true;
-    this.set(20000,50)
+    this.eight.set(20000,50)
 
 
     this.input.connect(this._eqIn);
@@ -62,7 +70,7 @@ define(function (require) {
   p5.EQ.prototype = Object.create(Effect.prototype);
 
   //eventually, take a preset argument here
-  p5.EQ.process = function (src) {
+  p5.EQ.prototype.process = function (src) {
     src.connect(this.input);
   };
 
@@ -71,14 +79,20 @@ define(function (require) {
    *  @{param} option {string} specify how to modify the band;
    */
 
-  p5.EQ.setBand = function (band, option, param) {
-	if (option == "toggle") { this.toggleBand(band);}
-	else if (option == "gain") { this.gainBand(band, param);}
-	else if (option == "type") { this.modBand(band, param); }
-	else return new Error();
+  p5.EQ.prototype.setBand = function (band, option, param) {
+    if (option === "toggle") { 
+      this.toggleBand(band);
+    } else if (option === "gain") { 
+      this.gainBand(band, param);
+      // console.log("gain");
+    } else if (option === "type") { 
+      this.modBand(band, param); 
+    } else {
+      console.log("error");
+    }
   };
 
-  p5.EQ.toggleBand = function (band) {
+  p5.EQ.prototype.toggleBand = function (band) {
     switch (band) {
       case 1:
         this.one.toggle = !this.one.toggle;
@@ -109,7 +123,7 @@ define(function (require) {
     }
   };
 
-  p5.EQ.gainBand = function (band, vol) {
+  p5.EQ.prototype.gainBand = function (band, vol) {
     switch (band) {
       case 1:
         this.one.amp(vol);
@@ -140,7 +154,7 @@ define(function (require) {
     }
   };
 
-  p5.EQ.modBand = function (band, type) {
+  p5.EQ.prototype.modBand = function (band, type) {
     switch (band) {
       case 1:
         this.one.setType(type);
@@ -155,7 +169,7 @@ define(function (require) {
         this.four.setType(type);
         break
       case 5:
-        this.five.
+        this.five.setType(type);
         break
       case 6:
         this.six.setType(type);
@@ -171,7 +185,7 @@ define(function (require) {
     }
   };
 
-  p5.EQ.dispose = function (argument) {
+  p5.EQ.prototype.dispose = function (argument) {
     Effect.prototype.dispose.apply(this);
 
     this.one.disconnect();
