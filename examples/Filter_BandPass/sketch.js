@@ -15,7 +15,8 @@ function setup() {
   createCanvas(710, 256);
   fill(255, 40, 255);
 
-  filter = new p5.BandPass();
+  filter = new p5.Filter('peaking');
+  filter.biquad.gain.value = -40;
 
   noise = new p5.Noise();
 

@@ -12,7 +12,7 @@ var description = 'loading';
 var p;
 
 //var eq, Freq, filterRes;
-var eq, gain;
+var noise, eq, gain1,gain2,gain3,gain4;
 function preload() {
   soundFormats('mp3', 'ogg');
   soundFile = loadSound('../files/beat');
@@ -24,23 +24,35 @@ function setup() {
 
   // loop the sound file
   soundFile.loop();
+    soundFile.disconnect();
+
+
 
   eq = new p5.EQ();
 
+
   // Disconnect soundfile from master output.
   // Then, connect it to the filter, so that we only hear the filtered sound
-  soundFile.disconnect();
+  // noise = new p5.Noise();
+  // noise.disconnect();
   eq.process(soundFile);
+  // noise.amp(0.1);
+  // noise.start();
 
   fft = new p5.FFT();
 
   // update description text
   p = createP(description);
   var p2 = createP('Draw the array returned by FFT.analyze( ). This represents the frequency spectrum, from lowest to highest frequencies.');
+
+ 
+   
+
 }
 
 function draw() {
   background(30);
+  
 
   // Map mouseX to a the cutoff frequency for our lowpass filter
   // filterFreq = map (mouseX, 0, width, 10, 22050);
@@ -49,39 +61,53 @@ function draw() {
   // // set filter parameters
   // filter.set(filterFreq, filterRes);
 
-  if (keyIsDown(BACKSPACE)){
-    console.log(eq.one.output.gain.value);
-  }
+    // if (keyIsDown(BACKSPACE)){
+    //   console.log(eq.one.output.gain.value);
+    // }
+
+
+    gain1 = gain2 = gain3 = gain4 = 0;
 
 
   if (keyIsDown(LEFT_ARROW)){
-    gain = map(mouseY, 0, 256, 1, -1);
-    eq.setBand(1,"gain",gain);
-    eq.setBand(2,"gain",gain);
+    gain1 = -40;
+    
     
   }
 
     if (keyIsDown(DOWN_ARROW)){
-    gain = map(mouseY, 0, 256, 1, -1);
+    gain2 = -40;
+    // = map(mouseY, 0, 256, 1, -1);
    
-    eq.setBand(3,"gain",gain);
-    eq.setBand(4,"gain",gain);
+    
     
   }
 
     if (keyIsDown(UP_ARROW)){
-    gain = map(mouseY, 0, 256, 1, -1);
+    gain3 = -40;
+    //= map(mouseY, 0, 256, 1, -1);
     
-    eq.setBand(5,"gain",gain);
-    eq.setBand(6,"gain",gain);
+    
     
   }
 
     if (keyIsDown(RIGHT_ARROW)){
-    gain = map(mouseY, 0, 256, 1, -1);
-    eq.setBand(7,"gain",gain);
-    eq.setBand(8,"gain",gain);
+    gain4 = -40;
+    // = map(mouseY, 0, 256, 1, -1);
+    
   }
+ 
+
+
+    eq.setBand(1,"gain",gain1);
+    eq.setBand(2,"gain",gain1);
+     eq.setBand(3,"gain",gain2);
+     eq.setBand(4,"gain",gain2);
+     eq.setBand(5,"gain",gain3);
+     eq.setBand(6,"gain",gain3);
+     eq.setBand(7,"gain",gain4);
+     eq.setBand(8,"gain",gain4);
+
 
   // Draw every value in the FFT spectrum analysis where
   // x = lowest (10Hz) to highest (22050Hz) frequencies,
@@ -100,6 +126,6 @@ function draw() {
 
 // Change description text if the song is loading, playing or paused
 function updateDescription() {
-    description = 'gain ' + gain;
+    description = 'gain1 ' + gain1 + '\ngain2 ' + gain2 + '\ngain3 ' + gain3 + '\ngain4 ' + gain4;
     p.html(description);
 }
