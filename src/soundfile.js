@@ -177,7 +177,11 @@ define(function (require) {
    *  </code></div>
    */
   p5.prototype.loadSound = function(){
-    var callback, onerror, whileLoading;
+    var path = arguments[0]; 
+    var callback;
+    var onerror;
+    var whileLoading;
+
     var decrementPreload = p5._getDecrementPreload.apply(this, arguments);
       
     for(var i = 1; i < arguments.length; i++) {
@@ -198,9 +202,9 @@ define(function (require) {
       alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
 
-    var s = new p5.SoundFile(arguments[0], function (soundFile) {
+    var s = new p5.SoundFile(path, function (sound) {
       if (typeof callback === 'function') {
-        callback(soundFile);
+        callback(sound);
       }
 
       if(decrementPreload) {
