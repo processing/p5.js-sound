@@ -176,13 +176,37 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.prototype.loadSound = function(path, callback, onerror, whileLoading){
+  p5.prototype.loadSound = function(){
+    var callback, onerror, whileLoading;
+    var decrementPreload = p5._getDecrementPreload.apply(this, arguments);
+      
+    for(var i = 1; i < arguments.length; i++) {
+      var arg = arguments[i];
+      if (typeof arg === 'function' && arg !== decrementPreload) {
+        if (typeof callback === 'undefined') {
+          callback = arg;
+        } else if (typeof onerror === 'undefined') {
+          onerror = arg;
+        } else {
+          whileLoading = arg;
+        }
+      }
+    }
+    
     // if loading locally without a server
     if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined' ) {
       alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
 
-    var s = new p5.SoundFile(path, callback, onerror, whileLoading);
+    var s = new p5.SoundFile(arguments[0], function (soundFile) {
+      if (typeof callback === 'function') {
+        callback(soundFile);
+      }
+
+      if(decrementPreload) {
+        decrementPreload();
+      }
+    }, onerror, whileLoading);
     return s;
   };
 
