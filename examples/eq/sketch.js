@@ -43,7 +43,7 @@ function setup() {
   //sound wave color
   fill(255, 40, 255);
 
-  eq = new p5.EQ();
+  eq = new p5.EQ(8);
 
 
   // Disconnect soundfile from master output.
