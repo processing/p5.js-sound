@@ -106,14 +106,14 @@ define(function (require) {
    *  @{param} option {string} specify how to modify the band;
    */
 
-  p5.EQ.prototype.setBand = function (band, option, param) {
+  p5.EQ.prototype.setBand = function (band, option, param1, param2) {
     if (option === "toggle") { 
       this.toggleBand(band);
-    } else if (option === "gain") { 
-      this.gainBand(band, param);
+    } else if (option === "mod") { 
+      this.modBand(band, param1, param2);
       // console.log("gain");
     } else if (option === "type") { 
-      this.modBand(band, param); 
+      this.bandType(band, param1); 
     } else {
       console.log("error");
     }
@@ -150,39 +150,47 @@ define(function (require) {
     }
   };
 
-  p5.EQ.prototype.gainBand = function (band, vol) {
+  p5.EQ.prototype.modBand = function (band, vol, freq) {
 
     switch (band) {
       case 1:
         this.one.biquad.gain.value = vol;
+        this.one.set(freq);
         break
       case 2:
         this.two.biquad.gain.value = vol;
+        this.two.set(freq);
         break
       case 3:
         this.three.biquad.gain.value = vol;
+        this.three.set(freq);
         break
       case 4:
         this.four.biquad.gain.value = vol;
+        this.four.set(freq);
         break
       case 5:
         this.five.biquad.gain.value = vol;
+        this.five.set(freq);
         break
       case 6:
         this.six.biquad.gain.value = vol;
+        this.six.set(freq);
         break
       case 7:
         this.seven.biquad.gain.value = vol;
+        this.seven.set(freq);
         break
       case 8:
         this.eight.biquad.gain.value = vol;
+        this.eight.set(freq);
         break
       default:
         return 0;
     }
   };
 
-  p5.EQ.prototype.modBand = function (band, type) {
+  p5.EQ.prototype.bandType = function (band, type) {
     switch (band) {
       case 1:
         this.one.setType(type);

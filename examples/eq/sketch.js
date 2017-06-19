@@ -25,6 +25,11 @@ var x5=405,y5=128;
 var x6=505,y6=128;
 var x7=605,y7=128;
 var x8=705,y8=128;
+
+var cpts = [[x1,y1], [x2,y2], [x3,y3], [x4,y4],
+            [x5,y5], [x6,y6], [x7,y7], [x8,y8]]
+
+var a, b, c, d, e, f, g, h;
 // function preload() {
 //   soundFormats('mp3', 'ogg');
 //   soundFile = loadSound('../files/beat');
@@ -54,7 +59,7 @@ function setup() {
   // update description text
   p = createP(description);
   var p2 = createP('Draw the array returned by FFT.analyze( ). This represents the frequency spectrum, from lowest to highest frequencies.');
-
+  a = b = c = d = e = f = g = h = color('white');
 }
 
 function draw() {
@@ -101,29 +106,49 @@ function draw() {
     rect(x, height, width/spectrum.length, h) ;
   }
 
-  fill(255,255,255);
-
-  mouseOnHandle(x1,y1) ? (y1=mouseY, makeAdjustment(1,y1)) : true;
-  mouseOnHandle(x2,y2) ? (y2=mouseY, makeAdjustment(2,y2)) : true;
-  mouseOnHandle(x3,y3) ? (y3=mouseY, makeAdjustment(3,y3)) : true;
-  mouseOnHandle(x4,y4) ? (y4=mouseY, makeAdjustment(4,y4)) : true;
-  mouseOnHandle(x5,y5) ? (y5=mouseY, makeAdjustment(5,y5)) : true;
-  mouseOnHandle(x6,y6) ? (y6=mouseY, makeAdjustment(6,y6)) : true;
-  mouseOnHandle(x7,y7) ? (y7=mouseY, makeAdjustment(7,y7)) : true;
-  mouseOnHandle(x8,y8) ? (y8=mouseY, makeAdjustment(8,y8)) : true;
-
-
-  ellipse(x1,y1,circleSize,circleSize);
-  ellipse(x2,y2,circleSize,circleSize);
-  ellipse(x3,y3,circleSize,circleSize);
-  ellipse(x4,y4,circleSize,circleSize);
-  ellipse(x5,y5,circleSize,circleSize);
-  ellipse(x6,y6,circleSize,circleSize);
-  ellipse(x7,y7,circleSize,circleSize);
-  ellipse(x8,y8,circleSize,circleSize);
-
   
 
+  mouseOnHandle(x1,y1) ? (x1=mouseX, y1=mouseY, makeAdjustment(1,y1,x1)) : true;
+  mouseOnHandle(x2,y2) ? (x2=mouseX, y2=mouseY, makeAdjustment(2,y2,x2)) : true;
+  mouseOnHandle(x3,y3) ? (x3=mouseX, y3=mouseY, makeAdjustment(3,y3,x3)) : true;
+  mouseOnHandle(x4,y4) ? (x4=mouseX, y4=mouseY, makeAdjustment(4,y4,x4)) : true;
+  mouseOnHandle(x5,y5) ? (x5=mouseX, y5=mouseY, makeAdjustment(5,y5,x5)) : true;
+  mouseOnHandle(x6,y6) ? (x6=mouseX, y6=mouseY, makeAdjustment(6,y6,x6)) : true;
+  mouseOnHandle(x7,y7) ? (x7=mouseX, y7=mouseY, makeAdjustment(7,y7,x6)) : true;
+  mouseOnHandle(x8,y8) ? (x8=mouseX, y8=mouseY, makeAdjustment(8,y8,x8)) : true;
+
+  fill(a);
+  ellipse(x1,y1,circleSize,circleSize);
+  fill(b);
+  ellipse(x2,y2,circleSize,circleSize);
+  fill(c);
+  ellipse(x3,y3,circleSize,circleSize);
+  fill(d);
+  ellipse(x4,y4,circleSize,circleSize);
+  fill(e);
+  ellipse(x5,y5,circleSize,circleSize);
+  fill(f);
+  ellipse(x6,y6,circleSize,circleSize);
+  fill(g);
+  ellipse(x7,y7,circleSize,circleSize);
+  fill(h);
+  ellipse(x8,y8,circleSize,circleSize);
+
+  stroke(255,0,0);
+  noFill();
+  beginShape();
+    curveVertex(x1,y1);
+    curveVertex(x1,y1);
+    curveVertex(x2,y2);
+    curveVertex(x3,y3);
+    curveVertex(x4,y4);
+    curveVertex(x5,y5);
+    curveVertex(x6,y6);
+    curveVertex(x7,y7);
+    curveVertex(x8,y8);
+    curveVertex(x8,y8);
+
+  endShape();
 
   updateDescription();
 }
@@ -139,11 +164,35 @@ function strictBoundaries(){
   y8<1 ? y8=1 : y8>255 ? y8 = 255 : true;
 
 
+ x1 < 1 ? x1 = 1 : x2 < x1 ? x2 = x1+1 : x3 < x2 ? x3 = x2 : x4 < x3 ? 
+    x4 = x3 : x5 < x4 ? x5 = x4 : x6 < x5 ? x6 = x5 : x7 < x6 ? x7 = x6 
+    : x8 < x7 ? x8 = x7 : true;
+  //x max
+  x1 > x2 ? x1 = x2-5 : x2 > x3 ? x2 = x3-1 : x3 > x4 ? x3 = x4-1 : x4 > x5 ? 
+    x4 = x5-1 : x5 > x6 ? x5 = x6-1 : x6 > x7 ? x6 = x7-1 : x7 > x8 ? x7 = x8-1 
+    : x8 > 709 ? x8 = 709 : true;
+// x min
+ 
+
+
+//  x2 < x1 ? x2 = x1+5 : true;
+
+
   
 }
 
-function makeAdjustment(band,y){
-  eq.setBand(band,"gain",map(y,256,0, -40, 40));
+
+function mouseClicked() {
+  for (var i = cpts.length - 1; i >= 0; i--) {
+    if (mouseOnHandle(cpts[i][0],cpts[i][1]){
+      
+    }
+  }
+
+}
+
+function makeAdjustment(band,y,x){
+  eq.setBand(band,"mod",map(y,256,0, -40, 40), map(x,0,710,0,20000));
 }
 
 function mouseOnHandle(x,y){
