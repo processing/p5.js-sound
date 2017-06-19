@@ -32,28 +32,28 @@ define(function (require) {
     this.four = new p5.Filter();
     this.four.setType('peaking');
     this.four.toggle = true;
-    this.four.set(7500,5);
+    this.four.set(9999,5);
 
     this.five = new p5.Filter();
     this.five.setType('peaking');
     this.five.toggle = true;
-    this.five.set(10000,5);
+    this.five.set(13333,5);
 
     this.six = new p5.Filter();
     this.six.setType('peaking');
     this.six.toggle = true;
-    this.six.set(133333,5);
+    this.six.set(16666,5);
 
 
     this.seven = new p5.Filter();
     this.seven.setType('peaking');
     this.seven.toggle = true;
-    this.seven.set(16666,25); 
+    this.seven.set(19999,25); 
 
     this.eight = new p5.Filter();
     this.eight.setType('peaking');
     this.eight.toggle = true;
-    this.eight.set(20000,30)
+    this.eight.set(22050,30)
 
 
     this.input.connect(this._eqIn);
