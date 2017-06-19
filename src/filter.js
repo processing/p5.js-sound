@@ -1,7 +1,7 @@
-define(function (require) {
-  'use strict';
+'use strict';
 
-  var p5sound = require('master');
+define(function (require) {
+
   var Effect = require('effect');
 
   /**
@@ -60,7 +60,7 @@ define(function (require) {
    *      var h = -height + map(spectrum[i], 0, 255, height, 0);
    *      rect(x, height, width/spectrum.length, h);
    *    }
-   *    
+   *
    *    isMouseOverCanvas();
    *  }
    *
@@ -75,9 +75,7 @@ define(function (require) {
    *  </code></div>
    */
 
-
-
-//constructor with inheritance
+  //constructor with inheritance
   p5.Filter = function (type) {
 
     Effect.call(this);
@@ -87,7 +85,7 @@ define(function (require) {
       *  The p5.Filter is built with a
       *  <a href="http://www.w3.org/TR/webaudio/#BiquadFilterNode">
       *  Web Audio BiquadFilter Node</a>.
-      *  
+      *
       *  @property biquadFilter
       *  @type {Object}  Web Audio Delay Node
 	  */
@@ -100,15 +98,15 @@ define(function (require) {
 
     if (type) {
       this.setType(type);
-     }
+    }
   };
   p5.Filter.prototype = Object.create(Effect.prototype);
-  
-  
+
+
   /**
    *  Filter an audio signal according to a set
    *  of filter parameters.
-   *  
+   *
    *  @method  process
    *  @param  {Object} Signal  An object that outputs audio
    *  @param {[Number]} freq Frequency in Hz, from 10 to 22050
@@ -151,19 +149,18 @@ define(function (require) {
    *  @return {Number} value  Returns the current frequency value
    */
   p5.Filter.prototype.freq = function(freq, time) {
-    var self = this;
     var t = time || 0;
     if (freq <= 0) {
       freq = 1;
     }
-    if (typeof(freq) === 'number'){
-      self.biquad.frequency.value = freq;
-      self.biquad.frequency.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      self.biquad.frequency.exponentialRampToValueAtTime(freq, this.ac.currentTime + 0.02 + t);
+    if (typeof freq === 'number') {
+      this.biquad.frequency.value = freq;
+      this.biquad.frequency.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      this.biquad.frequency.exponentialRampToValueAtTime(freq, this.ac.currentTime + 0.02 + t);
     } else if (freq) {
       freq.connect(this.biquad.frequency);
     }
-    return self.biquad.frequency.value;
+    return this.biquad.frequency.value;
   };
 
   /**
@@ -178,24 +175,23 @@ define(function (require) {
    *  @return {Number} value Returns the current res value
    */
   p5.Filter.prototype.res = function(res, time) {
-    var self = this;
     var t = time || 0;
-    if (typeof(res) == 'number'){
-      self.biquad.Q.value = res;
-      self.biquad.Q.cancelScheduledValues(self.ac.currentTime + 0.01 + t);
-      self.biquad.Q.linearRampToValueAtTime(res, self.ac.currentTime + 0.02 + t);
+    if (typeof res === 'number') {
+      this.biquad.Q.value = res;
+      this.biquad.Q.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      this.biquad.Q.linearRampToValueAtTime(res, this.ac.currentTime + 0.02 + t);
     } else if (res) {
-      freq.connect(this.biquad.Q);
+      res.connect(this.biquad.Q);
     }
-    return self.biquad.Q.value;
+    return this.biquad.Q.value;
   };
 
   /**
-   *  Set the type of a p5.Filter. Possible types include: 
-   *  "lowpass" (default), "highpass", "bandpass", 
+   *  Set the type of a p5.Filter. Possible types include:
+   *  "lowpass" (default), "highpass", "bandpass",
    *  "lowshelf", "highshelf", "peaking", "notch",
-   *  "allpass". 
-   *  
+   *  "allpass".
+   *
    *  @method  setType
    *  @param {String}
    */
@@ -217,7 +213,7 @@ define(function (require) {
    *  This is the same as creating a p5.Filter and then calling
    *  its method <code>setType('lowpass')</code>.
    *  See p5.Filter for methods.
-   *  
+   *
    *  @method p5.LowPass
    */
   p5.LowPass = function() {
@@ -230,7 +226,7 @@ define(function (require) {
    *  This is the same as creating a p5.Filter and then calling
    *  its method <code>setType('highpass')</code>.
    *  See p5.Filter for methods.
-   *  
+   *
    *  @method p5.HighPass
    */
   p5.HighPass = function() {
@@ -242,8 +238,8 @@ define(function (require) {
    *  Constructor: <code>new p5.BandPass()</code> Filter.
    *  This is the same as creating a p5.Filter and then calling
    *  its method <code>setType('bandpass')</code>.
-   *  See p5.Filter for methods. 
-   *  
+   *  See p5.Filter for methods.
+   *
    *  @method p5.BandPass
    */
   p5.BandPass = function() {

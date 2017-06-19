@@ -1,12 +1,11 @@
-define(function (require) {
+'use strict';
 
-  require('sndcore');
-  var p5sound = require('master');
+define(function () {
 
   /**
    *  Listen for onsets (a sharp increase in volume) within a given
    *  frequency range.
-   *  
+   *
    *  @class p5.OnsetDetect
    *  @constructor
    *  @param {Number} freqLow     Low frequency
@@ -32,21 +31,21 @@ define(function (require) {
   p5.OnsetDetect.prototype.update = function(fftObject, callback) {
     this.energy = fftObject.getEnergy(this.freqLow,this.freqHigh)/255;
 
-    if(this.isDetected == false){
-        if (this.energy-this.penergy > this.treshold){
-            this.isDetected = true;
+    if(this.isDetected === false) {
+      if (this.energy-this.penergy > this.treshold) {
+        this.isDetected = true;
 
-            if (this.callback) {
-              this.callback(this.energy);
-            } else if (callback) {
-              callback(this.energy);
-            }
-
-            var self = this;
-            setTimeout(function () {
-                self.isDetected = false;
-            },this.sensitivity);
+        if (this.callback) {
+          this.callback(this.energy);
+        } else if (callback) {
+          callback(this.energy);
         }
+
+        var self = this;
+        setTimeout(function () {
+          self.isDetected = false;
+        },this.sensitivity);
+      }
     }
 
     this.penergy = this.energy;

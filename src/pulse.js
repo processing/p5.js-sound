@@ -1,5 +1,6 @@
+'use strict';
+
 define(function (require) {
-  'use strict';
 
   var p5sound = require('master');
   require('oscillator');
@@ -12,7 +13,7 @@ define(function (require) {
    *  width between the pulses. See <a href="
    *  http://p5js.org/reference/#/p5.Oscillator">
    *  <code>p5.Oscillator</code> for a full list of methods.
-   *  
+   *
    *  @class p5.Pulse
    *  @constructor
    *  @param {Number} [freq] Frequency in oscillations per second (Hz)
@@ -23,7 +24,7 @@ define(function (require) {
    *  var pulse;
    *  function setup() {
    *    background(0);
-   *    
+   *
    *    // Create and start the pulse wave oscillator
    *    pulse = new p5.Pulse();
    *    pulse.amp(0.5);
@@ -83,7 +84,7 @@ define(function (require) {
    *                         defaults to 0)
    */
   p5.Pulse.prototype.width = function(w) {
-    if (typeof (w) === 'number') {
+    if (typeof w === 'number') {
       if (w <= 1.0 && w >= 0.0) {
         this.w = w;
         // set delay time based on PWM width
@@ -107,7 +108,7 @@ define(function (require) {
   p5.Pulse.prototype.start = function(f, time) {
     var now = p5sound.audiocontext.currentTime;
     var t = time || 0;
-    if (!this.started){
+    if (!this.started) {
       var freq = f || this.f;
       var type = this.oscillator.type;
       this.oscillator = p5sound.audiocontext.createOscillator();
@@ -130,7 +131,7 @@ define(function (require) {
       this.dcOffset.start(t + now);
 
       // if LFO connections depend on these oscillators
-      if (this.mods !== undefined && this.mods.frequency !== undefined){
+      if (this.mods !== undefined && this.mods.frequency !== undefined) {
         this.mods.frequency.connect(this.freqNode[0]);
         this.mods.frequency.connect(this.freqNode[1]);
       }
@@ -139,8 +140,8 @@ define(function (require) {
     }
   };
 
-  p5.Pulse.prototype.stop = function(time){
-    if (this.started){
+  p5.Pulse.prototype.stop = function(time) {
+    if (this.started) {
       var t = time || 0;
       var now = p5sound.audiocontext.currentTime;
       this.oscillator.stop(t + now);
@@ -151,8 +152,8 @@ define(function (require) {
     }
   };
 
-  p5.Pulse.prototype.freq = function(val, rampTime, tFromNow){
-    if (typeof(val) === 'number') {
+  p5.Pulse.prototype.freq = function(val, rampTime, tFromNow) {
+    if (typeof val === 'number') {
       this.f = val;
       var now = p5sound.audiocontext.currentTime;
       var rampTime = rampTime || 0;
@@ -165,7 +166,7 @@ define(function (require) {
       this.osc2.oscillator.frequency.setValueAtTime(currentFreq, now + tFromNow);
       this.osc2.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
 
-      if (this.freqMod){
+      if (this.freqMod) {
         this.freqMod.output.disconnect();
         this.freqMod = null;
       }

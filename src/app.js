@@ -1,6 +1,6 @@
-define(function (require) {
+'use strict';
 
-  'use strict';
+define(function (require) {
 
   var p5SOUND = require('sndcore');
   require('master');
@@ -16,7 +16,6 @@ define(function (require) {
   require('pulse');
   require('noise');
   require('audioin');
-//  require('effect');
   require('filter');
   require('delay');
   require('reverb');

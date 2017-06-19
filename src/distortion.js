@@ -1,5 +1,6 @@
+'use strict';
+
 define(function (require) {
-  'use strict';
 
   var p5sound = require('master');
 
@@ -8,13 +9,13 @@ define(function (require) {
    */
   function makeDistortionCurve(amount) {
     var k = typeof amount === 'number' ? amount : 50;
-    var n_samples = 44100;
-    var curve = new Float32Array(n_samples);
+    var numSamples = 44100;
+    var curve = new Float32Array(numSamples);
     var deg = Math.PI / 180;
     var i = 0;
     var x;
-    for ( ; i < n_samples; ++i ) {
-      x = i * 2 / n_samples - 1;
+    for ( ; i < numSamples; ++i ) {
+      x = i * 2 / numSamples - 1;
       curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
     }
     return curve;
@@ -58,19 +59,19 @@ define(function (require) {
      *  @property WaveShaperNode
      *  @type {Object}  AudioNode
      */
-     this.waveShaperNode = this.ac.createWaveShaper();
+    this.waveShaperNode = this.ac.createWaveShaper();
 
-     this.amount = curveAmount;
-     this.waveShaperNode.curve = makeDistortionCurve(curveAmount);
-     this.waveShaperNode.oversample = oversample;
+    this.amount = curveAmount;
+    this.waveShaperNode.curve = makeDistortionCurve(curveAmount);
+    this.waveShaperNode.oversample = oversample;
 
-     this.input.connect(this.waveShaperNode);
-     this.waveShaperNode.connect(this.output);
+    this.input.connect(this.waveShaperNode);
+    this.waveShaperNode.connect(this.output);
 
-     this.connect();
+    this.connect();
 
-     // add to the soundArray
-     p5sound.soundArray.push(this);
+    // add to the soundArray
+    p5sound.soundArray.push(this);
   }
 
   p5.Distortion.prototype.process = function(src, amount, oversample) {
@@ -100,7 +101,7 @@ define(function (require) {
 
   /**
    *  Return the distortion amount, typically between 0-1.
-   *  
+   *
    *  @method  getAmount
    *  @return {Number} Unbounded distortion amount.
    *                   Normal values range from 0-1.
@@ -111,7 +112,7 @@ define(function (require) {
 
   /**
    *  Return the oversampling.
-   *  
+   *
    *  @return {String} Oversample can either be 'none', '2x', or '4x'.
    */
   p5.Distortion.prototype.getOversample = function() {
