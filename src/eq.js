@@ -16,9 +16,8 @@ define(function (require) {
     this.one.setType('peaking');
     this.one.toggle = true;
     this.one.set(0, 1);
+   
 
-
- 
     this.two = new p5.Filter();
     this.two.setType('peaking');
     this.two.toggle = true;
@@ -59,37 +58,28 @@ define(function (require) {
     this.input.connect(this._eqIn);
     this._eqOut.connect(this.wet);
 
+   
+
+
+
+    this.bands = [this.one, this.two, this.three, this.four,
+                  this.five, this.six, this.seven, this.eight];
+
+    for (var i = 0; i<this.bands.length; i++){
+      this.bands[i].disconnect();
+      delete this.bands[i].output;
+    }
+
+
     this._eqIn.connect(this.one);
-    this.one.connect(this.two);
-    this.two.connect(this.three);
-    this.three.connect(this.four);
-    this.four.connect(this.five);
-    this.five.connect(this.six);
-    this.six.connect(this.seven);
-    this.seven.connect(this.eight);
-    this.eight.connect(this._eqOut);
-
-
-    // this._eqIn.connect(this.one);
-    // this._eqIn.connect(this.two);
-    // this._eqIn.connect(this.three);
-    // this._eqIn.connect(this.four);
-    // this._eqIn.connect(this.five);
-    // this._eqIn.connect(this.six);
-    // this._eqIn.connect(this.seven);
-    // this._eqIn.connect(this.eight);
-
-    // this.one.connect(this._eqOut);
-    // this.two.connect(this._eqOut);
-    // this.three.connect(this._eqOut);
-    // this.four.connect(this._eqOut);
-    // this.five.connect(this._eqOut);
-    // this.six.connect(this._eqOut);
-    // this.seven.connect(this._eqOut);
-    // this.eight.connect(this._eqOut);
-
-
-
+    this.one.biquad.connect(this.two);
+    this.two.biquad.connect(this.three);
+    this.three.biquad.connect(this.four);
+    this.four.biquad.connect(this.five);
+    this.five.biquad.connect(this.six);
+    this.six.biquad.connect(this.seven);
+    this.seven.biquad.connect(this.eight);
+    this.eight.biquad.connect(this._eqOut);
 
 
   };
@@ -119,120 +109,22 @@ define(function (require) {
     }
   };
 
-  p5.EQ.prototype.toggleBand = function (band) {
-    switch (band) {
-      case 1:
-        this.one.toggle = !this.one.toggle;
-        break
-      case 2:
-        this.two.toggle = !this.two.toggle;
-        break
-      case 3:
-        this.three.toggle = !this.three.toggle;
-        break
-      case 4:
-        this.four.toggle = !this.four.toggle;
-        break
-      case 5:
-        this.five.toggle = !this.five.toggle;
-        break
-      case 6:
-        this.six.toggle = !this.six.toggle;
-        break
-      case 7:
-        this.seven.toggle = !this.seven.toggle;
-        break
-      case 8:
-        this.eight.toggle = !this.one.toggle;
-        break
-      default:
-        return 0;
-    }
+  p5.EQ.prototype.toggleBand = function (index) {
+
+    this.bands[index].toggle = !this.bands[index].toggle;
+    console.log(this.bands[index].toggle);
+    this.bands[index].toggle ? this.bands[index].setType('peaking') : this.bands[index].setType('allpass')
   };
 
-  p5.EQ.prototype.modBand = function (band, vol, freq) {
-
-    switch (band) {
-      case 1:
-        this.one.biquad.gain.value = vol;
-        this.one.set(freq);
-        break
-      case 2:
-        this.two.biquad.gain.value = vol;
-        this.two.set(freq);
-        break
-      case 3:
-        this.three.biquad.gain.value = vol;
-        this.three.set(freq);
-        break
-      case 4:
-        this.four.biquad.gain.value = vol;
-        this.four.set(freq);
-        break
-      case 5:
-        this.five.biquad.gain.value = vol;
-        this.five.set(freq);
-        break
-      case 6:
-        this.six.biquad.gain.value = vol;
-        this.six.set(freq);
-        break
-      case 7:
-        this.seven.biquad.gain.value = vol;
-        this.seven.set(freq);
-        break
-      case 8:
-        this.eight.biquad.gain.value = vol;
-        this.eight.set(freq);
-        break
-      default:
-        return 0;
-    }
+  p5.EQ.prototype.modBand = function (index, vol, freq) {
+    this.bands[index].biquad.gain.value = vol;
+    this.bands[index].set(freq);
   };
 
-  p5.EQ.prototype.bandType = function (band, type) {
-    switch (band) {
-      case 1:
-        this.one.setType(type);
-        break
-      case 2:
-        this.two.setType(type);
-        break
-      case 3:
-        this.three.setType(type);
-        break
-      case 4:
-        this.four.setType(type);
-        break
-      case 5:
-        this.five.setType(type);
-        break
-      case 6:
-        this.six.setType(type);
-        break
-      case 7:
-        this.seven.setType(type);
-        break
-      case 8:
-        this.eight.setType(type);
-        break
-      default:
-        return 0;
-    }
+  p5.EQ.prototype.bandType = function (index, type) {
+
+    this.bannds[index].setType(type);
   };
-
-
-  p5.EQ.prototype.print = function () {
-    var array;
-    array.push(this.one.output.gain.value);
-    array.push(this.one.output.gain.value);
-    array.push(this.one.output.gain.value);
-    array.push(this.one.output.gain.value);
-    array.push(this.one.output.gain.value);
-    array.push(this.one.output.gain.value);
-    array.push(this.one.output.gain.value);
-    array.push(this.one.output.gain.value);
-  }
 
   p5.EQ.prototype.dispose = function (argument) {
     Effect.prototype.dispose.apply(this);
