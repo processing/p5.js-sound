@@ -7,13 +7,24 @@ define(function (require) {
 
 
   p5.EQ = function(_eqsize) {
-    Effect.call(this);
 
-    // this._eqIn = this.ac.createGain();
-    // this._eqOut = this.ac.createGain();
+    //default size is 8 band EQ
+    _eqsize = _eqsize || 8;
+
+    Effect.call(this);
     
     this.bands = [];
 
+    /**
+      *  The p5.EQ is built with
+      *  <a href="http://www.w3.org/TR/webaudio/#BiquadFilterNode">
+      *  Web Audio BiquadFilter Node</a>.
+      *  
+      *  @property biquadFilter
+      *  @type {Object}  Web Audio Delay Node
+      *
+      *  @{param} toggle {boolean} On/of switch for band, true == on
+    */
     for (var i = 0; i<_eqsize; i++){
       this.bands.push(this.ac.createBiquadFilter());
       this.bands[i].type = 'peaking';
@@ -24,98 +35,25 @@ define(function (require) {
         this.bands[i-1].connect(this.bands[i]);
       }
     }
-    console.log(this.bands[0]);
     this.input.connect(this.bands[0]);
-    this.bands[7].connect(this.output);
-
-
-
-
-
-    // this.one = new p5.Filter();
-    // this.one.setType('peaking');
-    // this.one.toggle = true;
-    // this.one.set(0, 1);
-   
-
-    // this.two = new p5.Filter();
-    // this.two.setType('peaking');
-    // this.two.toggle = true;
-    // this.two.set(3333,1);
-
-    // this.three = new p5.Filter();
-    // this.three.setType('peaking');
-    // this.three.toggle = true;
-    // this.three.set(6666,5);
-
-    // this.four = new p5.Filter();
-    // this.four.setType('peaking');
-    // this.four.toggle = true;
-    // this.four.set(9999,5);
-
-    // this.five = new p5.Filter();
-    // this.five.setType('peaking');
-    // this.five.toggle = true;
-    // this.five.set(13333,5);
-
-    // this.six = new p5.Filter();
-    // this.six.setType('peaking');
-    // this.six.toggle = true;
-    // this.six.set(16666,5);
-
-
-    // this.seven = new p5.Filter();
-    // this.seven.setType('peaking');
-    // this.seven.toggle = true;
-    // this.seven.set(19999,25); 
-
-    // this.eight = new p5.Filter();
-    // this.eight.setType('peaking');
-    // this.eight.toggle = true;
-    // this.eight.set(22050,30)
-
-
-    // this.input.connect(this._eqIn);
-    // this._eqOut.connect(this.wet);
-
-   
-
-
-
-    // this.bands = [this.one, this.two, this.three, this.four,
-    //               this.five, this.six, this.seven, this.eight];
-
-    // for (var i = 0; i<this.bands.length; i++){
-    //   this.bands[i].disconnect();
-    //   delete this.bands[i].output;
-    // }
-
-
-    // this._eqIn.connect(this.one);
-    // this.one.biquad.connect(this.two);
-    // this.two.biquad.connect(this.three);
-    // this.three.biquad.connect(this.four);
-    // this.four.biquad.connect(this.five);
-    // this.five.biquad.connect(this.six);
-    // this.six.biquad.connect(this.seven);
-    // this.seven.biquad.connect(this.eight);
-    // this.eight.biquad.connect(this._eqOut);
-
-
+    this.bands[_eqsize-1].connect(this.output);
   };
 
   p5.EQ.prototype = Object.create(Effect.prototype);
 
-  //eventually, take a preset argument here
   p5.EQ.prototype.process = function (src) {
     src.connect(this.input);
   };
 
   /**
-   *  @{param} band {number} specify the band to motify (1-8)
-   *  @{param} option {string} specify how to modify the band;
+   *  @{method} setBand Make adjustments to individual bands of the EQ
+   *
+   *  @{param} band {number} Band to be modified
+   *  @{param} option {string} Modify function (toggle, mod, type);
+   *  @{param} param1 {number} Set the frequency of a band w/ usage: "mod"
+   *  @{param} param2 {number} Set the Q value (resonance) of a band w/usage: "mod"
+   *  @{param} param1 {string} Set the type of the band filter w/ usage: "type"
    */
-
   p5.EQ.prototype.setBand = function (band, option, param1, param2) {
     if (option === "toggle") { 
       this.toggleBand(band);
@@ -129,52 +67,53 @@ define(function (require) {
     }
   };
 
-  p5.EQ.prototype.toggleBand = function (index) {
+  /**
+   *  @{method} toggleBand Switch a band on or off
+   *
+   *  @{param} band {number} Band to be modified
+   */
+  p5.EQ.prototype.toggleBand = function (band) {
 
-    this.bands[index].toggle = !this.bands[index].toggle;
-    console.log(this.bands[index].toggle);
-    this.bands[index].toggle ? this.bands[index].setType('peaking') : this.bands[index].setType('allpass')
+    this.bands[band].toggle = !this.bands[band].toggle;
+    this.bands[band].toggle ? this.bands[band].setType('peaking') : this.bands[band].setType('allpass')
+  };
+
+
+  /**
+   *  @{method} modBand Change the parameters of a band filter
+   *
+   *  @{param} band {number} Band to be modified
+   *  @{param} vol {number} Gain value, range: -40 to 40
+   *  @{param} freq {number} Frequency value, range: 0 to 22050
+   */
+  p5.EQ.prototype.modBand = function (band, vol, freq) {
+    // this.bands[band].biquad.gain.value = vol;
+    if (vol) {this.bands[band].gain.value = vol;}
+
+    if (freq) {this.bands[band].frequency.value = freq;}
   };
 
 
 
-  p5.EQ.prototype.modBand = function (index, vol, freq) {
-    // this.bands[index].biquad.gain.value = vol;
-    this.bands[index].gain.value = vol;
+  /**
+   *  @{method} bandType Change the type of a band 
+   *
+   *  @{param} band {number} Band to be modified
+   *  @{param} type {string} Type of filter, accepted inputs 
+   *  are those of the Web Audio Node BiquadFilter: 
+   *    "lowpass", "highpass", "bandpass", 
+   *    "lowshelf", "highshelf", "peaking", "notch",
+   *    "allpass". 
+   */
+  p5.EQ.prototype.bandType = function (band, type) {
 
-    this.bands[index].frequency.value = freq;
-  };
-
-
-
-
-  p5.EQ.prototype.bandType = function (index, type) {
-
-    // this.bannds[index].setType(type);
-    this.bannds[index].type = type;
+    // this.bannds[band].setType(type);
+    this.bands[band].type = type;
 
   };
 
   p5.EQ.prototype.dispose = function (argument) {
     Effect.prototype.dispose.apply(this);
-
-    // this.one.disconnect();
-    // this.one = undefined;
-    // this.two.disconnect();
-    // this.two = undefined;
-    // this.three.disconnect();
-    // this.three = undefined;
-    // this.four.disconnect();
-    // this.four = undefined;
-    // this.five.disconnect();
-    // this.five = undefined;
-    // this.six.disconnect();
-    // this.six = undefined;
-    // this.seven.disconnect();
-    // this.seven = undefined;
-    // this.eight.disconnect();
-    // this.eight = undefined;
-
 
     for (var i = 0; i<bands.length; i++){
       this.bands[i].disconnect();
@@ -183,7 +122,5 @@ define(function (require) {
     delete this.bands;
    
   }
-
-
 
 });
