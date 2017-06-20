@@ -99,26 +99,26 @@ define(function (require) {
           return this.analyser.fftSize / 2;
         },
         set: function(b) {
-          this.analyser.fftSize = (b * 2) || 1024;
+          this.analyser.fftSize = (b * 2);
         },
         configurable: true,
         enumerable: true
       },
       'smoothing': {
         get: function() {
-          return this.analyser.smoothing;
+          return this.analyser.smoothingTimeConstant;
         },
         set: function(s) {
-          this.analyser.smoothingTimeConstant = s || 0.8;
+          this.analyser.smoothingTimeConstant = s;
         },
         configurable: true,
         enumerable: true
       }
     });
-    
-    //
-    this.smoothing = smoothing;
-    this.bins = bins;
+
+    // set default smoothing and bins
+    this.smooth(smoothing);
+    this.bins = bins || 1024;
 
     // default connections to p5sound fftMeter
     p5sound.fftMeter.connect(this.analyser);
@@ -126,7 +126,7 @@ define(function (require) {
     this.freqDomain = new Uint8Array(this.analyser.frequencyBinCount);
     this.timeDomain = new Uint8Array(this.analyser.frequencyBinCount);
 
-    // predefined frequency ranages, these will be tweakable
+    // predefined frequency ranges, these will be tweakable
     this.bass = [20, 140];
     this.lowMid = [140, 400];
     this.mid = [400, 2600];
@@ -488,10 +488,10 @@ define(function (require) {
    *                               Defaults to 0.8.
    */
   p5.FFT.prototype.smooth = function(s) {
-    if (s) {
+    if (typeof s !== 'undefined') {
       this.smoothing = s;
     }
-    this.analyser.smoothingTimeConstant = s;
+    return this.smoothing;
   };
 
   p5.FFT.prototype.dispose = function() {
