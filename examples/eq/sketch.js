@@ -17,19 +17,12 @@ var circleSize = 15;
 //bezier curve variables
 var x1,x2,x3,x4,x5,x6,x7,x8,y1,y2,y3,y4,y5,y6,y7,y8;
 
-// var x1=5, y1=128;
-// var x2=105,y2=128;
-// var x3=205,y3=128;
-// var x4=305,y4=128;
-// var x5=405,y5=128;
-// var x6=505,y6=128;
-// var x7=605,y7=128;
-// var x8=705,y8=128;
-
-var cpts;// = [[x1,y1], [x2,y2], [x3,y3], [x4,y4],[x5,y5], [x6,y6], [x7,y7], [x8,y8]];
+//var cpts;
 
 var a, b, c, d, e, f, g, h;
 var colors;// = [a,b,c,d,e,f,g,h];
+var cpts = [];
+var splineV = [];
 // function preload() {
 //   soundFormats('mp3', 'ogg');
 //   soundFile = loadSound('../files/beat');
@@ -60,20 +53,6 @@ function setup() {
   p = createP(description);
   var p2 = createP('Draw the array returned by FFT.analyze( ). This represents the frequency spectrum, from lowest to highest frequencies.');
   
-  // a = color(255);
-  // b = color('white');
-  // c = color('white');
-  // d = color('white');
-  // e = color('white');
-  // f = color('white');
-  // g = color('white');
-  // h = color('white');
-
-  
-  // h = color('blue');
-
-
-
   x1=5, y1=128, x2=105,y2=128, x3=205,y3=128, x4=305,y4=128;
   x5=405,y5=128, x6=505,y6=128, x7=605,y7=128, x8=705,y8=128;
 
@@ -81,46 +60,21 @@ function setup() {
   colors = [color(255),color(255),color(255),color(255),
             color(255),color(255),color(255),color(255)];
 
+  for (var i = 0; i < 9; i++) {
+    cpts[i] = new Cpt(i);
+    console.log(cpts[i]);
+    splineV[i] = [cpts[i].x,cpts[i].y];
+  }
+
 
 
 }
 
 function draw() {
-  cpts = [[x1,y1], [x2,y2], [x3,y3], [x4,y4],[x5,y5], [x6,y6], [x7,y7], [x8,y8]];
+  //cpts = [[x1,y1], [x2,y2], [x3,y3], [x4,y4],[x5,y5], [x6,y6], [x7,y7], [x8,y8]];
 
   background(30);
   strictBoundaries();
-
-
-
-  //   gain1 = gain2 = gain3 = gain4 = 0;
-  // if (keyIsDown(LEFT_ARROW)){
-  //   gain1 = -40;   
-  // }
-
-  //   if (keyIsDown(DOWN_ARROW)){
-  //   gain2 = -40;
-  //   // = map(mouseY, 0, 256, 1, -1); 
-  // }
-  //   if (keyIsDown(UP_ARROW)){
-  //   gain3 = -40;
-  // }
-
-  //   if (keyIsDown(RIGHT_ARROW)){
-  //   gain4 = -40;
-  // }
- 
-
-
-     // eq.setBand(1,"gain",gain1);
-     // eq.setBand(2,"gain",gain1);
-     // eq.setBand(3,"gain",gain2);
-     // eq.setBand(4,"gain",gain2);
-     // eq.setBand(5,"gain",gain3);
-     // eq.setBand(6,"gain",gain3);
-     // eq.setBand(7,"gain",gain4);
-     // eq.setBand(8,"gain",gain4);
-
 
   // Draw every value in the FFT spectrum analysis where
   // x = lowest (10Hz) to highest (22050Hz) frequencies,
@@ -135,48 +89,59 @@ function draw() {
 
   
 
-  mouseOnHandle(x1,y1) ? (x1=mouseX, y1=mouseY, makeAdjustment(1,y1,x1)) : true;
-  mouseOnHandle(x2,y2) ? (x2=mouseX, y2=mouseY, makeAdjustment(2,y2,x2)) : true;
-  mouseOnHandle(x3,y3) ? (x3=mouseX, y3=mouseY, makeAdjustment(3,y3,x3)) : true;
-  mouseOnHandle(x4,y4) ? (x4=mouseX, y4=mouseY, makeAdjustment(4,y4,x4)) : true;
-  mouseOnHandle(x5,y5) ? (x5=mouseX, y5=mouseY, makeAdjustment(5,y5,x5)) : true;
-  mouseOnHandle(x6,y6) ? (x6=mouseX, y6=mouseY, makeAdjustment(6,y6,x6)) : true;
-  mouseOnHandle(x7,y7) ? (x7=mouseX, y7=mouseY, makeAdjustment(7,y7,x7)) : true;
-  mouseOnHandle(x8,y8) ? (x8=mouseX, y8=mouseY, makeAdjustment(8,y8,x8)) : true;
+  // mouseOnHandle(x1,y1) ? (y1=mouseY, makeAdjustment(1,y1,x1)) : true;
+  // mouseOnHandle(x2,y2) ? (x2=mouseX, y2=mouseY, makeAdjustment(2,y2,x2)) : true;
+  // mouseOnHandle(x3,y3) ? (x3=mouseX, y3=mouseY, makeAdjustment(3,y3,x3)) : true;
+  // mouseOnHandle(x4,y4) ? (x4=mouseX, y4=mouseY, makeAdjustment(4,y4,x4)) : true;
+  // mouseOnHandle(x5,y5) ? (x5=mouseX, y5=mouseY, makeAdjustment(5,y5,x5)) : true;
+  // mouseOnHandle(x6,y6) ? (x6=mouseX, y6=mouseY, makeAdjustment(6,y6,x6)) : true;
+  // mouseOnHandle(x7,y7) ? (x7=mouseX, y7=mouseY, makeAdjustment(7,y7,x7)) : true;
+  // mouseOnHandle(x8,y8) ? (y8=mouseY, makeAdjustment(8,y8,x8)) : true;
 
-  fill(colors[0]);
-  ellipse(x1,y1,circleSize,circleSize);
-  fill(colors[1]);
-  ellipse(x2,y2,circleSize,circleSize);
-  fill(colors[2]);
-  ellipse(x3,y3,circleSize,circleSize);
-  fill(colors[3]);
-  ellipse(x4,y4,circleSize,circleSize);
-  fill(colors[4]);
-  ellipse(x5,y5,circleSize,circleSize);
-  fill(colors[5]);
-  ellipse(x6,y6,circleSize,circleSize);
-  fill(colors[6]);
-  ellipse(x7,y7,circleSize,circleSize);
-  fill(colors[7])
-  ellipse(x8,y8,circleSize,circleSize);
+
+
+  for (var i = 0; i < cpts.length; i++) {
+    cpts[i].display();
+    cpts[i].move();
+    splineV[i] = [cpts[i].x,cpts[i].y];
+    //console.log(cpts[i]);
+  }
+  // fill(colors[0]);
+  // ellipse(x1,y1,circleSize,circleSize);
+  // fill(colors[1]);
+  // ellipse(x2,y2,circleSize,circleSize);
+  // fill(colors[2]);
+  // ellipse(x3,y3,circleSize,circleSize);
+  // fill(colors[3]);
+  // ellipse(x4,y4,circleSize,circleSize);
+  // fill(colors[4]);
+  // ellipse(x5,y5,circleSize,circleSize);
+  // fill(colors[5]);
+  // ellipse(x6,y6,circleSize,circleSize);
+  // fill(colors[6]);
+  // ellipse(x7,y7,circleSize,circleSize);
+  // fill(colors[7])
+  // ellipse(x8,y8,circleSize,circleSize);
 
   stroke(255,0,0);
   noFill();
   beginShape();
-    curveVertex(x1,y1);
-    curveVertex(x1,y1);
-    curveVertex(x2,y2);
-    curveVertex(x3,y3);
-    curveVertex(x4,y4);
-    curveVertex(x5,y5);
-    curveVertex(x6,y6);
-    curveVertex(x7,y7);
-    curveVertex(x8,y8);
-    curveVertex(x8,y8);
+    // curveVertex(x1,y1);
+    // curveVertex(x1,y1);
+    // curveVertex(x2,y2);
+    // curveVertex(x3,y3);
+    // curveVertex(x4,y4);
+    // curveVertex(x5,y5);
+    // curveVertex(x6,y6);
+    // curveVertex(x7,y7);
+    // curveVertex(x8,y8);
 
+    // curveVertex(x8,y8);
+    curveVertex( splineV[0][0],splineV[0][1])
+    for (var i = 0; i < splineV.length; i++) {
+      curveVertex( splineV[i][0],splineV[i][1]);
+    }
   endShape();
-
   updateDescription();
 }
 
@@ -191,32 +156,44 @@ function strictBoundaries(){
   y8<1 ? y8=1 : y8>255 ? y8 = 255 : true;
 
 
- x1 < 1 ? x1 = 1 : x2 < x1 ? x2 = x1+1 : x3 < x2 ? x3 = x2 : x4 < x3 ? 
+  x1 < 1 ? x1 = 1 : x2 < x1 ? x2 = x1+1 : x3 < x2 ? x3 = x2 : x4 < x3 ? 
     x4 = x3 : x5 < x4 ? x5 = x4 : x6 < x5 ? x6 = x5 : x7 < x6 ? x7 = x6 
     : x8 < x7 ? x8 = x7 : true;
-  //x max
+
   x1 > x2 ? x1 = x2-5 : x2 > x3 ? x2 = x3-1 : x3 > x4 ? x3 = x4-1 : x4 > x5 ? 
     x4 = x5-1 : x5 > x6 ? x5 = x6-1 : x6 > x7 ? x6 = x7-1 : x7 > x8 ? x7 = x8-1 
     : x8 > 709 ? x8 = 709 : true;
 }
 
 
-// function mouseClicked() {
+function Cpt(i){
+  this.c = color(255);
+  this.x = 100*i+5
+  this.y = 128;
+  this.ind = i;
 
-//   for (var i = 0; i < cpts.length; i++) {
-//     console.log(mouseOnHandle(105,128));
+  this.display = function () {
+    fill(this.c);
+    ellipse(this.x,this.y,15,15);
+  }
 
-//     if (mouseOnHandle( cpts[i][0], cpts[i][1]) === 0){
-//       eq.toggleBand(i);
-//       console.log(eq);
-//       eq.bands[i].toggle ? colors[i] = color(0) : colors[i] = color(255);
-//     }
-//   }
+  this.move = function () {
+    mouseOnHandle(this.x,this.y) ? (this.x=mouseX, this.y=mouseY, makeAdjustment(this.ind,this.y,this.x)) : true;
+  }
+}
 
-// }
+function mouseClicked(){
 
+  if (mouseX > x1 - circleSize && mouseX < x1 + circleSize &&
+       mouseY > y1 - circleSize && mouseY < y1 + circleSize){
+    console.log("hello");
+  } else {
+      return false;
+    }
+  
+}
 function makeAdjustment(band,y,x){
-  eq.setBand(band-1,"mod",map(y,256,0, -40, 40), map(x,0,710,0,22050));
+  eq.setBand(band,"mod",map(y,256,0, -40, 40), map(x,0,710,0,22050));
 }
 
 function mouseOnHandle(x,y){
@@ -224,16 +201,14 @@ function mouseOnHandle(x,y){
   if (mouseX > x - circleSize && mouseX < x + circleSize &&
       mouseY > y - circleSize && mouseY < y + circleSize &&
       mouseIsPressed){
-    
     return true;
-  } else if (mouseX > x - circleSize && mouseX < x + circleSize &&
-      mouseY > y - circleSize && mouseY < y + circleSize){
-    return 0;
   }
   else{
     return false;
   }
 }
+
+
 
 // Change description text if the song is loading, playing or paused
 function updateDescription() {
