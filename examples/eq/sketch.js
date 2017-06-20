@@ -1,14 +1,12 @@
 /**
- *  Example: Apply a p5.LowPass filter to a p5.SoundFile.
+ *  Example: Apply a p5.EQ filter to a p5.Noise.
  *  Visualize the sound with FFT.
- *  Map mouseX to the the filter's cutoff frequency
- *  and mouseY to resonance/width of the a BandPass filter
+ *  Use control points to change the spline that shapes the soundwave
  */
 
 var fft;
 
-var description = 'loading';
-var p;
+
 
 //var eq, Freq, filterRes;
 var noise, eq;
@@ -64,7 +62,7 @@ function draw() {
     splineV[i] = [cpts[i].x,cpts[i].y];
   }
 
-  stroke(255,0,0);
+  stroke(255,255,255);
   noFill();
   beginShape();
     curveVertex( splineV[0][0],splineV[0][1])
@@ -101,7 +99,7 @@ function Cpt(i){
   }
   this.toggle = function () {
     eq.toggleBand(this.ind);
-    eq.bands[this.ind].toggle ? this.c = color(255) : this.c = color(0);
+    eq.bands[this.ind].toggle ? this.c = color(255) : this.c = color(30);
   }
 }
 
