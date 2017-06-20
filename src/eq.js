@@ -75,7 +75,8 @@ define(function (require) {
   p5.EQ.prototype.toggleBand = function (band) {
 
     this.bands[band].toggle = !this.bands[band].toggle;
-    this.bands[band].toggle ? this.bands[band].setType('peaking') : this.bands[band].setType('allpass')
+    console.log(this.bands[band].toggle);
+    this.bands[band].toggle ? this.bands[band].type = 'peaking': this.bands[band].type = 'allpass';
   };
 
 
