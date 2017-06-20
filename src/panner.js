@@ -115,7 +115,7 @@ define(function (require) {
 
     panner3D.pan = function(xVal, yVal, zVal) {
       panner3D.setPosition(xVal, yVal, zVal);
-    }
+    };
 
     return panner3D;
   };

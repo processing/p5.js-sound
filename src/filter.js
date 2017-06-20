@@ -206,7 +206,7 @@ define(function (require) {
 
     this.biquad.disconnect();
     this.biquad = undefined;
-  }
+  };
 
   /**
    *  Constructor: <code>new p5.LowPass()</code> Filter.

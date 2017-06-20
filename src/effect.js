@@ -125,7 +125,7 @@ define(function (require) {
       }
     }
     return this;
-  }
+  };
 
 
   return p5.Effect;

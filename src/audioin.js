@@ -254,7 +254,7 @@ define(function (require) {
   };
 
   p5.AudioIn.prototype.listSources = function() {
-    console.log('listSources is deprecated - please use AudioIn.getSources')
+    console.log('listSources is deprecated - please use AudioIn.getSources');
     console.log('input sources: ');
     if (p5sound.inputSources.length > 0) {
       return p5sound.inputSources;

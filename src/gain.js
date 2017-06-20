@@ -82,7 +82,7 @@ define(function (require) {
 
     // add  to the soundArray
     p5sound.soundArray.push(this);
-  }
+  };
 
   /**
    *  Connect a source to the gain node.
@@ -95,7 +95,7 @@ define(function (require) {
 
   p5.Gain.prototype.setInput = function(src) {
     src.connect(this.input);
-  }
+  };
 
   /**
    *  Send output to a p5.sound or web audio object
@@ -144,6 +144,6 @@ define(function (require) {
     this.input.disconnect();
     this.output = undefined;
     this.input = undefined;
-  }
+  };
 
 });

@@ -38,5 +38,5 @@ define(function () {
     return err;
   };
 
-  return CustomError
+  return CustomError;
 });

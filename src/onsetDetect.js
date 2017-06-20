@@ -24,7 +24,7 @@ define(function () {
     // speed of decay
     this.sensitivity = 500;
 
-    this.callback = callback
+    this.callback = callback;
   };
 
   // callback here too?

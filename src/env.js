@@ -100,7 +100,7 @@ define(function (require) {
     this._rampLowPercentage = 0.02;
 
 
-    this.output = p5sound.audiocontext.createGain();;
+    this.output = p5sound.audiocontext.createGain();
 
     this.control = new TimelineSignal();
 
@@ -135,7 +135,7 @@ define(function (require) {
     var t = now;
     this.control.setTargetAtTime(0.00001, t, .001);
     //also, compute the correct time constants
-    this._setRampAD(this.aTime, this.dTime)
+    this._setRampAD(this.aTime, this.dTime);
   };
 
   /**
@@ -321,7 +321,7 @@ define(function (require) {
     // } else if (this.sPercent) {
     //   this.dLevel = this.sPercent ? this.sPercent * (this.aLevel - this.rLevel) + this.rLevel : 0;
     // }
-  }
+  };
 
   //  private (undocumented) method called when ADSR is set to set time constants for ramp
   //
@@ -895,7 +895,7 @@ define(function (require) {
       this.control.dispose();
       this.control = null;
     } catch(e) {
-      console.warn(e, 'already disposed p5.Env')
+      console.warn(e, 'already disposed p5.Env');
     }
     for (var i = 1; i < this.mathOps.length; i++) {
       this.mathOps[i].dispose();

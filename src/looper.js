@@ -420,7 +420,7 @@ define(function (require) {
       this.parts[this.parts.length - 1].onended = function() {
         this.stop();
         this.resetParts();
-      }
+      };
     }
     this.currentPart = 0;
   };

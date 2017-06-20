@@ -42,7 +42,7 @@ define(function (require) {
     } if (typeof oversample === 'undefined') {
       oversample = '2x';
     } if (typeof oversample !== 'string') {
-      throw new Error('oversample must be a String')
+      throw new Error('oversample must be a String');
     }
 
     var curveAmount = p5.prototype.map(amount, 0.0, 1.0, 0, 2000);
@@ -72,12 +72,12 @@ define(function (require) {
 
     // add to the soundArray
     p5sound.soundArray.push(this);
-  }
+  };
 
   p5.Distortion.prototype.process = function(src, amount, oversample) {
     src.connect(this.input);
     this.set(amount, oversample);
-  }
+  };
 
   /**
    * Set the amount and oversample of the waveshaper distortion.
@@ -97,7 +97,7 @@ define(function (require) {
     if (oversample) {
       this.waveShaperNode.oversample = oversample;
     }
-  }
+  };
 
   /**
    *  Return the distortion amount, typically between 0-1.
@@ -108,7 +108,7 @@ define(function (require) {
    */
   p5.Distortion.prototype.getAmount = function() {
     return this.amount;
-  }
+  };
 
   /**
    *  Return the oversampling.
@@ -117,7 +117,7 @@ define(function (require) {
    */
   p5.Distortion.prototype.getOversample = function() {
     return this.waveShaperNode.oversample;
-  }
+  };
 
   /**
    *  Send output to a p5.sound or web audio object
@@ -152,5 +152,5 @@ define(function (require) {
       this.output.disconnect();
       this.output = null;
     }
-  }
+  };
 });

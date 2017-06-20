@@ -252,7 +252,7 @@ define(function (require) {
         this._rightFilter.output.connect(this._merge, 0, 1);
         this._leftFilter.output.connect(this.rightDelay);
         this._rightFilter.output.connect(this.leftDelay);
-        break
+        break;
       default:
         this._leftFilter.output.connect(this._merge, 0, 0);
         this._leftFilter.output.connect(this._merge, 0, 1);
@@ -326,6 +326,6 @@ define(function (require) {
     this._rightGain = undefined;
     this.leftDelay = undefined;
     this.rightDelay = undefined;
-  }
+  };
 
 });
