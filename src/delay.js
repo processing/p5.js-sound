@@ -1,8 +1,9 @@
 'use strict';
 
 define(function (require) {
-  var p5sound = require('master');
   var Filter = require('filter');
+  var Effect = require('effect');
+
   /**
    *  Delay is an echo effect. It processes an existing sound source,
    *  and outputs a delayed version of that sound. The p5.Delay can
@@ -53,10 +54,7 @@ define(function (require) {
    *  </code></div>
    */
   p5.Delay = function() {
-    this.ac = p5sound.audiocontext;
-
-    this.input = this.ac.createGain();
-    this.output = this.ac.createGain();
+  	Effect.call(this);
 
     this._split = this.ac.createChannelSplitter(2);
     this._merge = this.ac.createChannelMerger(2);
@@ -99,8 +97,8 @@ define(function (require) {
     this.rightDelay.connect(this._rightGain);
     this._leftGain.connect(this._leftFilter.input);
     this._rightGain.connect(this._rightFilter.input);
-    this._merge.connect(this.output);
-    this.output.connect(p5.soundOut.input);
+    this._merge.connect(this.wet);
+
 
     this._leftFilter.biquad.gain.setValueAtTime(1, this.ac.currentTime);
     this._rightFilter.biquad.gain.setValueAtTime(1, this.ac.currentTime);
@@ -113,10 +111,10 @@ define(function (require) {
     // set initial feedback to 0.5
     this.feedback(0.5);
 
-    // add this p5.SoundFile to the soundArray
-    p5sound.soundArray.push(this);
+
   };
 
+  p5.Delay.prototype = Object.create(Effect.prototype);
   /**
    *  Add delay to an audio signal according to a set
    *  of delay parameters.
@@ -261,6 +259,7 @@ define(function (require) {
     }
   };
 
+  // DocBlocks for methods inherited from p5.Effect
   /**
    *  Set the output level of the delay effect.
    *
@@ -270,54 +269,31 @@ define(function (require) {
    *  @param {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
    */
-  p5.Delay.prototype.amp = function(vol, rampTime, tFromNow) {
-    var rampTime = rampTime || 0;
-    var tFromNow = tFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
-    var currentVol = this.output.gain.value;
-    this.output.gain.cancelScheduledValues(now);
-    this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow + .001);
-    this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
-  };
-
   /**
    *  Send output to a p5.sound or web audio object
    *
    *  @method  connect
    *  @param  {Object} unit
    */
-  p5.Delay.prototype.connect = function(unit) {
-    var u = unit || p5.soundOut.input;
-    this.output.connect(u);
-  };
-
   /**
    *  Disconnect all output.
    *
    *  @method disconnect
    */
-  p5.Delay.prototype.disconnect = function() {
-    this.output.disconnect();
-  };
 
   p5.Delay.prototype.dispose = function() {
-    // remove reference from soundArray
-    var index = p5sound.soundArray.indexOf(this);
-    p5sound.soundArray.splice(index, 1);
 
-    this.input.disconnect();
-    this.output.disconnect();
+    Effect.prototype.dispose.apply(this);
+
     this._split.disconnect();
-    this._leftFilter.disconnect();
-    this._rightFilter.disconnect();
+    this._leftFilter.dispose();
+    this._rightFilter.dispose();
     this._merge.disconnect();
     this._leftGain.disconnect();
     this._rightGain.disconnect();
     this.leftDelay.disconnect();
     this.rightDelay.disconnect();
 
-    this.input = undefined;
-    this.output = undefined;
     this._split = undefined;
     this._leftFilter = undefined;
     this._rightFilter = undefined;

@@ -2,7 +2,7 @@
 
 define(function (require) {
 
-  var p5sound = require('master');
+  var Effect = require('effect');
 
   /*
    * Adapted from [Kevin Ennis on StackOverflow](http://stackoverflow.com/questions/22312841/waveshaper-node-in-webaudio-how-to-emulate-distortion)
@@ -35,6 +35,8 @@ define(function (require) {
    * @return {Object}   Distortion object
    */
   p5.Distortion = function(amount, oversample) {
+    Effect.call(this);
+
     if (typeof amount === 'undefined') {
       amount = 0.25;
     } if (typeof amount !== 'number') {
@@ -46,10 +48,11 @@ define(function (require) {
     }
 
     var curveAmount = p5.prototype.map(amount, 0.0, 1.0, 0, 2000);
-    this.ac = p5sound.audiocontext;
 
-    this.input = this.ac.createGain();
-    this.output = this.ac.createGain();
+    // this.ac = p5sound.audiocontext;
+
+    // this.input = this.ac.createGain();
+    // this.output = this.ac.createGain();
 
     /**
      *  The p5.Distortion is built with a
@@ -66,13 +69,11 @@ define(function (require) {
     this.waveShaperNode.oversample = oversample;
 
     this.input.connect(this.waveShaperNode);
-    this.waveShaperNode.connect(this.output);
 
-    this.connect();
-
-    // add to the soundArray
-    p5sound.soundArray.push(this);
+    this.waveShaperNode.connect(this.wet);
   };
+
+  p5.Distortion.prototype = Object.create(Effect.prototype);
 
   p5.Distortion.prototype.process = function(src, amount, oversample) {
     src.connect(this.input);
@@ -119,38 +120,31 @@ define(function (require) {
     return this.waveShaperNode.oversample;
   };
 
+  // DocBlocks for methods inherited from p5.Effect
   /**
    *  Send output to a p5.sound or web audio object
    *
    *  @method connect
    *  @param  {Object} unit
    */
-  p5.Distortion.prototype.connect = function(unit) {
-    var u = unit || p5.soundOut.input;
-    this.output.connect(u);
-  };
-
   /**
    *  Disconnect all output.
    *
    *  @method disconnect
    */
-  p5.Distortion.prototype.disconnect = function() {
-    this.output.disconnect();
-  };
+  /**
+   *  Set the output level.
+   *
+   *  @method  amp
+   *  @param  {Number} volume amplitude between 0 and 1.0
+   *  @param {Number} [rampTime] create a fade that lasts rampTime
+   *  @param {Number} [timeFromNow] schedule this event to happen
+   *                                seconds from now
+   */
 
   p5.Distortion.prototype.dispose = function() {
-    var index = p5sound.soundArray.indexOf(this);
-    p5sound.soundArray.splice(index, 1);
-
-    this.input.disconnect();
+    Effect.prototype.dispose.apply(this);
     this.waveShaperNode.disconnect();
-    this.input = null;
     this.waveShaperNode = null;
-
-    if (typeof this.output !== 'undefined') {
-      this.output.disconnect();
-      this.output = null;
-    }
   };
 });

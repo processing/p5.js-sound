@@ -246,4 +246,6 @@ define(function (require) {
     p5.Filter.call(this, 'bandpass');
   };
   p5.BandPass.prototype = Object.create(p5.Filter.prototype);
+
+  return p5.Filter;
 });
