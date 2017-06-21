@@ -21,5 +21,11 @@ define(['chai'],
       expect(delay.feedback()).to.be.closeTo(0.7, 0.001);
     });
 
+    it('drywet value can be changed', function(){
+      var effect = new p5.Effect();
+
+      expect(effect.drywet(0.5)).to.equal(0.5);
+    });
+
   });
 });
