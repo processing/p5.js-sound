@@ -55,7 +55,7 @@ define(function (require) {
    *  </code></div>
    */
   p5.Delay = function() {
-  	p5.Effect.call(this);
+  	Effect.call(this);
 
     this._split = this.ac.createChannelSplitter(2);
     this._merge = this.ac.createChannelMerger(2);
@@ -82,8 +82,8 @@ define(function (require) {
      */
     this.rightDelay = this.ac.createDelay();
 
-    this._leftFilter = new p5.Filter();
-    this._rightFilter = new p5.Filter();
+    this._leftFilter = new Filter();
+    this._rightFilter = new Filter();
     this._leftFilter.disconnect();
     this._rightFilter.disconnect();
 
@@ -266,8 +266,8 @@ define(function (require) {
 	 Effect.prototype.dispose.apply(this);
 
     this._split.disconnect();
-    this._leftFilter.disconnect();
-    this._rightFilter.disconnect();
+    this._leftFilter.dispose();
+    this._rightFilter.dispose();
     this._merge.disconnect();
     this._leftGain.disconnect();
     this._rightGain.disconnect();
