@@ -18,7 +18,6 @@ define(function (require) {
 	p5.Compressor.prototype.process = function(src, attack, knee, 
                                       ratio, threshold, release) {
 		src.connect(this.input);
-
 		this.set(attack, knee, ratio, threshold, release);
 	};
 
@@ -26,44 +25,88 @@ define(function (require) {
   p5.Compressor.prototype.set = function (attack, knee, 
                                 ratio, threshold, release) {
 
-    // var self = this;
-    // var errorTrace = new Error().stack;
-
-    if (attack) {this.attack(attack);}
-    if (knee) {this.knee(knee);}
-    if (ratio) {this.ratio(ratio);}
-    if (threshold) {this.threshold(threshold);}
-    if (release) {this.release(release);}
+    if (attack != 'undefined') {this.attack(attack);}
+    if (knee != 'undefined') {this.knee(knee);}
+    if (ratio != 'undefined') {this.ratio(ratio);}
+    if (threshold != 'undefined') {this.threshold(threshold);}
+    if (release != 'undefined') {this.release(release);}
   };
 
-  p5.Compressor.prototype.attack = function (attack){
-    if (attack) {this.compressor.attack.value = attack;}
+
+  p5.Compressor.prototype.attack = function (attack, time){
+    var self = this;
+    var t = time || 0;
+    if (typeof(attack) == 'number'){
+      self.compressor.attack.value = attack;
+      self.compressor.attack.value.cancelScheduledValues(self.ac.currentTime + 0.01 + t);
+      self.compressor.attack.value.linearRampToValueAtTime(attack, self.ac.currentTime + 0.02 + t);
+    } else if (attack) {
+        attack.connect(this.compressor.attack);
+    }
     return this.compressor.attack.value;
   };
 
-  p5.Compressor.prototype.knee = function (knee){
-    if (knee) {this.compressor.knee.value = knee;}
+
+  p5.Compressor.prototype.knee = function (knee, time){
+    var self = this;
+    var t = time || 0;
+    if (typeof(knee) == 'number'){
+      self.compressor.knee.value = knee;
+      self.compressor.knee.value.cancelScheduledValues(self.ac.currentTime + 0.01 + t);
+      self.compressor.knee.value.linearRampToValueAtTime(ratio, self.ac.currentTime + 0.02 + t);
+    } else if (knee) {
+        knee.connect(this.compressor.knee);
+    }
     return this.compressor.knee.value;
   };
 
-  p5.Compressor.prototype.ratio = function (ratio){
-    if (ratio) {this.compressor.ratio.value = ratio;}
+
+  p5.Compressor.prototype.ratio = function (ratio, time){
+    var self = this;
+    var t = time || 0;
+    if (typeof(ratio) == 'number'){
+      self.compressor.ratio.value = ratio;
+      self.compressor.ratio.value.cancelScheduledValues(self.ac.currentTime + 0.01 + t);
+      self.compressor.ratio.value.linearRampToValueAtTime(ratio, self.ac.currentTime + 0.02 + t);
+    } else if (ratio) {
+        ratio.connect(this.compressor.ratio);
+    }
     return this.compressor.ratio.value;
   };
 
-  p5.Compressor.prototype.threshold = function (threshold){
-    if (threshold) {this.compressor.threshold.value = threshold;}
+
+  p5.Compressor.prototype.threshold = function (threshold, time){
+    var self = this;
+    var t = time || 0;
+    if (typeof(threshold) == 'number'){
+      self.compressor.threshold.value = threshold;
+      self.compressor.threshold.value.cancelScheduledValues(self.ac.currentTime + 0.01 + t);
+      self.compressor.threshold.value.linearRampToValueAtTime(threshold, self.ac.currentTime + 0.02 + t);
+    } else if (threshold) {
+        threshold.connect(this.compressor.threshold);
+    }
     return this.compressor.threshold.value;
   };
 
-  p5.Compressor.prototype.release = function (release){
-    if (release) {this.compressor.release.value = release;}
+
+  p5.Compressor.prototype.release = function (release, time){
+    var self = this;
+    var t = time || 0;
+    if (typeof(release) == 'number'){
+      self.compressor.release.value = release;
+      self.compressor.release.value.cancelScheduledValues(self.ac.currentTime + 0.01 + t);
+      self.compressor.release.value.linearRampToValueAtTime(release, self.ac.currentTime + 0.02 + t);
+    } else if (release) {
+        release.connect(this.compressor.release);
+    }
     return this.compressor.release.value;
   };
+
 
   p5.Compressor.prototype.reduction =function() {
     return this.compressor.reduction.value;
   };
+
 
 	p5.Compressor.prototype.dispose = function() {
 		Effect.prototype.dispose.apply(this);
