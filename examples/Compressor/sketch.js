@@ -25,6 +25,7 @@ var knobLineLen;
 var pressed;
 var cntrlIndex;
 
+var description;
 
 function preload() {
   soundFormats('mp3', 'ogg');
@@ -38,11 +39,11 @@ function setup() {
   pressed = false;
   angleMode(DEGREES);
 
-  createCanvas(710, 256);
+  createCanvas(710, 400);
 
 
   fftHeight = 0.75*height;
-  fftWidth = 0.75*width;
+  fftWidth = 0.8*width;
   // loop the sound file
   // soundFile.loop();
 
@@ -68,22 +69,28 @@ function setup() {
   cntrls[0] = new Knob('attack');
   cntrls[1] = new Knob('knee');
   cntrls[2] = new Knob('ratio');
+  cntrls[3] = new Knob('release');
+  cntrls[4] = new Knob('drywet');
+
   for (var i = 0; i < cntrls.length; i++) {
     cntrls[i].x = x;
     cntrls[i].y = y + y*i;
-    console.log(cntrls[i]);
   }
-
-  cntrls[3] = new Knob('release');
-  cntrls[3].x = width-x;
-  cntrls[3].y = 3*y;
+  for (var i = 3; i < 5; i++) {
+    cntrls[i].x = width - x;
+    cntrls[i].y = y*(i-1);
+  }
+  // cntrls[3] = new Knob('release');
+  // cntrls[3].x = width-x;
+  // cntrls[3].y = 3*y;
   
   knobRad = .15*height;
   knobLineLen = knobRad/2;
 
 
   //create Threshold control and 
-  cntrls[4] = new ThreshLine('threshold');
+  //
+  cntrls[5] = new ThreshLine('threshold');
 
   knobBckg = color(150);
   knobLine = color(30);
@@ -92,9 +99,15 @@ function setup() {
 
   threshLineCol = color(30);
 
-
-
-
+  description = createDiv("p5.Compressor: <br>" +
+    "Adjust the knobs to control the compressor's " +
+    "attack, knee, ratio, release, and wet / dry values " +
+    "Move the slider to adjust threshold." +
+    "For information on these audioParams, see <br>" +
+    "<a href =https://www.w3.org/TR/webaudio/#the-dynamicscompressornode-interface>"+
+    "Web Audio Dyanmics Compressor Node Interface</a>");
+  description.size(.75*fftWidth, AUTO);
+  description.position(width-fftWidth, 1.15*fftHeight);
 }
 //attack knee ratio threshold release
 
@@ -108,7 +121,7 @@ function draw() {
   var spectrum = fft.analyze();
   noStroke();
  for (var i = 0; i< spectrum.length; i++){
-   var x = map(i, 0, spectrum.length, 0.125*width, fftWidth);
+   var x = map(i, 0, spectrum.length, 0.2*width, fftWidth);
    var h = -fftHeight + map(spectrum[i], 0, 255, fftHeight, 0.125*height);
    rect(x, fftHeight, fftWidth/spectrum.length, h) ;
  }
@@ -123,25 +136,26 @@ function draw() {
   cntrls[i].display();
 
  }
- // threshCntrl.display();
+ 
+ //text(description, width - fftWidth, 1.1*fftHeight);
 
 }
 
 function ThreshLine(type) {
   this.type = type;
-  this.x = 0.125*width;
-  this.y = height - fftHeight;
+  this.x = width - fftWidth;
   this.range = getRange(type);
   this.current = getDefault(type);
+  this.y = map(this.current, -100,0,fftHeight, height - fftHeight);
 
   this.length = fftWidth;
 
   this.display = function () {
     stroke(threshLineCol);
     line(this.x,this.y, this.length, this.y)
-
-    text(type, this.x - knobLineLen, this.y+knobLineLen, knobRad,knobRad);
-    text(this.current, this.x - knobLineLen, this.y + knobLineLen + 10, knobRad, knobRad);
+    noStroke();
+    text(type, fftWidth - 50, this.y+knobLineLen, knobRad,knobRad);
+    text(this.current, fftWidth - 50, this.y + knobLineLen + 10, knobRad, knobRad);
 
   };
 
@@ -297,10 +311,10 @@ function updateVal(range, curAngle, cntrlIndex) {
       compressor.release(newVal);
       break;
     case 4:
-      compressor.threshold(newVal);
-      break;
-    case drywet:
       compressor.drywet(newVal);
+      break;
+    case 5:
+      compressor.threshold(newVal);
       break;
     default:
       break;
