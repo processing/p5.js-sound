@@ -32,6 +32,9 @@ function preload() {
 }
 
 function setup() {
+
+
+
   pressed = false;
   angleMode(DEGREES);
 
@@ -51,6 +54,8 @@ function setup() {
   soundFile.disconnect();
   compressor.process(soundFile);
 
+  // compressor.process(soundFile);
+
   fft = new p5.FFT();
 
 
@@ -60,19 +65,19 @@ function setup() {
   //Create cntrls
   var x = 0.0625*width;
   var y = .25*height;
-  cntrls[0] = new Knob('ratio');
-  cntrls[1] = new Knob('attack');
-  cntrls[2] = new Knob('release');
+  cntrls[0] = new Knob('attack');
+  cntrls[1] = new Knob('knee');
+  cntrls[2] = new Knob('ratio');
   for (var i = 0; i < cntrls.length; i++) {
     cntrls[i].x = x;
     cntrls[i].y = y + y*i;
     console.log(cntrls[i]);
   }
 
-  cntrls[3] = new Knob('drywet');
+  cntrls[3] = new Knob('release');
   cntrls[3].x = width-x;
   cntrls[3].y = 3*y;
-  console.log(cntrls[3]);
+  
   knobRad = .15*height;
   knobLineLen = knobRad/2;
 
@@ -88,10 +93,14 @@ function setup() {
   threshLineCol = color(30);
 
 
+
+
 }
 //attack knee ratio threshold release
 
 function draw() {
+
+
 
   background(255);
   fill(180);
@@ -103,6 +112,9 @@ function draw() {
    var h = -fftHeight + map(spectrum[i], 0, 255, fftHeight, 0.125*height);
    rect(x, fftHeight, fftWidth/spectrum.length, h) ;
  }
+
+
+
 
  if (pressed) {cntrls[cntrlIndex].change();}
 
@@ -120,12 +132,17 @@ function ThreshLine(type) {
   this.x = 0.125*width;
   this.y = height - fftHeight;
   this.range = getRange(type);
+  this.current = getDefault(type);
 
   this.length = fftWidth;
 
   this.display = function () {
     stroke(threshLineCol);
     line(this.x,this.y, this.length, this.y)
+
+    text(type, this.x - knobLineLen, this.y+knobLineLen, knobRad,knobRad);
+    text(this.current, this.x - knobLineLen, this.y + knobLineLen + 10, knobRad, knobRad);
+
   };
 
   this.change = function () {
@@ -133,6 +150,9 @@ function ThreshLine(type) {
     if (mouseY < height - fftHeight) {this.y = height - fftHeight}
     else if (mouseY > fftHeight) {this.y = fftHeight;}
     else { this.y = mouseY;}
+    this.current = map(this.y, fftHeight, height - fftHeight, -100,0);
+
+
   };
 
   this.mouseOver = function () {
@@ -190,7 +210,8 @@ function Knob(type){
      if (this.curAngle < 0) {this.curAngle = this.curAngle + 360;}
      if (this.curAngle < 50 ) {this.curAngle = 50;}
      else if (this.curAngle > 320) {this.curAngle = 320;}
-     this.current = updateVal(this.range, this.curAngle - 50);
+     this.current = updateVal(this.range, this.curAngle - 50, cntrlIndex);
+
      translate(-this.x,-this.y);
   }
 }
@@ -260,8 +281,31 @@ function getDefault(type){
 
 
 
-function updateVal(range, curAngle) {
-   
+function updateVal(range, curAngle, cntrlIndex) {
+  var newVal = map(curAngle, 0,270,range[0],range[1])
+  switch (cntrlIndex) {
+    case 0:
+      compressor.attack(newVal);
+      break;
+    case 1:
+      compressor.knee(newVal);
+      break;
+    case 2:
+      compressor.ratio(newVal);
+      break;
+    case 3:
+      compressor.release(newVal);
+      break;
+    case 4:
+      compressor.threshold(newVal);
+      break;
+    case drywet:
+      compressor.drywet(newVal);
+      break;
+    default:
+      break;
+  }
+   return newVal;
 }
 
 function mousePressed(){
