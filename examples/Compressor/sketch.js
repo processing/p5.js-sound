@@ -4,13 +4,11 @@ var fftWidth;
 var soundFile;
 var fft;
 
-
-
 var compressor;
 
 //UI Objects
-var knobs = [];
-var threshCntrl;
+var cntrls = [];
+//var threshCntrl;
 
 
 //knob info
@@ -24,6 +22,9 @@ var threshLineCol;
 var knobRad;
 var knobLineLen;
 
+var pressed;
+var cntrlIndex;
+
 
 function preload() {
   soundFormats('mp3', 'ogg');
@@ -31,6 +32,8 @@ function preload() {
 }
 
 function setup() {
+  pressed = false;
+  angleMode(DEGREES);
 
   createCanvas(710, 256);
 
@@ -54,28 +57,28 @@ function setup() {
   soundFile.loop();
 
 
-  //Create Knobs
+  //Create cntrls
   var x = 0.0625*width;
   var y = .25*height;
-  knobs[0] = new Knob('ratio');
-  knobs[1] = new Knob('attack');
-  knobs[2] = new Knob('release');
-  for (var i = 0; i < knobs.length; i++) {
-    knobs[i].x = x;
-    knobs[i].y = y + y*i;
-    console.log(knobs[i]);
+  cntrls[0] = new Knob('ratio');
+  cntrls[1] = new Knob('attack');
+  cntrls[2] = new Knob('release');
+  for (var i = 0; i < cntrls.length; i++) {
+    cntrls[i].x = x;
+    cntrls[i].y = y + y*i;
+    console.log(cntrls[i]);
   }
 
-  knobs[3] = new Knob('wetdry');
-  knobs[3].x = width-x;
-  knobs[3].y = 3*y;
-  console.log(knobs[3]);
+  cntrls[3] = new Knob('drywet');
+  cntrls[3].x = width-x;
+  cntrls[3].y = 3*y;
+  console.log(cntrls[3]);
   knobRad = .15*height;
   knobLineLen = knobRad/2;
 
 
-  //create Threshold control
-  threshCntrl = new ThreshLine();
+  //create Threshold control and 
+  cntrls[4] = new ThreshLine('threshold');
 
   knobBckg = color(150);
   knobLine = color(30);
@@ -89,11 +92,8 @@ function setup() {
 //attack knee ratio threshold release
 
 function draw() {
+
   background(255);
- 
-  
-
-
   fill(180);
  //sound wave
   var spectrum = fft.analyze();
@@ -104,18 +104,22 @@ function draw() {
    rect(x, fftHeight, fftWidth/spectrum.length, h) ;
  }
 
+ if (pressed) {cntrls[cntrlIndex].change();}
 
+ for (var i = 0; i < cntrls.length; i++) {
+  
+  cntrls[i].display();
 
- for (var i = 0; i < knobs.length; i++) {
-   knobs[i].display();
  }
- threshCntrl.display();
+ // threshCntrl.display();
 
 }
 
-function ThreshLine() {
+function ThreshLine(type) {
+  this.type = type;
   this.x = 0.125*width;
-  this.y = 0.15*height;
+  this.y = height - fftHeight;
+  this.range = getRange(type);
 
   this.length = fftWidth;
 
@@ -124,20 +128,32 @@ function ThreshLine() {
     line(this.x,this.y, this.length, this.y)
   };
 
-  this.move = function (newY) {
-    this.y = newY;
+  this.change = function () {
+    // this.y = mouseY;
+    if (mouseY < height - fftHeight) {this.y = height - fftHeight}
+    else if (mouseY > fftHeight) {this.y = fftHeight;}
+    else { this.y = mouseY;}
   };
+
+  this.mouseOver = function () {
+    if (mouseX > this.x && mouseX < width - this.x
+      && mouseY < this.y + 5 && mouseY > this.y - 5){
+      return true;
+    } else {
+      return false;
+    }
+  }
 
 }
 
 function Knob(type){
   this.type = type;
-   this.range = getRange(type);
-   this.default = getDefault(type);
-   this.current = this.default;
-   this.curAngle = getAngle(this.range, this.current);
-    this.x;
-    this.y;
+  this.range = getRange(type);
+  this.default = getDefault(type);
+  this.current = this.default;
+  this.curAngle = map(this.current, this.range[0], this.range[1],50,320);
+  this.x;
+  this.y;
 
   this.display = function () {
     noStroke();
@@ -151,32 +167,116 @@ function Knob(type){
     line(0,0,0,knobLineLen);
     rotate(-this.curAngle);
     translate(-this.x,-this.y);
-
-   
     noStroke();
     text(type, this.x - knobLineLen, this.y+knobLineLen, knobRad,knobRad);
-    // rectMode(CORNER);
+    text(this.current, this.x - knobLineLen, this.y + knobLineLen + 10, knobRad, knobRad);
   }
 
-  // this.turn = function () {
-  //   this.curAngle = get
-  // }
+  this.mouseOver = function () {
+    if (mouseX > this.x - knobLineLen && mouseX < this.x + knobLineLen
+      && mouseY < this.y + knobLineLen && mouseY > this.y - knobLineLen){
+      return true;
+    } else {
+      return false;
+    }
+  }
 
+  this.change = function () {
+     translate(this.x, this.y);
+     var a = atan2(mouseY - this.y, mouseX - this.x);
+     //console.log(a);
+     this.curAngle = a - 90;
 
+     if (this.curAngle < 0) {this.curAngle = this.curAngle + 360;}
+     if (this.curAngle < 50 ) {this.curAngle = 50;}
+     else if (this.curAngle > 320) {this.curAngle = 320;}
+     this.current = updateVal(this.range, this.curAngle - 50);
+     translate(-this.x,-this.y);
+  }
 }
+
+
+
+
+
+
+
+// -50 -> 90 -> 320
+
+
+// 0 - 360
+
+// 310 - 230
+
+// map(value, 0, 360, 310, 230)
+
+/**
+ * @attack 0 - 1
+ * @knee { 0 - 40}
+ * ratio 1 -20
+ * release 0 -1
+ * threshold -100 - 0
+ */
 
 
 function getRange(type){
-  return [0,1];
+  switch (type) {
+    case "attack":
+      return [0,1];
+    case "knee":
+      return [0,40];
+    case "ratio":
+      return [1,20];
+    case "release":
+      return [0,1];
+    case "threshold":
+      return [-100,0];
+    case "drywet":
+      return [0,1];
+    default:
+      return 0;
+  }
 }
 
 function getDefault(type){
-  return 0.5;
+  switch (type) {
+    case "attack":
+      return .003;
+    case "knee":
+      return 30;
+    case "ratio":
+      return 12;
+    case "release":
+      return 0.25;
+    case "threshold":
+      return -24;
+    case "drywet":
+      return compressor.drywet(1);
+    default:
+      return 0;
+  }
 }
-function getAngle(range,current){
-  return 90;
+
+
+
+
+function updateVal(range, curAngle) {
+   
 }
 
 function mousePressed(){
+  for (var i = 0; i < cntrls.length; i++) {
+    if (cntrls[i].mouseOver()){ 
+      pressed = true; 
+      cntrlIndex = i;
+      break;
+    }
 
+  }
+
+
+}
+
+function mouseReleased(){
+  pressed = false;
 }
