@@ -203,7 +203,7 @@ function Knob(type){
     translate(-this.x,-this.y);
     noStroke();
     text(type, this.x - knobLineLen, this.y+knobLineLen, knobRad,knobRad);
-    text(this.current, this.x - knobLineLen, this.y + knobLineLen + 10, knobRad, knobRad);
+    text(float(this.current).toFixed(2), this.x - knobLineLen, this.y + knobLineLen + 10, knobRad, knobRad);
   }
 
   this.mouseOver = function () {
