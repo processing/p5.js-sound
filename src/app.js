@@ -16,7 +16,6 @@ define(function (require) {
   require('pulse');
   require('noise');
   require('audioin');
-//  require('effect');
   require('filter');
   require('delay');
   require('reverb');
