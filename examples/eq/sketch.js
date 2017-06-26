@@ -11,16 +11,27 @@ var fft;
 //var eq, Freq, filterRes;
 var noise, eq;
 
-var cpts = [];
+var ctrlPts = [];
 var splineV = [];
-var circleSize;
+var ctrlPtRad;
+
+
+var pressed; 
+
+var cntrlIndex;
+var eqSize;
 
 function setup() {
   createCanvas(710, 256);
   //sound wave color
   fill(255, 40, 255);
-  circleSize = 15;
-  eq = new p5.EQ(8);
+  ctrlPtRad = 15;
+
+
+  eqSize = 8;
+
+
+  eq = new p5.EQ(eqSize);
 
 
   // Disconnect soundfile from master output.
@@ -34,9 +45,9 @@ function setup() {
   fft = new p5.FFT();
 
 
-  for (var i = 0; i < 8; i++) {
-    cpts[i] = new Cpt(i);
-    splineV[i] = [cpts[i].x,cpts[i].y];
+  for (var i = 0; i < eqSize; i++) {
+    ctrlPts[i] = new CntrlPt(i, (width/(eqSize-1)) * i, height/2);
+    splineV[i] = [ctrlPts[i].x,ctrlPts[i].y];
   }
 
 }
@@ -50,16 +61,22 @@ function draw() {
   // h = energy / amplitude at that frequency
   var spectrum = fft.analyze();
   noStroke();
+
+
   for (var i = 0; i< spectrum.length; i++){
     var x = map(i, 0, spectrum.length, 0, width);
     var t = -height + map(spectrum[i], 0, 255, height, 0);
     rect(x, height, width/spectrum.length, t) ;
   }
 
-  for (var i = 0; i < cpts.length; i++) {
-    cpts[i].display();
-    cpts[i].move();
-    splineV[i] = [cpts[i].x,cpts[i].y];
+
+  
+  if (pressed) {ctrlPts[cntrlIndex].move();}
+
+  for (var i = 0; i < ctrlPts.length; i++) {
+    ctrlPts[i].display();
+
+    splineV[i] = [ctrlPts[i].x,ctrlPts[i].y];
   }
 
   stroke(255,255,255);
@@ -74,61 +91,96 @@ function draw() {
 }
 
 
-function Cpt(i){
+function CntrlPt(i,x,y){
   this.c = color(255);
-  this.x = 100*i+5
-  this.y = 128;
-  this.ind = i;
+
+  this.x = x;
+  this.y = y;
+  this.freq = calcFreq(this.x); 
+  this.q = calcQ(this.y);
 
   this.display = function () {
     fill(this.c);
-    ellipse(this.x,this.y,circleSize,circleSize);
+    ellipse(this.x,this.y,ctrlPtRad,ctrlPtRad);
   }
 
+  // this.move = function () {
+  //   if (this.ind == 0 || this.ind == 7){
+  //     mouseOnHandle(this.x,this.y) ? (this.y=mouseY, makeAdjustment(this.ind,this.y,this.x)) : true;
+  //   } else{
+  //     mouseOnHandle(this.x,this.y) ? (this.x=mouseX, this.y=mouseY, makeAdjustment(this.ind,this.y,this.x)) : true;
+  //   }
+
+  //   // if (this.y < 1) {this.y = 1;}
+  //   // else if (this.y >255) { this.y = 255;}
+  //   // else if (this.x < 1) { this.x = 1;}
+  //   // else if (this.x > 709) { this.x = 709;} 
+  // }
+  // 
+  // 
   this.move = function () {
-    if (this.ind == 0 || this.ind == 7){
-      mouseOnHandle(this.x,this.y) ? (this.y=mouseY, makeAdjustment(this.ind,this.y,this.x)) : true;
-    } else{
-      mouseOnHandle(this.x,this.y) ? (this.x=mouseX, this.y=mouseY, makeAdjustment(this.ind,this.y,this.x)) : true;
+
+    if (mouseX < 1) { this.x = 1;}
+    else if (mouseX > width) {this.x = width -1;}
+    else if (mouseY < 1) {this.y = 1;}
+    else if (mouseY > height) {this.y = height - 1;}
+    else {
+      this.x = mouseX;
+      this.y = mouseY;
     }
 
-    if (this.y < 1) {this.y = 1;}
-    else if (this.y >255) { this.y = 255;}
-    else if (this.x < 1) { this.x = 1;}
-    else if (this.x > 709) { this.x = 709;} 
   }
-  this.toggle = function () {
-    eq.toggleBand(this.ind);
-    eq.bands[this.ind].toggle ? this.c = color(255) : this.c = color(30);
+
+
+
+
+  this.mouseOver = function () {
+    if (mouseX > this.x - ctrlPtRad && mouseX < this.x + ctrlPtRad
+      && mouseY < this.y + ctrlPtRad && mouseY > this.y - ctrlPtRad){
+      return true;
+    } else {
+      return false;
+    }
   }
+
+
+  // this.toggle = function () {
+  //   eq.toggleBand(this.ind);
+  //   eq.bands[this.ind].toggle ? this.c = color(255) : this.c = color(30);
+  // }
 }
 
 
-
-function mouseClicked(){
-  //console.log(cpts.length);
-  for (var i = 0; i < cpts.length; i++) {
-    
-    if (mouseX > cpts[i].x - circleSize && mouseX < cpts[i].x + circleSize &&
-         mouseY > cpts[i].y - circleSize && mouseY < cpts[i].y + circleSize){
-      cpts[i].toggle();
-    } 
-  }
-  
+function calcQ(y) {
+  // body...
 }
 
-function makeAdjustment(band,y,x){
-  eq.setBand(band,"mod",map(y,256,0, -40, 40), map(x,0,710,0,22050));
+function calcFre(x) {
 }
 
-function mouseOnHandle(x,y){
+20
+75
+100
+250
+750
+2500
+7500
+20000
 
-  if (mouseX > x - circleSize && mouseX < x + circleSize &&
-      mouseY > y - circleSize && mouseY < y + circleSize &&
-      mouseIsPressed){
-    return true;
+
+function mousePressed(){
+  for (var i = 0; i < ctrlPts.length; i++) {
+    if (ctrlPts[i].mouseOver()){ 
+      pressed = true; 
+      cntrlIndex = i;
+      break;
+    }
+
   }
-  else{
-    return false;
-  }
+
+
+}
+
+function mouseReleased(){
+  pressed = false;
 }
