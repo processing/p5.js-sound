@@ -182,7 +182,15 @@ define(function (require) {
       alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
 
-    var s = new p5.SoundFile(path, callback, onerror, whileLoading);
+    var self = this;
+    var s = new p5.SoundFile(path, function() {
+      if(typeof callback === 'function') {
+        callback.apply(self, arguments);
+      }
+
+      self._decrementPreload();
+    }, onerror, whileLoading);
+
     return s;
   };
 
