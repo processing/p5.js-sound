@@ -11,7 +11,7 @@ var fft;
 //var eq, Freq, filterRes;
 var noise, eq;
 
-var ctrlPts = [];
+var cntrlPts = [];
 var splineV = [];
 var ctrlPtRad;
 
@@ -20,6 +20,8 @@ var pressed;
 
 var cntrlIndex;
 var eqSize;
+
+var description;
 
 function setup() {
   createCanvas(710, 256);
@@ -32,6 +34,7 @@ function setup() {
 
 
   eq = new p5.EQ(eqSize);
+  console.log(eq.bands[1]);
 
 
   // Disconnect soundfile from master output.
@@ -39,17 +42,21 @@ function setup() {
   noise = new p5.Noise();
   noise.disconnect();
   eq.process(noise);
-  noise.amp(0.1);
+
   noise.start();
 
   fft = new p5.FFT();
 
 
   for (var i = 0; i < eqSize; i++) {
-    ctrlPts[i] = new CntrlPt(i, (width/(eqSize-1)) * i, height/2);
-    splineV[i] = [ctrlPts[i].x,ctrlPts[i].y];
+    cntrlPts[i] = new CntrlPt(i, (width/(eqSize-1)) * i, height/2);
+    eq.bands[i].frequency.value = map(cntrlPts[i].x, 0, width, 50, 22050);
+    splineV[i] = [cntrlPts[i].x,cntrlPts[i].y];
   }
-
+  description = createDiv("p5.EQ:<br>"+
+                "Use the p5.EQ to shape a sound spectrum. The p5.EQ is"+
+                "built with Web Audio Biquad Filters (peaking mode) and can<br>"+
+                "be set to use 3 or 8 bands.");
 }
 
 function draw() {
@@ -71,12 +78,12 @@ function draw() {
 
 
   
-  if (pressed) {ctrlPts[cntrlIndex].move();}
+  if (pressed) {cntrlPts[cntrlIndex].move();}
 
-  for (var i = 0; i < ctrlPts.length; i++) {
-    ctrlPts[i].display();
+  for (var i = 0; i < cntrlPts.length; i++) {
+    cntrlPts[i].display();
 
-    splineV[i] = [ctrlPts[i].x,ctrlPts[i].y];
+    splineV[i] = [cntrlPts[i].x,cntrlPts[i].y];
   }
 
   stroke(255,255,255);
@@ -91,33 +98,21 @@ function draw() {
 }
 
 
+
 function CntrlPt(i,x,y){
   this.c = color(255);
 
   this.x = x;
   this.y = y;
-  this.freq = calcFreq(this.x); 
-  this.q = calcQ(this.y);
+  this.index = i;
+
 
   this.display = function () {
     fill(this.c);
     ellipse(this.x,this.y,ctrlPtRad,ctrlPtRad);
   }
 
-  // this.move = function () {
-  //   if (this.ind == 0 || this.ind == 7){
-  //     mouseOnHandle(this.x,this.y) ? (this.y=mouseY, makeAdjustment(this.ind,this.y,this.x)) : true;
-  //   } else{
-  //     mouseOnHandle(this.x,this.y) ? (this.x=mouseX, this.y=mouseY, makeAdjustment(this.ind,this.y,this.x)) : true;
-  //   }
-
-  //   // if (this.y < 1) {this.y = 1;}
-  //   // else if (this.y >255) { this.y = 255;}
-  //   // else if (this.x < 1) { this.x = 1;}
-  //   // else if (this.x > 709) { this.x = 709;} 
-  // }
-  // 
-  // 
+ 
   this.move = function () {
 
     if (mouseX < 1) { this.x = 1;}
@@ -125,14 +120,14 @@ function CntrlPt(i,x,y){
     else if (mouseY < 1) {this.y = 1;}
     else if (mouseY > height) {this.y = height - 1;}
     else {
-      this.x = mouseX;
       this.y = mouseY;
+      this.x = mouseX;
+      console.log(this.index);
+      eq.modBand(this.index, map(this.y, 0, height, 40, -40), map(this.x, 0, width, 50, 22050));
+      console.log(eq.bands[i].gain.value);
     }
 
   }
-
-
-
 
   this.mouseOver = function () {
     if (mouseX > this.x - ctrlPtRad && mouseX < this.x + ctrlPtRad
@@ -143,41 +138,21 @@ function CntrlPt(i,x,y){
     }
   }
 
-
-  // this.toggle = function () {
-  //   eq.toggleBand(this.ind);
-  //   eq.bands[this.ind].toggle ? this.c = color(255) : this.c = color(30);
-  // }
 }
 
 
-function calcQ(y) {
-  // body...
-}
 
-function calcFre(x) {
-}
-
-20
-75
-100
-250
-750
-2500
-7500
-20000
 
 
 function mousePressed(){
-  for (var i = 0; i < ctrlPts.length; i++) {
-    if (ctrlPts[i].mouseOver()){ 
+  for (var i = 0; i < cntrlPts.length; i++) {
+    if (cntrlPts[i].mouseOver()){ 
       pressed = true; 
       cntrlIndex = i;
       break;
     }
 
   }
-
 
 }
 

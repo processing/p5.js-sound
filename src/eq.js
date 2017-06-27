@@ -6,12 +6,13 @@ define(function (require) {
 
 
   p5.EQ = function(_eqsize) {
+    Effect.call(this);
 
     //p5.EQ can be of size (3) or (8), defaults to 3
-    //
-    _eqsize = _eqsize == 3 || _eqsize ==8 ? _eqsize : 3;
 
-    Effect.call(this);
+    _eqsize = _eqsize == 3 || _eqsize == 8 ? _eqsize : 3;
+
+    _eqsize == 3 ? var factor = pow(2,4) : var factor = 2;
 
     this.bands = [];
 
@@ -25,34 +26,33 @@ define(function (require) {
       *
       *  @{param} toggle {boolean} On/of switch for band, true == on
     */
-   
 
+    for (var i = 0; i < _eqsize; i++) {
+      this.bands[i] = this.ac.createBiquadFilter();
+      this.bands[i].Q.value = 5;
 
-  for (var i = _eqsize - 1; i >= 0; i--) {
-    this.bands[i] = this.ac.createBiquadFilter();
-    this.bands[i].Q.value = 1;
-    if (i == _eqsize - 1) {
-      this.bands[i].frequency.value = 22048; 
-      this.bands[i].type = 'highshelf'; 
-    } else {
-      this.bands[i].frequency.value = this.bands[i+1].frequency.value / floor(31/_eqsize);
-      i == 0 ? this.bands[i].type = 'lowshelf' : this.bands[i].type = 'peaking'; 
+      if (i == _eqsize - 1) {
+        this.bands[i].frequency.value = 20480; 
+        this.bands[i].type = 'peaking'; 
+      } else if (i == 0 ){
+        this.bands[i].type = 'peaking'; 
+        this.bands[i].frequency.value = 160;
+      } 
+      else {
+        this.bands[i].frequency.value = this.bands[i-1].frequency.value * factor;
+        this.bands[i].type = 'peaking';   
     }
 
-  }
-   
+    i > 0 ? this.bands[i-1].connect(this.bands[i]) : true;
 
+  }
     this.input.connect(this.bands[0]);
     this.bands[_eqsize-1].connect(this.output);
   };
 
-  function getFreqs(){
-    return freqs;
-  }
+
 
   p5.EQ.prototype = Object.create(Effect.prototype);
-
-
 
 
   p5.EQ.prototype.process = function (src) {
@@ -77,7 +77,6 @@ define(function (require) {
     } else if (option === "type") { 
       this.bandType(band, param1); 
     } else {
-      console.log("error");
     }
   };
 
@@ -93,7 +92,6 @@ define(function (require) {
     this.bands[band].toggle ? this.bands[band].type = 'peaking': this.bands[band].type = 'allpass';
   };
 
-
   /**
    *  @{method} modBand Change the parameters of a band filter
    *
@@ -102,13 +100,10 @@ define(function (require) {
    *  @{param} freq {number} Frequency value, range: 0 to 22050
    */
   p5.EQ.prototype.modBand = function (band, vol, freq) {
-    // this.bands[band].biquad.gain.value = vol;
-    if (vol) {this.bands[band].gain.value = vol;}
 
+    if (vol) {this.bands[band].gain.value = vol;}
     if (freq) {this.bands[band].frequency.value = freq;}
   };
-
-
 
   /**
    *  @{method} bandType Change the type of a band 
@@ -122,7 +117,6 @@ define(function (require) {
    */
   p5.EQ.prototype.bandType = function (band, type) {
     this.bands[band].type = type;
-
   };
 
   p5.EQ.prototype.dispose = function (argument) {
@@ -133,15 +127,6 @@ define(function (require) {
       this.bands[i] = undefined;
     }
     delete this.bands;
-   
   }
 
 });
-
-
-
-
-
-
-
-
