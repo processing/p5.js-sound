@@ -12,7 +12,8 @@ define(function (require) {
 
     _eqsize = _eqsize == 3 || _eqsize == 8 ? _eqsize : 3;
 
-    _eqsize == 3 ? var factor = pow(2,4) : var factor = 2;
+    var factor;
+    _eqsize == 3 ? factor = pow(2,4) : factor = 2;
 
     this.bands = [];
 
