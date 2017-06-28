@@ -16,14 +16,12 @@ define(function (require) {
   require('pulse');
   require('noise');
   require('audioin');
-//  require('effect');
   require('filter');
   require('eq');
   require('delay');
   require('reverb');
   require('metro');
   require('looper');
-  require('compressor');
   require('soundRecorder');
   require('peakdetect');
   require('gain');

@@ -13,7 +13,7 @@ define(function (require) {
     _eqsize = _eqsize == 3 || _eqsize == 8 ? _eqsize : 3;
 
     var factor;
-    _eqsize == 3 ? factor = pow(2,4) : factor = 2;
+    _eqsize == 3 ? factor = Math.pow(2,4) : factor = 2;
 
     //bands are stored in an array, index 0 - 3 or 0 - 7
     this.bands = [];
@@ -32,6 +32,7 @@ define(function (require) {
     for (var i = 0; i < _eqsize; i++) {
       this.bands[i] = this.ac.createBiquadFilter();
       this.bands[i].disconnect();
+      this.bands[i].toggle = true;
       this.bands[i].Q.value = 5;
 
       if (i == _eqsize - 1) {
@@ -100,8 +101,8 @@ define(function (require) {
    */
   p5.EQ.prototype.modBand = function (band, vol, freq) {
 
-    if (typeof vol!='undefined') {this.bands[band].gain.value = vol;}
-    if (typeof freq!='undefined') {this.bands[band].frequency.value = freq;}
+    if (vol!= null) {this.bands[band].gain.value = vol;}
+    if (freq!= null) {this.bands[band].frequency.value = freq;}
   };
 
   /**
@@ -121,11 +122,10 @@ define(function (require) {
   p5.EQ.prototype.dispose = function (argument) {
     Effect.prototype.dispose.apply(this);
 
-    for (var i = 0; i<bands.length; i++){
+    for (var i = 0; i<this.bands.length; i++){
       this.bands[i].disconnect();
       this.bands[i] = undefined;
     }
-    delete this.bands;
   }
 
 });
