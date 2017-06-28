@@ -15,6 +15,7 @@ define(function (require) {
     var factor;
     _eqsize == 3 ? factor = pow(2,4) : factor = 2;
 
+    //bands are stored in an array, index 0 - 3 or 0 - 7
     this.bands = [];
 
     /**
@@ -73,11 +74,12 @@ define(function (require) {
     if (option === "toggle") { 
       this.toggleBand(band);
     } else if (option === "mod") { 
+      console.log(param1);
       this.modBand(band, param1, param2);
-      // console.log("gain");
     } else if (option === "type") { 
       this.bandType(band, param1); 
     } else {
+      return new Error();
     }
   };
 
@@ -89,7 +91,6 @@ define(function (require) {
   p5.EQ.prototype.toggleBand = function (band) {
 
     this.bands[band].toggle = !this.bands[band].toggle;
-    console.log(this.bands[band].toggle);
     this.bands[band].toggle ? this.bands[band].type = 'peaking': this.bands[band].type = 'allpass';
   };
 
@@ -101,9 +102,9 @@ define(function (require) {
    *  @{param} freq {number} Frequency value, range: 0 to 22050
    */
   p5.EQ.prototype.modBand = function (band, vol, freq) {
-
-    if (vol) {this.bands[band].gain.value = vol;}
-    if (freq) {this.bands[band].frequency.value = freq;}
+    console.log(vol);
+    if (vol!='undefined') {this.bands[band].gain.value = vol;}
+    if (freq!='undefined') {this.bands[band].frequency.value = freq;}
   };
 
   /**

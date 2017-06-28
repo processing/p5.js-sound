@@ -53,6 +53,8 @@ function setup() {
     eq.bands[i].frequency.value = map(cntrlPts[i].x, 0, width, 50, 22050);
     splineV[i] = [cntrlPts[i].x,cntrlPts[i].y];
   }
+
+
   description = createDiv("p5.EQ:<br>"+
                 "Use the p5.EQ to shape a sound spectrum. The p5.EQ is"+
                 "built with Web Audio Biquad Filters (peaking mode) and can<br>"+
@@ -93,7 +95,7 @@ function draw() {
     for (var i = 0; i < splineV.length; i++) {
       curveVertex( splineV[i][0],splineV[i][1]);
     }
-    curveVertex( splineV[7][0],splineV[7][1])
+    curveVertex( splineV[eqSize-1][0],splineV[eqSize-1][1])
   endShape();
 }
 
