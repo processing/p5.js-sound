@@ -45,6 +45,7 @@ function preload() {
   soundFile1 = loadSound('../files/beat');
   soundFile2 = loadSound('../files/beatbox');
 
+
 }
 
 
@@ -68,6 +69,8 @@ function setup() {
 
   fft1 = new p5.FFT();
   fft2 = new p5.FFT();
+
+  crossFade = new Tone();
 
   fft1.setInput(eq1);
   fft2.setInput(eq2);
@@ -107,18 +110,8 @@ function setup() {
   knobRad = .1*deckHeight;
   knobLineLen = knobRad/2;
 
-
-  // //create Threshold control and 
-  // //
-
   knobBckg = color(150);
   knobLine = color(30);
-
-  //eq2.freq(200);
-
-
-
-
 
   // description = createDiv("p5.Compressor: <br>" +
   //   "Adjust the knobs to control the compressor's " +
@@ -133,12 +126,10 @@ function setup() {
 //attack knee ratio threshold release
 
 function draw() {
-
   for (var i = 0; i < eq1.length; i++) {
     // eq1.bands[i].gain.value = -40;
     // eq2.bands[i].gain.value = -40;
   }
-
   background(50);
 
 
