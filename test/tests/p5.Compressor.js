@@ -12,7 +12,6 @@ define(['chai'],
 
      it('wet dry value can be changed', function(){
       var compressor = new p5.Compressor();
-
       expect(compressor.drywet(0.5)).to.equal(0.5);
     });
 
