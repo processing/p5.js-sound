@@ -31,6 +31,7 @@ define(function (require) {
 
     for (var i = 0; i < _eqsize; i++) {
       this.bands[i] = this.ac.createBiquadFilter();
+      this.bands[i].disconnect();
       this.bands[i].Q.value = 5;
 
       if (i == _eqsize - 1) {
@@ -51,9 +52,6 @@ define(function (require) {
     this.input.connect(this.bands[0]);
     this.bands[_eqsize-1].connect(this.output);
   };
-
-
-
   p5.EQ.prototype = Object.create(Effect.prototype);
 
 
@@ -74,7 +72,6 @@ define(function (require) {
     if (option === "toggle") { 
       this.toggleBand(band);
     } else if (option === "mod") { 
-      console.log(param1);
       this.modBand(band, param1, param2);
     } else if (option === "type") { 
       this.bandType(band, param1); 
@@ -102,9 +99,9 @@ define(function (require) {
    *  @{param} freq {number} Frequency value, range: 0 to 22050
    */
   p5.EQ.prototype.modBand = function (band, vol, freq) {
-    console.log(vol);
-    if (vol!='undefined') {this.bands[band].gain.value = vol;}
-    if (freq!='undefined') {this.bands[band].frequency.value = freq;}
+
+    if (typeof vol!='undefined') {this.bands[band].gain.value = vol;}
+    if (typeof freq!='undefined') {this.bands[band].frequency.value = freq;}
   };
 
   /**

@@ -1,12 +1,7 @@
-
-
 var soundFile1;
 var soundFile2;
 var fft1;
 var fft2;
-
-
-
 
 //knob info
 
@@ -54,11 +49,28 @@ function preload() {
 
 
 function setup() {
+  createCanvas(1080, 680);
 
   pressed = false;
   angleMode(DEGREES);
 
-  createCanvas(1080, 680);
+  soundFile1.loop();
+  soundFile2.loop();
+
+  eq1 = new p5.EQ(3);
+  eq2 = new p5.EQ(3);
+
+  soundFile1.disconnect();
+  soundFile2.disconnect();
+
+  soundFile1.connect(eq1);
+  soundFile2.connect(eq2);
+
+  fft1 = new p5.FFT();
+  fft2 = new p5.FFT();
+
+  fft1.setInput(eq1);
+  fft2.setInput(eq2);
 
   deckWidth = .4*width;
   deckHeight = .3*height;
@@ -72,48 +84,17 @@ function setup() {
   sliderx = 40;
   slidery = 10;
 
-
-
- fft1 = new p5.FFT();
- fft2 = new p5.FFT();
-
- eq1 = new p5.EQ(3);
- eq2 = new p5.EQ(3);
-
- fft1.setInput(eq1);
- fft2.setInput(eq2);
-
- soundFile1.disconnect();
- soundFile2.disconnect();
-
-
  for (var i = 0; i < 3; i++) {
-   mixer[i] = new Knob("low",i);
+   mixer[i] = new Knob(i);
    mixer[i].x = 0.45*width;
-   mixer[i].y = 0.5*deckHeight + 0.25*deckHeight*(i+1);
+   mixer[i].y = 1.5*deckHeight - 0.25*deckHeight*(i+1);
    eq1.bands[i].Q.value = 0.1;
-   eq1.bands[i].gain.value = -20;
-   console.log(eq1.bands[i]);
  }
 
-
-
-  eq1.process(soundFile1);
-  eq2.process(soundFile2);
-
-
-  soundFile1.loop();
-  soundFile2.loop();
-
-
-
-
-
-
-  for (var i = 3; i < 6; i++) {
-    mixer[i] = new Knob("low",i-3);
+  for (var i = 5; i >= 3; i--) {
+    mixer[i] = new Knob(i-3);
     mixer[i].x = width - 0.45*width;
-    mixer[i].y = 0.5*deckHeight + 0.25*deckHeight*(i-2);
+    mixer[i].y = 1.5*deckHeight - 0.25*deckHeight*(i-2);
     eq2.bands[i-3].Q.value = 0.1;
   }
 
@@ -195,6 +176,7 @@ function draw() {
 
   if (pressed) {mixer[cntrlIndex].change();}
 
+
   for (var i = 0; i < mixer.length; i++) {
     mixer[i].display();
   }
@@ -275,8 +257,8 @@ function SliderHor(mode,x, y){
 
 
 
-function Knob(type,i){
-  this.type = type;
+function Knob(i){
+  this.type = i;
   this.range = [-40,40];
   this.default = 0;
   this.current = 0;
@@ -320,11 +302,10 @@ function Knob(type,i){
      else if (this.curAngle > 320) {this.curAngle = 320;}
     this.current = map(this.curAngle, 50, 320, -40,40);
     if(cntrlIndex < 3) { 
-        eq1.setBand(this.index, "mod", this.current,null)
+        eq1.setBand(this.index, "mod", this.current)
       }else{
-        eq2.setBand(this.index, "mod", this.current,null);
+        eq2.setBand(this.index, "mod", this.current);
       }
-
     translate(-this.x,-this.y);
 
  
