@@ -73,7 +73,8 @@ define(function (require) {
    *  converter.
    *
    *  @method soundFormats
-   *  @param {String|Strings} formats i.e. 'mp3', 'wav', 'ogg'
+   *  @param {String} formats i.e. 'mp3', 'wav', 'ogg'
+   *  @param {String} formats i.e. 'mp3', 'wav', 'ogg'
    *  @example
    *  <div><code>
    *  function preload() {
@@ -81,7 +82,7 @@ define(function (require) {
    *    soundFormats('mp3', 'ogg');
    *
    *    // load either beatbox.mp3, or .ogg, depending on browser
-   *    mySound = loadSound('../sounds/beatbox.mp3');
+   *    mySound = loadSound('assets/beatbox.mp3');
    *  }
    *
    *  function setup() {
