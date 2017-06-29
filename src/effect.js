@@ -87,7 +87,8 @@ define(function (require) {
 	 *	@param {Float}
 	 */
 	p5.Effect.prototype.drywet = function(fade){
-		if (typeof fade !='undefined'){		
+
+		if (typeof fade !="undefined"){	
 			this._drywet.fade.value = fade
 		}
 		return this._drywet.fade.value;
