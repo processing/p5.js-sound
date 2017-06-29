@@ -1,51 +1,41 @@
-var soundFile1;
-var soundFile2;
-var fft1;
-var fft2;
+var soundFile1, soundFile2;
+var fft1, fft2;
 
-//knob info
+
+//Knob controls
 
 //colors
-var knobBckg;
-var knobLine;
-
+var knobBckg, knobLine;
 
 //dimensions
-var knobRad;
-var knobLineLen;
+var knobRad, knobLineLen;
 
-var pressed;
-var cntrlIndex;
+//global control variables
+var pressed, cntrlIndex;
 
 var description;
 
-
-
+//Deck UI
 var deckWidth, deckHeight;
 var deck1x, deck1y, deck2x, deck2y;
+var fftWidth, fftHeight;
 
-var sliderLength;
-var sliderx;
-var slidery;
+var buttonWidth, buttonHeight;
 
+var sliderLength, sliderx, slidery;
 
 //0-5 = EQ
 //6 = deck 1 volume
 //7 = deck 2 volume
 //8 = channel fader
+//9 - 12 = buttons
 var mixer = [];
-var eq1;
-var eq2;
-var crossFade;
-var noise;
-
+var eq1, eq2;
 
 function preload() {
   soundFormats('mp3', 'ogg');
   soundFile1 = loadSound('../files/beat');
   soundFile2 = loadSound('../files/beatbox');
-
-
 }
 
 
@@ -70,8 +60,6 @@ function setup() {
   fft1 = new p5.FFT();
   fft2 = new p5.FFT();
 
-  crossFade = new Tone();
-
   fft1.setInput(eq1);
   fft2.setInput(eq2);
 
@@ -82,6 +70,9 @@ function setup() {
   deck2x = 0.6*width;
   deck1y = 0.3*height;
   deck2y = 0.3*height;
+
+  buttonWidth = .05*width;
+  buttonHeight = .05*width; 
 
   sliderLength = deckWidth/2;
   sliderx = 40;
@@ -106,6 +97,11 @@ function setup() {
   }
   mixer[8] = new SliderHor("hor", 0.4*width, deck1y + 2*deckHeight );
 
+ 
+  mixer[9] = new Button('play', deck1x + deckWidth/4, deck1y + 1.5*deckHeight,9);
+  mixer[10] = new Button('mute', deck1x + deckWidth/2 , deck1y + 1.5*deckHeight,10);
+  mixer[11] = new Button('play', deck2x + deckWidth/4, deck2y + 1.5*deckHeight,11);
+  mixer[12] = new Button('mute', deck2x + deckWidth/2 , deck2y + 1.5*deckHeight,12);
 
   knobRad = .1*deckHeight;
   knobLineLen = knobRad/2;
@@ -113,39 +109,25 @@ function setup() {
   knobBckg = color(150);
   knobLine = color(30);
 
-  // description = createDiv("p5.Compressor: <br>" +
-  //   "Adjust the knobs to control the compressor's " +
-  //   "attack, knee, ratio, release, and wet / dry values " +
-  //   "Move the slider to adjust threshold." +
-  //   "For information on these audioParams, see <br>" +
-  //   "<a href =https://www.w3.org/TR/webaudio/#the-dynamicscompressornode-interface>"+
-  //   "Web Audio Dyanmics Compressor Node Interface</a>");
-  // description.size(.75*fftWidth, AUTO);
-  // description.position(width-fftWidth, 1.15*fftHeight);
+  description = createDiv("Simple Mixer using p5.EQ: <br>" +
+    "Adjust the knobs to control 3 band EQ " +
+    "use the sliders to control volumes, and crossfading.");
+  description.size(.75*fftWidth, AUTO);
+  description.position(width-fftWidth, 1.15*fftHeight);
 }
-//attack knee ratio threshold release
 
 function draw() {
-  for (var i = 0; i < eq1.length; i++) {
-    // eq1.bands[i].gain.value = -40;
-    // eq2.bands[i].gain.value = -40;
-  }
   background(50);
-
-
   noStroke()
   fill(30);
 
   rect(deck1x, deck1y, deckWidth, deckHeight);
   rect(deck2x,deck2y, deckWidth, deckHeight);
 
-
   noStroke();
-
   fill(255);
-//deck1
 
-//deck1
+  //deck1
  var spectrum1 = fft1.analyze();
  noStroke();
  for (var i = 0; i< spectrum1.length; i++){
@@ -153,7 +135,7 @@ function draw() {
    var h = -deckHeight + map(spectrum1[i], 0, 255, deckHeight, 0);
    rect(x, deck1y + deckHeight, deckWidth/spectrum1.length, h) ;
  }
-//deck 2
+  //deck 2
   var spectrum2 = fft2.analyze();
   noStroke();
   for (var i = 0; i< spectrum2.length; i++){
@@ -162,17 +144,93 @@ function draw() {
     rect(x, deck2y + deckHeight, deckWidth/spectrum2.length, h) ;
   }
 
-
-  // if (pressed) {mixer[cntrlIndex].change();}
-
   if (pressed) {mixer[cntrlIndex].change();}
-
 
   for (var i = 0; i < mixer.length; i++) {
     mixer[i].display();
   }
+}
 
+function Button(type,x,y, i) {
+  this.x = x;
+  this.y = y;
+  this.type = type;
+  this.toggle = true;
+  this.index = i;
+  this.c = color(255,0,0)
 
+  this.display = function() {
+    fill(255,255,255);
+    rectMode(CORNER);
+    rect(this.x,this.y, buttonWidth, buttonHeight);
+    this.graphic(this.type);
+  };
+
+  this.graphic = function(type) {
+    if (type == 'play'){
+      if(this.toggle){
+        fill(0,255,0)
+        beginShape(TRIANGLES);
+          vertex(this.x + 0.2*buttonWidth, this.y + 0.2*buttonHeight);
+          vertex(this.x + 0.8* buttonWidth, this.y + 0.5*buttonHeight);
+          vertex(this.x + 0.2*buttonWidth, this.y + 0.8*buttonHeight);
+        endShape();
+        //this.index < 10 ? soundFile1.loop() : soundFile2.loop();
+      } else {
+        fill(255,0,0);
+        beginShape(QUADS);
+        vertex(this.x + 0.2*buttonWidth, this.y + 0.2*buttonHeight);
+        vertex(this.x + 0.4*buttonWidth, this.y + 0.2*buttonHeight);
+        vertex(this.x + 0.4*buttonWidth, this.y + 0.8*buttonHeight);
+        vertex(this.x + 0.2*buttonWidth, this.y + 0.8*buttonHeight);
+        vertex(this.x + 0.6*buttonWidth, this.y + 0.2*buttonHeight);
+        vertex(this.x + 0.8*buttonWidth, this.y + 0.2*buttonHeight);
+        vertex(this.x + 0.8*buttonWidth, this.y + 0.8*buttonHeight);
+        vertex(this.x + 0.6*buttonWidth, this.y + 0.8*buttonHeight);
+        endShape();
+        //this.index < 10 ? soundFile1.stop() : soundFile2.stop();
+      }
+    } else if (type =='mute'){
+      if (this.toggle){
+        fill(0,255,0);
+      } else {
+        fill(255,0,0);
+      }
+      text('mute',this.x + buttonWidth/4,this.y+buttonHeight/2);
+    }
+
+    this.mouseOver = function () {
+      if (mouseX > this.x && mouseX < this.x + buttonWidth
+        && mouseY < this.y + buttonHeight && mouseY > this.y){
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    this.switch = function () {
+      this.toggle = !this.toggle;
+
+      if (this.type == 'mute') {
+        if (!this.toggle) {
+           this.index < 11 ? soundFile1.setVolume(0) : soundFile2.setVolume(0);
+        } else {
+          this.index < 11 ? soundFile1.setVolume(1) : soundFile2.setVolume(1);
+        }
+      } else if(this.type == 'play'){
+        if (this.toggle) {
+           this.index < 10 ? soundFile1.play() : soundFile2.play();
+        } else {
+          console.log(this.index);
+          this.index == 9 ? soundFile1.pause() : soundFile2.pause();
+        }
+      }
+    }
+
+    this.change = function () {
+     return 0;
+    }
+  }
 }
 
 function SliderVert(mode,x){
@@ -183,7 +241,6 @@ function SliderVert(mode,x){
   this.sliderx  = 40;
   this.slidery = 10;
   this.index;
-
 
     this.display = function (){
       stroke(30);
@@ -208,7 +265,6 @@ function SliderVert(mode,x){
      cntrlIndex == 6 ? 
         soundFile1.setVolume(map(this.curPos, this.y, this.y+deckHeight, 1, 0))
         : soundFile2.setVolume(map(this.curPos, this.y, this.y+deckHeight, 1, 0));
-
   }
 }
 
@@ -216,7 +272,7 @@ function SliderHor(mode,x, y){
   this.mode = mode;
   this.x = x;
   this.y = y;
-  this.curPos = this.x;
+  this.curPos = this.x+deckWidth/4;
   this.sliderx = 10;
   this.slidery = 40;
 
@@ -228,8 +284,6 @@ function SliderHor(mode,x, y){
       rectMode(CENTER)
       rect(this.curPos, this.y, slidery, sliderx);
     }
-  
-  
 
   this.mouseOver = function () {
     if (mouseX > this.curPos - this.sliderx/2 && mouseX < this.curPos + this.sliderx/2
@@ -242,11 +296,11 @@ function SliderHor(mode,x, y){
 
   this.change = function () {
     this.curPos = Math.min(Math.max(mouseX, this.x), this.x+deckWidth/2);
-
+    map(this.curPos, this.x, this.x+deckWidth/2, -1, 1) < 0 ?
+      soundFile2.setVolume(map(this.curPos, this.x+deckWidth/4, this.x, 1, 0))
+      : soundFile1.setVolume(map(this.curPos, this.x+deckWidth/4, this.x+deckWidth/2, 1, 0));
   }
 }
-
-
 
 function Knob(i){
   this.type = i;
@@ -257,7 +311,6 @@ function Knob(i){
   this.x;
   this.y;
   this.index = i;
-
 
   this.display = function () {
     noStroke();
@@ -270,7 +323,6 @@ function Knob(i){
     line(0,0,0,knobLineLen);
     rotate(-this.curAngle);
     translate(-this.x,-this.y);
-   
   }
 
   this.mouseOver = function () {
@@ -298,8 +350,6 @@ function Knob(i){
         eq2.setBand(this.index, "mod", this.current);
       }
     translate(-this.x,-this.y);
-
- 
   }
 }
 
@@ -316,4 +366,15 @@ function mousePressed(){
 
 function mouseReleased(){
   pressed = false;
+}
+
+function mouseClicked() {
+
+  for (var i = 9; i < mixer.length; i++) {
+      if (mixer[i].mouseOver()){ 
+        mixer[i].switch()
+      }
+
+    }
+  
 }

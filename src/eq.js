@@ -33,24 +33,22 @@ define(function (require) {
       this.bands[i] = this.ac.createBiquadFilter();
       this.bands[i].disconnect();
       this.bands[i].toggle = true;
-      this.bands[i].Q.value = 5;
-
+      
       if (i == _eqsize - 1) {
         this.bands[i].frequency.value = 20480; 
-        this.bands[i].type = 'peaking'; 
-      } else if (i == 0 ){
-        this.bands[i].type = 'peaking'; 
+        this.bands[i].Q.value = .1;
+      } else if (i == 0) {
         this.bands[i].frequency.value = 160;
-      } 
-      else {
+        this.bands[i].Q.value = .1;
+      } else {
         this.bands[i].frequency.value = this.bands[i-1].frequency.value * factor;
-        this.bands[i].type = 'peaking';   
+        this.bands[i].Q.value = .9;
+      }
+
+      this.bands[i].type = 'peaking';  
+      i > 0 ? this.bands[i-1].connect(this.bands[i]) : this.input.connect(this.bands[i]);
     }
-
-    i > 0 ? this.bands[i-1].connect(this.bands[i]) : true;
-
-  }
-    this.input.connect(this.bands[0]);
+    //this.input.connect(this.bands[0]);
     this.bands[_eqsize-1].connect(this.output);
   };
   p5.EQ.prototype = Object.create(Effect.prototype);
