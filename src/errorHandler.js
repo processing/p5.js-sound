@@ -1,13 +1,13 @@
-define(function (require) {
-  'use strict';
+'use strict';
 
+define(function () {
   /**
    *  Helper function to generate an error
    *  with a custom stack trace that points to the sketch
    *  and removes other parts of the stack trace.
-   *  
+   *
    *  @private
-   *  
+   *
    *  @param  {String} name         custom  error name
    *  @param  {String} errorTrace   custom error trace
    *  @param  {String} failedPath     path to the file that failed to load
@@ -20,23 +20,23 @@ define(function (require) {
    *  @return {Error}     returns a custom Error object
    */
   var CustomError = function(name, errorTrace, failedPath) {
-      var err = new Error();
-      var tempStack, splitStack;
+    var err = new Error();
+    var tempStack, splitStack;
 
-      err.name = name;
-      err.originalStack = err.stack + errorTrace;
-      tempStack = err.stack + errorTrace;
-      err.failedPath = failedPath;
+    err.name = name;
+    err.originalStack = err.stack + errorTrace;
+    tempStack = err.stack + errorTrace;
+    err.failedPath = failedPath;
 
-      // only print the part of the stack trace that refers to the user code:
-      var splitStack = tempStack.split('\n');
-      splitStack = splitStack.filter(function(ln) {
-        return !ln.match(/(p5.|native code|globalInit)/g);
-      });
-      err.stack = splitStack.join('\n');
+    // only print the part of the stack trace that refers to the user code:
+    var splitStack = tempStack.split('\n');
+    splitStack = splitStack.filter(function(ln) {
+      return !ln.match(/(p5.|native code|globalInit)/g);
+    });
+    err.stack = splitStack.join('\n');
 
-      return err;
+    return err;
   };
 
-  return CustomError
+  return CustomError;
 });

@@ -2,32 +2,12 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    jshint: {
-      build: {
-        options: {jshintrc: '.jshintrc'},
-        src: ['Gruntfile.js']
-      },
+
+    // Configure style consistency
+    eslint: {
       source: {
-        options: {jshintrc: 'src/.jshintrc'},
+        options: {configFile: './src/.eslintrc'},
         src: ['src/**/*.js']
-      },
-      test: {
-        options: {jshintrc: 'test/.jshintrc'},
-        src: ['test/unit/**/*.js']
-      }
-    },
-    yuidoc: {
-      compile: {
-        name: '<%= pkg.name %>',
-        description: '<%= pkg.description %>',
-        version: '<%= pkg.version %>',
-        url: '<%= pkg.homepage %>',
-        options: {
-          paths: ['src/'],
-          //helpers: [],
-          themedir: 'docs/yuidoc-p5-theme/',
-          outdir: 'docs/reference/'
-        }
       }
     },
     watch: {
@@ -171,14 +151,12 @@ module.exports = function(grunt) {
 
 
   grunt.loadNpmTasks('grunt-contrib-requirejs');
-  grunt.loadNpmTasks('grunt-contrib-yuidoc');
-  grunt.registerTask('yui', ['yuidoc']);
-
-  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-open');
 
+  grunt.registerTask('lint', ['eslint:source']);
   grunt.registerTask('default', ['requirejs']);
   grunt.registerTask('dev', ['connect','requirejs', 'watch']);
   grunt.registerTask('serve', 'connect:server:keepalive');

@@ -1,12 +1,13 @@
+'use strict';
+
 define(function (require) {
-  'use strict';
   var p5sound = require('master');
 
   /**
    *  Amplitude measures volume between 0.0 and 1.0.
    *  Listens to all p5sound by default, or use setInput()
    *  to listen to a specific sound source. Accepts an optional
-   *  smoothing value, which defaults to 0. 
+   *  smoothing value, which defaults to 0.
    *
    *  @class p5.Amplitude
    *  @constructor
@@ -16,7 +17,7 @@ define(function (require) {
    *  @example
    *  <div><code>
    *  var sound, amplitude, cnv;
-   *  
+   *
    *  function preload(){
    *    sound = loadSound('assets/beat.mp3');
    *  }
@@ -165,7 +166,7 @@ define(function (require) {
     }
   };
 
-  p5.Amplitude.prototype.disconnect = function(unit) {
+  p5.Amplitude.prototype.disconnect = function() {
     this.output.disconnect();
   };
 
@@ -182,7 +183,7 @@ define(function (require) {
 
       for (var i = 0; i < bufLength; i++) {
         x = inputBuffer[i];
-        if (this.normalize){
+        if (this.normalize) {
           total += Math.max(Math.min(x/this.volMax, 1), -1);
           sum += Math.max(Math.min(x/this.volMax, 1), -1) * Math.max(Math.min(x/this.volMax, 1), -1);
         }
@@ -231,7 +232,7 @@ define(function (require) {
    *  function preload(){
    *    sound = loadSound('assets/beat.mp3');
    *  }
-   *  function setup() { 
+   *  function setup() {
    *    amplitude = new p5.Amplitude();
    *    sound.play();
    *  }
@@ -248,7 +249,7 @@ define(function (require) {
    *  </code></div>
    */
   p5.Amplitude.prototype.getLevel = function(channel) {
-    if (typeof(channel) !== 'undefined') {
+    if (typeof channel !== 'undefined') {
       if (this.normalize) {
         return this.stereoVolNorm[channel];
       } else {
@@ -277,7 +278,7 @@ define(function (require) {
    * @param {boolean} [boolean] set normalize to true (1) or false (0)
    */
   p5.Amplitude.prototype.toggleNormalize = function(bool) {
-    if (typeof(bool) === 'boolean'){
+    if (typeof bool === 'boolean') {
       this.normalize = bool;
     }
     else {
@@ -286,7 +287,7 @@ define(function (require) {
   };
 
   /**
-   *  Smooth Amplitude analysis by averaging with the last analysis 
+   *  Smooth Amplitude analysis by averaging with the last analysis
    *  frame. Off by default.
    *
    *  @method smooth

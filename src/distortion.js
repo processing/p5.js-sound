@@ -1,7 +1,7 @@
-define(function (require) {
-  'use strict';
+'use strict';
 
-  var p5sound = require('master');
+define(function (require) {
+
   var Effect = require('effect');
 
   /*
@@ -9,13 +9,13 @@ define(function (require) {
    */
   function makeDistortionCurve(amount) {
     var k = typeof amount === 'number' ? amount : 50;
-    var n_samples = 44100;
-    var curve = new Float32Array(n_samples);
+    var numSamples = 44100;
+    var curve = new Float32Array(numSamples);
     var deg = Math.PI / 180;
     var i = 0;
     var x;
-    for ( ; i < n_samples; ++i ) {
-      x = i * 2 / n_samples - 1;
+    for ( ; i < numSamples; ++i ) {
+      x = i * 2 / numSamples - 1;
       curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
     }
     return curve;
@@ -44,11 +44,11 @@ define(function (require) {
     } if (typeof oversample === 'undefined') {
       oversample = '2x';
     } if (typeof oversample !== 'string') {
-      throw new Error('oversample must be a String')
+      throw new Error('oversample must be a String');
     }
 
     var curveAmount = p5.prototype.map(amount, 0.0, 1.0, 0, 2000);
-    
+
     // this.ac = p5sound.audiocontext;
 
     // this.input = this.ac.createGain();
@@ -62,28 +62,23 @@ define(function (require) {
      *  @property WaveShaperNode
      *  @type {Object}  AudioNode
      */
-     this.waveShaperNode = this.ac.createWaveShaper();
+    this.waveShaperNode = this.ac.createWaveShaper();
 
-     this.amount = curveAmount;
-     this.waveShaperNode.curve = makeDistortionCurve(curveAmount);
-     this.waveShaperNode.oversample = oversample;
+    this.amount = curveAmount;
+    this.waveShaperNode.curve = makeDistortionCurve(curveAmount);
+    this.waveShaperNode.oversample = oversample;
 
-     this.input.connect(this.waveShaperNode);
+    this.input.connect(this.waveShaperNode);
 
-     this.waveShaperNode.connect(this.wet);
-
-     // this.connect();
-
-     // // add to the soundArray
-     // p5sound.soundArray.push(this);
-  }
+    this.waveShaperNode.connect(this.wet);
+  };
 
   p5.Distortion.prototype = Object.create(Effect.prototype);
 
   p5.Distortion.prototype.process = function(src, amount, oversample) {
     src.connect(this.input);
     this.set(amount, oversample);
-  }
+  };
 
   /**
    * Set the amount and oversample of the waveshaper distortion.
@@ -103,64 +98,53 @@ define(function (require) {
     if (oversample) {
       this.waveShaperNode.oversample = oversample;
     }
-  }
+  };
 
   /**
    *  Return the distortion amount, typically between 0-1.
-   *  
+   *
    *  @method  getAmount
    *  @return {Number} Unbounded distortion amount.
    *                   Normal values range from 0-1.
    */
   p5.Distortion.prototype.getAmount = function() {
     return this.amount;
-  }
+  };
 
   /**
    *  Return the oversampling.
-   *  
+   *
    *  @return {String} Oversample can either be 'none', '2x', or '4x'.
    */
   p5.Distortion.prototype.getOversample = function() {
     return this.waveShaperNode.oversample;
-  }
+  };
 
-  // /**
-  //  *  Send output to a p5.sound or web audio object
-  //  *
-  //  *  @method connect
-  //  *  @param  {Object} unit
-  //  */
-  // p5.Distortion.prototype.connect = function(unit) {
-  //   var u = unit || p5.soundOut.input;
-  //   this.output.connect(u);
-  // };
-
-  // /**
-  //  *  Disconnect all output.
-  //  *
-  //  *  @method disconnect
-  //  */
-  // p5.Distortion.prototype.disconnect = function() {
-  //   this.output.disconnect();
-  // };
+  // DocBlocks for methods inherited from p5.Effect
+  /**
+   *  Send output to a p5.sound or web audio object
+   *
+   *  @method connect
+   *  @param  {Object} unit
+   */
+  /**
+   *  Disconnect all output.
+   *
+   *  @method disconnect
+   */
+  /**
+   *  Set the output level.
+   *
+   *  @method  amp
+   *  @param  {Number} volume amplitude between 0 and 1.0
+   *  @param {Number} [rampTime] create a fade that lasts rampTime
+   *  @param {Number} [timeFromNow] schedule this event to happen
+   *                                seconds from now
+   */
 
   p5.Distortion.prototype.dispose = function() {
-
     Effect.prototype.dispose.apply(this);
-
-    // var index = p5sound.soundArray.indexOf(this);
-    // p5sound.soundArray.splice(index, 1);
-
-    // this.input.disconnect();
-    
     this.waveShaperNode.disconnect();
-    // this.input = null;
     this.waveShaperNode = null;
-
-    // if (typeof this.output !== 'undefined') {
-    //   this.output.disconnect();
-    //   this.output = null;
-    // }
-  }
+  };
 });

@@ -1,14 +1,11 @@
-define(function (require) {
-  'use strict';
+'use strict';
 
+define(function (require) {
   var p5sound = require('master');
 
   // requires the Tone.js library's Clock (MIT license, Yotam Mann)
   // https://github.com/TONEnoTONE/Tone.js/
-  var Clock = require("Tone/core/Clock");
-
-  var ac = p5sound.audiocontext;
-  // var upTick = false;
+  var Clock = require('Tone/core/Clock');
 
   p5.Metro = function() {
     this.clock = new Clock({
@@ -21,7 +18,7 @@ define(function (require) {
     this.prevTick = 0;
     this.tatumTime = 0;
 
-    this.tickCallback = function(){};
+    this.tickCallback = function() {};
   };
 
   p5.Metro.prototype.ontick = function(tickTime) {
@@ -32,21 +29,21 @@ define(function (require) {
     } else {
       // console.log('ok', this.syncedParts[0].phrases[0].name);
       this.prevTick = tickTime;
+
       // for all of the active things on the metro:
-      for (var i in this.syncedParts) {
-        var thisPart = this.syncedParts[i];
+      var self = this;
+      this.syncedParts.forEach(function(thisPart) {
         if (!thisPart.isPlaying) return;
         thisPart.incrementStep(secondsFromNow);
         // each synced source keeps track of its own beat number
-        for (var j in thisPart.phrases) {
-          var thisPhrase = thisPart.phrases[j];
+        thisPart.phrases.forEach(function(thisPhrase) {
           var phraseArray = thisPhrase.sequence;
-          var bNum = this.metroTicks % (phraseArray.length );
-          if (phraseArray[bNum] !== 0 && (this.metroTicks < phraseArray.length || !thisPhrase.looping) ) {
+          var bNum = self.metroTicks % phraseArray.length;
+          if (phraseArray[bNum] !== 0 && (self.metroTicks < phraseArray.length || !thisPhrase.looping) ) {
             thisPhrase.callback(secondsFromNow, phraseArray[bNum]);
           }
-        }
-      }
+        });
+      });
       this.metroTicks += 1;
       this.tickCallback(secondsFromNow);
     }
@@ -63,8 +60,8 @@ define(function (require) {
     this.bpm = bpm;
   };
 
-  p5.Metro.prototype.getBPM = function(tempo) {
-    return ( this.clock.getRate() / this.tatums ) * 60;
+  p5.Metro.prototype.getBPM = function() {
+    return this.clock.getRate() / this.tatums * 60;
   };
 
   p5.Metro.prototype._init = function() {
