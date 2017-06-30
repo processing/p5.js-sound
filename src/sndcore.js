@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  *  p5.sound extends p5 with <a href="http://caniuse.com/audio-api"
  *  target="_blank">Web Audio</a> functionality including audio input,
@@ -27,15 +29,15 @@
  *  <b><a href="#/p5.Convolver">p5.Convolver</a>:</b> Extends
  *  <a href="#/p5.Reverb">p5.Reverb</a> to simulate the sound of real
  *    physical spaces through convolution.<br/>
- *  <b><a href="#/p5.SoundRecorder">p5.SoundRecorder</a></b>: Record sound for playback 
+ *  <b><a href="#/p5.SoundRecorder">p5.SoundRecorder</a></b>: Record sound for playback
  *    / save the .wav file.
  *  <b><a href="#/p5.Phrase">p5.Phrase</a></b>, <b><a href="#/p5.Part">p5.Part</a></b> and
  *  <b><a href="#/p5.Score">p5.Score</a></b>: Compose musical sequences.
  *  <br/><br/>
  *  p5.sound is on <a href="https://github.com/therewasaguy/p5.sound/">GitHub</a>.
- *  Download the latest version 
+ *  Download the latest version
  *  <a href="https://github.com/therewasaguy/p5.sound/blob/master/lib/p5.sound.js">here</a>.
- *  
+ *
  *  @module p5.sound
  *  @submodule p5.sound
  *  @for p5.sound
@@ -45,7 +47,7 @@
 
 /**
  *  p5.sound developed by Jason Sigal for the Processing Foundation, Google Summer of Code 2014. The MIT License (MIT).
- *  
+ *
  *  http://github.com/therewasaguy/p5.sound
  *
  *  Some of the many audio libraries & resources that inspire p5.sound:
@@ -55,12 +57,11 @@
  *   - wavesurfer.js https://github.com/katspaugh/wavesurfer.js
  *   - Web Audio Components by Jordan Santell https://github.com/web-audio-components
  *   - Wilm Thoben's Sound library for Processing https://github.com/processing/processing/tree/master/java/libraries/sound
- *   
+ *
  *   Web Audio API: http://w3.org/TR/webaudio/
  */
 
-define(function (require) {
-  'use strict';
+define(function () {
 
   /* AudioContext Monkeypatch
      Copyright 2013 Chris Wilson
@@ -74,9 +75,7 @@ define(function (require) {
      See the License for the specific language governing permissions and
      limitations under the License.
   */
-  (function (global, exports, perf) {
-    'use strict';
-
+  (function () {
     function fixSetTarget(param) {
       if (!param) // if NYI, just return
         return;
@@ -86,7 +85,7 @@ define(function (require) {
 
     if (window.hasOwnProperty('webkitAudioContext') &&
         !window.hasOwnProperty('AudioContext')) {
-      window.AudioContext = webkitAudioContext;
+      window.AudioContext = window.webkitAudioContext;
 
       if (typeof AudioContext.prototype.createGain !== 'function')
         AudioContext.prototype.createGain = AudioContext.prototype.createGainNode;
@@ -202,10 +201,10 @@ define(function (require) {
 
     if (window.hasOwnProperty('webkitOfflineAudioContext') &&
         !window.hasOwnProperty('OfflineAudioContext')) {
-      window.OfflineAudioContext = webkitOfflineAudioContext;
+      window.OfflineAudioContext = window.webkitOfflineAudioContext;
     }
 
-  }(window));
+  })(window);
   // <-- end MonkeyPatch.
 
   // Create the Audio Context
@@ -220,12 +219,15 @@ define(function (require) {
    * @method getAudioContext
    * @return {Object}    AudioContext for this sketch
    */
-  p5.prototype.getAudioContext = function(){
+  p5.prototype.getAudioContext = function() {
     return audiocontext;
   };
 
   // Polyfill for AudioIn, also handled by p5.dom createCapture
-  navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+  navigator.getUserMedia = navigator.getUserMedia ||
+    navigator.webkitGetUserMedia ||
+    navigator.mozGetUserMedia ||
+    navigator.msGetUserMedia;
 
 
   /**
@@ -261,9 +263,12 @@ define(function (require) {
         return isWAVSupported();
       case 'ogg':
         return isOGGSupported();
-      case 'aac', 'm4a', 'mp4':
+      case 'aac':
+      case 'm4a':
+      case 'mp4':
         return isAACSupported();
-      case 'aif', 'aiff':
+      case 'aif':
+      case 'aiff':
         return isAIFSupported();
       default:
         return false;
@@ -272,7 +277,7 @@ define(function (require) {
 
   // if it is iOS, we have to have a user interaction to start Web Audio
   // http://paulbakaus.com/tutorials/html5/web-audio-on-ios/
-  var iOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false );
+  var iOS =  navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false ;
   if (iOS) {
     var iosStarted = false;
     var startIOS = function() {

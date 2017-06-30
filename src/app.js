@@ -1,6 +1,6 @@
-define(function (require) {
+'use strict';
 
-  'use strict';
+define(function (require) {
 
   var p5SOUND = require('sndcore');
   require('master');
