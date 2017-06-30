@@ -79,6 +79,8 @@ module.exports = function(grunt) {
             'env': 'src/env',
             'delay': 'src/delay',
             'effect': 'src/effect',
+            'spatializer': 'src/spatializer',
+            'listener3d': 'src/listener3d',
             'filter': 'src/filter',
             'reverb': 'src/reverb',
             'eq': 'src/eq',

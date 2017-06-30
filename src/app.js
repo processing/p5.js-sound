@@ -18,6 +18,8 @@ define(function (require) {
   require('audioin');
   require('filter');
   require('eq');
+  require('spatializer');
+  require('listener3d');
   require('delay');
   require('reverb');
   require('metro');
