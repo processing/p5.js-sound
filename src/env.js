@@ -1,5 +1,6 @@
+'use strict';
+
 define(function (require) {
-  'use strict';
 
   var p5sound = require('master');
   var Add = require('Tone/signal/Add');
@@ -62,9 +63,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Env = function(t1, l1, t2, l2, t3, l3){
-    var now = p5sound.audiocontext.currentTime;
-
+  p5.Env = function(t1, l1, t2, l2, t3, l3) {
     /**
      * Time until envelope reaches attackLevel
      * @property attackTime
@@ -101,7 +100,7 @@ define(function (require) {
     this._rampLowPercentage = 0.02;
 
 
-    this.output = p5sound.audiocontext.createGain();;
+    this.output = p5sound.audiocontext.createGain();
 
     this.control = new TimelineSignal();
 
@@ -136,7 +135,7 @@ define(function (require) {
     var t = now;
     this.control.setTargetAtTime(0.00001, t, .001);
     //also, compute the correct time constants
-    this._setRampAD(this.aTime, this.dTime)
+    this._setRampAD(this.aTime, this.dTime);
   };
 
   /**
@@ -188,7 +187,7 @@ define(function (require) {
    *  </code></div>
    *
    */
-  p5.Env.prototype.set = function(t1, l1, t2, l2, t3, l3){
+  p5.Env.prototype.set = function(t1, l1, t2, l2, t3, l3) {
     this.aTime = t1;
     this.aLevel = l1;
     this.dTime = t2 || 0;
@@ -255,13 +254,13 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Env.prototype.setADSR = function(aTime, dTime, sPercent, rTime){
+  p5.Env.prototype.setADSR = function(aTime, dTime, sPercent, rTime) {
     this.aTime = aTime;
     this.dTime = dTime || 0;
 
     // lerp
     this.sPercent = sPercent || 0;
-    this.dLevel = typeof(sPercent) !== 'undefined' ? sPercent * (this.aLevel - this.rLevel) + this.rLevel : 0;
+    this.dLevel = typeof sPercent !== 'undefined' ? sPercent * (this.aLevel - this.rLevel) + this.rLevel : 0;
 
     this.rTime = rTime || 0;
 
@@ -322,7 +321,7 @@ define(function (require) {
     // } else if (this.sPercent) {
     //   this.dLevel = this.sPercent ? this.sPercent * (this.aLevel - this.rLevel) + this.rLevel : 0;
     // }
-  }
+  };
 
   //  private (undocumented) method called when ADSR is set to set time constants for ramp
   //
@@ -335,30 +334,30 @@ define(function (require) {
   //  param {Number} attackTimeConstant  attack time constant
   //  param {Number} decayTimeConstant   decay time constant
   //
-  p5.Env.prototype._setRampAD = function(t1, t2){
+  p5.Env.prototype._setRampAD = function(t1, t2) {
     this._rampAttackTime = this.checkExpInput(t1);
     this._rampDecayTime = this.checkExpInput(t2);
 
     var TCDenominator = 1.0;
     /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
-    TCDenominator = Math.log(1.0 / (this.checkExpInput(1.0 - this._rampHighPercentage)));
-    this._rampAttackTC = (t1 / this.checkExpInput(TCDenominator));
+    TCDenominator = Math.log(1.0 / this.checkExpInput(1.0 - this._rampHighPercentage));
+    this._rampAttackTC = t1 / this.checkExpInput(TCDenominator);
     TCDenominator = Math.log(1.0 / this._rampLowPercentage);
-    this._rampDecayTC = (t2 / this.checkExpInput(TCDenominator));
+    this._rampDecayTC = t2 / this.checkExpInput(TCDenominator);
   };
 
   // private method
-  p5.Env.prototype.setRampPercentages = function(p1, p2){
+  p5.Env.prototype.setRampPercentages = function(p1, p2) {
     //set the percentages that the simple exponential ramps go to
     this._rampHighPercentage = this.checkExpInput(p1);
     this._rampLowPercentage = this.checkExpInput(p2);
     var TCDenominator = 1.0;
     //now re-compute the time constants based on those percentages
     /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
-    TCDenominator = Math.log(1.0 / (this.checkExpInput(1.0 - this._rampHighPercentage)));
-    this._rampAttackTC = (this._rampAttackTime / this.checkExpInput(TCDenominator));
+    TCDenominator = Math.log(1.0 / this.checkExpInput(1.0 - this._rampHighPercentage));
+    this._rampAttackTC = this._rampAttackTime / this.checkExpInput(TCDenominator);
     TCDenominator = Math.log(1.0 / this._rampLowPercentage);
-    this._rampDecayTC = (this._rampDecayTime / this.checkExpInput(TCDenominator));
+    this._rampDecayTC = this._rampDecayTime / this.checkExpInput(TCDenominator);
   };
 
 
@@ -372,7 +371,7 @@ define(function (require) {
    *  @param  {Object} unit         A p5.sound object or
    *                                Web Audio Param.
    */
-  p5.Env.prototype.setInput = function(unit){
+  p5.Env.prototype.setInput = function() {
     for (var i = 0; i<arguments.length; i++) {
       this.connect(arguments[i]);
     }
@@ -386,7 +385,7 @@ define(function (require) {
    *  @method  setExp
    *  @param {Boolean} isExp true is exponential, false is linear
    */
-  p5.Env.prototype.setExp = function(isExp){
+  p5.Env.prototype.setExp = function(isExp) {
     this.isExponential = isExp;
   };
 
@@ -449,8 +448,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Env.prototype.play = function(unit, secondsFromNow, susTime){
-    var now =  p5sound.audiocontext.currentTime;
+  p5.Env.prototype.play = function(unit, secondsFromNow, susTime) {
     var tFromNow = secondsFromNow || 0;
     var susTime = susTime || 0;
 
@@ -540,7 +538,7 @@ define(function (require) {
     // get and set value (with linear ramp) to anchor automation
     var valToSet = this.control.getValueAtTime(t);
     this.control.cancelScheduledValues(t); // not sure if this is necessary
-    if (this.isExponential == true)
+    if (this.isExponential === true)
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(valToSet), t);
     }
@@ -556,7 +554,7 @@ define(function (require) {
 
     // attack
     t += this.aTime;
-    if (this.isExponential == true)
+    if (this.isExponential === true)
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(this.aLevel), t);
       valToSet = this.checkExpInput(this.control.getValueAtTime(t));
@@ -573,7 +571,7 @@ define(function (require) {
 
     // decay to decay level (if using ADSR, then decay level == sustain level)
     t += this.dTime;
-    if (this.isExponential == true)
+    if (this.isExponential === true)
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(this.dLevel), t);
       valToSet = this.checkExpInput(this.control.getValueAtTime(t));
@@ -671,7 +669,7 @@ define(function (require) {
     // get and set value (with linear or exponential ramp) to anchor automation
     var valToSet = this.control.getValueAtTime(t);
     this.control.cancelScheduledValues(t); // not sure if this is necessary
-    if (this.isExponential == true)
+    if (this.isExponential === true)
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(valToSet), t);
     }
@@ -683,7 +681,7 @@ define(function (require) {
     // release
     t += this.rTime;
 
-    if (this.isExponential == true)
+    if (this.isExponential === true)
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(this.rLevel), t);
       valToSet = this.checkExpInput(this.control.getValueAtTime(t));
@@ -759,7 +757,7 @@ define(function (require) {
     var tFromNow = secondsFromNow || 0;
     var t = now + tFromNow;
     var destination1 = this.checkExpInput(v1);
-    var destination2 = typeof(v2) !== 'undefined' ? this.checkExpInput(v2) : undefined;
+    var destination2 = typeof v2 !== 'undefined' ? this.checkExpInput(v2) : undefined;
 
     // connect env to unit if not already connected
     if (unit) {
@@ -799,7 +797,7 @@ define(function (require) {
   };
 
 
-  p5.Env.prototype.connect = function(unit){
+  p5.Env.prototype.connect = function(unit) {
     this.connection = unit;
 
     // assume we're talking about output gain
@@ -811,23 +809,22 @@ define(function (require) {
         unit instanceof p5.Noise ||
         unit instanceof p5.Filter ||
         unit instanceof p5.Delay
-    ){
+    ) {
       unit = unit.output.gain;
     }
-    if (unit instanceof AudioParam){
+    if (unit instanceof AudioParam) {
       //set the initial value
       unit.setValueAtTime(0, p5sound.audiocontext.currentTime);
     }
-    if (unit instanceof p5.Signal){
+    if (unit instanceof p5.Signal) {
       unit.setValue(0);
     }
     this.output.connect(unit);
   };
 
-  p5.Env.prototype.disconnect = function(unit){
+  p5.Env.prototype.disconnect = function() {
     this.output.disconnect();
   };
-
 
 
   // Signal Math
@@ -893,14 +890,15 @@ define(function (require) {
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
-    var now = p5sound.audiocontext.currentTime;
     this.disconnect();
     try{
       this.control.dispose();
       this.control = null;
-    } catch(e) {}
+    } catch(e) {
+      console.warn(e, 'already disposed p5.Env');
+    }
     for (var i = 1; i < this.mathOps.length; i++) {
-      mathOps[i].dispose();
+      this.mathOps[i].dispose();
     }
   };
 

@@ -1,7 +1,6 @@
-define(function (require) {
-  'use strict';
+'use strict';
 
-  var p5sound = require('master');
+define(function (require) {
   var Filter = require('filter');
   var Effect = require('effect');
 
@@ -10,36 +9,36 @@ define(function (require) {
    *  and outputs a delayed version of that sound. The p5.Delay can
    *  produce different effects depending on the delayTime, feedback,
    *  filter, and type. In the example below, a feedback of 0.5 (the
-   *  defaul value) will produce a looping delay that decreases in 
+   *  defaul value) will produce a looping delay that decreases in
    *  volume by 50% each repeat. A filter will cut out the high
    *  frequencies so that the delay does not sound as piercing as the
    *  original source.
-   *  
+   *
    *  @class p5.Delay
    *  @constructor
    *  @return {Object} Returns a p5.Delay object
    *  @example
    *  <div><code>
    *  var noise, env, delay;
-   *  
+   *
    *  function setup() {
    *    background(0);
    *    noStroke();
    *    fill(255);
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
-   *    
+   *
    *    noise = new p5.Noise('brown');
    *    noise.amp(0);
    *    noise.start();
-   *    
+   *
    *    delay = new p5.Delay();
    *
    *    // delay.process() accepts 4 parameters:
    *    // source, delayTime, feedback, filter frequency
    *    // play with these numbers!!
    *    delay.process(noise, .12, .7, 2300);
-   *    
+   *
    *    // play the noise with an envelope,
    *    // a series of fades ( time / value pairs )
    *    env = new p5.Env(.01, 0.2, .2, .1);
@@ -67,7 +66,7 @@ define(function (require) {
      *  The p5.Delay is built with two
      *  <a href="http://www.w3.org/TR/webaudio/#DelayNode">
      *  Web Audio Delay Nodes</a>, one for each stereo channel.
-     *  
+     *
      *  @property leftDelay
      *  @type {Object}  Web Audio Delay Node
      */
@@ -76,7 +75,7 @@ define(function (require) {
      *  The p5.Delay is built with two
      *  <a href="http://www.w3.org/TR/webaudio/#DelayNode">
      *  Web Audio Delay Nodes</a>, one for each stereo channel.
-     *  
+     *
      *  @property rightDelay
      *  @type {Object}  Web Audio Delay Node
      */
@@ -115,11 +114,11 @@ define(function (require) {
 
   };
 
- p5.Delay.prototype = Object.create(Effect.prototype);
+  p5.Delay.prototype = Object.create(Effect.prototype);
   /**
    *  Add delay to an audio signal according to a set
    *  of delay parameters.
-   *  
+   *
    *  @method  process
    *  @param  {Object} Signal  An object that outputs audio
    *  @param  {Number} [delayTime] Time (in seconds) of the delay/echo.
@@ -163,14 +162,14 @@ define(function (require) {
    */
   p5.Delay.prototype.delayTime = function(t) {
     // if t is an audio node...
-    if (typeof(t) !== 'number'){
+    if (typeof t !== 'number') {
       t.connect(this.leftDelay.delayTime);
       t.connect(this.rightDelay.delayTime);
     }
 
     else {
       this.leftDelay.delayTime.cancelScheduledValues(this.ac.currentTime);
-      this.rightDelay.delayTime.cancelScheduledValues(this.ac.currentTime);  
+      this.rightDelay.delayTime.cancelScheduledValues(this.ac.currentTime);
       this.leftDelay.delayTime.linearRampToValueAtTime(t, this.ac.currentTime);
       this.rightDelay.delayTime.linearRampToValueAtTime(t, this.ac.currentTime);
     }
@@ -182,24 +181,24 @@ define(function (require) {
    *  time through the loop. A feedback greater than 1.0 is not desirable because
    *  it will increase the overall output each time through the loop,
    *  creating an infinite feedback loop. The default value is 0.5
-   *  
+   *
    *  @method  feedback
    *  @param {Number|Object} feedback 0.0 to 1.0, or an object such as an
    *                                  Oscillator that can be used to
    *                                  modulate this param
    *  @returns {Number} Feedback value
-   *                                  
+   *
    */
   p5.Delay.prototype.feedback = function(f) {
     // if f is an audio node...
-    if (f && typeof(f) !== 'number'){
+    if (f && typeof f !== 'number') {
       f.connect(this._leftGain.gain);
       f.connect(this._rightGain.gain);
     }
     else if (f >= 1.0) {
       throw new Error('Feedback value will force a positive feedback loop.');
     }
-    else if (typeof (f) === 'number') {
+    else if (typeof f === 'number') {
       this._leftGain.gain.value = f;
       this._rightGain.gain.value = f;
     }
@@ -211,9 +210,9 @@ define(function (require) {
   /**
    *  Set a lowpass filter frequency for the delay. A lowpass filter
    *  will cut off any frequencies higher than the filter frequency.
-   *   
+   *
    *  @method  filter
-   *  @param {Number|Object} cutoffFreq  A lowpass filter will cut off any 
+   *  @param {Number|Object} cutoffFreq  A lowpass filter will cut off any
    *                              frequencies higher than the filter frequency.
    *  @param {Number|Object} res  Resonance of the filter frequency
    *                              cutoff, or an object (i.e. a p5.Oscillator)
@@ -231,7 +230,7 @@ define(function (require) {
    *  Choose a preset type of delay. 'pingPong' bounces the signal
    *  from the left to the right channel to produce a stereo effect.
    *  Any other parameter will revert to the default delay setting.
-   *  
+   *
    *  @method  setType
    *  @param {String|Number} type 'pingPong' (1) or 'default' (0)
    */
@@ -251,7 +250,7 @@ define(function (require) {
         this._rightFilter.output.connect(this._merge, 0, 1);
         this._leftFilter.output.connect(this.rightDelay);
         this._rightFilter.output.connect(this.leftDelay);
-        break
+        break;
       default:
         this._leftFilter.output.connect(this._merge, 0, 0);
         this._leftFilter.output.connect(this._merge, 0, 1);
@@ -260,10 +259,31 @@ define(function (require) {
     }
   };
 
+  // DocBlocks for methods inherited from p5.Effect
+  /**
+   *  Set the output level of the delay effect.
+   *
+   *  @method  amp
+   *  @param  {Number} volume amplitude between 0 and 1.0
+   *  @param {Number} [rampTime] create a fade that lasts rampTime
+   *  @param {Number} [timeFromNow] schedule this event to happen
+   *                                seconds from now
+   */
+  /**
+   *  Send output to a p5.sound or web audio object
+   *
+   *  @method  connect
+   *  @param  {Object} unit
+   */
+  /**
+   *  Disconnect all output.
+   *
+   *  @method disconnect
+   */
 
   p5.Delay.prototype.dispose = function() {
 
-	 Effect.prototype.dispose.apply(this);
+    Effect.prototype.dispose.apply(this);
 
     this._split.disconnect();
     this._leftFilter.dispose();
@@ -282,6 +302,6 @@ define(function (require) {
     this._rightGain = undefined;
     this.leftDelay = undefined;
     this.rightDelay = undefined;
-  }
+  };
 
 });

@@ -1,6 +1,6 @@
-define(function (require) {
-  'use strict';
+'use strict';
 
+define(function (require) {
   var p5sound = require('master');
 
   /**
@@ -12,21 +12,21 @@ define(function (require) {
    *                       'brown' or 'pink'.
    *  @return {Object}    Noise Object
    */
-  p5.Noise = function(type){
+  p5.Noise = function(type) {
     var assignType;
     p5.Oscillator.call(this);
     delete this.f;
     delete this.freq;
     delete this.oscillator;
 
-    if (type === "brown") {
+    if (type === 'brown') {
       assignType = _brownNoise;
-    } else if (type === "pink") {
+    } else if (type === 'pink') {
       assignType = _pinkNoise;
     } else {
       assignType = _whiteNoise;
     }
-    this.buffer = assignType;    
+    this.buffer = assignType;
   };
 
   p5.Noise.prototype = Object.create(p5.Oscillator.prototype);
@@ -41,7 +41,7 @@ define(function (require) {
     }
     whiteBuffer.type = 'white';
     return whiteBuffer;
-  }());
+  })();
 
   var _pinkNoise = (function() {
     var bufferSize = 2 * p5sound.audiocontext.sampleRate;
@@ -63,22 +63,22 @@ define(function (require) {
     }
     pinkBuffer.type = 'pink';
     return pinkBuffer;
-  }());
+  })();
 
   var _brownNoise = (function() {
     var bufferSize = 2 * p5sound.audiocontext.sampleRate;
     var brownBuffer = p5sound.audiocontext.createBuffer(1, bufferSize, p5sound.audiocontext.sampleRate);
     var noiseData = brownBuffer.getChannelData(0);
     var lastOut = 0.0;
-    for (var i = 0; i< bufferSize; i++){
+    for (var i = 0; i< bufferSize; i++) {
       var white = Math.random() * 2 - 1;
-      noiseData[i] = (lastOut + (0.02*white)) / 1.02;
+      noiseData[i] = (lastOut + 0.02*white) / 1.02;
       lastOut = noiseData[i];
       noiseData[i] *= 3.5;
     }
     brownBuffer.type = 'brown';
     return brownBuffer;
-  }());
+  })();
 
   /**
    *  Set type of noise to 'white', 'pink' or 'brown'.
@@ -88,7 +88,7 @@ define(function (require) {
    *  @param {String} [type] 'white', 'pink' or 'brown'
    */
   p5.Noise.prototype.setType = function(type) {
-    switch(type){
+    switch(type) {
       case 'white':
         this.buffer = _whiteNoise;
         break;
@@ -101,14 +101,14 @@ define(function (require) {
       default:
         this.buffer = _whiteNoise;
     }
-    if (this.started){
+    if (this.started) {
       var now = p5sound.audiocontext.currentTime;
       this.stop(now);
       this.start(now+.01);
     }
   };
 
-  p5.Noise.prototype.getType = function(){
+  p5.Noise.prototype.getType = function() {
     return this.buffer.type;
   };
 
@@ -118,7 +118,7 @@ define(function (require) {
    *  @method start
    */
   p5.Noise.prototype.start = function() {
-    if (this.started){
+    if (this.started) {
       this.stop();
     }
     this.noise = p5sound.audiocontext.createBufferSource();
@@ -177,7 +177,7 @@ define(function (require) {
    *  @method disconnect
    */
 
-  p5.Noise.prototype.dispose = function(){
+  p5.Noise.prototype.dispose = function() {
     var now = p5sound.audiocontext.currentTime;
 
     // remove reference from soundArray

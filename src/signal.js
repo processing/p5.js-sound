@@ -1,5 +1,6 @@
+'use strict';
+
 define(function (require) {
-  'use strict';
 
   // Signal is built with the Tone.js signal by Yotam Mann
   // https://github.com/TONEnoTONE/Tone.js/
@@ -21,7 +22,7 @@ define(function (require) {
    *  the audio clock must process samples 44100 times per second. If we
    *  want to add a value to each of those samples, we can't do it in the
    *  draw loop, but we can do it by adding a constant-rate audio signal.</p.
-   *  
+   *
    *  <p>This class mostly functions behind the scenes in p5.sound, and returns
    *  a Tone.Signal from the Tone.js library by Yotam Mann.
    *  If you want to work directly with audio signals for modular
@@ -38,7 +39,7 @@ define(function (require) {
    *    carrier.amp(1); // set amplitude
    *    carrier.freq(220); // set frequency
    *    carrier.start(); // start oscillating
-   *    
+   *
    *    modulator = new p5.Oscillator('sawtooth');
    *    modulator.disconnect();
    *    modulator.amp(1);
@@ -74,7 +75,7 @@ define(function (require) {
   /**
    *  Connect a p5.sound object or Web Audio node to this
    *  p5.Signal so that its amplitude values can be scaled.
-   *  
+   *
    *  @param {Object} input
    */
   Signal.prototype.setInput = function(_input) {
@@ -92,7 +93,7 @@ define(function (require) {
    *  and return the resulting audio signal. Does
    *  not change the value of the original signal,
    *  instead it returns a new p5.SignalAdd.
-   *  
+   *
    *  @method  add
    *  @param {Number} number
    *  @return {p5.SignalAdd} object
@@ -112,7 +113,7 @@ define(function (require) {
    *  and return the resulting audio signal. Does
    *  not change the value of the original signal,
    *  instead it returns a new p5.SignalMult.
-   *  
+   *
    *  @method  mult
    *  @param {Number} number to multiply
    *  @return {Tone.Multiply} object
@@ -132,7 +133,7 @@ define(function (require) {
    *  and return the result as an audio signal. Does
    *  not change the value of the original signal,
    *  instead it returns a new p5.SignalScale.
-   *  
+   *
    *  @method  scale
    *  @param {Number} number to multiply
    *  @param  {Number} inMin  input range minumum
@@ -143,7 +144,7 @@ define(function (require) {
    */
   Signal.prototype.scale = function(inMin, inMax, outMin, outMax) {
     var mapOutMin, mapOutMax;
-    if (arguments.length === 4){
+    if (arguments.length === 4) {
       mapOutMin = p5.prototype.map(outMin, inMin, inMax, 0, 1) - 0.5;
       mapOutMax = p5.prototype.map(outMax, inMin, inMax, 0, 1) - 0.5;
     }
