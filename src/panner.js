@@ -21,12 +21,11 @@ define(function (require) {
       this.stereoPanner.pan.linearRampToValueAtTime(val, t);
     };
 
-    // p5.Panner.prototype.inputChannels = function() {
-    //   //not implemented because stereopanner
-    //   //node does not require this and will automatically
-    //   //convert single channel or multichannel to stereo.
-    //   //tested with single and stereo, not with (>2) multichannel
-    // };
+    //not implemented because stereopanner
+    //node does not require this and will automatically
+    //convert single channel or multichannel to stereo.
+    //tested with single and stereo, not with (>2) multichannel
+    p5.Panner.prototype.inputChannels = function() {};
 
     p5.Panner.prototype.connect = function(obj) {
       this.stereoPanner.connect(obj);
