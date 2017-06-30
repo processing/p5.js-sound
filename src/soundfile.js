@@ -104,7 +104,6 @@ define(function (require) {
 
     this.buffer = null;
     this.playbackRate = 1;
-    this.gain = 1;
 
     this.input = p5sound.audiocontext.createGain();
     this.output = p5sound.audiocontext.createGain();
@@ -340,6 +339,9 @@ define(function (require) {
 
     time = time + now;
 
+    this.rate(rate);
+    this.setVolume(amp);
+
     // TO DO: if already playing, create array of buffers for easy stop()
     if (this.buffer) {
 
@@ -351,9 +353,6 @@ define(function (require) {
         this.bufferSourceNode.stop(time);
         this._counterNode.stop(time);
       }
-
-      // set playback rate
-      if (rate) this.playbackRate = rate;
 
       // make a new source and counter. They are automatically assigned playbackRate and buffer
       this.bufferSourceNode = this._initSourceNode();
@@ -378,20 +377,7 @@ define(function (require) {
         duration = this.buffer.duration - cueStart;
       }
 
-      // TO DO: Fix this. It broke in Safari
-      //
-      // method of controlling gain for individual bufferSourceNodes, without resetting overall soundfile volume
-      // if (typeof(this.bufferSourceNode.gain === 'undefined' ) ) {
-      //   this.bufferSourceNode.gain = p5sound.audiocontext.createGain();
-      // }
-      // this.bufferSourceNode.connect(this.bufferSourceNode.gain);
-      // set local amp if provided, otherwise 1
-      var a = amp || 1;
-      // this.bufferSourceNode.gain.gain.setValueAtTime(a, p5sound.audiocontext.currentTime);
-      // this.bufferSourceNode.gain.connect(this.output);
-
       this.bufferSourceNode.connect(this.output);
-      this.output.gain.value = a;
 
       // if it was paused, play at the pause position
       if (this._paused) {
@@ -821,38 +807,37 @@ define(function (require) {
    *
    */
   p5.SoundFile.prototype.rate = function(playbackRate) {
-    if (this.playbackRate === playbackRate && this.bufferSourceNode) {
-      if (this.bufferSourceNode.playbackRate.value === playbackRate) {
-        return;
-      }
+    if (typeof playbackRate === 'undefined') {
+      return this.playbackRate;
     }
-    this.playbackRate = playbackRate;
-    var rate = playbackRate;
-    if (this.playbackRate === 0 && this._playing) {
-      this.pause();
+
+    if (playbackRate === 0) {
+      playbackRate = 0.0000000000001;
     }
-    if (this.playbackRate < 0 && !this.reversed) {
+
+    else if (playbackRate < 0 && !this.reversed) {
       var cPos = this.currentTime();
-
-      // this.pause();
-      this.reverseBuffer();
-      rate = Math.abs(playbackRate);
-
-      var newPos = ( cPos - this.duration() ) / rate;
+      var newPos = ( cPos - this.duration() ) / playbackRate;
       this.pauseTime = newPos;
-      // this.play();
+
+      this.reverseBuffer();
+      playbackRate = Math.abs(playbackRate);
     }
-    else if (this.playbackRate > 0 && this.reversed) {
+
+    else if (playbackRate > 0 && this.reversed) {
       this.reverseBuffer();
     }
+
     if (this.bufferSourceNode) {
       var now = p5sound.audiocontext.currentTime;
       this.bufferSourceNode.playbackRate.cancelScheduledValues(now);
-      this.bufferSourceNode.playbackRate.linearRampToValueAtTime(Math.abs(rate), now);
+      this.bufferSourceNode.playbackRate.linearRampToValueAtTime(Math.abs(playbackRate), now);
       this._counterNode.playbackRate.cancelScheduledValues(now);
-      this._counterNode.playbackRate.linearRampToValueAtTime(Math.abs(rate), now);
-
+      this._counterNode.playbackRate.linearRampToValueAtTime(Math.abs(playbackRate), now);
     }
+
+    this.playbackRate = playbackRate;
+    return this.playbackRate;
   };
 
   // TO DO: document this
@@ -1039,7 +1024,6 @@ define(function (require) {
   p5.SoundFile.prototype.reverseBuffer = function() {
     var curVol = this.getVolume();
     this.setVolume(0, 0.01, 0);
-    this.pause();
     if (this.buffer) {
       for (var i = 0; i < this.buffer.numberOfChannels; i++) {
         Array.prototype.reverse.call( this.buffer.getChannelData(i) );
@@ -1050,7 +1034,6 @@ define(function (require) {
       throw 'SoundFile is not done loading';
     }
     this.setVolume(curVol, 0.01, 0.0101);
-    this.play();
   };
 
   /**
