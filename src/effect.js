@@ -5,6 +5,13 @@ define(function (require) {
   var p5sound = require('master');
   var CrossFade = require('Tone/component/CrossFade');
 
+  /**
+   *  p5.Effect is the superclass for p5 effects including Filter and Reverb.
+   *  All p5 effects share this API.
+   *
+   *  @class p5.Effect
+   *  @constructor
+   */
   p5.Effect = function() {
     this.ac = p5sound.audiocontext;
 
@@ -114,7 +121,7 @@ define(function (require) {
    *  May be used with open-ended number of arguments
    *
    *  @method chain
-     *  @param {Object} arguments p5.Effect objects
+   *  @param {Object} arguments p5.Effect objects
    */
   p5.Effect.prototype.chain = function() {
     if (arguments.length>0) {

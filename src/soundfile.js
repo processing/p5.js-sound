@@ -48,6 +48,7 @@ define(function (require) {
    *  <div><code>
    *
    *  function preload() {
+   *    soundFormats('mp3', 'ogg');
    *    mySound = loadSound('assets/doorbell.mp3');
    *  }
    *
