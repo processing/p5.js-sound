@@ -127,7 +127,3 @@ function mousePressed(){
 function mouseReleased(){
   pressed = false;
 }
-
-function mouseClicked() {
-  console.log(cntrlIndex)
-}

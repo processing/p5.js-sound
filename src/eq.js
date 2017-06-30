@@ -4,12 +4,31 @@ define(function (require) {
   var p5Sound = require('master');
   var Effect = require('effect');
 
-
+  /**
+   * p5.EQ is an audio effect that performs the function of a multiband
+   * audio equalizer. Equalization is used to adjust the balance of 
+   * frequency compoenents of an audio signal. This process is commonly used
+   * in sound production and recording to change the waveform before it reaches
+   * a sound output device. EQ can also be used as an audio effect to create
+   * interesting distortions by filtering out parts of the spectrum. p5.EQ is
+   * built using a chain of Web Audio Biquad Filter Nodes and can be
+   * instantiated with 3 or 8 bands. Bands can be added or removed from
+   * the EQ by directly modifying p5.EQ.bands (the array that stores filters).
+   *  
+   * @class p5.EQ
+   * @constructor
+   * @param {Number} [_eqsize] [Constructor will accept 3 or 8, defaults to 3]
+   * @return {Object} [p5.EQ object]
+   *
+   * @example
+   * <div><code>
+   * 
+   * </code></div>
+   */
   p5.EQ = function(_eqsize) {
     Effect.call(this);
 
     //p5.EQ can be of size (3) or (8), defaults to 3
-
     _eqsize = _eqsize == 3 || _eqsize == 8 ? _eqsize : 3;
 
     var factor;
