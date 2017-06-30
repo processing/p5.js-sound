@@ -4,6 +4,16 @@ define(function (require) {
 	var p5sound = require('master');
 	var CrossFade = require('Tone/component/CrossFade');
 
+	/**
+	 * Effect is bases class for audio effects in p5
+	 * This module handles the nodes and methods that are 
+	 * common and useful for all current and future effects.
+	 *
+	 * @class  p5.Effect
+	 * @constructor
+	 * @return {Object} Returns a p5.Effect object
+	 * 
+	 */
 	p5.Effect = function() {
 		this.ac = p5sound.audiocontext;
 
@@ -21,7 +31,7 @@ define(function (require) {
 		/**
 		 *	In classes that extend
 		 *	p5.Effect, connect effect nodes
-		 *	to the wet parametee
+		 *	to the wet parameter
 		 *	@property wet
 		 *	@type {Object} Web Audio Gain Node
 		 */
@@ -84,11 +94,11 @@ define(function (require) {
 	 *	Adjust the dry/wet knob value.	
 	 *	
 	 *	@method drywet
-	 *	@param {Float}
+	 *	@param {Number} [fade] The desired drywet value
 	 */
 	p5.Effect.prototype.drywet = function(fade){
 
-		if (typeof fade !="undefined"){	
+		if (typeof fade !=="undefined"){	
 			this._drywet.fade.value = fade
 		}
 		return this._drywet.fade.value;
