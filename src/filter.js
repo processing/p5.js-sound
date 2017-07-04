@@ -1,7 +1,7 @@
 'use strict';
 
 define(function (require) {
-
+  var p5sound = require('master');
   var Effect = require('effect');
 
   /**
