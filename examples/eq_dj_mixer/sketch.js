@@ -45,8 +45,7 @@ function setup() {
   pressed = false;
   angleMode(DEGREES);
 
-  soundFile1.loop();
-  soundFile2.loop();
+ 
 
   eq1 = new p5.EQ(3);
   eq2 = new p5.EQ(3);
@@ -54,6 +53,9 @@ function setup() {
   soundFile1.disconnect();
   soundFile2.disconnect();
 
+  soundFile1.loop();
+  soundFile2.loop();
+  
   soundFile1.connect(eq1);
   soundFile2.connect(eq2);
 

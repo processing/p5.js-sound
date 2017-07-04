@@ -7,8 +7,9 @@
 var fft, noise, eq;
 var eqSize;
 
-var cntrlPts, ctrlPtRad, cntrlIndex;
-var splineVerts;
+var cntrlPts = []; 
+var ctrlPtRad, cntrlIndex;
+var splineVerts = [];
 var pressed; 
 var description;
 
@@ -34,7 +35,7 @@ function setup() {
 
   for (var i = 0; i < eqSize; i++) {
     cntrlPts[i] = new CntrlPt(i, (width/(eqSize-1)) * i, height/2);
-    eq.bands[i].frequency.value = map(cntrlPts[i].x, 0, width, 50, 22050);
+    eq.bands[i].freq(map(cntrlPts[i].x, 0, width, 50, 22050));
     splineVerts[i] = [cntrlPts[i].x,cntrlPts[i].y];
   }
 
@@ -99,7 +100,9 @@ function CntrlPt(i,x,y){
     else {
     this.y = mouseY;
     this.x = this.index == 0 || this.index == eqSize - 1  ? this.x : mouseX;
-    eq.modBand(this.index, map(this.y, 0, height, 40, -40), map(this.x, 0, width, 50, 22050));
+    //eq.modBand(this.index, map(this.y, 0, height, 40, -40), map(this.x, 0, width, 50, 22050));
+    eq.bands[this.index].freq( map(this.x, 0, width, 50, 22050));
+    eq.bands[this.index].biquad.gain.value = map(this.y, 0, height, 40, -40);
     }
   }
 

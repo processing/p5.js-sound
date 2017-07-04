@@ -3,6 +3,7 @@ define(function (require) {
 
   var p5Sound = require('master');
   var Effect = require('effect');
+  var Filter = require('filter');
 
   /**
    * p5.EQ is an audio effect that performs the function of a multiband
@@ -48,27 +49,28 @@ define(function (require) {
       *  @{param} toggle {boolean} On/of switch for band, true == on
     */
 
+    var freq, res;
     for (var i = 0; i < _eqsize; i++) {
-      this.bands[i] = this.ac.createBiquadFilter();
-      this.bands[i].disconnect();
-      this.bands[i].toggle = true;
-      
-      if (i == _eqsize - 1) {
-        this.bands[i].frequency.value = 20480; 
-        this.bands[i].Q.value = .1;
-      } else if (i == 0) {
-        this.bands[i].frequency.value = 160;
-        this.bands[i].Q.value = .1;
-      } else {
-        this.bands[i].frequency.value = this.bands[i-1].frequency.value * factor;
-        this.bands[i].Q.value = .9;
-      }
 
-      this.bands[i].type = 'peaking';  
-      i > 0 ? this.bands[i-1].connect(this.bands[i]) : this.input.connect(this.bands[i]);
+      if (i == _eqsize - 1) {
+        freq = 20480; 
+        res = .1;
+      } else if (i == 0) {
+        freq = 160;
+        res = .1;
+      } else {
+        freq = this.bands[i-1].freq * factor;
+        res = .9;
+      } 
+      this.bands[i] = this.newBand(freq, res);
+      if (i>0) {
+        this.bands[i-1].biquad.connect(this.bands[i].biquad);
+      } else {
+        this.input.connect(this.bands[i].biquad);
+      }
     }
     //this.input.connect(this.bands[0]);
-    this.bands[_eqsize-1].connect(this.output);
+    this.bands[_eqsize-1].biquad.connect(this.output);
   };
   p5.EQ.prototype = Object.create(Effect.prototype);
 
@@ -77,6 +79,18 @@ define(function (require) {
     src.connect(this.input);
   };
 
+
+  p5.EQ.prototype.newBand = function(freq, res) {
+    var newFilter = new Filter('peaking');
+    newFilter.disconnect();
+    newFilter.set(freq, res);
+    newFilter.biquad.gain.value = 0;
+    delete newFilter.input;
+    delete newFilter.output;
+    delete newFilter._drywet;
+    delete newFilter.wet;
+    return newFilter;
+  }
   /**
    *  @{method} setBand Make adjustments to individual bands of the EQ
    *
