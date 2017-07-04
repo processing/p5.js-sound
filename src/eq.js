@@ -60,7 +60,7 @@ define(function (require) {
         res = .1;
       } else {
         freq = this.bands[i-1].freq * factor;
-        res = .9;
+        res = 1.5;
       } 
       this.bands[i] = this.newBand(freq, res);
       if (i>0) {

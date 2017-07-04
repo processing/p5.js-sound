@@ -1,7 +1,7 @@
 var soundFile1, soundFile2;
 var fft1, fft2;
 
-
+var test;
 //Knob controls
 
 //colors
@@ -36,6 +36,7 @@ function preload() {
   soundFormats('mp3', 'ogg');
   soundFile1 = loadSound('../files/beat');
   soundFile2 = loadSound('../files/beatbox');
+  test = loadSound('../files/doorbell');
 }
 
 
@@ -45,16 +46,17 @@ function setup() {
   pressed = false;
   angleMode(DEGREES);
 
- 
-
   eq1 = new p5.EQ(3);
   eq2 = new p5.EQ(3);
 
+soundFile1.loop();
+soundFile2.loop();
   soundFile1.disconnect();
   soundFile2.disconnect();
 
-  soundFile1.loop();
-  soundFile2.loop();
+  //test.play();
+  //soundFile1.loop();
+  // soundFile2.loop();
   
   soundFile1.connect(eq1);
   soundFile2.connect(eq2);
@@ -84,14 +86,14 @@ function setup() {
    mixer[i] = new Knob(i);
    mixer[i].x = 0.45*width;
    mixer[i].y = 1.5*deckHeight - 0.25*deckHeight*(i+1);
-   eq1.bands[i].Q.value = 0.1;
+   eq1.bands[i].res(0.1);
  }
 
   for (var i = 5; i >= 3; i--) {
     mixer[i] = new Knob(i-3);
     mixer[i].x = width - 0.45*width;
     mixer[i].y = 1.5*deckHeight - 0.25*deckHeight*(i-2);
-    eq2.bands[i-3].Q.value = 0.1;
+    eq2.bands[i-3].res(0.1);
   }
 
   for (var i = 6; i < 8; i++){
@@ -223,7 +225,6 @@ function Button(type,x,y, i) {
         if (this.toggle) {
            this.index < 10 ? soundFile1.play() : soundFile2.play();
         } else {
-          console.log(this.index);
           this.index == 9 ? soundFile1.pause() : soundFile2.pause();
         }
       }
@@ -347,9 +348,11 @@ function Knob(i){
      else if (this.curAngle > 320) {this.curAngle = 320;}
     this.current = map(this.curAngle, 50, 320, -40,40);
     if(cntrlIndex < 3) { 
-        eq1.setBand(this.index, "mod", this.current)
+        // eq1.setBand(this.index, "mod", this.current)
+        eq1.bands[cntrlIndex].gain(this.current);
       }else{
-        eq2.setBand(this.index, "mod", this.current);
+        // eq2.setBand(this.index, "mod", this.current);
+        eq2.bands[cntrlIndex].gain(this.current);
       }
     translate(-this.x,-this.y);
   }

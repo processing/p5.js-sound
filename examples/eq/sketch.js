@@ -35,7 +35,7 @@ function setup() {
 
   for (var i = 0; i < eqSize; i++) {
     cntrlPts[i] = new CntrlPt(i, (width/(eqSize-1)) * i, height/2);
-    eq.bands[i].freq(map(cntrlPts[i].x, 0, width, 50, 22050));
+    eq.bands[i].freq(map(cntrlPts[i].x, 0, width, 160, 20480));
     splineVerts[i] = [cntrlPts[i].x,cntrlPts[i].y];
   }
 

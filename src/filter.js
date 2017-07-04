@@ -187,6 +187,27 @@ define(function (require) {
   };
 
   /**
+   * Controls the gain attribute of a Biquad Filter.
+   * This is distinctly different from .amp() which is inherited from p5.Effect
+   * .amp() controls the volume via the output gain node
+   * p5.Filter.gain() controls the gain parameter of a Biquad Filter node.
+   * 
+   * @param  {Number} gain 
+   * @return {Number} Returns the current or updated gain value
+   */
+  p5.Filter.prototype.gain = function(gain, time) {
+    var t = time || 0;
+    if (typeof gain === 'number') {
+      this.biquad.gain.value = gain;
+      this.biquad.gain.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      this.biquad.gain.linearRampToValueAtTime(gain, this.ac.currentTime + 0.02 + t);
+    } else if (gain) {
+      gain.connect(this.biquad.gain);
+    }
+    return this.biquad.gain.value;
+  }
+
+  /**
    *  Set the type of a p5.Filter. Possible types include:
    *  "lowpass" (default), "highpass", "bandpass",
    *  "lowshelf", "highshelf", "peaking", "notch",
