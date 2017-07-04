@@ -158,4 +158,6 @@ define(function (require) {
     }
   }
 
+  return p5.EQ;
+
 });
