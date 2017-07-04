@@ -51,7 +51,6 @@ define(function (require) {
 
     var freq, res;
     for (var i = 0; i < _eqsize; i++) {
-
       if (i == _eqsize - 1) {
         freq = 20480; 
         res = .1;
