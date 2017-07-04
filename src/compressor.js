@@ -153,4 +153,6 @@ define(function (require) {
 		this.compressor.disconnect();
 		this.compressor = undefined;
 	};
+
+  return p5.Compressor;
 });
