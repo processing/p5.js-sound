@@ -20,10 +20,8 @@ define(function (require) {
 
 
 
-//proposal
-
 	p5.Panner3D = function() {
-		Effect.call(this);
+	Effect.call(this);
 		this.spatialPanner = this.ac.createSpatialPanner(); 
     this.input.connect(this.spatialPanner);
     this.spatialPanner.connect(this.output);
@@ -34,7 +32,9 @@ define(function (require) {
   p5.Panner3D.prototype.
 
 
-
+  // =======================================================================
+  //                          *** p5.Listener3D ***
+  // =======================================================================
 
   p5.Listener3D = function() {
     Effect.call(this);
@@ -42,6 +42,5 @@ define(function (require) {
     this.input.connect(this.spatialListener);
     this.spatialListener.connect(this.output); 
   };
-
   p5.Listener3D.prototype = Object.create(Effect.prototype);
 });
