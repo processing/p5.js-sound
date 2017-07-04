@@ -12,14 +12,13 @@ define(['chai'],
 
      it('wet dry value can be changed', function(){
       var compressor = new p5.Compressor();
-
       expect(compressor.drywet(0.5)).to.equal(0.5);
     });
 
     it('can set params', function(){
       var compressor = new p5.Compressor();
       compressor.set(0.5, 20, 15, -50, 0.75);
-      expect(compressor.attack(0.5)).to.equal(0.5);
+      expect(compressor.attack()).to.equal(0.5);
       expect(compressor.knee()).to.equal(20);
       expect(compressor.ratio()).to.equal(15);
       expect(compressor.threshold()).to.equal(-50);
