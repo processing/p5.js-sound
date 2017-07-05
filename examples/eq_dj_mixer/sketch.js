@@ -49,14 +49,11 @@ function setup() {
   eq1 = new p5.EQ(3);
   eq2 = new p5.EQ(3);
 
-soundFile1.loop();
-soundFile2.loop();
+  // soundFile1.loop();
+  // soundFile2.loop();
+
   soundFile1.disconnect();
   soundFile2.disconnect();
-
-  //test.play();
-  //soundFile1.loop();
-  // soundFile2.loop();
   
   soundFile1.connect(eq1);
   soundFile2.connect(eq2);
@@ -159,7 +156,7 @@ function Button(type,x,y, i) {
   this.x = x;
   this.y = y;
   this.type = type;
-  this.toggle = true;
+  this.toggle = false;
   this.index = i;
   this.c = color(255,0,0)
 
@@ -352,7 +349,7 @@ function Knob(i){
         eq1.bands[cntrlIndex].gain(this.current);
       }else{
         // eq2.setBand(this.index, "mod", this.current);
-        eq2.bands[cntrlIndex].gain(this.current);
+        eq2.bands[cntrlIndex-3].gain(this.current);
       }
     translate(-this.x,-this.y);
   }
@@ -363,6 +360,7 @@ function mousePressed(){
     if (mixer[i].mouseOver()){ 
       pressed = true; 
       cntrlIndex = i;
+      console.log(cntrlIndex);
       break;
     }
 
