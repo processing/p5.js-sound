@@ -154,11 +154,14 @@ define(function (require) {
   p5.Panner3D = function() {
     p5.Spatializer.call(this,'panner');
   };
+  p5.Panner3D.prototype = Object.create(p5.Spatializer.prototype);
 
   p5.Listener3D = function() {
     p5.Spatializer.call(this, 'listener');
   };
+  p5.Listener3D.prototype = Object.create(p5.Spatializer.prototype);
 
+  
   return p5.Spatializer;
 
 });
