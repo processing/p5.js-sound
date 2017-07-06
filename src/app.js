@@ -18,8 +18,7 @@ define(function (require) {
   require('audioin');
   require('filter');
   require('eq');
-  require('panner3d');
-  require('listener3d');
+  require('spatializer');
   require('delay');
   require('reverb');
   require('metro');
