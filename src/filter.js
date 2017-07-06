@@ -99,6 +99,9 @@ define(function (require) {
     if (type) {
       this.setType(type);
     }
+
+    this._on = true;
+    this.type = this.biquad.type;
   };
   p5.Filter.prototype = Object.create(Effect.prototype);
 
@@ -205,6 +208,23 @@ define(function (require) {
       gain.connect(this.biquad.gain);
     }
     return this.biquad.gain.value;
+  };
+
+
+  /**
+   * Toggle function. Switches between the specified type and allpass
+   * @return {boolean} [Toggle value]
+   */
+  p5.Filter.prototype.toggle = function() {
+    this._on = !this._on;
+    
+    if (this._on === true) {
+      this.biquad.type = this.type;
+    } else if (this._on === false) {
+      this.biquad.type = 'allpass';
+    }
+
+    return this._on;
   }
 
   /**

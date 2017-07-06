@@ -39,14 +39,10 @@ define(function (require) {
     this.bands = [];
 
     /**
-      *  The p5.EQ is built with
-      *  <a href="http://www.w3.org/TR/webaudio/#BiquadFilterNode">
-      *  Web Audio BiquadFilter Node</a>.
-      *  
-      *  @property biquadFilter
+      *  The p5.EQ is built with abstracted p5.Filter objects
+      *  To modify any bands, use methods of the p5.Filter API
       *  @type {Object}  Web Audio Delay Node
       *
-      *  @{param} toggle {boolean} On/of switch for band, true == on
     */
 
     var freq, res;
@@ -68,7 +64,6 @@ define(function (require) {
         this.input.connect(this.bands[i].biquad);
       }
     }
-    //this.input.connect(this.bands[0]);
     this.bands[_eqsize-1].biquad.connect(this.output);
   };
   p5.EQ.prototype = Object.create(Effect.prototype);
@@ -78,7 +73,12 @@ define(function (require) {
     src.connect(this.input);
   };
 
-
+  /**
+   * Add a new band. Creates a p5.Filter and strips away the gain node wrapper
+   * @param  {[type]} freq [description]
+   * @param  {[type]} res  [description]
+   * @return {[type]}      [description]
+   */
   p5.EQ.prototype.newBand = function(freq, res) {
     var newFilter = new Filter('peaking');
     newFilter.disconnect();
@@ -90,71 +90,11 @@ define(function (require) {
     delete newFilter.wet;
     return newFilter;
   }
-  /**
-   *  @{method} setBand Make adjustments to individual bands of the EQ
-   *
-   *  @{param} band {number} Band to be modified
-   *  @{param} option {string} Modify function (toggle, mod, type);
-   *  @{param} param1 {number} Set the frequency of a band w/ usage: "mod"
-   *  @{param} param2 {number} Set the Q value (resonance) of a band w/usage: "mod"
-   *  @{param} param1 {string} Set the type of the band filter w/ usage: "type"
-   */
-  p5.EQ.prototype.setBand = function (band, option, param1, param2) {
-    if (option === "toggle") { 
-      this.toggleBand(band);
-    } else if (option === "mod") { 
-      this.modBand(band, param1, param2);
-    } else if (option === "type") { 
-      this.bandType(band, param1); 
-    } else {
-      return new Error();
-    }
-  };
-
-  /**
-   *  @{method} toggleBand Switch a band on or off
-   *
-   *  @{param} band {number} Band to be modified
-   */
-  p5.EQ.prototype.toggleBand = function (band) {
-
-    this.bands[band].toggle = !this.bands[band].toggle;
-    this.bands[band].toggle ? this.bands[band].type = 'peaking': this.bands[band].type = 'allpass';
-  };
-
-  /**
-   *  @{method} modBand Change the parameters of a band filter
-   *
-   *  @{param} band {number} Band to be modified
-   *  @{param} vol {number} Gain value, range: -40 to 40
-   *  @{param} freq {number} Frequency value, range: 0 to 22050
-   */
-  p5.EQ.prototype.modBand = function (band, vol, freq) {
-
-    if (vol!= null) {this.bands[band].gain.value = vol;}
-    if (freq!= null) {this.bands[band].frequency.value = freq;}
-  };
-
-  /**
-   *  @{method} bandType Change the type of a band 
-   *
-   *  @{param} band {number} Band to be modified
-   *  @{param} type {string} Type of filter, accepted inputs 
-   *  are those of the Web Audio Node BiquadFilter: 
-   *    "lowpass", "highpass", "bandpass", 
-   *    "lowshelf", "highshelf", "peaking", "notch",
-   *    "allpass". 
-   */
-  p5.EQ.prototype.bandType = function (band, type) {
-    this.bands[band].type = type;
-  };
 
   p5.EQ.prototype.dispose = function (argument) {
     Effect.prototype.dispose.apply(this);
-
     for (var i = 0; i<this.bands.length; i++){
-      this.bands[i].disconnect();
-      this.bands[i] = undefined;
+      this.bands[i].dispose();
     }
   }
 
