@@ -151,9 +151,14 @@ define(function (require) {
     return this.spatializer.orientZ.value;
   };
 
+  p5.Panner3D = function() {
+    p5.Spatializer.call(this,'panner');
+  };
+
+  p5.Listener3D = function() {
+    p5.Spatializer.call(this, 'listener');
+  };
+
   return p5.Spatializer;
 
-
-  
- 
 });
