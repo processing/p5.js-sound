@@ -30,6 +30,7 @@ define(function (require) {
 	p5.Spatializer = function(type) {
 
     if (type==="listener") {
+      this.ac = p5sound.audiocontext;
       this.spatializer = this.ac.listener;
     } else {
       Effect.call(this);
@@ -38,9 +39,13 @@ define(function (require) {
       this.spatializer.distanceModel = 'linear';
       this.spatializer.connect(this.output);
       this.input.connect(this.spatializer);
+
+
     } 
 	};
+
   p5.Spatializer.prototype = Object.create(Effect.prototype);
+ 
 
   /**
    * Connect an audio sorce
@@ -88,7 +93,7 @@ define(function (require) {
       this.spatializer.positionY.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
       this.spatializer.positionY.linearRampToValueAtTime(yVal, this.ac.currentTime + 0.02 + t);
     } else if (yVal) {
-      yVal.connec(this.spatializer.positionY);
+      yVal.connect(this.spatializer.positionY);
     }
     return this.spatializer.positionY.value;
   };
@@ -99,7 +104,7 @@ define(function (require) {
       this.spatializer.positionZ.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
       this.spatializer.positionZ.linearRampToValueAtTime(zVal, this.ac.currentTime + 0.02 + t);
     } else if (zVal) {
-      zVal.connec(this.spatializer.positionZ);
+      zVal.connect(this.spatializer.positionZ);
     }
     return this.spatializer.positionZ.value;
   };
@@ -124,7 +129,7 @@ define(function (require) {
       this.spatializer.orientX.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
       this.spatializer.orientX.linearRampToValueAtTime(yVal, this.ac.currentTime + 0.02 + t);
     } else if (xVal) {
-      xVal.connec(this.spatializer.orientX);
+      xVal.connect(this.spatializer.orientX);
     }
     return this.spatializer.orientX.value;
   };
@@ -135,7 +140,7 @@ define(function (require) {
       this.spatializer.orientY.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
       this.spatializer.orientY.linearRampToValueAtTime(yVal, this.ac.currentTime + 0.02 + t);
     } else if (yVal) {
-      yVal.connec(this.spatializer.orientY);
+      yVal.connect(this.spatializer.orientY);
     }
     return this.spatializer.orientY.value;
   };
@@ -146,7 +151,7 @@ define(function (require) {
       this.spatializer.orientZ.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
       this.spatializer.orientZ.linearRampToValueAtTime(yVal, this.ac.currentTime + 0.02 + t);
     } else if (zVal) {
-      zVal.connec(this.spatializer.orientY);
+      zVal.connect(this.spatializer.orientY);
     }
     return this.spatializer.orientZ.value;
   };

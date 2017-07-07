@@ -80,6 +80,7 @@ module.exports = function(grunt) {
             'delay': 'src/delay',
             'effect': 'src/effect',
             'spatializer': 'src/spatializer',
+            'listener3d': 'src/listener3d',
             'filter': 'src/filter',
             'reverb': 'src/reverb',
             'distortion': 'src/distortion',
