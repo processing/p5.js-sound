@@ -181,7 +181,7 @@ define(function (require) {
    *  @param {Number} [rampTime] create a fade that lasts rampTime
    *  @param {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
-   *  @return  {AudioParam} gain  If no value is provided,
+   *  @return  {p5.AudioParam} gain  If no value is provided,
    *                              returns the Web Audio API
    *                              AudioParam that controls
    *                              this oscillator's
@@ -221,7 +221,7 @@ define(function (require) {
    *  @param  {Number} [rampTime] Ramp time (in seconds)
    *  @param  {Number} [timeFromNow] Schedule this event to happen
    *                                   at x seconds from now
-   *  @return  {AudioParam} Frequency If no value is provided,
+   *  @return  {p5.AudioParam} Frequency If no value is provided,
    *                                  returns the Web Audio API
    *                                  AudioParam that controls
    *                                  this oscillator's frequency
@@ -497,7 +497,8 @@ define(function (require) {
    *  its method <code>setType('sine')</code>.
    *  See p5.Oscillator for methods.
    *
-   *  @method  p5.SinOsc
+   *  @method  SinOsc
+   *  @for p5
    *  @param {[Number]} freq Set the frequency
    */
   p5.SinOsc = function(freq) {
@@ -514,7 +515,8 @@ define(function (require) {
    *  its method <code>setType('triangle')</code>.
    *  See p5.Oscillator for methods.
    *
-   *  @method  p5.TriOsc
+   *  @method  TriOsc
+   *  @for p5
    *  @param {[Number]} freq Set the frequency
    */
   p5.TriOsc = function(freq) {
@@ -531,7 +533,8 @@ define(function (require) {
    *  its method <code>setType('sawtooth')</code>.
    *  See p5.Oscillator for methods.
    *
-   *  @method  p5.SawOsc
+   *  @method  SawOsc
+   *  @for p5
    *  @param {[Number]} freq Set the frequency
    */
   p5.SawOsc = function(freq) {
@@ -548,7 +551,8 @@ define(function (require) {
    *  its method <code>setType('square')</code>.
    *  See p5.Oscillator for methods.
    *
-   *  @method  p5.SqrOsc
+   *  @method  SqrOsc
+   *  @for p5
    *  @param {[Number]} freq Set the frequency
    */
   p5.SqrOsc = function(freq) {

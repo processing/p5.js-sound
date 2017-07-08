@@ -111,8 +111,7 @@ define(function () {
    *  Web Audio API nodes including a dyanmicsCompressor (<code>.limiter</code>),
    *  and Gain Nodes for <code>.input</code> and <code>.output</code>.
    *
-   *  @property soundOut
-   *  @type {Object}
+   *  @property soundOut {Object}
    */
   p5.prototype.soundOut = p5.soundOut = p5sound;
 

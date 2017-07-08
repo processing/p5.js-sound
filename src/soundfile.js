@@ -723,8 +723,8 @@ define(function (require) {
    *
    * @method pan
    * @param {Number} [panValue]     Set the stereo panner
-   * @param  {Number} timeFromNow schedule this event to happen
-   *                                seconds from now
+   * @param {Number} [timeFromNow]  schedule this event to happen
+   *                                 seconds from now
    * @example
    * <div><code>
    *

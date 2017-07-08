@@ -86,8 +86,7 @@ define(function (require) {
       *  <a href="http://www.w3.org/TR/webaudio/#BiquadFilterNode">
       *  Web Audio BiquadFilter Node</a>.
       *
-      *  @property biquadFilter
-      *  @type {Object}  Web Audio Delay Node
+      *  @property biquadFilter {Object}  Web Audio Delay Node
 	  */
 
     this.biquad = this.ac.createBiquadFilter();
@@ -214,7 +213,8 @@ define(function (require) {
    *  its method <code>setType('lowpass')</code>.
    *  See p5.Filter for methods.
    *
-   *  @method p5.LowPass
+   *  @method LowPass
+   *  @for p5
    */
   p5.LowPass = function() {
     p5.Filter.call(this, 'lowpass');
@@ -227,7 +227,8 @@ define(function (require) {
    *  its method <code>setType('highpass')</code>.
    *  See p5.Filter for methods.
    *
-   *  @method p5.HighPass
+   *  @method HighPass
+   *  @for p5
    */
   p5.HighPass = function() {
     p5.Filter.call(this, 'highpass');
@@ -240,7 +241,8 @@ define(function (require) {
    *  its method <code>setType('bandpass')</code>.
    *  See p5.Filter for methods.
    *
-   *  @method p5.BandPass
+   *  @method BandPass
+   *  @for p5
    */
   p5.BandPass = function() {
     p5.Filter.call(this, 'bandpass');
