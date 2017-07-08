@@ -36,7 +36,7 @@ function setup() {
     cameraControls = QuickSettings.create(5, 5, "Camera Controls");
     cameraControls.addRange("camera x rotation", -TWO_PI, TWO_PI, 0, 0.1, camXChange);
     cameraControls.addRange("camera y rotation", -PI, PI, -PI/2, 0.1, camYChange);
-    cameraControls.addRange("camera z position", -1500, 1500, -500, 1, camZChange);
+    cameraControls.addRange("camera z position", -15000, 1500, -500, 1, camZChange);
     cameraControls.addButton("camera reset", resetCam);
 
     simulationParameters = QuickSettings.create(255, 5, "Simulation Parameters");
@@ -52,12 +52,13 @@ function setup() {
     //disconnect sound file and send it to output via Panner3D
     soundFile.disconnect();
     panner3d = new p5.Panner3D();
+    listener3d = new p5.Listener3D();
+    //listener3d.connect(panner3d);
     soundFile.connect(panner3d);
     soundFile.loop();
     
     
-    listener3d = new p5.Listener3D();
-
+    
 
 }
 
@@ -86,6 +87,11 @@ function draw() {
     panner3d.position( flock.boids[0].position.x, 
                     flock.boids[0].position.y, 
                     flock.boids[0].position.z);
+
+    listener3d.spatializer.setPosition(0,0,cam_z_pos)
+    //listener3d.orientX(cam_y_rot)
+    //listener3d.spatializer.orientY(cam_x_rot)
+  //  listener3d.spatializer.setOrientation(cam_x_rot,cam_y_rot,0)
   
 }
 
@@ -104,6 +110,7 @@ function resetFlock(){
     flock = new Flock();
     for (var i = 0; i < nb; i++) {
         var b = new Boid(1,1,-400);
+        b.acceleration = createVector(random(1,10)*cos(random(TWO_PI)),random(1,10)*sin(random(TWO_PI)),0 )
         flock.addBoid(b);
     }
 }
