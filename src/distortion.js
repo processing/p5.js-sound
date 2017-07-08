@@ -59,8 +59,7 @@ define(function (require) {
      *  <a href="http://www.w3.org/TR/webaudio/#WaveShaperNode">
      *  Web Audio WaveShaper Node</a>.
      *
-     *  @property WaveShaperNode
-     *  @type {Object}  AudioNode
+     *  @property WaveShaperNode {Object}  AudioNode
      */
     this.waveShaperNode = this.ac.createWaveShaper();
 
