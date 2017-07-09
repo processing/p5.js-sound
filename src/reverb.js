@@ -63,6 +63,17 @@ define(function (require) {
   };
 
   p5.Reverb.prototype = Object.create(Effect.prototype);
+
+
+
+
+
+  // p5.Reverb.default = {
+  //   "_seconds" : 3,
+  //   "_decay" : 2,
+  //   "_reverse" : false
+  // };
+
   /**
    *  Connect a source to the reverb, and assign reverb parameters.
    *
