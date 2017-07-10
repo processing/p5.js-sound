@@ -65,14 +65,27 @@ define(function (require) {
   p5.Reverb.prototype = Object.create(Effect.prototype);
 
 
+  p5.Reverb.prototype.loadPreset = function(preset) {
+    return p5.Reverb.prototype[preset];
+  }
 
+  /**
+   * Presets
+   *
+   * Simple Reverb
+   * @type {Array} [seconds, decay, reverse]
+   */
+  p5.Reverb.prototype.default = [3, 2, false];
 
+  p5.Reverb.prototype.smallRoom = [1, 16, false];
 
-  // p5.Reverb.default = {
-  //   "_seconds" : 3,
-  //   "_decay" : 2,
-  //   "_reverse" : false
-  // };
+  p5.Reverb.prototype.mediumRoom = [2, 12.5, false];
+
+  p5.Reverb.prototype.largeRoom = [3, 30, false];
+
+  p5.Reverb.prototype.touchOfVerb = [1.1, 6.1, false, {"drywet" : 0.5}];
+
+  p5.Reverb.prototype.lotsOfVerb =[4.9, 42.3, false];
 
   /**
    *  Connect a source to the reverb, and assign reverb parameters.
