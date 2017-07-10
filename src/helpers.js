@@ -1,6 +1,9 @@
 'use strict';
 define(function (require) {
   var p5sound = require('master');
+  /**
+   * @class p5
+   */
 
   /**
    * Returns a number representing the sample rate, in samples per second,
