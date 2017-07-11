@@ -181,7 +181,7 @@ define(function (require) {
    *  @param {Number} [rampTime] create a fade that lasts rampTime
    *  @param {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
-   *  @return  {p5.AudioParam} gain  If no value is provided,
+   *  @return  {AudioParam} gain  If no value is provided,
    *                              returns the Web Audio API
    *                              AudioParam that controls
    *                              this oscillator's
@@ -221,7 +221,7 @@ define(function (require) {
    *  @param  {Number} [rampTime] Ramp time (in seconds)
    *  @param  {Number} [timeFromNow] Schedule this event to happen
    *                                   at x seconds from now
-   *  @return  {p5.AudioParam} Frequency If no value is provided,
+   *  @return  {AudioParam} Frequency If no value is provided,
    *                                  returns the Web Audio API
    *                                  AudioParam that controls
    *                                  this oscillator's frequency
@@ -499,7 +499,7 @@ define(function (require) {
    *
    *  @method  SinOsc
    *  @for p5
-   *  @param {[Number]} freq Set the frequency
+   *  @param {Number} [freq] Set the frequency
    */
   p5.SinOsc = function(freq) {
     p5.Oscillator.call(this, freq, 'sine');
@@ -517,7 +517,7 @@ define(function (require) {
    *
    *  @method  TriOsc
    *  @for p5
-   *  @param {[Number]} freq Set the frequency
+   *  @param {Number} [freq] Set the frequency
    */
   p5.TriOsc = function(freq) {
     p5.Oscillator.call(this, freq, 'triangle');
@@ -535,7 +535,7 @@ define(function (require) {
    *
    *  @method  SawOsc
    *  @for p5
-   *  @param {[Number]} freq Set the frequency
+   *  @param {Number} [freq] Set the frequency
    */
   p5.SawOsc = function(freq) {
     p5.Oscillator.call(this, freq, 'sawtooth');
@@ -553,7 +553,7 @@ define(function (require) {
    *
    *  @method  SqrOsc
    *  @for p5
-   *  @param {[Number]} freq Set the frequency
+   *  @param {Number} [freq] Set the frequency
    */
   p5.SqrOsc = function(freq) {
     p5.Oscillator.call(this, freq, 'square');

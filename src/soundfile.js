@@ -25,7 +25,7 @@ define(function (require) {
    *
    *  @class p5.SoundFile
    *  @constructor
-   *  @param {String/Array} path   path to a sound file (String). Optionally,
+   *  @param {String|Array} path   path to a sound file (String). Optionally,
    *                               you may include multiple file formats in
    *                               an array. Alternately, accepts an object
    *                               from the HTML5 File API, or a p5.File.
@@ -153,7 +153,7 @@ define(function (require) {
    *  local server</a> is recommended when loading external files.
    *
    *  @method loadSound
-   *  @param  {String/Array}   path     Path to the sound file, or an array with
+   *  @param  {String|Array}   path     Path to the sound file, or an array with
    *                                    paths to soundfiles in multiple formats
    *                                    i.e. ['sound.ogg', 'sound.mp3'].
    *                                    Alternately, accepts an object: either

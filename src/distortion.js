@@ -86,7 +86,6 @@ define(function (require) {
    * @param {Number} [amount=0.25] Unbounded distortion amount.
    *                                Normal values range from 0-1.
    * @param {String} [oversample='none'] 'none', '2x', or '4x'.
-   * @param {String}
    */
   p5.Distortion.prototype.set = function(amount, oversample) {
     if (amount) {

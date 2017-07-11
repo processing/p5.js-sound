@@ -76,8 +76,7 @@ define(function (require) {
    *  converter.
    *
    *  @method soundFormats
-   *  @param {String} formats i.e. 'mp3', 'wav', 'ogg'
-   *  @param {String} formats i.e. 'mp3', 'wav', 'ogg'
+   *  @param {String} [...formats] i.e. 'mp3', 'wav', 'ogg'
    *  @example
    *  <div><code>
    *  function preload() {

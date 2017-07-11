@@ -22,7 +22,7 @@ define(function (require) {
    *
    *  @class p5.Filter
    *  @constructor
-   *  @param {[String]} type 'lowpass' (default), 'highpass', 'bandpass'
+   *  @param {String} [type] 'lowpass' (default), 'highpass', 'bandpass'
    *  @return {Object} p5.Filter
    *  @example
    *  <div><code>
@@ -108,8 +108,8 @@ define(function (require) {
    *
    *  @method  process
    *  @param  {Object} Signal  An object that outputs audio
-   *  @param {[Number]} freq Frequency in Hz, from 10 to 22050
-   *  @param {[Number]} res Resonance/Width of the filter frequency
+   *  @param {Number} [freq] Frequency in Hz, from 10 to 22050
+   *  @param {Number} [res] Resonance/Width of the filter frequency
    *                        from 0.001 to 1000
    */
   p5.Filter.prototype.process = function(src, freq, res, time) {
@@ -122,8 +122,8 @@ define(function (require) {
    *  Set the frequency and the resonance of the filter.
    *
    *  @method  set
-   *  @param {Number} freq Frequency in Hz, from 10 to 22050
-   *  @param {Number} res  Resonance (Q) from 0.001 to 1000
+   *  @param {Number} [freq] Frequency in Hz, from 10 to 22050
+   *  @param {Number} [res]  Resonance (Q) from 0.001 to 1000
    *  @param {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
    */
