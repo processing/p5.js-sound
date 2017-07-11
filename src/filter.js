@@ -192,7 +192,7 @@ define(function (require) {
    *  "allpass".
    *
    *  @method  setType
-   *  @param {String}
+   *  @param {String} t
    */
   p5.Filter.prototype.setType = function(t) {
     this.biquad.type = t;

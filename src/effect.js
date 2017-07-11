@@ -124,7 +124,7 @@ define(function (require) {
 	 *	May be used with open-ended number of arguments
 	 *
 	 *	@method chain 
-     *  @param {Object} arguments p5.Effect objects	
+     *  @param {Object} [...effects] p5.Effect objects	
 	 */		
 	p5.Effect.prototype.chain = function(){
 		if (arguments.length>0){
