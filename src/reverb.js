@@ -42,7 +42,7 @@ define(function (require) {
    */
 
 
-  p5.Reverb = function() {
+  p5.Reverb = function(preset) {
     Effect.call(this);
 
     this.convolverNode = this.ac.createConvolver();
@@ -57,6 +57,9 @@ define(function (require) {
     this._seconds = 3;
     this._decay = 2;
     this._reverse = false;
+    this.params = ['_seconds', '_decay', '_reverse'];
+
+    this.chained = [];
 
     this._buildImpulse();
 
@@ -66,7 +69,28 @@ define(function (require) {
 
 
   p5.Reverb.prototype.loadPreset = function(preset) {
-    return p5.Reverb.prototype[preset];
+    //reset all params
+    if (preset !== 'default') {
+      this.loadPreset('default');
+    }
+
+    if (typeof this[preset] === 'function'){
+      console.log('funct');
+      this[preset]();
+    } else {
+      var params = p5.Reverb.prototype[preset]
+      for (var i = 0; i < params.length; i++) {
+        if (typeof params[i] === 'object'){
+          this[params[i].function](params[i].value);
+        } else if (typeof params[i] === 'function') {
+            this[params[i]]();
+        } else {
+          this.params[i] = params[i];
+        }
+      }
+      this.set(this.params[0], this.params[1], this.params[2]);
+    }
+    return this;
   }
 
   /**
@@ -75,17 +99,26 @@ define(function (require) {
    * Simple Reverb
    * @type {Array} [seconds, decay, reverse]
    */
-  p5.Reverb.prototype.default = [3, 2, false];
-
-  p5.Reverb.prototype.smallRoom = [1, 16, false];
-
+  p5.Reverb.prototype.default = [3, 2, false, {'function' : 'drywet','value' : 1}];
+  p5.Reverb.prototype.smallRoom = [0.5, 16, false];
   p5.Reverb.prototype.mediumRoom = [2, 12.5, false];
-
   p5.Reverb.prototype.largeRoom = [3, 30, false];
-
-  p5.Reverb.prototype.touchOfVerb = [1.1, 6.1, false, {"drywet" : 0.5}];
-
+  p5.Reverb.prototype.touchOfVerb = [1.1, 6.1, false, 
+                                        {'function' : 'drywet',
+                                          'value' : 0.5} ];
   p5.Reverb.prototype.lotsOfVerb =[4.9, 42.3, false];
+
+  //attach an EQ with hi and lo cuts
+  p5.Reverb.prototype.smoothVerb = function() {
+    this.set(4, 40, false);
+    this.drywet(.65);
+    var locut = new p5.Filter('highpass');
+    locut.set(12000,2);
+    var hicut = new p5.Filter('lowpass');
+    hicut.set(18000,2);
+    this.chain(locut,hicut);
+    return this;
+  }
 
   /**
    *  Connect a source to the reverb, and assign reverb parameters.

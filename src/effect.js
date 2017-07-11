@@ -52,6 +52,8 @@ define(function (require) {
 		this.wet.connect(this._drywet.b);
 		this._drywet.connect(this.output);
 
+		this.chained = [];
+
 		this.connect();
 
 		//Add to the soundArray
@@ -139,15 +141,39 @@ define(function (require) {
 		this.output.disconnect();
 		this.output = undefined;
 
+
     this._drywet.disconnect();
     delete this._drywet;
 
     this.wet.disconnect();
     delete this.wet;
-
+    
 		this.ac = undefined;
 	};
 
+
+	/**
+	 *	Link effects together in a chain	
+	 *	Example uUsage: filter.chain(reverb,delay,panner);
+	 *	May be used with open-ended number of arguments
+	 *
+	 *	@method chain 
+     *  @param {Object} [...effects] p5.Effect objects	
+	 */		
+	p5.Effect.prototype.chain = function(){
+		if (arguments.length>0){
+			this.output.connect(arguments[0]);
+		
+			for(var i=1;i<arguments.length; i+=1){
+				arguments[i-1].connect(arguments[i]);
+				this.chained.push(arguments[i-1]);
+			}
+		}
+
+		this.chained = Array.from(arguments);
+		return this;
+	}
+	
 	return p5.Effect;
 
 });
