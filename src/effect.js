@@ -11,7 +11,6 @@ define(function (require) {
 	 *
 	 * @class  p5.Effect
 	 * @constructor
-	 * @return {Object} Returns a p5.Effect object
 	 * 
 	 */
 	p5.Effect = function() {

@@ -36,7 +36,7 @@ define(function () {
     });
     err.stack = splitStack.join('\n');
 
-    return err;
+    return err; // TODO: is this really a constructor?
   };
 
   return CustomError;

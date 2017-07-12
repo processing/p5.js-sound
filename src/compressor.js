@@ -18,8 +18,8 @@ define(function (require) {
    * https://www.w3.org/TR/webaudio/#the-dynamicscompressornode-interface
    *
    * @class p5.Compressor
+   * @extends p5.Effect
    * @constructor
-   * @return {Object} Returns a p5.Compressor object
    *
    * @example
    * <div><code>

@@ -15,8 +15,8 @@ define(function (require) {
    *  original source.
    *
    *  @class p5.Delay
+   *  @extends p5.Effect
    *  @constructor
-   *  @return {Object} Returns a p5.Delay object
    *  @example
    *  <div><code>
    *  var noise, env, delay;

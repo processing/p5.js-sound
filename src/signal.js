@@ -56,7 +56,7 @@ define(function (require) {
   p5.Signal = function(value) {
     var s = new Signal(value);
     // p5sound.soundArray.push(s);
-    return s;
+    return s; // TODO: is this really a constructor?
   };
 
   /**

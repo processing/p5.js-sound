@@ -29,7 +29,6 @@ define(function (require) {
    *  @param {String} [type] type of oscillator. Options:
    *                         'sine' (default), 'triangle',
    *                         'sawtooth', 'square'
-   *  @return {Object}    Oscillator object
    *  @example
    *  <div><code>
    *  var osc;

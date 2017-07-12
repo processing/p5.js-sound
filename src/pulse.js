@@ -15,6 +15,7 @@ define(function (require) {
    *  <code>p5.Oscillator</code> for a full list of methods.
    *
    *  @class p5.Pulse
+   *  @extends p5.Oscillator
    *  @constructor
    *  @param {Number} [freq] Frequency in oscillations per second (Hz)
    *  @param {Number} [w]    Width between the pulses (0 to 1.0,

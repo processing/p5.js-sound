@@ -13,7 +13,6 @@ define(function (require) {
    *  @constructor
    *  @param {Number} [smoothing] between 0.0 and .999 to smooth
    *                             amplitude readings (defaults to 0)
-   *  @return {Object}    Amplitude Object
    *  @example
    *  <div><code>
    *  var sound, amplitude, cnv;

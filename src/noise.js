@@ -7,10 +7,10 @@ define(function (require) {
    *  Noise is a type of oscillator that generates a buffer with random values.
    *
    *  @class p5.Noise
+   *  @extends p5.Oscillator
    *  @constructor
    *  @param {String} type Type of noise can be 'white' (default),
    *                       'brown' or 'pink'.
-   *  @return {Object}    Noise Object
    */
   p5.Noise = function(type) {
     var assignType;
