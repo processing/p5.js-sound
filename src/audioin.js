@@ -91,9 +91,9 @@ define(function (require) {
    *  the browser won't provide mic access.
    *
    *  @method start
-   *  @param {Function} successCallback Name of a function to call on
+   *  @param {Function} [successCallback] Name of a function to call on
    *                                    success.
-   *  @param {Function} errorCallback Name of a function to call if
+   *  @param {Function} [errorCallback] Name of a function to call if
    *                                    there was an error. For example,
    *                                    some browsers do not support
    *                                    getUserMedia.

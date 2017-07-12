@@ -497,8 +497,9 @@ define(function (require) {
    *  its method <code>setType('sine')</code>.
    *  See p5.Oscillator for methods.
    *
-   *  @method  p5.SinOsc
-   *  @param {[Number]} freq Set the frequency
+   *  @method  SinOsc
+   *  @for p5
+   *  @param {Number} [freq] Set the frequency
    */
   p5.SinOsc = function(freq) {
     p5.Oscillator.call(this, freq, 'sine');
@@ -514,8 +515,9 @@ define(function (require) {
    *  its method <code>setType('triangle')</code>.
    *  See p5.Oscillator for methods.
    *
-   *  @method  p5.TriOsc
-   *  @param {[Number]} freq Set the frequency
+   *  @method  TriOsc
+   *  @for p5
+   *  @param {Number} [freq] Set the frequency
    */
   p5.TriOsc = function(freq) {
     p5.Oscillator.call(this, freq, 'triangle');
@@ -531,8 +533,9 @@ define(function (require) {
    *  its method <code>setType('sawtooth')</code>.
    *  See p5.Oscillator for methods.
    *
-   *  @method  p5.SawOsc
-   *  @param {[Number]} freq Set the frequency
+   *  @method  SawOsc
+   *  @for p5
+   *  @param {Number} [freq] Set the frequency
    */
   p5.SawOsc = function(freq) {
     p5.Oscillator.call(this, freq, 'sawtooth');
@@ -548,8 +551,9 @@ define(function (require) {
    *  its method <code>setType('square')</code>.
    *  See p5.Oscillator for methods.
    *
-   *  @method  p5.SqrOsc
-   *  @param {[Number]} freq Set the frequency
+   *  @method  SqrOsc
+   *  @for p5
+   *  @param {Number} [freq] Set the frequency
    */
   p5.SqrOsc = function(freq) {
     p5.Oscillator.call(this, freq, 'square');

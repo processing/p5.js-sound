@@ -234,8 +234,7 @@ define(function (require) {
      *  <a href="http://www.w3.org/TR/webaudio/#ConvolverNode">
      *  Web Audio Convolver Node</a>.
      *
-     *  @property convolverNode
-     *  @type {Object}  Web Audio Convolver Node
+     *  @property convolverNode {Object}  Web Audio Convolver Node
      */
     this.convolverNode = this.ac.createConvolver();
 
@@ -432,8 +431,7 @@ define(function (require) {
    *  they will be stored as Objects in this Array. Toggle between them
    *  with the <code>toggleImpulse(id)</code> method.
    *
-   *  @property impulses
-   *  @type {Array} Array of Web Audio Buffers
+   *  @property impulses {Array} Array of Web Audio Buffers
    */
   p5.Convolver.prototype.impulses = [];
 

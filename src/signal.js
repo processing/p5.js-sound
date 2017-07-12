@@ -64,7 +64,7 @@ define(function (require) {
    *
    *  @method  fade
    *  @param  {Number} value          Value to set this signal
-   *  @param  {[Number]} secondsFromNow Length of fade, in seconds from now
+   *  @param  {Number} [secondsFromNow] Length of fade, in seconds from now
    */
   Signal.prototype.fade = Signal.prototype.linearRampToValueAtTime;
   Mult.prototype.fade =   Signal.prototype.fade;

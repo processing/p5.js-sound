@@ -102,8 +102,7 @@ define(function (require) {
      * strings, or an object with multiple parameters.
      * Zero (0) indicates a rest.
      *
-     * @property sequence
-     * @type {Array}
+     * @property sequence {Array}
      */
     this.sequence = sequence;
   };
@@ -390,7 +389,7 @@ define(function (require) {
    *
    *  @class p5.Score
    *  @constructor
-   *  @param {p5.Part} part(s) One or multiple parts, to be played in sequence.
+   *  @param {p5.Part} [...parts] One or multiple parts, to be played in sequence.
    *  @return {p5.Score}
    */
   p5.Score = function() {
