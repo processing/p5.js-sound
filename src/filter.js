@@ -21,9 +21,9 @@ define(function (require) {
    *  bandpass, or resonance of the low/highpass cutoff frequency.
    *
    *  @class p5.Filter
+   *  @extends p5.Effect
    *  @constructor
    *  @param {String} [type] 'lowpass' (default), 'highpass', 'bandpass'
-   *  @return {Object} p5.Filter
    *  @example
    *  <div><code>
    *  var fft, noise, filter;

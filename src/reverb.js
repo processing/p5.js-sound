@@ -15,6 +15,7 @@ define(function (require) {
    *  spaces through convolution.
    *
    *  @class p5.Reverb
+   *  @extends p5.Effect
    *  @constructor
    *  @example
    *  <div><code>
@@ -191,6 +192,7 @@ define(function (require) {
    *  p5.Convolver with a path to your impulse response audio file.</p>
    *
    *  @class p5.Convolver
+   *  @extends p5.Effect
    *  @constructor
    *  @param  {String}   path     path to a sound file
    *  @param  {Function} [callback] function to call when loading succeeds

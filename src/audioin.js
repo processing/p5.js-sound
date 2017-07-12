@@ -24,7 +24,6 @@ define(function (require) {
    *                                    accessing the AudioIn. For example,
    *                                    Safari and iOS devices do not
    *                                    currently allow microphone access.
-   *  @return {Object} AudioIn
    *  @example
    *  <div><code>
    *  var mic;

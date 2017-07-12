@@ -43,7 +43,6 @@ define(function (require) {
    *                                             does not account for the additional
    *                                             time needed to decode the audio data.
    *
-   *  @return {Object}    p5.SoundFile Object
    *  @example
    *  <div><code>
    *
