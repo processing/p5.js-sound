@@ -22,7 +22,7 @@ define(function (require) {
 		/**
 		 *	The p5.Effect class is built
 		 * 	using Tone.js CrossFade
-		 *	@property _drywet {Object} ToneJS node
+		 *	@property {CrossFade} _drywet
 		 */
 		this._drywet = new CrossFade(1);
 
@@ -30,7 +30,7 @@ define(function (require) {
 		 *	In classes that extend
 		 *	p5.Effect, connect effect nodes
 		 *	to the wet parameter
-		 *	@property wet {Object} Web Audio Gain Node
+		 *	@property {GainNode} wet
 		 */
 		this.wet = this.ac.createGain();
 
