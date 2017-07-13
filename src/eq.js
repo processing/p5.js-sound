@@ -44,7 +44,6 @@ define(function (require) {
       *  @type {Object}  Web Audio Delay Node
       *
     */
-
     var freq, res;
     for (var i = 0; i < _eqsize; i++) {
       if (i == _eqsize - 1) {
@@ -57,7 +56,7 @@ define(function (require) {
         freq = this.bands[i-1].freq * factor;
         res = 1.5;
       } 
-      this.bands[i] = this.newBand(freq, res);
+      this.bands[i] = this._newBand(freq, res);
       if (i>0) {
         this.bands[i-1].biquad.connect(this.bands[i].biquad);
       } else {
@@ -74,10 +73,11 @@ define(function (require) {
   };
 
   /**
-   * Add a new band. Creates a p5.Filter and strips away the gain node wrapper
-   * @param  {[type]} freq [description]
-   * @param  {[type]} res  [description]
-   * @return {[type]}      [description]
+   * Add a new band. Creates a p5.Filter and strips away everything but 
+   * the raw biquad filter
+   * @param  {Number} freq 
+   * @param  {Number} res  
+   * @return {Obect}      [p5.Filter object]
    */
   p5.EQ.prototype._newBand = function(freq, res) {
     var newFilter = new Filter('peaking');
