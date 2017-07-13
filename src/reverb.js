@@ -156,7 +156,7 @@ define(function (require) {
     var impulseR = impulse.getChannelData(1);
     var n, i;
     for (i = 0; i < length; i++) {
-      n = this.reverse ? length - i : i;
+      n = this._reverse ? length - i : i;
       impulseL[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
       impulseR[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
     }
