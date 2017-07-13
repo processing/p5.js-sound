@@ -100,8 +100,9 @@ define(function (require) {
       this.setType(type);
     }
 
+    //Properties useful for the toggle method.
     this._on = true;
-    this.type = this.biquad.type;
+    this._untoggledType = this.biquad.type;
   };
   p5.Filter.prototype = Object.create(Effect.prototype);
 
@@ -219,7 +220,7 @@ define(function (require) {
     this._on = !this._on;
     
     if (this._on === true) {
-      this.biquad.type = this.type;
+      this.biquad.type = this._untoggledType;
     } else if (this._on === false) {
       this.biquad.type = 'allpass';
     }
@@ -238,6 +239,7 @@ define(function (require) {
    */
   p5.Filter.prototype.setType = function(t) {
     this.biquad.type = t;
+    this._untoggledType = this.biquad.type;
   };
 
   p5.Filter.prototype.dispose = function() {

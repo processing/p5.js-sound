@@ -30,7 +30,7 @@ define(function (require) {
     Effect.call(this);
 
     //p5.EQ can be of size (3) or (8), defaults to 3
-    _eqsize = _eqsize == 3 || _eqsize == 8 ? _eqsize : 3;
+    _eqsize = _eqsize === 3 || _eqsize === 8 ? _eqsize : 3;
 
     var factor;
     _eqsize == 3 ? factor = Math.pow(2,4) : factor = 2;
@@ -79,7 +79,7 @@ define(function (require) {
    * @param  {[type]} res  [description]
    * @return {[type]}      [description]
    */
-  p5.EQ.prototype.newBand = function(freq, res) {
+  p5.EQ.prototype._newBand = function(freq, res) {
     var newFilter = new Filter('peaking');
     newFilter.disconnect();
     newFilter.set(freq, res);
