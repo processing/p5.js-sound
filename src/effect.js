@@ -53,6 +53,7 @@ define(function (require) {
 		this._drywet.connect(this.output);
 
 		this.chained = [];
+		this.params = [];
 
 		this.connect();
 
@@ -62,6 +63,49 @@ define(function (require) {
 
 	/**
 	 *  Set the output volume of the filter.
+	 * loadPreset is a method of the base Effect class
+	 * which loads paramters specified in a preset defintion of 
+	 * a specific effect.
+	 *
+	 * Presets can be saved / loaded as an array of parameters or 
+	 * as a function definition.
+	 * When saved as an array, function calls can be specified by including a
+	 * javascript object as an item in the area, formatted as follows
+	 * {'function' : some_function_name, 'value' : some_value}. Any function objects
+	 * should follow simple variable parameters.
+	 * 
+	 * @param  preset [preset as an array or function definition]
+	 * @return {this}        [returns this]
+	 */
+	p5.Effect.prototype.loadPreset = function(preset) {
+	  //Calling default resets params and deletes chained objects from 
+	  //any previous preset
+	  if (preset !== 'default') {
+	    this.loadPreset('default');
+	  }
+
+	  if (typeof this[preset] === 'function'){
+	    this[preset]();
+	  } 
+
+	  else {
+	    var params = this[preset];
+	    for (var i = 0; i < params.length; i++) {
+	      if (typeof params[i] === 'object'){
+	        this[params[i].function](params[i].value);
+	      } 
+	      else {
+	        this.params[i] = params[i];
+	      }
+	    }
+	  }
+	  this._loadParams();
+	  return this;
+	};
+
+
+	/**
+	 *  Set the output level of the filter.
 	 *  
 	 *  @method  amp
 	 *  @param {Number} [vol] amplitude between 0 and 1.0

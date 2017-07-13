@@ -67,31 +67,22 @@ define(function (require) {
 
   p5.Reverb.prototype = Object.create(Effect.prototype);
 
-
-  p5.Reverb.prototype.loadPreset = function(preset) {
-    //reset all params
-    if (preset !== 'default') {
-      this.loadPreset('default');
-    }
-
-    if (typeof this[preset] === 'function'){
-      console.log('funct');
-      this[preset]();
-    } else {
-      var params = p5.Reverb.prototype[preset]
-      for (var i = 0; i < params.length; i++) {
-        if (typeof params[i] === 'object'){
-          this[params[i].function](params[i].value);
-        } else if (typeof params[i] === 'function') {
-            this[params[i]]();
-        } else {
-          this.params[i] = params[i];
-        }
-      }
-      this.set(this.params[0], this.params[1], this.params[2]);
-    }
-    return this;
+  /**
+   * @private _loadParams is implemented in every effect class
+   * this method calls which ever method is used to modify default params of an
+   * effect class.
+   *
+   * This should only be called by the superclass method .loadPreset(). 
+   * The method is necessary because effects use different methods to set 
+   * different numbers of paramters
+   * @return {[type]} [description]
+   */
+  p5.Reverb.prototype._loadParams = function() {
+    this.set(this.params[0], this.params[1], this.params[2]);
   }
+
+
+
 
   /**
    * Presets
@@ -99,26 +90,38 @@ define(function (require) {
    * Simple Reverb
    * @type {Array} [seconds, decay, reverse]
    */
-  p5.Reverb.prototype.default = [3, 2, false, {'function' : 'drywet','value' : 1}];
+  
+   /**
+    * Default preset, clears out any objects created by previous.
+    * @return {[type]} [description]
+    */
+  p5.Reverb.prototype.default = function() {
+  this.params = [3,2,false];
+  p5.Reverb.prototype.set.apply(this, this.params);
+  this.drywet(1);
+  while (this.chained.length > 0) {
+     delete this.chained.pop();
+   } 
+  }
+
   p5.Reverb.prototype.smallRoom = [0.5, 16, false];
   p5.Reverb.prototype.mediumRoom = [2, 12.5, false];
   p5.Reverb.prototype.largeRoom = [3, 30, false];
   p5.Reverb.prototype.touchOfVerb = [1.1, 6.1, false, 
                                         {'function' : 'drywet',
-                                          'value' : 0.5} ];
+                                          'value' : 0.3} ];
   p5.Reverb.prototype.lotsOfVerb =[4.9, 42.3, false];
 
-  //attach hi and lo cuts
   p5.Reverb.prototype.smoothVerb = function() {
     this.set(4, 40, false);
     this.drywet(.65);
-    var locut = new p5.Filter('highpass');
-    locut.set(12000,2);
-    var hicut = new p5.Filter('lowpass');
-    hicut.set(18000,2);
-    this.chain(locut,hicut);
-    return this;
-  }
+    this.locut = new p5.Filter('highpass');
+    this.locut.set(12000,2);
+    this.hicut = new p5.Filter('lowpass');
+    this.hicut.set(18000,2);
+    this.chain(this.hicut,this.locut);
+  };
+
 
   /**
    *  Connect a source to the reverb, and assign reverb parameters.
