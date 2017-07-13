@@ -6,6 +6,7 @@
 
 var soundFile;
 var listener3d;
+var panner3d;
 var zPos, ZDir;
 var description, position;
 
@@ -22,11 +23,16 @@ function setup() {
   //disconnect sound file and send it to output via listener3d
 
   listener3d = new p5.Listener3D();
-  listener3d.spatializer.setPosition(10000000,0,300);
+  listener3d.position(width/2,height/2,0);
+
+  panner3d = new p5.Panner3D();
+  panner3d.position(width/2,height/2,0);
+
+ 
 
   soundFile.loop();
-  // soundFile.disconnect();
-  // soundFile.connect(listener3d);
+  soundFile.disconnect();
+  soundFile.connect(panner3d);
   zPos = 0;
   zDir = 0.5;
 
@@ -53,15 +59,13 @@ function draw() {
 
 
   //Position the sound in 3 dimensions
-  // listener3d.position( max(min(25*(mouseX-width/2),6500),-6500), 
-  //                   max(min(25*(mouseY-width/2),6500),-6500), 
-  //                   max(min(200*zPos,10000),-10000));
-  //                   
-  // listener3d.position(100*mouseX,1000*mouseY, 100*(mouseX+mouseY));
+  listener3d.position( max(min(25*(mouseX-width/2),6500),-6500), 
+                     max(min(25*(mouseY-width/2),6500),-6500), 
+                     100);
+                     
   ellipse(width/2, height/2, 20, 20);
   fill(255,0,0);
   ellipse(mouseX, mouseY, 20,20)
-  
 }
 
 function updateDescription(){
@@ -74,6 +78,9 @@ p2.html(position);
 
 
 
-function mouseClicked() {
-  console.log(listener3d.positionX());
+function mousePressed() {
+  listener3d.orient(-1,1,1);
+}
+function mouseReleased() {
+  listener3d.orient(1,1,1);
 }
