@@ -108,7 +108,7 @@ define(function (require) {
                                           'value' : 0.5} ];
   p5.Reverb.prototype.lotsOfVerb =[4.9, 42.3, false];
 
-  //attach an EQ with hi and lo cuts
+  //attach hi and lo cuts
   p5.Reverb.prototype.smoothVerb = function() {
     this.set(4, 40, false);
     this.drywet(.65);
