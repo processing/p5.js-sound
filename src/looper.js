@@ -102,7 +102,7 @@ define(function (require) {
      * strings, or an object with multiple parameters.
      * Zero (0) indicates a rest.
      *
-     * @property sequence {Array}
+     * @property {Array} sequence
      */
     this.sequence = sequence;
   };

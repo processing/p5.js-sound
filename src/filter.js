@@ -86,7 +86,7 @@ define(function (require) {
       *  <a href="http://www.w3.org/TR/webaudio/#BiquadFilterNode">
       *  Web Audio BiquadFilter Node</a>.
       *
-      *  @property biquadFilter {Object}  Web Audio Delay Node
+      *  @property {DelayNode} biquadFilter
 	  */
 
     this.biquad = this.ac.createBiquadFilter();

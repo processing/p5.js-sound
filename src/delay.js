@@ -67,7 +67,7 @@ define(function (require) {
      *  <a href="http://www.w3.org/TR/webaudio/#DelayNode">
      *  Web Audio Delay Nodes</a>, one for each stereo channel.
      *
-     *  @property leftDelay {Object}  Web Audio Delay Node
+     *  @property {DelayNode} leftDelay
      */
     this.leftDelay = this.ac.createDelay();
     /**
@@ -75,7 +75,7 @@ define(function (require) {
      *  <a href="http://www.w3.org/TR/webaudio/#DelayNode">
      *  Web Audio Delay Nodes</a>, one for each stereo channel.
      *
-     *  @property rightDelay {Object}  Web Audio Delay Node
+     *  @property {DelayNode} rightDelay
      */
     this.rightDelay = this.ac.createDelay();
 
