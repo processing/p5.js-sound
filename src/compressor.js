@@ -90,8 +90,6 @@ define(function (require) {
 
   /**
    * Get current attack or set value w/ time ramp
-   * 
-   * 
    * @method attack
    * @param {Number} [attack] Attack is the amount of time (in seconds) to reduce the gain by 10dB,
    *                          default = .003, range 0 - 1
@@ -112,7 +110,6 @@ define(function (require) {
 
  /**
    * Get current knee or set value w/ time ramp
-   * 
    * @method knee
    * @param {Number} [knee] A decibel value representing the range above the 
    *                        threshold where the curve smoothly transitions to the "ratio" portion.
