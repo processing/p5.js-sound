@@ -368,7 +368,7 @@ define(function (require) {
    *  control all of them.
    *
    *  @method  setInput
-   *  @param  {Object} unit         A p5.sound object or
+   *  @param  {Object} [...inputs]         A p5.sound object or
    *                                Web Audio Param.
    */
   p5.Env.prototype.setInput = function() {

@@ -56,7 +56,7 @@ define(function (require) {
   p5.Signal = function(value) {
     var s = new Signal(value);
     // p5sound.soundArray.push(s);
-    return s;
+    return s; // TODO: is this really a constructor?
   };
 
   /**
@@ -64,7 +64,7 @@ define(function (require) {
    *
    *  @method  fade
    *  @param  {Number} value          Value to set this signal
-   *  @param  {[Number]} secondsFromNow Length of fade, in seconds from now
+   *  @param  {Number} [secondsFromNow] Length of fade, in seconds from now
    */
   Signal.prototype.fade = Signal.prototype.linearRampToValueAtTime;
   Mult.prototype.fade =   Signal.prototype.fade;

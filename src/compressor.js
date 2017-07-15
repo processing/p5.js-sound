@@ -18,8 +18,8 @@ define(function (require) {
    * https://www.w3.org/TR/webaudio/#the-dynamicscompressornode-interface
    *
    * @class p5.Compressor
+   * @extends p5.Effect
    * @constructor
-   * @return {Object} Returns a p5.Compressor object
    *
    * @example
    * <div><code>
@@ -64,16 +64,10 @@ define(function (require) {
   };
 
 
-
   /**
-   * Setter and Getter methdds 
-   * @method  {attack} set attack w/ time ramp or get current attack
-   * @method  {knee} set knee w/ time ramp or get current knee
-   * @method {ratio} set ratio w/ time ramp or get current ratio
-   * @method {threshold} set threshold w/ time ramp or get current threshold
-   * @method {release} set release w/ time ramp or get current release
+   * set attack w/ time ramp or get current attack
+   * @method attack
    */
-
   p5.Compressor.prototype.attack = function (attack, time){
     var t = time || 0;
     if (typeof attack == 'number'){
@@ -87,6 +81,10 @@ define(function (require) {
   };
 
 
+ /**
+   * set knee w/ time ramp or get current knee
+   * @method knee
+   */
   p5.Compressor.prototype.knee = function (knee, time){
     var t = time || 0;
     if (typeof knee == 'number'){
@@ -100,6 +98,10 @@ define(function (require) {
   };
 
 
+  /**
+   * set ratio w/ time ramp or get current ratio
+   * @method ratio
+   */
   p5.Compressor.prototype.ratio = function (ratio, time){
     var t = time || 0;
     if (typeof ratio == 'number'){
@@ -113,6 +115,10 @@ define(function (require) {
   };
 
 
+  /**
+   * set threshold w/ time ramp or get current threshold
+   * @method threshold
+   */
   p5.Compressor.prototype.threshold = function (threshold, time){
     var t = time || 0;
     if (typeof threshold == 'number'){
@@ -126,6 +132,10 @@ define(function (require) {
   };
 
 
+  /**
+   * set release w/ time ramp or get current release
+   * @method release
+   */
   p5.Compressor.prototype.release = function (release, time){
     var t = time || 0;
     if (typeof release == 'number'){
@@ -153,4 +163,6 @@ define(function (require) {
 		this.compressor.disconnect();
 		this.compressor = undefined;
 	};
+
+  return p5.Compressor;
 });

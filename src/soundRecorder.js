@@ -92,7 +92,7 @@ define(function (require) {
     /**
      *  callback invoked when the recording is over
      *  @private
-     *  @type {function(Float32Array)}
+     *  @type Function(Float32Array)
      */
     this._callback = function() {};
 

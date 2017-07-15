@@ -21,9 +21,9 @@ define(function (require) {
    *  bandpass, or resonance of the low/highpass cutoff frequency.
    *
    *  @class p5.Filter
+   *  @extends p5.Effect
    *  @constructor
-   *  @param {[String]} type 'lowpass' (default), 'highpass', 'bandpass'
-   *  @return {Object} p5.Filter
+   *  @param {String} [type] 'lowpass' (default), 'highpass', 'bandpass'
    *  @example
    *  <div><code>
    *  var fft, noise, filter;
@@ -86,8 +86,7 @@ define(function (require) {
       *  <a href="http://www.w3.org/TR/webaudio/#BiquadFilterNode">
       *  Web Audio BiquadFilter Node</a>.
       *
-      *  @property biquadFilter
-      *  @type {Object}  Web Audio Delay Node
+      *  @property {DelayNode} biquadFilter
 	  */
 
     this.biquad = this.ac.createBiquadFilter();
@@ -113,8 +112,8 @@ define(function (require) {
    *
    *  @method  process
    *  @param  {Object} Signal  An object that outputs audio
-   *  @param {[Number]} freq Frequency in Hz, from 10 to 22050
-   *  @param {[Number]} res Resonance/Width of the filter frequency
+   *  @param {Number} [freq] Frequency in Hz, from 10 to 22050
+   *  @param {Number} [res] Resonance/Width of the filter frequency
    *                        from 0.001 to 1000
    */
   p5.Filter.prototype.process = function(src, freq, res, time) {
@@ -127,8 +126,8 @@ define(function (require) {
    *  Set the frequency and the resonance of the filter.
    *
    *  @method  set
-   *  @param {Number} freq Frequency in Hz, from 10 to 22050
-   *  @param {Number} res  Resonance (Q) from 0.001 to 1000
+   *  @param {Number} [freq] Frequency in Hz, from 10 to 22050
+   *  @param {Number} [res]  Resonance (Q) from 0.001 to 1000
    *  @param {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
    */
@@ -235,7 +234,7 @@ define(function (require) {
    *  "allpass".
    *
    *  @method  setType
-   *  @param {String}
+   *  @param {String} t
    */
   p5.Filter.prototype.setType = function(t) {
     this.biquad.type = t;
@@ -257,7 +256,8 @@ define(function (require) {
    *  its method <code>setType('lowpass')</code>.
    *  See p5.Filter for methods.
    *
-   *  @method p5.LowPass
+   *  @method LowPass
+   *  @for p5
    */
   p5.LowPass = function() {
     p5.Filter.call(this, 'lowpass');
@@ -270,7 +270,8 @@ define(function (require) {
    *  its method <code>setType('highpass')</code>.
    *  See p5.Filter for methods.
    *
-   *  @method p5.HighPass
+   *  @method HighPass
+   *  @for p5
    */
   p5.HighPass = function() {
     p5.Filter.call(this, 'highpass');
@@ -283,7 +284,8 @@ define(function (require) {
    *  its method <code>setType('bandpass')</code>.
    *  See p5.Filter for methods.
    *
-   *  @method p5.BandPass
+   *  @method BandPass
+   *  @for p5
    */
   p5.BandPass = function() {
     p5.Filter.call(this, 'bandpass');

@@ -1,6 +1,9 @@
 'use strict';
 define(function (require) {
   var p5sound = require('master');
+  /**
+   * @class p5
+   */
 
   /**
    * Returns a number representing the sample rate, in samples per second,
@@ -73,8 +76,7 @@ define(function (require) {
    *  converter.
    *
    *  @method soundFormats
-   *  @param {String} formats i.e. 'mp3', 'wav', 'ogg'
-   *  @param {String} formats i.e. 'mp3', 'wav', 'ogg'
+   *  @param {String} [...formats] i.e. 'mp3', 'wav', 'ogg'
    *  @example
    *  <div><code>
    *  function preload() {

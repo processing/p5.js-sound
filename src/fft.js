@@ -39,7 +39,6 @@ define(function (require) {
    *  @param {Number} [bins]    Length of resulting array.
    *                            Must be a power of two between
    *                            16 and 1024. Defaults to 1024.
-   *  @return {Object}    FFT Object
    *  @example
    *  <div><code>
    *  function preload(){

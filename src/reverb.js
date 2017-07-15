@@ -15,6 +15,7 @@ define(function (require) {
    *  spaces through convolution.
    *
    *  @class p5.Reverb
+   *  @extends p5.Effect
    *  @constructor
    *  @example
    *  <div><code>
@@ -155,7 +156,7 @@ define(function (require) {
     var impulseR = impulse.getChannelData(1);
     var n, i;
     for (i = 0; i < length; i++) {
-      n = this.reverse ? length - i : i;
+      n = this._reverse ? length - i : i;
       impulseL[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
       impulseR[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
     }
@@ -191,6 +192,7 @@ define(function (require) {
    *  p5.Convolver with a path to your impulse response audio file.</p>
    *
    *  @class p5.Convolver
+   *  @extends p5.Effect
    *  @constructor
    *  @param  {String}   path     path to a sound file
    *  @param  {Function} [callback] function to call when loading succeeds
@@ -234,8 +236,7 @@ define(function (require) {
      *  <a href="http://www.w3.org/TR/webaudio/#ConvolverNode">
      *  Web Audio Convolver Node</a>.
      *
-     *  @property convolverNode
-     *  @type {Object}  Web Audio Convolver Node
+     *  @property {ConvolverNode} convolverNod
      */
     this.convolverNode = this.ac.createConvolver();
 
@@ -432,8 +433,7 @@ define(function (require) {
    *  they will be stored as Objects in this Array. Toggle between them
    *  with the <code>toggleImpulse(id)</code> method.
    *
-   *  @property impulses
-   *  @type {Array} Array of Web Audio Buffers
+   *  @property {Array} impulses
    */
   p5.Convolver.prototype.impulses = [];
 

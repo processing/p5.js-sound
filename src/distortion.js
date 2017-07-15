@@ -27,12 +27,12 @@ define(function (require) {
    * [Kevin Ennis](http://stackoverflow.com/questions/22312841/waveshaper-node-in-webaudio-how-to-emulate-distortion)
    *
    * @class p5.Distortion
+   * @extends p5.Effect
    * @constructor
    * @param {Number} [amount=0.25] Unbounded distortion amount.
    *                                Normal values range from 0-1.
    * @param {String} [oversample='none'] 'none', '2x', or '4x'.
    *
-   * @return {Object}   Distortion object
    */
   p5.Distortion = function(amount, oversample) {
     Effect.call(this);
@@ -59,8 +59,7 @@ define(function (require) {
      *  <a href="http://www.w3.org/TR/webaudio/#WaveShaperNode">
      *  Web Audio WaveShaper Node</a>.
      *
-     *  @property WaveShaperNode
-     *  @type {Object}  AudioNode
+     *  @property {AudioNode} WaveShaperNode
      */
     this.waveShaperNode = this.ac.createWaveShaper();
 
@@ -87,7 +86,6 @@ define(function (require) {
    * @param {Number} [amount=0.25] Unbounded distortion amount.
    *                                Normal values range from 0-1.
    * @param {String} [oversample='none'] 'none', '2x', or '4x'.
-   * @param {String}
    */
   p5.Distortion.prototype.set = function(amount, oversample) {
     if (amount) {

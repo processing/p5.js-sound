@@ -15,8 +15,8 @@ define(function (require) {
    *  original source.
    *
    *  @class p5.Delay
+   *  @extends p5.Effect
    *  @constructor
-   *  @return {Object} Returns a p5.Delay object
    *  @example
    *  <div><code>
    *  var noise, env, delay;
@@ -67,8 +67,7 @@ define(function (require) {
      *  <a href="http://www.w3.org/TR/webaudio/#DelayNode">
      *  Web Audio Delay Nodes</a>, one for each stereo channel.
      *
-     *  @property leftDelay
-     *  @type {Object}  Web Audio Delay Node
+     *  @property {DelayNode} leftDelay
      */
     this.leftDelay = this.ac.createDelay();
     /**
@@ -76,8 +75,7 @@ define(function (require) {
      *  <a href="http://www.w3.org/TR/webaudio/#DelayNode">
      *  Web Audio Delay Nodes</a>, one for each stereo channel.
      *
-     *  @property rightDelay
-     *  @type {Object}  Web Audio Delay Node
+     *  @property {DelayNode} rightDelay
      */
     this.rightDelay = this.ac.createDelay();
 

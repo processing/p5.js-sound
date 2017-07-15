@@ -114,8 +114,7 @@ define(function () {
     /**
      *  isDetected is set to true when a peak is detected.
      *
-     *  @attribute isDetected
-     *  @type {Boolean}
+     *  @attribute isDetected {Boolean}
      *  @default  false
      */
     this.isDetected = false;
