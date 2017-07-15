@@ -11,20 +11,17 @@ define(function (require) {
    * and sound production. Compression creates an overall louder, richer, 
    * and fuller sound by lowering the volume of louds and raising that of softs.
    * Compression can be used to avoid clipping (sound distortion due to 
-   * peaks in volume) and is especially useful when many sounds are being used 
+   * peaks in volume) and is especially useful when many sounds are played 
    * at once. Compression can be used on indivudal sound sources in addition
    * to the master output. This class is built using the 
-   * Web Audio Dynamics Compressor Node
+   * Web Audio Dynamics Compressor Node <br>
    * https://www.w3.org/TR/webaudio/#the-dynamicscompressornode-interface
    *
    * @class p5.Compressor
    * @extends p5.Effect
    * @constructor
    *
-   * @example
-   * <div><code>
-   *
-   * </code></div>
+   * @param {WebAudioNode} [compressor]  DynamicsCompressorNode instance
    */
 	p5.Compressor = function() {
 		Effect.call(this);
@@ -36,7 +33,19 @@ define(function (require) {
 
 	p5.Compressor.prototype = Object.create(Effect.prototype);
 
- 
+ /**
+  * Performs the same function as .connect, but also accepts
+  * optional parameters to set compressor's audioParams
+  * @method process 
+  * 
+  * @param  {Object} src       Audio Input
+  * @param  {Number} attack    The amount of time (in seconds) to reduce the gain by 10dB
+  * @param  {Number} knee      A decibel value representing the range above the 
+  *                            threshold where the curve smoothly transitions to the "ratio" portion.
+  * @param  {Number} ratio     The amount of dB change in input for a 1 dB change in output
+  * @param  {Number} threshold The decibel value above which the compression will start taking effect
+  * @param  {Number} release   The amount of time (in seconds) to increase the gain by 10dB
+  */
 	p5.Compressor.prototype.process = function(src, attack, knee, 
                                       ratio, threshold, release) {
 		src.connect(this.input);
@@ -44,14 +53,13 @@ define(function (require) {
 	};
 
   /**
-   * Set the paramters of the compressor
-   *
+   * Set the paramters of the compressor. 
    * 
-   * @param {Number} attack    [default = .003, range 0 - 1]
-   * @param {Number} knee      [default = 30, range 0 - 40]
-   * @param {Number} ratio     [default = 12, range 1 - 20]
-   * @param {Number} threshold [default = -24, range -100 - 0]
-   * @param {Number} release   [default = .25, range 0 - 1]
+   * @param {Number} attack     default = .003, range 0 - 1
+   * @param {Number} knee       default = 30, range 0 - 40
+   * @param {Number} ratio      default = 12, range 1 - 20
+   * @param {Number} threshold  default = -24, range -100 - 0
+   * @param {Number} release    default = .25, range 0 - 1
    */
   p5.Compressor.prototype.set = function (attack, knee, 
                                 ratio, threshold, release) {
@@ -65,7 +73,7 @@ define(function (require) {
 
 
   /**
-   * set attack w/ time ramp or get current attack
+   * Get current attack or set value w/ time ramp
    * @method attack
    */
   p5.Compressor.prototype.attack = function (attack, time){
@@ -82,7 +90,7 @@ define(function (require) {
 
 
  /**
-   * set knee w/ time ramp or get current knee
+   * Get current knee or set value w/ time ramp
    * @method knee
    */
   p5.Compressor.prototype.knee = function (knee, time){
@@ -99,7 +107,7 @@ define(function (require) {
 
 
   /**
-   * set ratio w/ time ramp or get current ratio
+   * Get current ratio or set value w/ time ramp
    * @method ratio
    */
   p5.Compressor.prototype.ratio = function (ratio, time){
@@ -116,7 +124,7 @@ define(function (require) {
 
 
   /**
-   * set threshold w/ time ramp or get current threshold
+   * Get current threshold or set value w/ time ramp
    * @method threshold
    */
   p5.Compressor.prototype.threshold = function (threshold, time){
@@ -133,7 +141,7 @@ define(function (require) {
 
 
   /**
-   * set release w/ time ramp or get current release
+   * Get current release or set value w/ time ramp
    * @method release
    */
   p5.Compressor.prototype.release = function (release, time){
@@ -150,7 +158,7 @@ define(function (require) {
 
   /**
    * Return the current reduction value
-   * @return {Number} value of the amount of gain reduction that is applied to the signal
+   * @return {Number} Value of the amount of gain reduction that is applied to the signal
    */
   p5.Compressor.prototype.reduction =function() {
     return this.compressor.reduction.value;
@@ -159,7 +167,6 @@ define(function (require) {
 
 	p5.Compressor.prototype.dispose = function() {
 		Effect.prototype.dispose.apply(this);
-
 		this.compressor.disconnect();
 		this.compressor = undefined;
 	};
