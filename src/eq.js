@@ -93,8 +93,9 @@ define(function (require) {
 
   p5.EQ.prototype.dispose = function (argument) {
     Effect.prototype.dispose.apply(this);
-    for (var i = 0; i<this.bands.length; i++){
-      this.bands[i].dispose();
+    
+    while (this.bands.length > 0) {
+      delete this.bands.pop();
     }
   }
 

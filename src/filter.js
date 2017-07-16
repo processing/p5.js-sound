@@ -243,9 +243,7 @@ define(function (require) {
 
   p5.Filter.prototype.dispose = function() {
     // remove reference from soundArray
-
     Effect.prototype.dispose.apply(this);
-
     this.biquad.disconnect();
     this.biquad = undefined;
   };

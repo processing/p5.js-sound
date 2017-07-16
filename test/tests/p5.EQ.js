@@ -7,6 +7,7 @@ define(['chai'],
 
     it('can be created and disposed', function() {
       var eq = new p5.EQ();
+      console.log(eq);
       eq.dispose();
     });
 
@@ -27,33 +28,42 @@ define(['chai'],
 
     it('a band can be toggled on and off', function() {
       var eq = new p5.EQ(8);
-      eq.setBand(2, "toggle");
-      expect(eq.bands[2].type).to.equal('allpass');
-      eq.toggleBand(2);
-      expect(eq.bands[2].type).to.equal('peaking');
+      
+      expect(eq.bands[2].biquad.type).to.equal('peaking');
+      eq.bands[2].toggle();
+      expect(eq.bands[2].biquad.type).to.equal('allpass');
+      eq.bands[2].toggle();
+      expect(eq.bands[2].biquad.type).to.equal('peaking');
+      
+ 
     });
 
     it('a bands gain value can be changed', function() {
       var eq = new p5.EQ(8);
-      expect(eq.bands[2].gain.value).to.equal(0);
-      eq.setBand(2, "mod", 30);
-      expect(eq.bands[2].gain.value).to.equal(30);
+      expect(eq.bands[2].gain()).to.equal(0);
+      eq.bands[2].gain(30);
+      expect(eq.bands[2].gain()).to.equal(30);
     });
 
     it('a bands freq value can be changed', function() {
       var eq = new p5.EQ(8);
-      expect(eq.bands[2].frequency.value).to.equal(640);
-      eq.setBand(2, "mod", null, 800);
-      expect(eq.bands[2].gain.value).to.equal(0);
-      expect(eq.bands[2].frequency.value).to.equal(800);
+      console.log(eq);
+
+
+
+      expect(eq.bands[0].freq()).to.equal(160);
+      eq.bands[0].freq(200);
+      expect(eq.bands[0].gain()).to.equal(0);
+      expect(eq.bands[0].freq()).to.equal(200);
     });
 
     it('a bands type can be changed', function() {
       var eq = new p5.EQ();
-      expect(eq.bands[2].type=='peaking');
-      eq.bandType(2,'highshelf');
-      expect(eq.bands[2].type=='highshelf');
+      expect(eq.bands[2]._untoggledType=='peaking');
+      eq.bands[2].setType('highshelf');
+      expect(eq.bands[2]._untoggledType=='highshelf');
     });
+
     it('drywet value can be changed', function(){
       var eq = new p5.EQ();
       expect(eq.drywet(0.5)).to.equal(0.5);

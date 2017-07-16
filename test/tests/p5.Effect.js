@@ -33,7 +33,6 @@ define(['chai'],
       var reverb = new p5.Reverb();
       expect(reverb.output.gain.value).to.equal(1);
       reverb.amp(0.5);
-      console.log(reverb);
       expect(reverb.output.gain.value).to.equal(0.5);
     });
   });
