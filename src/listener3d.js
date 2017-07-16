@@ -5,10 +5,10 @@ define(function (require) {
   var Effect = require('effect');
 
   /**
-   * Spatializer is a class that can construct both a Spatial Panner
+   * listener is a class that can construct both a Spatial Panner
    * and a Spatial Listener. The panner is based on the 
    * Web Audio Spatial Panner Node
-   * https://www.w3.org/TR/webaudio/#the-spatializernode-interface
+   * https://www.w3.org/TR/webaudio/#the-listenernode-interface
    * This panner is a spatial processing node that allows audio to be positioned
    * and oriented in 3D space. 
    *
@@ -18,13 +18,13 @@ define(function (require) {
    * <code>p5.Panner3D</code> - Constructs a Spatial Panner<br/>
    * <code>p5.Listener3D</code> - Constructs a Spatial Listener<br/>
    *
-   * @class Spatializer
+   * @class listener
    * @constructor
    * @return {Object} p5.Listener3D Object
    *
-   * @param {Web Audio Node} spatializer Web Audio Spatial Panning Node
-   * @param {AudioParam} spatializer.panningModel "equal power" or "HRTF"
-   * @param {AudioParam} spatializer.distanceModel "linear", "inverse", or "exponential"
+   * @param {Web Audio Node} listener Web Audio Spatial Panning Node
+   * @param {AudioParam} listener.panningModel "equal power" or "HRTF"
+   * @param {AudioParam} listener.distanceModel "linear", "inverse", or "exponential"
    * @param {String} [type] [Specify construction of a spatial panner or listener]
    */
 	p5.Listener3D = function(type) {
@@ -57,9 +57,9 @@ define(function (require) {
     this.positionX(xVal,time);
     this.positionY(yVal,time);
     this.positionZ(zVal,time);
-    return [this.spatializer.positionX.value, 
-              this.spatializer.positionY.value,
-              this.spatializer.positionZ.value];
+    return [this.listener.positionX.value, 
+              this.listener.positionY.value,
+              this.listener.positionZ.value];
   };
 
   /**
@@ -69,39 +69,39 @@ define(function (require) {
   p5.Listener3D.prototype.positionX = function(xVal, time) {
     var t = time || 0;
     if (typeof xVal === 'number') {
-      this.spatializer.positionX.value = xVal;
-      this.spatializer.positionX.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.spatializer.positionX.linearRampToValueAtTime(xVal, this.ac.currentTime + 0.02 + t);
+      this.listener.positionX.value = xVal;
+      this.listener.positionX.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      this.listener.positionX.linearRampToValueAtTime(xVal, this.ac.currentTime + 0.02 + t);
     } else if (xVal) {
-      xVal.connect(this.spatializer.positionX);
+      xVal.connect(this.listener.positionX);
     }
-    return this.spatializer.positionX.value;
+    return this.listener.positionX.value;
   };
   p5.Listener3D.prototype.positionY = function(yVal, time) {
     var t = time || 0;
     if (typeof yVal === 'number') {
-      this.spatializer.positionY.value = yVal;
-      this.spatializer.positionY.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.spatializer.positionY.linearRampToValueAtTime(yVal, this.ac.currentTime + 0.02 + t);
+      this.listener.positionY.value = yVal;
+      this.listener.positionY.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      this.listener.positionY.linearRampToValueAtTime(yVal, this.ac.currentTime + 0.02 + t);
     } else if (yVal) {
-      yVal.connect(this.spatializer.positionY);
+      yVal.connect(this.listener.positionY);
     }
-    return this.spatializer.positionY.value;
+    return this.listener.positionY.value;
   };
   p5.Listener3D.prototype.positionZ = function(zVal, time) {
     var t = time || 0;
     if (typeof zVal === 'number') {
-      this.spatializer.positionZ.value = zVal;
-      this.spatializer.positionZ.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.spatializer.positionZ.linearRampToValueAtTime(zVal, this.ac.currentTime + 0.02 + t);
+      this.listener.positionZ.value = zVal;
+      this.listener.positionZ.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      this.listener.positionZ.linearRampToValueAtTime(zVal, this.ac.currentTime + 0.02 + t);
     } else if (zVal) {
-      zVal.connect(this.spatializer.positionZ);
+      zVal.connect(this.listener.positionZ);
     }
-    return this.spatializer.positionZ.value;
+    return this.listener.positionZ.value;
   };
 
   /**
-   * [Overrides the Spatializer orient() method because Listener has slightly
+   * [Overrides the listener orient() method because Listener has slightly
    * different params. In human terms, Forward vectors are the direction the 
    * nose is pointing. Up vectors are the direction of the top of the head.
    * 
@@ -125,12 +125,12 @@ define(function (require) {
     this.orientUp(xValU, yValU, zValU, time);
   }
   
-  return [this.spatializer.forwardX.value, 
-          this.spatializer.forwardY.value,
-          this.spatializer.forwardZ.value,
-          this.spatializer.upX.value,
-          this.spatializer.upY.value,
-          this.spatializer.upZ.value];
+  return [this.listener.forwardX.value, 
+          this.listener.forwardY.value,
+          this.listener.forwardZ.value,
+          this.listener.upX.value,
+          this.listener.upY.value,
+          this.listener.upZ.value];
   };
 
 
@@ -139,9 +139,9 @@ define(function (require) {
     this.forwardY(yValF,time);
     this.forwardZ(zValF,time);
 
-    return [this.spatializer.forwardX, 
-            this.spatializer.forwardY,
-            this.spatializer.forwardZ];
+    return [this.listener.forwardX, 
+            this.listener.forwardY,
+            this.listener.forwardZ];
   };
 
   p5.Listener3D.prototype.orientUp = function(xValU, yValU, zValU, time) {
@@ -149,9 +149,9 @@ define(function (require) {
     this.upY(yValU,time);
     this.upZ(zValU,time);
 
-    return [this.spatializer.upX, 
-            this.spatializer.upY,
-            this.spatializer.upZ];
+    return [this.listener.upX, 
+            this.listener.upY,
+            this.listener.upZ];
   };
   /**
    * Getter and setter methods for orient coordinates
@@ -160,68 +160,68 @@ define(function (require) {
   p5.Listener3D.prototype.forwardX = function(xVal, time) {
     var t = time || 0;
     if (typeof xVal === 'number') {
-      this.spatializer.forwardX.value = xVal;
-      this.spatializer.forwardX.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.spatializer.forwardX.linearRampToValueAtTime(xVal, this.ac.currentTime + 0.02 + t);
+      this.listener.forwardX.value = xVal;
+      this.listener.forwardX.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      this.listener.forwardX.linearRampToValueAtTime(xVal, this.ac.currentTime + 0.02 + t);
     } else if (xVal) {
-      xVal.connect(this.spatializer.forwardX);
+      xVal.connect(this.listener.forwardX);
     }
-    return this.spatializer.forwardX.value;
+    return this.listener.forwardX.value;
   };
   p5.Listener3D.prototype.forwardY = function(yVal, time) {
     var t = time || 0;
     if (typeof yVal === 'number') {
-      this.spatializer.forwardY.value = yVal;
-      this.spatializer.forwardY.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.spatializer.forwardY.linearRampToValueAtTime(yVal, this.ac.currentTime + 0.02 + t);
+      this.listener.forwardY.value = yVal;
+      this.listener.forwardY.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      this.listener.forwardY.linearRampToValueAtTime(yVal, this.ac.currentTime + 0.02 + t);
     } else if (yVal) {
-      yVal.connect(this.spatializer.forwardY);
+      yVal.connect(this.listener.forwardY);
     }
-    return this.spatializer.forwardY.value;
+    return this.listener.forwardY.value;
   };
   p5.Listener3D.prototype.forwardZ = function(zVal, time) {
     var t = time || 0;
     if (typeof zVal === 'number') {
-      this.spatializer.forwardZ.value = zVal;
-      this.spatializer.forwardZ.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.spatializer.forwardZ.linearRampToValueAtTime(zVal, this.ac.currentTime + 0.02 + t);
+      this.listener.forwardZ.value = zVal;
+      this.listener.forwardZ.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      this.listener.forwardZ.linearRampToValueAtTime(zVal, this.ac.currentTime + 0.02 + t);
     } else if (zVal) {
-      zVal.connect(this.spatializer.forwardZ);
+      zVal.connect(this.listener.forwardZ);
     }
-    return this.spatializer.forwardZ.value;
+    return this.listener.forwardZ.value;
   };
   p5.Listener3D.prototype.upX = function(xVal, time) {
     var t = time || 0;
     if (typeof xVal === 'number') {
-      this.spatializer.upX.value = xVal;
-      this.spatializer.upX.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.spatializer.upX.linearRampToValueAtTime(xVal, this.ac.currentTime + 0.02 + t);
+      this.listener.upX.value = xVal;
+      this.listener.upX.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      this.listener.upX.linearRampToValueAtTime(xVal, this.ac.currentTime + 0.02 + t);
     } else if (xVal) {
-      xVal.connect(this.spatializer.upX);
+      xVal.connect(this.listener.upX);
     }
-    return this.spatializer.upX.value;
+    return this.listener.upX.value;
   };
   p5.Listener3D.prototype.upY = function(yVal, time) {
     var t = time || 0;
     if (typeof yVal === 'number') {
-      this.spatializer.upY.value = yVal;
-      this.spatializer.upY.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.spatializer.upY.linearRampToValueAtTime(yVal, this.ac.currentTime + 0.02 + t);
+      this.listener.upY.value = yVal;
+      this.listener.upY.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      this.listener.upY.linearRampToValueAtTime(yVal, this.ac.currentTime + 0.02 + t);
     } else if (yVal) {
-      yVal.connect(this.spatializer.upY);
+      yVal.connect(this.listener.upY);
     }
-    return this.spatializer.upY.value;
+    return this.listener.upY.value;
   };
   p5.Listener3D.prototype.upZ = function(zVal, time) {
     var t = time || 0;
     if (typeof zVal === 'number') {
-      this.spatializer.upZ.value = zVal;
-      this.spatializer.upZ.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.spatializer.upZ.linearRampToValueAtTime(zVal, this.ac.currentTime + 0.02 + t);
+      this.listener.upZ.value = zVal;
+      this.listener.upZ.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      this.listener.upZ.linearRampToValueAtTime(zVal, this.ac.currentTime + 0.02 + t);
     } else if (zVal) {
-      zVal.connect(this.spatializer.upZ);
+      zVal.connect(this.listener.upZ);
     }
-    return this.spatializer.upZ.value;
+    return this.listener.upZ.value;
   };
   
   return p5.Listener3D;

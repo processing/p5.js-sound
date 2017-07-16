@@ -69,9 +69,9 @@ function draw() {
 }
 
 function updateDescription(){
-  // position = 'positionX: '+ listener3d.positionX() +
-  //               '<br>positionY: '+ listener3d.positionY() +
-  //               '<br>positionZ: '+listener3d.positionZ();
+   position = 'positionX: '+ listener3d.positionX() +
+                '<br>positionY: '+ listener3d.positionY() +
+                '<br>positionZ: '+listener3d.positionZ();
 p2.html(position);
 }
 
