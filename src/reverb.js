@@ -95,31 +95,40 @@ define(function (require) {
     * Default preset, clears out any objects created by previous.
     * @return {[type]} [description]
     */
-  p5.Reverb.prototype.default = function() {
-  this.params = [3,2,false];
-  p5.Reverb.prototype.set.apply(this, this.params);
-  this.drywet(1);
-  while (this.chained.length > 0) {
-     delete this.chained.pop();
-   } 
-  }
+   
 
-  p5.Reverb.prototype.smallRoom = [0.5, 16, false];
-  p5.Reverb.prototype.mediumRoom = [2, 12.5, false];
-  p5.Reverb.prototype.largeRoom = [3, 30, false];
-  p5.Reverb.prototype.touchOfVerb = [1.1, 6.1, false, 
-                                        {'function' : 'drywet',
-                                          'value' : 0.3} ];
-  p5.Reverb.prototype.lotsOfVerb =[4.9, 42.3, false];
 
-  p5.Reverb.prototype.smoothVerb = function() {
-    this.set(4, 40, false);
-    this.drywet(.65);
-    this.locut = new p5.Filter('highpass');
-    this.locut.set(12000,2);
-    this.hicut = new p5.Filter('lowpass');
-    this.hicut.set(18000,2);
-    this.chain(this.hicut,this.locut);
+  p5.Reverb.prototype.default = {
+    "seconds" : 3,
+    "decay" : 2,
+    "reverse" : false
+  };
+  
+  p5.Reverb.prototype.smallRoom = {
+    "seconds" :0.5,
+    "decay" : 16,
+    "reverse" : false,
+  };
+  p5.Reverb.prototype.mediumRoom = {
+    "seconds" : 2,
+    "decay" : 12.5,
+    "reverse" : false,
+  };
+  p5.Reverb.prototype.largeRoom = {
+    "seconds" :3,
+    "decay" : 30,
+    "reverse" : false,
+  };
+  p5.Reverb.prototype.touchOfVerb = {
+    "seconds" : 1.1,
+    "decay" : 6.1,
+    "reverse" : false,
+  };
+
+  p5.Reverb.prototype.lotsOfVerb = {
+    "seconds" : 4.9,
+    "decay" : 42.3,
+    "reverse" : false,
   };
 
 

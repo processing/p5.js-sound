@@ -80,27 +80,21 @@ define(function (require) {
 	p5.Effect.prototype.loadPreset = function(preset) {
 	  //Calling default resets params and deletes chained objects from 
 	  //any previous preset
-	  if (preset !== 'default') {
-	    this.loadPreset('default');
+	  var params = [];
+	  var options = this[preset];
+	  var keys = Object.keys(options);
+	  if (preset !== 'default' ){
+	  	this.loadPreset('default');
 	  }
 
-	  if (typeof this[preset] === 'function'){
-	    this[preset]();
-	  } 
-
-	  else {
-	    var params = this[preset];
-	    for (var i = 0; i < params.length; i++) {
-	      if (typeof params[i] === 'object'){
-	        this[params[i].function](params[i].value);
-	      } 
-	      else {
-	        this.params[i] = params[i];
-	      }
-	    }
+	  for (var i = 0; i < keys.length; i++) {
+	  	if (typeof this[keys[i]] === 'function') {
+	  		this[keys[i]](options[keys[i]]);
+	  	} else {
+	  	params.push(options[keys[i]]);
+	  	}
 	  }
-	  this._loadParams();
-	  return this;
+		this.__proto__.set.apply(this, params);
 	};
 
 
@@ -185,12 +179,11 @@ define(function (require) {
 		this.output.disconnect();
 		this.output = undefined;
 
+	    this._drywet.disconnect();
+	    delete this._drywet;
 
-    this._drywet.disconnect();
-    delete this._drywet;
-
-    this.wet.disconnect();
-    delete this.wet;
+	    this.wet.disconnect();
+	    delete this.wet;
     
 		this.ac = undefined;
 	};
@@ -210,11 +203,8 @@ define(function (require) {
 		
 			for(var i=1;i<arguments.length; i+=1){
 				arguments[i-1].connect(arguments[i]);
-				this.chained.push(arguments[i-1]);
 			}
 		}
-
-		this.chained = Array.from(arguments);
 		return this;
 	}
 	
