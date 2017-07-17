@@ -33,10 +33,7 @@ define(function (require) {
 
       this.ac = p5sound.audiocontext;
       this.listener = this.ac.listener;
-	};
-
-
- 
+	}; 
 
   /**
    * Connect an audio sorce

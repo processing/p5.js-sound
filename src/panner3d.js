@@ -34,7 +34,6 @@ define(function (require) {
       this.panner.distanceModel = 'linear';
       this.panner.connect(this.output);
       this.input.connect(this.panner);
-
 	};
 
   p5.Panner3D.prototype = Object.create(Effect.prototype);
@@ -66,6 +65,9 @@ define(function (require) {
 
   /**
    * Getter and setter methods for position coordinates
+   * @method positionX
+   * @method positionY
+   * @method positionZ
    * @return {Number}      [updated coordinate value]
    */
   p5.Panner3D.prototype.positionX = function(xVal, time) {
@@ -102,6 +104,15 @@ define(function (require) {
     return this.panner.positionZ.value;
   };
 
+  /**
+   * Set the X,Y,Z position of the Panner
+   * @method  orient
+   * @param  {Number} xVal
+   * @param  {Number} yVal
+   * @param  {Number} zVal
+   * @param  {Number} time
+   * @return {Array}      [Updated x, y, z values as an array]
+   */
   p5.Panner3D.prototype.orient = function(xVal, yVal, zVal, time) {
   this.orientX(xVal,time);
   this.orientY(yVal,time);
@@ -113,6 +124,10 @@ define(function (require) {
 
   /**
    * Getter and setter methods for orient coordinates
+   * @method positionX
+   * @method positionY
+   * @method positionZ
+   * @return {Number}      [updated coordinate value]
    * @return {Number}      [updated coordinate value]
    */
   p5.Panner3D.prototype.orientX = function(xVal, time) {
@@ -144,11 +159,53 @@ define(function (require) {
       this.panner.orientationZ.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
       this.panner.orientationZ.linearRampToValueAtTime(zVal, this.ac.currentTime + 0.02 + t);
     } else if (zVal) {
-      zVal.connect(this.panner.orientationY);
+      zVal.connect(this.panner.orientationZ);
     }
     return this.panner.orientationZ.value;
   };
-  
+
+  /**
+   * Set the rolloff factor and max distance
+   * @method  setFalloff
+   * @param {Number} [maxDistance]
+   * @param {Number} [rolloffFactor]       
+   */
+  p5.Panner3D.prototype.setFalloff = function(maxDistance, rolloffFactor) {
+    this.maxDist(maxDistance);
+    this.rolloff(rolloffFactor);
+  };
+  /**
+   * Maxium distance between the source and the listener
+   * @method  maxDist
+   * @param  {Number} maxDistance 
+   * @return {Number} updated value        
+   */
+  p5.Panner3D.prototype.maxDist = function(maxDistance){
+    if (typeof maxDistance === 'number') {
+      this.panner.maxDistance = maxDistance;
+    }
+    return this.panner.maxDistance;
+  };
+
+  /**
+   * How quickly the volume is reduced as the source moves away from the listener
+   * @method  rollof
+   * @param  {Number} rolloffFactor 
+   * @return {Number} updated value      
+   */
+  p5.Panner3D.prototype.rolloff = function(rolloffFactor){
+    if (typeof rolloffFactor === 'number') {
+      this.panner.rolloffFactor = rolloffFactor;
+    }
+    return this.panner.rolloffFactor;
+  };
+
+  p5.Panner3D.dispose = function() {
+    Effect.prototype.dispose.apply(this);
+    this.panner.disconnect();
+    delete this.panner;
+  };
+
   return p5.Panner3D;
 
 });
