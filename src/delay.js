@@ -113,8 +113,6 @@ define(function (require) {
 
     // set initial feedback to 0.5
     this.feedback(0.5);
-
-
   };
 
   p5.Delay.prototype = Object.create(Effect.prototype);
@@ -124,13 +122,13 @@ define(function (require) {
    *
    *  @method  process
    *  @param  {Object} Signal  An object that outputs audio
-   *  @param  {Number} [delayTime] Time (in seconds) of the delay/echo.
+   *  @param  {Number} [_delayTime] Time (in seconds) of the delay/echo.
    *                               Some browsers limit delayTime to
    *                               1 second.
-   *  @param  {Number} [feedback]  sends the delay back through itself
+   *  @param  {Number} [_feedback]  sends the delay back through itself
    *                               in a loop that decreases in volume
    *                               each time.
-   *  @param  {Number} [lowPass]   Cutoff frequency. Only frequencies
+   *  @param  {Number} [_filter]   Cutoff frequency. Only frequencies
    *                               below the lowPass will be part of the
    *                               delay.
    */
@@ -155,6 +153,40 @@ define(function (require) {
       this._rightFilter.freq(_filter);
     }
   };
+
+  /**
+   *  Set the audio params for a delay object.
+   *
+   *  @method  set
+   *  @param  {Number} [_delayTime] Time (in seconds) of the delay/echo.
+   *                               Some browsers limit delayTime to
+   *                               1 second.
+   *  @param  {Number} [_feedback]  sends the delay back through itself
+   *                               in a loop that decreases in volume
+   *                               each time.
+   *  @param  {Number} [_filter]   Cutoff frequency. Only frequencies
+   *                               below the lowPass will be part of the
+   *                               delay.
+   */
+  p5.Delay.prototype.set = function(_delayTime, _feedback, _filter) {
+    var feedback = _feedback || 0;
+    var delayTime = _delayTime || 0;
+    if (feedback >= 1.0) {
+      throw new Error('Feedback value will force a positive feedback loop.');
+    }
+    if (delayTime >= this._maxDelay) {
+      throw new Error('Delay Time exceeds maximum delay time of '+ this._maxDelay + ' second.');
+    }
+    this.leftDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
+    this.rightDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
+    this._leftGain.gain.value = feedback;
+    this._rightGain.gain.value = feedback;
+
+    if (_filter) {
+      this._leftFilter.freq(_filter);
+      this._rightFilter.freq(_filter);
+    }
+  }
 
   /**
    *  Set the delay (echo) time, in seconds. Usually this value will be
