@@ -15,7 +15,11 @@ module.exports = function(grunt) {
       main: {
         files: ['src/**/*.js'],
         tasks: ['requirejs'],
-        options: { livereload: true }
+        options: {
+          livereload: {
+            port: 35728
+          }
+        },
       }
     },
     requirejs: {
@@ -144,6 +148,7 @@ module.exports = function(grunt) {
       server: {
         options: {
           port: 8000,
+          livereload: 35727,
           hostname: '*'
         }
       }
