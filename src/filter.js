@@ -5,17 +5,17 @@ define(function (require) {
   var Effect = require('effect');
 
   /**
-   *  A p5.Filter uses a Web Audio Biquad Filter to filter
-   *  the frequency response of an input source. Inheriting
-   *  classes include:<br/>
-   *  * <code>p5.LowPass</code> - allows frequencies below
-   *  the cutoff frequency to pass through, and attenuates
-   *  frequencies above the cutoff.<br/>
-   *  * <code>p5.HighPass</code> - the opposite of a lowpass
-   *  filter. <br/>
-   *  * <code>p5.BandPass</code> -  allows a range of
-   *  frequencies to pass through and attenuates the frequencies
-   *  below and above this frequency range.<br/>
+   *  <p>A p5.Filter uses a Web Audio Biquad Filter to filter
+   *  the frequency response of an input source. Subclasses
+   *  include:</p>
+   *  * <a href="/reference/#/p5.LowPass"><code>p5.LowPass</code></a>:
+   *  Allows frequencies below the cutoff frequency to pass through,
+   *  and attenuates frequencies above the cutoff.<br/>
+   *  * <a href="/reference/#/p5.HighPass"><code>p5.HighPass</code></a>:
+   *  The opposite of a lowpass filter. <br/>
+   *  * <a href="/reference/#/p5.BandPass"><code>p5.BandPass</code></a>:
+   *  Allows a range of frequencies to pass through and attenuates
+   *  the frequencies below and above this frequency range.<br/>
    *
    *  The <code>.res()</code> method controls either width of the
    *  bandpass, or resonance of the low/highpass cutoff frequency.
@@ -213,8 +213,9 @@ define(function (require) {
    *  its method <code>setType('lowpass')</code>.
    *  See p5.Filter for methods.
    *
-   *  @method LowPass
-   *  @for p5
+   *  @class p5.LowPass
+   *  @constructor
+   *  @extends {p5.Filter}
    */
   p5.LowPass = function() {
     p5.Filter.call(this, 'lowpass');
@@ -227,8 +228,9 @@ define(function (require) {
    *  its method <code>setType('highpass')</code>.
    *  See p5.Filter for methods.
    *
-   *  @method HighPass
-   *  @for p5
+   *  @class p5.HighPass
+   *  @constructor
+   *  @extends {p5.Filter}
    */
   p5.HighPass = function() {
     p5.Filter.call(this, 'highpass');
@@ -241,8 +243,9 @@ define(function (require) {
    *  its method <code>setType('bandpass')</code>.
    *  See p5.Filter for methods.
    *
-   *  @method BandPass
-   *  @for p5
+   *  @class BandPass
+   *  @constructor
+   *  @extends {p5.Filter}
    */
   p5.BandPass = function() {
     p5.Filter.call(this, 'bandpass');
