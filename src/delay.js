@@ -251,9 +251,9 @@ define(function (require) {
         break;
       default:
         this._leftFilter.output.connect(this._merge, 0, 0);
-        this._leftFilter.output.connect(this._merge, 0, 1);
+        this._rightFilter.output.connect(this._merge, 0, 1);
         this._leftFilter.output.connect(this.leftDelay);
-        this._leftFilter.output.connect(this.rightDelay);
+        this._rightFilter.output.connect(this.rightDelay);
     }
   };
 
