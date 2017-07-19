@@ -58,7 +58,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Delay = function() {
+  p5.Delay = function(preset) {
   	Effect.call(this);
 
     this._split = this.ac.createChannelSplitter(2);
@@ -106,13 +106,20 @@ define(function (require) {
     this._leftFilter.biquad.gain.setValueAtTime(1, this.ac.currentTime);
     this._rightFilter.biquad.gain.setValueAtTime(1, this.ac.currentTime);
 
-    // default routing
-    this.setType(0);
+    // // default routing
+    // this.setType(0);
 
     this._maxDelay = this.leftDelay.delayTime.maxValue;
 
-    // set initial feedback to 0.5
-    this.feedback(0.5);
+    // // set initial feedback to 0.5
+    // this.feedback(0.5);
+
+    if (preset) {
+      this.loadPreset(preset);
+    }
+    else {
+      this.loadPreset('default');
+    }
   };
 
   p5.Delay.prototype = Object.create(Effect.prototype);
@@ -131,31 +138,22 @@ define(function (require) {
     "setType" : 0,
     "_effectDefault" : null
   };
-
   p5.Delay.prototype.panRight = {
     "leftDelayTime" : .2,
     "rightDelayTime" : .1,
     "feedback" : .4
   };
-
   p5.Delay.prototype.panLeft = {
-    "leftDelayTime" : .001,
-    "rightDelayTime" : .002,
-    "feedback" : 0
+    "leftDelayTime" : .1,
+    "rightDelayTime" : .2,
+    "feedback" : .4
   };
-
   p5.Delay.prototype.unevenMovement = {
-    "leftDelayTime" : .01,
-    "rightDelayTime" : .02,
+    "leftDelayTime" : .1,
+    "rightDelayTime" : .3,
     "feedback" : .56,
+    "setType" : 1,
     "drywet" : .7
-
-  };
-  p5.Delay.prototype.touchOfDelay = {
-    "_delayTime" : .4,
-    "_feedback" : .4,
-    "_filter" : 1200,
-    "drywet" : 0.66
   };
   p5.Delay.prototype.delayForever = {
     "_delayTime" : .1,
@@ -163,6 +161,13 @@ define(function (require) {
     "_filter" : 1200,
     "drywet" : .95
   };
+  p5.Delay.prototype.harmonics = {
+    "leftDelayTime" : .01,
+    "rightDelayTime" : .015,
+    "feedback" : .8,
+    "filter" : 1200,
+    "drywet" : .6
+  }
 
 
 

@@ -41,11 +41,12 @@ function setup() {
   reverse = createButton('reverse: true')
   reverse.mouseReleased(changeRev);
 
-  effect = new p5.Delay();
+  effect = new p5.Compressor();
 
   // sonnects soundFile to effect with a
   // effectTime of 6 seconds, decayRate of 0.2%
-  effect.process(soundFile);
+  // effect.process(soundFile);
+  soundFile.connect(effect);
   
   desc = createDiv('seconds '+seconds.value() + ' decay ' + decay.value());
 

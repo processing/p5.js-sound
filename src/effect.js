@@ -93,7 +93,7 @@ define(function (require) {
 	  }
 		if (params.length > 0) {
       this.__proto__.set.apply(this, params);
-    }
+    	}
 	};
 
 	p5.Effect.prototype._effectDefault = function() {
