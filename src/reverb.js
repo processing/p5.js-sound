@@ -68,23 +68,6 @@ define(function (require) {
   p5.Reverb.prototype = Object.create(Effect.prototype);
 
   /**
-   * @private _loadParams is implemented in every effect class
-   * this method calls which ever method is used to modify default params of an
-   * effect class.
-   *
-   * This should only be called by the superclass method .loadPreset(). 
-   * The method is necessary because effects use different methods to set 
-   * different numbers of paramters
-   * @return {[type]} [description]
-   */
-  p5.Reverb.prototype._loadParams = function() {
-    this.set(this.params[0], this.params[1], this.params[2]);
-  }
-
-
-
-
-  /**
    * Presets
    *
    * Simple Reverb
@@ -95,13 +78,12 @@ define(function (require) {
     * Default preset, clears out any objects created by previous.
     * @return {[type]} [description]
     */
-   
-
 
   p5.Reverb.prototype.default = {
     "seconds" : 3,
     "decay" : 2,
-    "reverse" : false
+    "reverse" : false,
+    "_effectDefault": null
   };
   
   p5.Reverb.prototype.smallRoom = {
@@ -123,6 +105,7 @@ define(function (require) {
     "seconds" : 1.1,
     "decay" : 6.1,
     "reverse" : false,
+    "drywet" : 0.4
   };
 
   p5.Reverb.prototype.lotsOfVerb = {

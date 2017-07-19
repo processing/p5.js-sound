@@ -116,6 +116,56 @@ define(function (require) {
   };
 
   p5.Delay.prototype = Object.create(Effect.prototype);
+
+
+
+  /** 
+   * presets
+   */
+  
+
+  p5.Delay.prototype.default = {
+    "_delayTime" : 0.7,
+    "_feedback" : 0.5,
+    "_filter" : 1200,
+    "setType" : 0,
+    "_effectDefault" : null
+  };
+
+  p5.Delay.prototype.panRight = {
+    "leftDelayTime" : .2,
+    "rightDelayTime" : .1,
+    "feedback" : .4
+  };
+
+  p5.Delay.prototype.panLeft = {
+    "leftDelayTime" : .001,
+    "rightDelayTime" : .002,
+    "feedback" : 0
+  };
+
+  p5.Delay.prototype.unevenMovement = {
+    "leftDelayTime" : .01,
+    "rightDelayTime" : .02,
+    "feedback" : .56,
+    "drywet" : .7
+
+  };
+  p5.Delay.prototype.touchOfDelay = {
+    "_delayTime" : .4,
+    "_feedback" : .4,
+    "_filter" : 1200,
+    "drywet" : 0.66
+  };
+  p5.Delay.prototype.delayForever = {
+    "_delayTime" : .1,
+    "_feedback" : .82,
+    "_filter" : 1200,
+    "drywet" : .95
+  };
+
+
+
   /**
    *  Add delay to an audio signal according to a set
    *  of delay parameters.
@@ -133,25 +183,28 @@ define(function (require) {
    *                               delay.
    */
   p5.Delay.prototype.process = function(src, _delayTime, _feedback, _filter) {
-    var feedback = _feedback || 0;
-    var delayTime = _delayTime || 0;
-    if (feedback >= 1.0) {
-      throw new Error('Feedback value will force a positive feedback loop.');
-    }
-    if (delayTime >= this._maxDelay) {
-      throw new Error('Delay Time exceeds maximum delay time of ' + this._maxDelay + ' second.');
-    }
-
+    this.set(_delayTime,_feedback,_filter);
     src.connect(this.input);
-    this.leftDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
-    this.rightDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
-    this._leftGain.gain.value = feedback;
-    this._rightGain.gain.value = feedback;
 
-    if (_filter) {
-      this._leftFilter.freq(_filter);
-      this._rightFilter.freq(_filter);
-    }
+    // var feedback = _feedback || 0;
+    // var delayTime = _delayTime || 0;
+    // if (feedback >= 1.0) {
+    //   throw new Error('Feedback value will force a positive feedback loop.');
+    // }
+    // if (delayTime >= this._maxDelay) {
+    //   throw new Error('Delay Time exceeds maximum delay time of ' + this._maxDelay + ' second.');
+    // }
+
+    // src.connect(this.input);
+    // this.leftDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
+    // this.rightDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
+    // this._leftGain.gain.value = feedback;
+    // this._rightGain.gain.value = feedback;
+
+    // if (_filter) {
+    //   this._leftFilter.freq(_filter);
+    //   this._rightFilter.freq(_filter);
+    // }
   };
 
   /**
@@ -171,20 +224,24 @@ define(function (require) {
   p5.Delay.prototype.set = function(_delayTime, _feedback, _filter) {
     var feedback = _feedback || 0;
     var delayTime = _delayTime || 0;
-    if (feedback >= 1.0) {
-      throw new Error('Feedback value will force a positive feedback loop.');
-    }
-    if (delayTime >= this._maxDelay) {
-      throw new Error('Delay Time exceeds maximum delay time of '+ this._maxDelay + ' second.');
-    }
-    this.leftDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
-    this.rightDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
-    this._leftGain.gain.value = feedback;
-    this._rightGain.gain.value = feedback;
+    // if (feedback >= 1.0) {
+    //   throw new Error('Feedback value will force a positive feedback loop.');
+    // }
+    // if (delayTime >= this._maxDelay) {
+    //   throw new Error('Delay Time exceeds maximum delay time of '+ this._maxDelay + ' second.');
+    // }
+    // this.leftDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
+    // this.rightDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
+    // this._leftGain.gain.value = feedback;
+    // this._rightGain.gain.value = feedback;
+    // 
+    this.delayTime(delayTime);
+    this.feedback(feedback);
 
     if (_filter) {
-      this._leftFilter.freq(_filter);
-      this._rightFilter.freq(_filter);
+      // this._leftFilter.freq(_filter);
+      // this._rightFilter.freq(_filter);
+      this.filter(_filter);
     }
   }
 
@@ -196,19 +253,33 @@ define(function (require) {
    *  @param {Number} delayTime Time (in seconds) of the delay
    */
   p5.Delay.prototype.delayTime = function(t) {
-    // if t is an audio node...
+    if (t >= this._maxDelay) {
+      throw new Error('Delay Time exceeds maximum delay time of '+ this._maxDelay + ' second.');
+    }
+    this.leftDelayTime(t);
+    this.rightDelayTime(t);
+  };
+
+  p5.Delay.prototype.leftDelayTime = function(t) {
     if (typeof t !== 'number') {
       t.connect(this.leftDelay.delayTime);
-      t.connect(this.rightDelay.delayTime);
     }
-
     else {
       this.leftDelay.delayTime.cancelScheduledValues(this.ac.currentTime);
-      this.rightDelay.delayTime.cancelScheduledValues(this.ac.currentTime);
       this.leftDelay.delayTime.linearRampToValueAtTime(t, this.ac.currentTime);
+    }
+  };
+
+  p5.Delay.prototype.rightDelayTime = function(t) {
+    if (typeof t !== 'number') {
+      t.connect(this.rightDelay.delayTime);
+    }
+    else {
+      this.rightDelay.delayTime.cancelScheduledValues(this.ac.currentTime);
       this.rightDelay.delayTime.linearRampToValueAtTime(t, this.ac.currentTime);
     }
   };
+
 
   /**
    *  Feedback occurs when Delay sends its signal back through its input

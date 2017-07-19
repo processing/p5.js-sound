@@ -52,9 +52,6 @@ define(function (require) {
 		this.wet.connect(this._drywet.b);
 		this._drywet.connect(this.output);
 
-		this.chained = [];
-		this.params = [];
-
 		this.connect();
 
 		//Add to the soundArray
@@ -94,8 +91,15 @@ define(function (require) {
 	  	params.push(options[keys[i]]);
 	  	}
 	  }
-		this.__proto__.set.apply(this, params);
+		if (params.length > 0) {
+      this.__proto__.set.apply(this, params);
+    }
 	};
+
+	p5.Effect.prototype._effectDefault = function() {
+		this.amp(1);
+		this.drywet(1);
+	}
 
 
 	/**
