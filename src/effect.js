@@ -12,7 +12,6 @@ define(function (require) {
 	 * @class  p5.Effect
 	 * @constructor
 	 *
-
 	 * @property {Object} [ac]   Reference to the audio context of the p5 object
 	 * @property {WebAudioNode} [input]  Gain Node effect wrapper
 	 * @property {WebAudioNode} [output] Gain Node effect wrapper
