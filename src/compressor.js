@@ -14,19 +14,25 @@ define(function (require) {
    * peaks in volume) and is especially useful when many sounds are played 
    * at once. Compression can be used on indivudal sound sources in addition
    * to the master output. This class is built using the 
-   * Web Audio Dynamics Compressor Node <br>
-   * https://www.w3.org/TR/webaudio/#the-dynamicscompressornode-interface
+   * Web Audio Dynamics Compressor Node 
+   * <a href="https://www.w3.org/TR/webaudio/#the-dynamicscompressornode-interface" 
+   *   target="_blank" title="W3 spec for Dynamics Compressor Node">Web Audio Dynamics Compressor Node
+   *   </a>
    *
    * @class p5.Compressor
-   * @extends p5.Effect
+   * @extends {p5.Effect}
    * @constructor
    *
-   * @param {WebAudioNode} [compressor]  DynamicsCompressorNode instance
+   * 
    */
 	p5.Compressor = function() {
 		Effect.call(this);
 
+    /**
+     * @property {WebAudioNode} compressor  DynamicsCompressorNode instance
+     */
 		this.compressor = this.ac.createDynamicsCompressor();
+
     this.input.connect(this.compressor);
     this.compressor.connect(this.wet);
 	};
@@ -38,13 +44,17 @@ define(function (require) {
   * optional parameters to set compressor's audioParams
   * @method process 
   * 
-  * @param  {Object} src       Audio Input
-  * @param  {Number} attack    The amount of time (in seconds) to reduce the gain by 10dB
-  * @param  {Number} knee      A decibel value representing the range above the 
+  * @param {Number} attack     The amount of time (in seconds) to reduce the gain by 10dB,
+  *                            default = .003, range 0 - 1
+  * @param {Number} knee       A decibel value representing the range above the 
   *                            threshold where the curve smoothly transitions to the "ratio" portion.
-  * @param  {Number} ratio     The amount of dB change in input for a 1 dB change in output
-  * @param  {Number} threshold The decibel value above which the compression will start taking effect
-  * @param  {Number} release   The amount of time (in seconds) to increase the gain by 10dB
+  *                            default = 30, range 0 - 40
+  * @param {Number} ratio      The amount of dB change in input for a 1 dB change in output
+  *                            default = 12, range 1 - 20
+  * @param {Number} threshold  The decibel value above which the compression will start taking effect
+  *                            default = -24, range -100 - 0
+  * @param {Number} release    The amount of time (in seconds) to increase the gain by 10dB
+  *                            default = .25, range 0 - 1
   */
 	p5.Compressor.prototype.process = function(src, attack, knee, 
                                       ratio, threshold, release) {
@@ -53,13 +63,19 @@ define(function (require) {
 	};
 
   /**
-   * Set the paramters of the compressor. 
-   * 
-   * @param {Number} attack     default = .003, range 0 - 1
-   * @param {Number} knee       default = 30, range 0 - 40
-   * @param {Number} ratio      default = 12, range 1 - 20
-   * @param {Number} threshold  default = -24, range -100 - 0
-   * @param {Number} release    default = .25, range 0 - 1
+   * Set the paramters of a compressor. 
+   * @method  set
+   * @param {Number} attack     The amount of time (in seconds) to reduce the gain by 10dB,
+   *                            default = .003, range 0 - 1
+   * @param {Number} knee       A decibel value representing the range above the 
+   *                            threshold where the curve smoothly transitions to the "ratio" portion.
+   *                            default = 30, range 0 - 40
+   * @param {Number} ratio      The amount of dB change in input for a 1 dB change in output
+   *                            default = 12, range 1 - 20
+   * @param {Number} threshold  The decibel value above which the compression will start taking effect
+   *                            default = -24, range -100 - 0
+   * @param {Number} release    The amount of time (in seconds) to increase the gain by 10dB
+   *                            default = .25, range 0 - 1
    */
   p5.Compressor.prototype.set = function (attack, knee, 
                                 ratio, threshold, release) {
@@ -74,7 +90,12 @@ define(function (require) {
 
   /**
    * Get current attack or set value w/ time ramp
+   * 
+   * 
    * @method attack
+   * @param {Number} [attack] Attack is the amount of time (in seconds) to reduce the gain by 10dB,
+   *                          default = .003, range 0 - 1
+   * @param {Number} [time]  Assign time value to schedule the change in value
    */
   p5.Compressor.prototype.attack = function (attack, time){
     var t = time || 0;
@@ -91,7 +112,12 @@ define(function (require) {
 
  /**
    * Get current knee or set value w/ time ramp
+   * 
    * @method knee
+   * @param {Number} [knee] A decibel value representing the range above the 
+   *                        threshold where the curve smoothly transitions to the "ratio" portion.
+   *                        default = 30, range 0 - 40
+   * @param {Number} [time]  Assign time value to schedule the change in value
    */
   p5.Compressor.prototype.knee = function (knee, time){
     var t = time || 0;
@@ -109,6 +135,10 @@ define(function (require) {
   /**
    * Get current ratio or set value w/ time ramp
    * @method ratio
+   *
+   * @param {Number} [ratio]      The amount of dB change in input for a 1 dB change in output
+   *                            default = 12, range 1 - 20 
+   * @param {Number} [time]  Assign time value to schedule the change in value
    */
   p5.Compressor.prototype.ratio = function (ratio, time){
     var t = time || 0;
@@ -126,6 +156,10 @@ define(function (require) {
   /**
    * Get current threshold or set value w/ time ramp
    * @method threshold
+   *
+   * @param {Number} threshold  The decibel value above which the compression will start taking effect
+   *                            default = -24, range -100 - 0
+   * @param {Number} [time]  Assign time value to schedule the change in value
    */
   p5.Compressor.prototype.threshold = function (threshold, time){
     var t = time || 0;
@@ -143,6 +177,11 @@ define(function (require) {
   /**
    * Get current release or set value w/ time ramp
    * @method release
+   *
+   * @param {Number} release    The amount of time (in seconds) to increase the gain by 10dB
+   *                            default = .25, range 0 - 1
+   *
+   * @param {Number} [time]  Assign time value to schedule the change in value
    */
   p5.Compressor.prototype.release = function (release, time){
     var t = time || 0;
