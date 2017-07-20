@@ -91,12 +91,31 @@ define(function (require) {
     return newFilter;
   }
 
+  /**
+   * This method adds a new band to the EQ's array of bands.
+   * By default the method will set the new band to have a 
+   * frequency of 20480 and a resonance of .1. These values can be modified
+   * after the band is created.
+   *
+   * @method addBand
+   * 
+   */
+  
+  p5.EQ.prototype.addBand = function(freq, res) {
+    if(typeof freq!=='number') {freq = 20480;}
+    if(typeof res!=='number') {res = 0.1;}
+
+      this.bands.push(this._newBand(freq, res));
+    }
+  }
+
   p5.EQ.prototype.dispose = function (argument) {
     Effect.prototype.dispose.apply(this);
     
     while (this.bands.length > 0) {
-      delete this.bands.pop();
+      delete this.bands.pop().biquad.disconnect();
     }
+    delete this.bands;
   }
 
   return p5.EQ;
