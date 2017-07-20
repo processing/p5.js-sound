@@ -53,7 +53,7 @@ define(function (require) {
         freq = 160;
         res = .1;
       } else {
-        freq = this.bands[i-1].freq * factor;
+        freq = this.bands[i-1].freq() * factor;
         res = 1.5;
       } 
       this.bands[i] = this._newBand(freq, res);
