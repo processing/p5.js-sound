@@ -22,12 +22,11 @@ define(function (require) {
    * @constructor
    * @return {Object} p5.Panner3D Object
    *
-   * @param {Web Audio Node} spatializer Web Audio Spatial Panning Node
-   * @param {AudioParam} spatializer.panningModel "equal power" or "HRTF"
-   * @param {AudioParam} spatializer.distanceModel "linear", "inverse", or "exponential"
-   * @param {String} [type] [Specify construction of a spatial panner or listener]
+   * @property {Web Audio Node} spatializer Web Audio Spatial Panning Node
+   * @property {AudioParam} spatializer.panningModel "equal power" or "HRTF"
+   * @pproperty {AudioParam} spatializer.distanceModel "linear", "inverse", or "exponential"
    */
-	p5.Panner3D = function(type) {
+	p5.Panner3D = function() {
       Effect.call(this);
       this.panner = this.ac.createPanner();
       this.panner.panningModel = 'HRTF';
@@ -48,13 +47,13 @@ define(function (require) {
   }
   /**
    * Set the X,Y,Z position of the Panner
-   * @param  {[Number]} xVal
-   * @param  {[Number]} yVal
-   * @param  {[Number]} zVal
-   * @param  {[Number]} time
-   * @return {[Array]}      [Updated x, y, z values as an array]
+   * @param  {Number} xVal
+   * @param  {Number} yVal
+   * @param  {Number} zVal
+   * @param  {Number} time
+   * @return {Array}      Updated x, y, z values as an array
    */
-  p5.Panner3D.prototype.position = function(xVal, yVal, zVal, time) {
+  p5.Panner3D.prototype.set = function(xVal, yVal, zVal, time) {
     this.positionX(xVal,time);
     this.positionY(yVal,time);
     this.positionZ(zVal,time);
@@ -68,7 +67,7 @@ define(function (require) {
    * @method positionX
    * @method positionY
    * @method positionZ
-   * @return {Number}      [updated coordinate value]
+   * @return {Number}      updated coordinate value
    */
   p5.Panner3D.prototype.positionX = function(xVal, time) {
     var t = time || 0;
@@ -111,7 +110,7 @@ define(function (require) {
    * @param  {Number} yVal
    * @param  {Number} zVal
    * @param  {Number} time
-   * @return {Array}      [Updated x, y, z values as an array]
+   * @return {Array}      Updated x, y, z values as an array
    */
   p5.Panner3D.prototype.orient = function(xVal, yVal, zVal, time) {
   this.orientX(xVal,time);
@@ -127,7 +126,6 @@ define(function (require) {
    * @method positionX
    * @method positionY
    * @method positionZ
-   * @return {Number}      [updated coordinate value]
    * @return {Number}      [updated coordinate value]
    */
   p5.Panner3D.prototype.orientX = function(xVal, time) {

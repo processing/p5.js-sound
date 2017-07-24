@@ -1,65 +1,65 @@
 // ====================
-// DEMO: P5.Panner3D: use mouseX and mouseY to control panners X and Y
-// panners positionZ moves from -10000 to 10000
+// DEMO: P5.Panner3D: Moves sound in 3D space from max negative coordinates, to max positive
 // ====================
 
 
 var soundFile;
 var panner3d;
-var zPos, ZDir;
 var description, position;
 
 function preload() {
   soundFormats('mp3', 'ogg');
-  soundFile = loadSound('../files/beat');
+  soundFile = loadSound('../files/lucky_dragons_-_power_melody');
 }
 
+var i;
+var factorI;
 function setup() {
-  createCanvas(500, 500); 
-  soundFile.volume = .6;
+  createCanvas(500, 500, WEBGL); 
+ 
 
-  //disconnect sound file and send it to output via Panner3D
-  soundFile.disconnect();
-  panner3d = new p5.Panner3D();
-  soundFile.connect(panner3d);
-  soundFile.loop();
-  zPos = 0;
-  zDir = 0.5;
-
-  description = createDiv('Panner3D: Control the the panners '+
-                  'positionX and positionY with the mouse '+
-                  'positionZ pans from -100 to 100')
-  position = 'positionX: 0'+'positionY: 0' + 'positionZ: 0';
+  description = createDiv('Panner3D: The cone symbolizes the soundFile '+
+                          'which is panning the soundin relation to the center of the '+
+                          'canvas');
   p2 = createDiv(position);
 
   description.position(550,0).size(400,50);
   p2.position(550,50);
 
+  panner1 = new p5.Panner3D();
+
+  
+  i = 0;
+  factorI = 1;
+  soundFile.disconnect();
+  soundFile.loop();
+  soundFile.connect(panner1);
 }
 
 function draw() {
   background(0);
+
+  if (i > 500 || i < -500) {factorI = -1*factorI;}
+
   updateDescription();
+  
+  push();
+  translate(i+=factorI*1,i + factorI*1,i + factorI*1);   
+  rotateX(frameCount* 0.01);
+  rotateY(frameCount* 0.01);
+  rotateZ(frameCount* 0.01);
+  cone(100);
+  pop();
 
-  //Pan the sound in the Z direction
-  if (zPos > 50 || zPos < -50) {
-    zDir = -zDir;
-  }
-  zPos += zDir;
+  //pan the sound along with the cone
+  panner1.set(i*10,i*10,i*10);
 
-  //Position the sound in 3 dimensions
-  panner3d.position( max(min(25*(mouseX-width/2),6500),-6500), 
-                    max(min(25*(mouseY-width/2),6500),-6500), 
-                    max(min(200*zPos,10000),-10000));
-  ellipse(width/2, height/2, 20, 20);
-  fill(255,0,0);
-  ellipse(mouseX, mouseY, 20,20)
   
 }
 
 function updateDescription(){
-  position = 'positionX: '+ panner3d.positionX() +
-                '<br>positionY: '+ panner3d.positionY() +
-                '<br>positionZ: '+panner3d.positionZ();
+  position = 'positionX: '+ panner1.positionX() +
+                '<br>positionY: '+ panner1.positionY() +
+                '<br>positionZ: '+ panner1.positionZ();
 p2.html(position);
 }
