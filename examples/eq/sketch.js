@@ -4,7 +4,7 @@
  *  Use control points to change the spline that shapes the soundwave
  */
 
-var fft, noise, eq;
+var fft, eq;
 var eqSize;
 
 var cntrlPts = []; 
@@ -34,14 +34,9 @@ function setup() {
   eq = new p5.EQ(eqSize);
 
 
-  // Disconnect noiose generator from master output.
+  // Disconnect soundFile from master output.
   // Then, connect it to the EQ, so that we only hear the EQ'd sound
-  // noise = new p5.Noise();
-  // noise.disconnect();
-  // eq.process(noise);
-  // noise.start();
-  // 
-  // 
+
   soundFile.loop();
   soundFile.disconnect();
   soundFile.connect(eq);
@@ -49,50 +44,20 @@ function setup() {
   //use an fft to visualize the sound
   fft = new p5.FFT();
 
-
-  // var x = map(Math.log(i), 0, Math.log(spectrum.length), 0, width);
-
-
   for (var i = 0; i < eqSize; i++) {
-    //cntrlPts[i] = new CntrlPt(i, (width/(eqSize-1)) * i, height/2);
-    //eq.bands[i].freq(map(cntrlPts[i].x, 0, width, 160, 20480));
-    //
-    // var x = map(i*eqSize/1024, 0, 1024)
-    // 
-    // 
-    var x = map(eq.bands[i].freq(), eq.bands[0].freq(), eq.bands[7].freq(), Math.log(1), Math.log(1024));
-
-
-
-    console.log(x);
     cntrlPts[i] = new CntrlPt(i, 
               //map(x, 0, Math.log(1024), 0, width), height/2);
               i + i*101, height/2);
-    
-
-
-
-    // eq.bands[i].freq(160*Math.pow(2,i));
-
     splineVerts[i] = [cntrlPts[i].x,cntrlPts[i].y];
-    // console.log(cntrlPts[i].x);
+
   }
 
-
-
-  //eq.bands[0].freq(0);
-  // for (var i = 0; i < 7; i++) {
-  //   eq.bands[i].freq(344*Math.pow(2,i));
-  //   //console.log(eq.bands[i].freq());
-  // }
-
-
-  
 
   description = createDiv("p5.EQ:<br>"+
                 "Use the p5.EQ to shape a sound spectrum. The p5.EQ is "+
                 "built with Web Audio Biquad Filters (peaking mode) and can "+
                 "be set to use 3 or 8 bands.");
+  description.position(10,300);
 }
 
 function draw() {
@@ -110,23 +75,14 @@ function draw() {
     var h = -height + map(spectrum[i], 0, 255, height, 0);
 
     if (i % 128 === 0 ) {
-      fill(255);
+
     } else {
-      fill(255, 40, 255);
+
     }
     rect(x, height, width/spectrum.length, h) ;
 
   }
 
-
-  // Bin.prototype.drawLog = function(i, totalBins, value, prev) {
-  //   this.x = map(Math.log(i+2), 0, Math.log(totalBins), 0, width - 200);
-  //   var h = map(value, 0, 255, height, 0)- height;
-  //   this.width = prev - this.x;
-  //   this.value = value;
-  //   this.draw(h);
-  //   return this.x;
-  // }
 
   //When mouse is pressed, move relevant control point
   if (pressed) {cntrlPts[cntrlIndex].move();}
@@ -158,6 +114,26 @@ function CntrlPt(i,x,y){
   this.display = function () {
     fill(this.c);
     ellipse(this.x,this.y,ctrlPtRad,ctrlPtRad);
+    rectMode(CENTER);
+    noStroke();
+
+    var upDown = this.index % 2 > 0 ? 1 : -1
+    var textY;
+    var textX;
+    if (this.index === 0) {
+      textX = this.x + 10;
+      
+
+    }
+    else if (this.index === eq.bands.length - 1){
+     textX = this.x - 70;
+
+    }
+    else{
+      textX = this.x - 18;
+    }
+    text("freq: " + eq.bands[this.index].freq(),textX,this.y + upDown*35);
+    text("gain: " + eq.bands[this.index].gain(),textX,this.y + upDown *25);
   }
 
   this.move = function () {
@@ -181,7 +157,7 @@ function CntrlPt(i,x,y){
       return true;
     } else {
       return false;
-    }
+    }s
   }
 }
 

@@ -33,7 +33,7 @@ define(function (require) {
     _eqsize = _eqsize === 3 || _eqsize === 8 ? _eqsize : 3;
 
     var factor;
-    _eqsize == 3 ? factor = Math.pow(2,4) : factor = 2;
+    _eqsize == 3 ? factor = Math.pow(2,3) : factor = 2;
 
     //bands are stored in an array, index 0 - 3 or 0 - 7
     this.bands = [];
@@ -52,8 +52,9 @@ define(function (require) {
       } else if (i === 0) {
         freq = 100;
         res = .1;
-      } else if (i===1) {
-        freq = 344;
+      } 
+      else if (i===1) {
+        freq = _eqsize === 3 ? 360 * factor : 360;
         res = 1;
       }else {
         freq = this.bands[i-1].freq() * factor;
