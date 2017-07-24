@@ -46,15 +46,18 @@ define(function (require) {
     */
     var freq, res;
     for (var i = 0; i < _eqsize; i++) {
-      if (i == _eqsize - 1) {
-        freq = 20480; 
+      if (i === _eqsize - 1) {
+        freq = 21000; 
+        res = .01;
+      } else if (i === 0) {
+        freq = 100;
         res = .1;
-      } else if (i == 0) {
-        freq = 160;
-        res = .1;
-      } else {
+      } else if (i===1) {
+        freq = 344;
+        res = 1;
+      }else {
         freq = this.bands[i-1].freq() * factor;
-        res = 1.5;
+        res = 1;
       } 
       this.bands[i] = this._newBand(freq, res);
       if (i>0) {
@@ -63,6 +66,17 @@ define(function (require) {
         this.input.connect(this.bands[i].biquad);
       }
     }
+
+
+    // this.bands[0] = this._newBand(0,.1);
+
+    // this.input.connect(this.bands[0].biquad);
+    // this.bands[_eqsize-1] = this._newBand(22050, .1);
+    // for (var i = 1; i < _eqsize-1; i++) {
+    //   this.bands[i] = this._newBand(344 * Math.pow(2, i-1), .1);
+    //   this.bands[i-1].biquad.connect(this.bands[i].biquad);
+    // }
+
     this.bands[_eqsize-1].biquad.connect(this.output);
   };
   p5.EQ.prototype = Object.create(Effect.prototype);
@@ -106,10 +120,10 @@ define(function (require) {
     if(typeof res!=='number') {res = 0.1;}
 
       this.bands.push(this._newBand(freq, res));
-    }
+    
   }
 
-  p5.EQ.prototype.dispose = function (argument) {
+  p5.EQ.prototype.dispose = function () {
     Effect.prototype.dispose.apply(this);
     
     while (this.bands.length > 0) {
