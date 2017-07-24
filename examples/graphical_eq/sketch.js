@@ -4,12 +4,17 @@
  *  Use control points to change the spline that shapes the soundwave
  */
 
-var fft, eq;
-var eqSize;
+var fft;
 
+var eq, eqSize;
+
+//Array to hold contrl points
 var cntrlPts = []; 
 var ctrlPtRad, cntrlIndex;
+
+//Array to hold the spline vertices
 var splineVerts = [];
+
 var pressed; 
 var description;
 
@@ -33,10 +38,8 @@ function setup() {
   eqSize = 8;
   eq = new p5.EQ(eqSize);
 
-
   // Disconnect soundFile from master output.
   // Then, connect it to the EQ, so that we only hear the EQ'd sound
-
   soundFile.loop();
   soundFile.disconnect();
   soundFile.connect(eq);
@@ -44,6 +47,8 @@ function setup() {
   //use an fft to visualize the sound
   fft = new p5.FFT();
 
+  //Evenly spaced control points line up with logarithmically spaced
+  //filter frequencies on the logarithmically drawn spectrum
   for (var i = 0; i < eqSize; i++) {
     cntrlPts[i] = new CntrlPt(i, 
               //map(x, 0, Math.log(1024), 0, width), height/2);
@@ -73,18 +78,12 @@ function draw() {
     //var x = map(i, 0, spectrum.length, 0, width);
     var x = map(Math.log((i+1)/8), 0, Math.log(spectrum.length/8), 0, width);
     var h = -height + map(spectrum[i], 0, 255, height, 0);
-
-    if (i % 128 === 0 ) {
-
-    } else {
-
-    }
     rect(x, height, width/spectrum.length, h) ;
 
   }
 
 
-  //When mouse is pressed, move relevant control point
+  //When mouse is pressed, move relevant control point, then display all
   if (pressed) {cntrlPts[cntrlIndex].move();}
 
   for (var i = 0; i < cntrlPts.length; i++) {
@@ -122,18 +121,21 @@ function CntrlPt(i,x,y){
     var textX;
     if (this.index === 0) {
       textX = this.x + 10;
-      
-
     }
     else if (this.index === eq.bands.length - 1){
      textX = this.x - 70;
-
     }
     else{
       textX = this.x - 18;
     }
-    text("freq: " + eq.bands[this.index].freq(),textX,this.y + upDown*35);
-    text("gain: " + eq.bands[this.index].gain(),textX,this.y + upDown *25);
+    if (upDown > 0) {
+      text("freq: " + eq.bands[this.index].freq(),textX,this.y + upDown*40);
+      text("gain: " + eq.bands[this.index].gain(),textX,this.y + upDown *25);
+    } else {
+     text("gain: " + eq.bands[this.index].gain(),textX,this.y + upDown *40); 
+     text("freq: " + eq.bands[this.index].freq(),textX,this.y + upDown*25);
+    }
+    
   }
 
   this.move = function () {
@@ -143,9 +145,6 @@ function CntrlPt(i,x,y){
     else if (mouseY > height) {this.y = height - 1;}
     else {
     this.y = mouseY;
-    //this.x = this.index == 0 || this.index == eqSize - 1  ? this.x : mouseX;
-    //eq.modBand(this.index, map(this.y, 0, height, 40, -40), map(this.x, 0, width, 50, 22050));
-    //eq.bands[this.index].freq( map(this.x, 0, width, 50, 22050));
     eq.bands[this.index].biquad.gain.value = map(this.y, 0, height, 40, -40);
     }
   }
