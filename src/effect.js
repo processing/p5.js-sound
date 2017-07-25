@@ -5,13 +5,20 @@ define(function (require) {
 	var CrossFade = require('Tone/component/CrossFade');
 
 	/**
-	 * Effect is bases class for audio effects in p5
+	 * Effect is a base class for audio effects in p5. <br>
 	 * This module handles the nodes and methods that are 
-	 * common and useful for all current and future effects.
+	 * common and useful for current and future effects.
 	 *
 	 * @class  p5.Effect
 	 * @constructor
-	 * 
+	 *
+	 * @property {Object} [ac]   Reference to the audio context of the p5 object
+	 * @property {WebAudioNode} [input]  Gain Node effect wrapper
+	 * @property {WebAudioNode} [output] Gain Node effect wrapper
+	 * @property {Object} [_drywet]   Tone.JS CrossFade node (defaults to value: 1)
+	 * @property {WebAudioNode} [wet]  Effect that extend this class should connect
+	 *                              to this this gain node, so that dry and wet 
+	 *                              signals are mixed properly.
 	 */
 	p5.Effect = function() {
 		this.ac = p5sound.audiocontext;
@@ -22,7 +29,7 @@ define(function (require) {
 		/**
 		 *	The p5.Effect class is built
 		 * 	using Tone.js CrossFade
-		 *	@property {CrossFade} _drywet
+		 * 	@private
 		 */
 		this._drywet = new CrossFade(1);
 
@@ -30,7 +37,6 @@ define(function (require) {
 		 *	In classes that extend
 		 *	p5.Effect, connect effect nodes
 		 *	to the wet parameter
-		 *	@property {GainNode} wet
 		 */
 		this.wet = this.ac.createGain();
 
@@ -45,15 +51,13 @@ define(function (require) {
 	};
 
 	/**
-	 *  Set the output level of the filter.
+	 *  Set the output volume of the filter.
 	 *  
 	 *  @method  amp
-	 *  @param {Number} volume amplitude between 0 and 1.0
-	 *  @param {Number} [rampTime] create a fade that lasts rampTime 
-	 *  @param {Number} [timeFromNow] schedule this event to happen
-	 *                                seconds from now
+	 *  @param {Number} [vol] amplitude between 0 and 1.0
+	 *  @param {Number} [rampTime] create a fade that lasts until rampTime 
+	 *  @param {Number} [tFromNow] schedule this event to happen in tFromNow seconds
 	 */
-
 	p5.Effect.prototype.amp = function(vol, rampTime, tFromNow){
 	  var rampTime = rampTime || 0;
 	  var tFromNow = tFromNow || 0;
@@ -64,9 +68,40 @@ define(function (require) {
 	  this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
 	};
 
+	/**
+	 *	Link effects together in a chain	
+	 *	Example usage: filter.chain(reverb, delay, panner);
+	 *	May be used with an open-ended number of arguments
+	 *
+	 *	@method chain 
+     *  @param {Object} [arguments]  Chain together multiple sound objects	
+	 */		
+	p5.Effect.prototype.chain = function(){
+		if (arguments.length>0){
+			this.output.connect(arguments[0]);
+			for(var i=1;i<arguments.length; i+=1){
+				arguments[i-1].connect(arguments[i]);
+			}
+		}
+		return this;
+	};
 
 	/**
-	 *	Send output to a p5.sound or web audio object	
+	 *	Adjust the dry/wet value.	
+	 *	
+	 *	@method drywet
+	 *	@param {Number} [fade] The desired drywet value (0 - 1.0)
+	 */
+	p5.Effect.prototype.drywet = function(fade){
+		if (typeof fade !=="undefined"){	
+			this._drywet.fade.value = fade
+		}
+		return this._drywet.fade.value;
+	};
+
+	/**
+	 *	Send output to a p5.js-sound, Web Audio Node, or use signal to
+	 *	control an AudioParam	
 	 *	
 	 *	@method connect 
 	 *	@param {Object} unit 
@@ -76,7 +111,6 @@ define(function (require) {
 		this.output.connect(u.input ? u.input : u);
 	};
 
-
 	/**
 	 *	Disconnect all output.	
 	 *	
@@ -85,22 +119,6 @@ define(function (require) {
 	p5.Effect.prototype.disconnect = function() {
 		this.output.disconnect();
 	};
-
-
-	/**
-	 *	Adjust the dry/wet knob value.	
-	 *	
-	 *	@method drywet
-	 *	@param {Number} [fade] The desired drywet value
-	 */
-	p5.Effect.prototype.drywet = function(fade){
-
-		if (typeof fade !=="undefined"){	
-			this._drywet.fade.value = fade
-		}
-		return this._drywet.fade.value;
-	};
-
 
 	p5.Effect.prototype.dispose = function() {
 		// remove refernce form soundArray
@@ -116,27 +134,6 @@ define(function (require) {
 		this.ac = undefined;
 	};
 
-
-	/**
-	 *	Link effects together in a chain	
-	 *	Example uUsage: filter.chain(reverb,delay,panner);
-	 *	May be used with open-ended number of arguments
-	 *
-	 *	@method chain 
-     *  @param {Object} [...effects] p5.Effect objects	
-	 */		
-	p5.Effect.prototype.chain = function(){
-		if (arguments.length>0){
-			this.output.connect(arguments[0]);
-		
-			for(var i=1;i<arguments.length; i+=1){
-				arguments[i-1].connect(arguments[i]);
-			}
-		}
-		return this;
-	}
-	
-		
 	return p5.Effect;
 
 });
