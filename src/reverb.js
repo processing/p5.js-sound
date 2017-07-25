@@ -14,6 +14,11 @@ define(function (require) {
    *  extends p5.Reverb allowing you to recreate the sound of actual physical
    *  spaces through convolution.
    *
+   *  This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.  
+   *  Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>, 
+   *  <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and 
+   *  <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
+   *
    *  @class p5.Reverb
    *  @extends p5.Effect
    *  @constructor

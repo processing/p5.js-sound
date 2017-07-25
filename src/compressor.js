@@ -13,15 +13,16 @@ define(function (require) {
    * Compression can be used to avoid clipping (sound distortion due to 
    * peaks in volume) and is especially useful when many sounds are played 
    * at once. Compression can be used on indivudal sound sources in addition
-   * to the master output. This class is built using the 
-   * Web Audio Dynamics Compressor Node 
-   * <a href="https://www.w3.org/TR/webaudio/#the-dynamicscompressornode-interface" 
-   *   target="_blank" title="W3 spec for Dynamics Compressor Node">Web Audio Dynamics Compressor Node
-   *   </a>
+   * to the master output.  
+   *
+   * This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.  
+   * Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>, 
+   * <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and 
+   * <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
    *
    * @class p5.Compressor
-   * @extends {p5.Effect}
    * @constructor
+   * @extends p5.Effect
    *
    * 
    */
@@ -29,8 +30,13 @@ define(function (require) {
 		Effect.call(this);
 
     /**
-     * @property {WebAudioNode} compressor  DynamicsCompressorNode instance
+     * The p5.Compressor is built with a <a href="https://www.w3.org/TR/webaudio/#the-dynamicscompressornode-interface" 
+   *   target="_blank" title="W3 spec for Dynamics Compressor Node">Web Audio Dynamics Compressor Node
+   *   </a>
+     * @property {WebAudioNode} compressor 
      */
+    
+
 		this.compressor = this.ac.createDynamicsCompressor();
 
     this.input.connect(this.compressor);
@@ -43,17 +49,19 @@ define(function (require) {
   * Performs the same function as .connect, but also accepts
   * optional parameters to set compressor's audioParams
   * @method process 
+  *
+  * @param {Object} src         Sound source to be connected
   * 
-  * @param {Number} attack     The amount of time (in seconds) to reduce the gain by 10dB,
+  * @param {Number} [attack]     The amount of time (in seconds) to reduce the gain by 10dB,
   *                            default = .003, range 0 - 1
-  * @param {Number} knee       A decibel value representing the range above the 
+  * @param {Number} [knee]       A decibel value representing the range above the 
   *                            threshold where the curve smoothly transitions to the "ratio" portion.
   *                            default = 30, range 0 - 40
-  * @param {Number} ratio      The amount of dB change in input for a 1 dB change in output
+  * @param {Number} [ratio]      The amount of dB change in input for a 1 dB change in output
   *                            default = 12, range 1 - 20
-  * @param {Number} threshold  The decibel value above which the compression will start taking effect
+  * @param {Number} [threshold]  The decibel value above which the compression will start taking effect
   *                            default = -24, range -100 - 0
-  * @param {Number} release    The amount of time (in seconds) to increase the gain by 10dB
+  * @param {Number} [release]    The amount of time (in seconds) to increase the gain by 10dB
   *                            default = .25, range 0 - 1
   */
 	p5.Compressor.prototype.process = function(src, attack, knee, 
