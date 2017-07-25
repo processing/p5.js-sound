@@ -15,16 +15,18 @@ define(function (require) {
    * built using a chain of Web Audio Biquad Filter Nodes and can be
    * instantiated with 3 or 8 bands. Bands can be added or removed from
    * the EQ by directly modifying p5.EQ.bands (the array that stores filters).
-   *  
+   *
+   * This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.  
+   * Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>, 
+   * <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and 
+   * <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
+   * 
    * @class p5.EQ
    * @constructor
-   * @param {Number} [_eqsize] [Constructor will accept 3 or 8, defaults to 3]
-   * @return {Object} [p5.EQ object]
-   *
-   * @example
-   * <div><code>
    * 
-   * </code></div>
+   * @param {Number} [_eqsize] Constructor will accept 3 or 8, defaults to 3
+   * @return {Object} p5.EQ object
+   *
    */
   p5.EQ = function(_eqsize) {
     Effect.call(this);
@@ -35,15 +37,17 @@ define(function (require) {
     var factor;
     _eqsize == 3 ? factor = Math.pow(2,3) : factor = 2;
 
-    //bands are stored in an array, index 0 - 3 or 0 - 7
-    this.bands = [];
-
     /**
-      *  The p5.EQ is built with abstracted p5.Filter objects
-      *  To modify any bands, use methods of the p5.Filter API
-      *  @type {Object}  Web Audio Delay Node
+      *  The p5.EQ is built with abstracted p5.Filter objects. 
+      *  To modify any bands, use methods of the p5.Filter API.
+      *  To add or remove bands, use p5.EQ.addBand() and p5.EQ.removeBand().
+      *  Bands are stored in an array, with indices 0 - 3, or 0 - 7
+      *  @property {Array}  bands
       *
     */
+    this.bands = [];
+
+    
     var freq, res;
     for (var i = 0; i < _eqsize; i++) {
       if (i === _eqsize - 1) {
@@ -68,31 +72,64 @@ define(function (require) {
       }
     }
 
-
-    // this.bands[0] = this._newBand(0,.1);
-
-    // this.input.connect(this.bands[0].biquad);
-    // this.bands[_eqsize-1] = this._newBand(22050, .1);
-    // for (var i = 1; i < _eqsize-1; i++) {
-    //   this.bands[i] = this._newBand(344 * Math.pow(2, i-1), .1);
-    //   this.bands[i-1].biquad.connect(this.bands[i].biquad);
-    // }
-
     this.bands[_eqsize-1].biquad.connect(this.output);
   };
   p5.EQ.prototype = Object.create(Effect.prototype);
 
-
+  /**
+   * Process an input by connecting it to the EQ
+   * @method  process
+   * @param  {Object} src Audio source
+   */
   p5.EQ.prototype.process = function (src) {
     src.connect(this.input);
   };
 
+  /** 
+   * Set the frequency and gain of each band in the EQ. This method should be
+   * called with 3 or 8 frequency and gain pairs, depending on the size of the EQ. 
+   * ex. eq.set(freq0, gain0, freq1, gain1, freq2, gain2);
+   *
+   * @method  set
+   * @param {Number} [freq0] Frequency value for band with index 0
+   * @param {Number} [gain0] Gain value for band with index 0
+   * @param {Number} [freq1] Frequency value for band with index 1
+   * @param {Number} [gain1] Gain value for band with index 1
+   * @param {Number} [freq2] Frequency value for band with index 2
+   * @param {Number} [gain2] Gain value for band with index 2
+   * @param {Number} [freq3] Frequency value for band with index 3
+   * @param {Number} [gain3] Gain value for band with index 3
+   * @param {Number} [freq4] Frequency value for band with index 4
+   * @param {Number} [gain4] Gain value for band with index 4
+   * @param {Number} [freq5] Frequency value for band with index 5
+   * @param {Number} [gain5] Gain value for band with index 5
+   * @param {Number} [freq6] Frequency value for band with index 6
+   * @param {Number} [gain6] Gain value for band with index 6
+   * @param {Number} [freq7] Frequency value for band with index 7
+   * @param {Number} [gain7] Gain value for band with index 7
+   */
+  p5.EQ.prototype.set = function() {
+    if (arguments.length === this.bands.length * 2) {
+      for (var i = 0; i < arguments.length; i+=2) {
+        this.bands[i/2].freq(arguments[i]);
+        this.bands[i/2].gain(arguments[i+1]);
+      }
+    }
+    else {
+      console.error("Argument mismatch. .set() should be called with " + (this.bands.length*2) +
+        " arguments. (one frequency and gain value pair for each band of the eq)");
+    }
+  };
+
   /**
    * Add a new band. Creates a p5.Filter and strips away everything but 
-   * the raw biquad filter
+   * the raw biquad filter. This method returns an abstracted p5.Filter,
+   * which can be added to p5.EQ.bands, in order to create new EQ bands.
+   * @method  _newBand
+   * @private
    * @param  {Number} freq 
    * @param  {Number} res  
-   * @return {Obect}      [p5.Filter object]
+   * @return {Obect}      Abstracted Filter
    */
   p5.EQ.prototype._newBand = function(freq, res) {
     var newFilter = new Filter('peaking');
@@ -104,24 +141,6 @@ define(function (require) {
     delete newFilter._drywet;
     delete newFilter.wet;
     return newFilter;
-  }
-
-  /**
-   * This method adds a new band to the EQ's array of bands.
-   * By default the method will set the new band to have a 
-   * frequency of 20480 and a resonance of .1. These values can be modified
-   * after the band is created.
-   *
-   * @method addBand
-   * 
-   */
-  
-  p5.EQ.prototype.addBand = function(freq, res) {
-    if(typeof freq!=='number') {freq = 20480;}
-    if(typeof res!=='number') {res = 0.1;}
-
-      this.bands.push(this._newBand(freq, res));
-    
   }
 
   p5.EQ.prototype.dispose = function () {
