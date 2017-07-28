@@ -3,7 +3,7 @@
 define(function (require) {
 
   var Effect = require('effect');
-  var Filter = require('filter');
+  var EQFilter = require('src/eqFilter');
 
   /**
    * p5.EQ is an audio effect that performs the function of a multiband
@@ -23,7 +23,7 @@ define(function (require) {
    *
    * @class p5.EQ
    * @constructor
-   *
+   * @extends p5.Effect
    * @param {Number} [_eqsize] Constructor will accept 3 or 8, defaults to 3
    * @return {Object} p5.EQ object
    *
@@ -39,8 +39,9 @@ define(function (require) {
 
     /**
       *  The p5.EQ is built with abstracted p5.Filter objects.
-      *  To modify any bands, use methods of the p5.Filter API.
-      *  To add or remove bands, use p5.EQ.addBand() and p5.EQ.removeBand().
+      *  To modify any bands, use methods of the <a 
+      *  href="/reference/#/p5.Filter" title="p5.Filter reference">
+      *  p5.Filter</a> API, especially `gain` and `freq`.
       *  Bands are stored in an array, with indices 0 - 3, or 0 - 7
       *  @property {Array}  bands
       *
@@ -85,29 +86,29 @@ define(function (require) {
     src.connect(this.input);
   };
 
-  /**
-   * Set the frequency and gain of each band in the EQ. This method should be
-   * called with 3 or 8 frequency and gain pairs, depending on the size of the EQ.
-   * ex. eq.set(freq0, gain0, freq1, gain1, freq2, gain2);
-   *
-   * @method  set
-   * @param {Number} [freq0] Frequency value for band with index 0
-   * @param {Number} [gain0] Gain value for band with index 0
-   * @param {Number} [freq1] Frequency value for band with index 1
-   * @param {Number} [gain1] Gain value for band with index 1
-   * @param {Number} [freq2] Frequency value for band with index 2
-   * @param {Number} [gain2] Gain value for band with index 2
-   * @param {Number} [freq3] Frequency value for band with index 3
-   * @param {Number} [gain3] Gain value for band with index 3
-   * @param {Number} [freq4] Frequency value for band with index 4
-   * @param {Number} [gain4] Gain value for band with index 4
-   * @param {Number} [freq5] Frequency value for band with index 5
-   * @param {Number} [gain5] Gain value for band with index 5
-   * @param {Number} [freq6] Frequency value for band with index 6
-   * @param {Number} [gain6] Gain value for band with index 6
-   * @param {Number} [freq7] Frequency value for band with index 7
-   * @param {Number} [gain7] Gain value for band with index 7
-   */
+  //  /**
+  //   * Set the frequency and gain of each band in the EQ. This method should be
+  //   * called with 3 or 8 frequency and gain pairs, depending on the size of the EQ.
+  //   * ex. eq.set(freq0, gain0, freq1, gain1, freq2, gain2);
+  //   *
+  //   * @method  set
+  //   * @param {Number} [freq0] Frequency value for band with index 0
+  //   * @param {Number} [gain0] Gain value for band with index 0
+  //   * @param {Number} [freq1] Frequency value for band with index 1
+  //   * @param {Number} [gain1] Gain value for band with index 1
+  //   * @param {Number} [freq2] Frequency value for band with index 2
+  //   * @param {Number} [gain2] Gain value for band with index 2
+  //   * @param {Number} [freq3] Frequency value for band with index 3
+  //   * @param {Number} [gain3] Gain value for band with index 3
+  //   * @param {Number} [freq4] Frequency value for band with index 4
+  //   * @param {Number} [gain4] Gain value for band with index 4
+  //   * @param {Number} [freq5] Frequency value for band with index 5
+  //   * @param {Number} [gain5] Gain value for band with index 5
+  //   * @param {Number} [freq6] Frequency value for band with index 6
+  //   * @param {Number} [gain6] Gain value for band with index 6
+  //   * @param {Number} [freq7] Frequency value for band with index 7
+  //   * @param {Number} [gain7] Gain value for band with index 7
+  //   */
   p5.EQ.prototype.set = function() {
     if (arguments.length === this.bands.length * 2) {
       for (var i = 0; i < arguments.length; i+=2) {
@@ -132,22 +133,14 @@ define(function (require) {
    * @return {Obect}      Abstracted Filter
    */
   p5.EQ.prototype._newBand = function(freq, res) {
-    var newFilter = new Filter('peaking');
-    newFilter.disconnect();
-    newFilter.set(freq, res);
-    newFilter.biquad.gain.value = 0;
-    delete newFilter.input;
-    delete newFilter.output;
-    delete newFilter._drywet;
-    delete newFilter.wet;
-    return newFilter;
+    return new EQFilter(freq, res);
   };
 
   p5.EQ.prototype.dispose = function () {
     Effect.prototype.dispose.apply(this);
 
     while (this.bands.length > 0) {
-      delete this.bands.pop().biquad.disconnect();
+      delete this.bands.pop().dispose();
     }
     delete this.bands;
   };
