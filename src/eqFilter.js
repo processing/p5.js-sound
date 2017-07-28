@@ -26,13 +26,22 @@ define(function (require) {
   EQFilter.prototype.amp = function() {
     console.warn('`amp()` is not available for p5.EQ bands. Use `.gain()`');
   };
-
+  EQFilter.prototype.drywet = function() {
+    console.warn('`drywet()` is not available for p5.EQ bands.');
+  };
+  EQFilter.prototype.connect = function(unit) {
+    var u = unit || p5.soundOut.input;
+    this.biquad.connect(u.input ? u.input : u);
+  };
+  EQFilter.prototype.disconnect = function() {
+    this.biquad.disconnect();
+  };
   EQFilter.prototype.dispose = function() {
     // remove reference form soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
-    this.biquad.disconnect();
+    this.disconnect();
     delete this.biquad;
   };
 

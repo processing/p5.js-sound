@@ -66,14 +66,20 @@ define(function (require) {
         res = 1;
       }
       this.bands[i] = this._newBand(freq, res);
-      if (i>0) {
-        this.bands[i-1].biquad.connect(this.bands[i].biquad);
-      } else {
-        this.input.connect(this.bands[i].biquad);
-      }
+      // if (i>0) {
+
+      //   this.bands[i-1].biquad.connect(this.bands[i].biquad);
+      //   this.bands[i-1].connect(this.bands)
+      // } else {
+      //   this.input.connect(this.bands[i].biquad);
+      // }
     }
 
-    this.bands[_eqsize-1].biquad.connect(this.output);
+
+
+    //this.bands[_eqsize-1].biquad.connect(this.output);
+    this.getPrototypeOf().chain.apply(this.input, this.bands);
+    this.bands[_eqsize-1].connect(this.output);
   };
   p5.EQ.prototype = Object.create(Effect.prototype);
 
