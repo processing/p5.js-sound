@@ -6,8 +6,14 @@ define(['chai'],
   describe('p5.EQ', function() {
 
     it('can be created and disposed', function() {
+      var origSoundArrayLength = p5.soundOut.soundArray.length;
       var eq = new p5.EQ();
+      expect(p5.soundOut.soundArray.length).to.not.equal(origSoundArrayLength);
       eq.dispose();
+      expect(p5.soundOut.soundArray.length).to.equal(origSoundArrayLength);
+      expect(eq.input).to.equal(undefined);
+      expect(eq.output).to.equal(undefined);
+      expect(eq.bands).to.equal(undefined);
     });
 
     it('can be only be created with size 3 or 8', function() {
