@@ -139,6 +139,12 @@ define(function (require) {
 		this.output.disconnect();
 		this.output = undefined;
 
+    this._drywet.disconnect();
+    delete this._drywet;
+
+    this.wet.disconnect();
+    delete this.wet;
+
 		this.ac = undefined;
 	};
 
