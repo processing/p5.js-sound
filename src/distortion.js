@@ -25,7 +25,12 @@ define(function (require) {
    * A Distortion effect created with a Waveshaper Node,
    * with an approach adapted from
    * [Kevin Ennis](http://stackoverflow.com/questions/22312841/waveshaper-node-in-webaudio-how-to-emulate-distortion)
-   *
+   * 
+   * This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.  
+   * Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>, 
+   * <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and 
+   * <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
+   * 
    * @class p5.Distortion
    * @extends p5.Effect
    * @constructor
@@ -49,11 +54,6 @@ define(function (require) {
 
     var curveAmount = p5.prototype.map(amount, 0.0, 1.0, 0, 2000);
 
-    // this.ac = p5sound.audiocontext;
-
-    // this.input = this.ac.createGain();
-    // this.output = this.ac.createGain();
-
     /**
      *  The p5.Distortion is built with a
      *  <a href="http://www.w3.org/TR/webaudio/#WaveShaperNode">
@@ -74,6 +74,15 @@ define(function (require) {
 
   p5.Distortion.prototype = Object.create(Effect.prototype);
 
+
+  /**
+   * Process a sound source, optionally specify amount and oversample values.
+   *
+   * @method process
+   * @param {Number} [amount=0.25] Unbounded distortion amount.
+   *                                Normal values range from 0-1.
+   * @param {String} [oversample='none'] 'none', '2x', or '4x'.
+   */
   p5.Distortion.prototype.process = function(src, amount, oversample) {
     src.connect(this.input);
     this.set(amount, oversample);
@@ -82,7 +91,7 @@ define(function (require) {
   /**
    * Set the amount and oversample of the waveshaper distortion.
    *
-   * @method setType
+   * @method set
    * @param {Number} [amount=0.25] Unbounded distortion amount.
    *                                Normal values range from 0-1.
    * @param {String} [oversample='none'] 'none', '2x', or '4x'.
@@ -112,33 +121,14 @@ define(function (require) {
   /**
    *  Return the oversampling.
    *
+   *  @method getOversample
+   *
    *  @return {String} Oversample can either be 'none', '2x', or '4x'.
    */
   p5.Distortion.prototype.getOversample = function() {
     return this.waveShaperNode.oversample;
   };
 
-  // DocBlocks for methods inherited from p5.Effect
-  /**
-   *  Send output to a p5.sound or web audio object
-   *
-   *  @method connect
-   *  @param  {Object} unit
-   */
-  /**
-   *  Disconnect all output.
-   *
-   *  @method disconnect
-   */
-  /**
-   *  Set the output level.
-   *
-   *  @method  amp
-   *  @param  {Number} volume amplitude between 0 and 1.0
-   *  @param {Number} [rampTime] create a fade that lasts rampTime
-   *  @param {Number} [timeFromNow] schedule this event to happen
-   *                                seconds from now
-   */
 
   p5.Distortion.prototype.dispose = function() {
     Effect.prototype.dispose.apply(this);
