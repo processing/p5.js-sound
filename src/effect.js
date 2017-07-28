@@ -9,15 +9,22 @@ define(function (require) {
 	 * This module handles the nodes and methods that are 
 	 * common and useful for current and future effects.
 	 *
+	 *
+	 * This class is extended by <a href="reference/#/p5.Distortion">p5.Distortion</a>, 
+	 * <a href="reference/#/p5.Compressor">p5.Compressor</a>,
+	 * <a href="reference/#/p5.Delay">p5.Delay</a>, 
+	 * <a href="reference/#/p5.Filter">p5.Filter</a>, 
+	 * <a href="reference/#/p5.Reverb">p5.Reverb</a>.
+	 *
 	 * @class  p5.Effect
 	 * @constructor
 	 *
-	 * @property {Object} [ac]   Reference to the audio context of the p5 object
-	 * @property {WebAudioNode} [input]  Gain Node effect wrapper
-	 * @property {WebAudioNode} [output] Gain Node effect wrapper
-	 * @property {Object} [_drywet]   Tone.JS CrossFade node (defaults to value: 1)
-	 * @property {WebAudioNode} [wet]  Effect that extend this class should connect
-	 *                              to this this gain node, so that dry and wet 
+	 * @param {Object} [ac]   Reference to the audio context of the p5 object
+	 * @param {WebAudioNode} [input]  Gain Node effect wrapper
+	 * @param {WebAudioNode} [output] Gain Node effect wrapper
+	 * @param {Object} [_drywet]   Tone.JS CrossFade node (defaults to value: 1)
+	 * @param {WebAudioNode} [wet]  Effects that extend this class should connect
+	 *                              to the wet signal to this gain node, so that dry and wet 
 	 *                              signals are mixed properly.
 	 */
 	p5.Effect = function() {
@@ -26,11 +33,12 @@ define(function (require) {
 		this.input = this.ac.createGain();
 		this.output = this.ac.createGain();
 
-		/**
-		 *	The p5.Effect class is built
-		 * 	using Tone.js CrossFade
-		 * 	@private
-		 */
+		 /**
+		  *	The p5.Effect class is built
+		  * 	using Tone.js CrossFade
+		  * 	@private
+		  */
+		 
 		this._drywet = new CrossFade(1);
 
 		/**
@@ -130,6 +138,12 @@ define(function (require) {
 
 		this.output.disconnect();
 		this.output = undefined;
+
+    this._drywet.disconnect();
+    delete this._drywet;
+
+    this.wet.disconnect();
+    delete this.wet;
 
 		this.ac = undefined;
 	};

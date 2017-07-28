@@ -8,6 +8,10 @@ define(['chai'],
     it('can be created and disposed', function() {
       var effect = new p5.Effect();
       effect.dispose();
+      expect(effect.wet).to.equal(undefined);
+      expect(effect._drywet).to.equal(undefined);
+      expect(effect.input).to.equal(undefined);
+      expect(effect.output).to.equal(undefined);
     });
 
     it('drywet value can be changed', function(){
