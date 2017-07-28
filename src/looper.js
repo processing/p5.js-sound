@@ -18,7 +18,7 @@ define(function (require){
     this.tatums = 0.0625;
     this.metro = new Metro();
     this.metro._init();
-    this.metro.beatLength(this.tatums);
+    this.metro.beatLength(0.0625*4);
     this.bpm = BPM;
     this.metro.setBPM(this.bpm);
 
@@ -43,7 +43,7 @@ define(function (require){
 
   };
   p5.Looper.prototype.click = function() {
-    //console.log(this.loopStep);
+    console.log(this.loopStep);
     return true;
   }
 
@@ -77,10 +77,11 @@ define(function (require){
 
   p5.Looper.prototype.setBPM = function(tempo, rampTime) {
     this.metro.setBPM(tempo, rampTime);
+    this.metro.resetSync(this);
   };
 
   p5.Looper.prototype.getBPM = function() {
-    return this.metro.getBPM;
+    return this.metro.getBPM();
   };
 
 

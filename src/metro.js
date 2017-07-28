@@ -44,10 +44,7 @@ define(function (require) {
           }else{
             thisPart.click();
             thisPart.loopStep+=1;
-
           }
-
-
 
         } else {
           thisPart.incrementStep(secondsFromNow);
