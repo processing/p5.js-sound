@@ -14,6 +14,11 @@ define(function (require) {
    *  frequencies so that the delay does not sound as piercing as the
    *  original source.
    *
+   *
+   *  This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.  
+   *  Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>, 
+   *  <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and 
+   *  <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
    *  @class p5.Delay
    *  @extends p5.Effect
    *  @constructor
@@ -251,9 +256,9 @@ define(function (require) {
         break;
       default:
         this._leftFilter.output.connect(this._merge, 0, 0);
-        this._leftFilter.output.connect(this._merge, 0, 1);
+        this._rightFilter.output.connect(this._merge, 0, 1);
         this._leftFilter.output.connect(this.leftDelay);
-        this._leftFilter.output.connect(this.rightDelay);
+        this._rightFilter.output.connect(this.rightDelay);
     }
   };
 

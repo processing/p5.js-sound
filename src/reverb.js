@@ -14,6 +14,11 @@ define(function (require) {
    *  extends p5.Reverb allowing you to recreate the sound of actual physical
    *  spaces through convolution.
    *
+   *  This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.  
+   *  Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>, 
+   *  <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and 
+   *  <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
+   *
    *  @class p5.Reverb
    *  @extends p5.Effect
    *  @constructor
@@ -156,7 +161,7 @@ define(function (require) {
     var impulseR = impulse.getChannelData(1);
     var n, i;
     for (i = 0; i < length; i++) {
-      n = this.reverse ? length - i : i;
+      n = this._reverse ? length - i : i;
       impulseL[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
       impulseR[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
     }

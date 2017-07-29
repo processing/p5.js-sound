@@ -15,12 +15,11 @@ define(function (require) {
    *  440 oscillations per second (440Hz, equal to the pitch of an
    *  'A' note).</p>
    *
-   *  <p>Set the type of oscillation with setType(), or by creating a
-   *  specific oscillator.</p> For example:
-   *  <code>new p5.SinOsc(freq)</code>
-   *  <code>new p5.TriOsc(freq)</code>
-   *  <code>new p5.SqrOsc(freq)</code>
-   *  <code>new p5.SawOsc(freq)</code>.
+   *  <p>Set the type of oscillation with setType(), or by instantiating a
+   *  specific oscillator: <a href="/reference/#/p5.SinOsc">p5.SinOsc</a>, <a
+   *  href="/reference/#/p5.TriOsc">p5.TriOsc</a>, <a
+   *  href="/reference/#/p5.SqrOsc">p5.SqrOsc</a>, or <a
+   *  href="/reference/#/p5.SawOsc">p5.SawOsc</a>.
    *  </p>
    *
    *  @class p5.Oscillator
@@ -496,8 +495,9 @@ define(function (require) {
    *  its method <code>setType('sine')</code>.
    *  See p5.Oscillator for methods.
    *
-   *  @method  SinOsc
-   *  @for p5
+   *  @class  p5.SinOsc
+   *  @constructor
+   *  @extends {p5.Oscillator}
    *  @param {Number} [freq] Set the frequency
    */
   p5.SinOsc = function(freq) {
@@ -514,8 +514,9 @@ define(function (require) {
    *  its method <code>setType('triangle')</code>.
    *  See p5.Oscillator for methods.
    *
-   *  @method  TriOsc
-   *  @for p5
+   *  @class  p5.TriOsc
+   *  @constructor
+   *  @extends {p5.Oscillator}
    *  @param {Number} [freq] Set the frequency
    */
   p5.TriOsc = function(freq) {
@@ -532,8 +533,9 @@ define(function (require) {
    *  its method <code>setType('sawtooth')</code>.
    *  See p5.Oscillator for methods.
    *
-   *  @method  SawOsc
-   *  @for p5
+   *  @class  p5.SawOsc
+   *  @constructor
+   *  @extends {p5.Oscillator}
    *  @param {Number} [freq] Set the frequency
    */
   p5.SawOsc = function(freq) {
@@ -550,8 +552,9 @@ define(function (require) {
    *  its method <code>setType('square')</code>.
    *  See p5.Oscillator for methods.
    *
-   *  @method  SqrOsc
-   *  @for p5
+   *  @class  p5.SqrOsc
+   *  @constructor
+   *  @extends {p5.Oscillator}
    *  @param {Number} [freq] Set the frequency
    */
   p5.SqrOsc = function(freq) {
