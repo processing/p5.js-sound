@@ -19,8 +19,8 @@ define(function (require) {
     delete this.output;
     delete this._drywet;
     delete this.wet;
-  };
 
+  };
   EQFilter.prototype = Object.create(Filter.prototype);
 
   EQFilter.prototype.amp = function() {
@@ -31,8 +31,13 @@ define(function (require) {
   };
   EQFilter.prototype.connect = function(unit) {
     var u = unit || p5.soundOut.input;
-    this.biquad.connect(u.input ? u.input : u);
+    if (this.biquad) {
+      this.biquad.connect(u.input ? u.input : u);
+    } else {
+      this.output.connect(u.input ? u.input : u);
+    }
   };
+
   EQFilter.prototype.disconnect = function() {
     this.biquad.disconnect();
   };
@@ -40,7 +45,6 @@ define(function (require) {
     // remove reference form soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
-
     this.disconnect();
     delete this.biquad;
   };
