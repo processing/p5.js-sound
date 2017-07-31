@@ -27,6 +27,64 @@ define(function (require) {
    * @param {Number} [_eqsize] Constructor will accept 3 or 8, defaults to 3
    * @return {Object} p5.EQ object
    *
+   * @example
+   * <div><code>
+   * var eq;
+   * var band_names;
+   * var band_index;
+   * 
+   * var soundFile, play;
+   * 
+   * function preload() {
+   *   soundFormats('mp3', 'ogg');
+   *   soundFile = loadSound('assets/beat');
+   * }
+   * 
+   * function setup() {
+   *   eq = new p5.EQ(3);
+   *   soundFile.disconnect();
+   *   eq.process(soundFile);
+   * 
+   *   band_names = ['lows','mids','highs'];
+   *   band_index = 0;
+   *   play = false;
+   *   textAlign(CENTER);
+   * }
+   * 
+   * function draw() {
+   *   background(30);
+   *   noStroke();
+   *   fill(255);
+   *   text('click to kill',50,25);
+   * 
+   *   fill(255, 40, 255);
+   *   textSize(26);
+   *   text(band_names[band_index],50,55);
+   * 
+   *   fill(255);
+   *   textSize(9);
+   *   text('space = play/pause',50,80);
+   * }
+   * 
+   * //If mouse is over canvas, cycle to the next band and kill the frequency
+   * function mouseClicked() {
+   *   for (var i = 0; i < eq.bands.length; i++) {
+   *     eq.bands[i].gain(0);
+   *   }
+   *   eq.bands[band_index].gain(-40);
+   *   if (mouseX > 0 && mouseX < width && mouseY < height && mouseY > 0) {
+   *     band_index === 2 ? band_index = 0 : band_index++;
+   *   }
+   * }
+   * 
+   * //use space bar to trigger play / pause
+   * function keyPressed() {
+   *   if (key===' ') {
+   *     play = !play
+   *     play ? soundFile.loop() : soundFile.pause();
+   *   }
+   * }
+   * </code></div>
    */
   p5.EQ = function(_eqsize) {
     Effect.call(this);
@@ -126,8 +184,8 @@ define(function (require) {
    * Add a new band. Creates a p5.Filter and strips away everything but
    * the raw biquad filter. This method returns an abstracted p5.Filter,
    * which can be added to p5.EQ.bands, in order to create new EQ bands.
-   * @method  _newBand
    * @private
+   * @method  _newBand
    * @param  {Number} freq
    * @param  {Number} res
    * @return {Obect}      Abstracted Filter
