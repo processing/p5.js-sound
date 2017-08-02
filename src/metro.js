@@ -34,30 +34,15 @@ define(function (require) {
       var self = this;
       this.syncedParts.forEach(function(thisPart) {
         if (!thisPart.isPlaying) return;
-
-        //LOOPER
-        if (thisPart.isLoop) {
-          if (thisPart.loopStep===thisPart.length-1) {
-            thisPart.click();
-            thisPart.loopStep=0;
-            thisPart.callback();
-          }else{
-            thisPart.click();
-            thisPart.loopStep+=1;
+        thisPart.incrementStep(secondsFromNow);
+        // each synced source keeps track of its own beat number
+        thisPart.phrases.forEach(function(thisPhrase) {
+          var phraseArray = thisPhrase.sequence;
+          var bNum = self.metroTicks % phraseArray.length;
+          if (phraseArray[bNum] !== 0 && (self.metroTicks < phraseArray.length || !thisPhrase.looping) ) {
+            thisPhrase.callback(secondsFromNow, phraseArray[bNum]);
           }
-
-        } else {
-          thisPart.incrementStep(secondsFromNow);
-          // each synced source keeps track of its own beat number
-          thisPart.phrases.forEach(function(thisPhrase) {
-            var phraseArray = thisPhrase.sequence;
-            var bNum = self.metroTicks % phraseArray.length;
-
-            if (phraseArray[bNum] !== 0 && (self.metroTicks < phraseArray.length || !thisPhrase.looping) ) {
-              thisPhrase.callback(secondsFromNow, phraseArray[bNum]);
-            }
-          });
-        }
+        });
       });
       this.metroTicks += 1;
       this.tickCallback(secondsFromNow);
@@ -110,7 +95,5 @@ define(function (require) {
   p5.Metro.prototype.beatLength = function(tatums) {
     this.tatums = 1/tatums / 4; // lowest possible division of a beat
   };
-
-  return p5.Metro;
 
 });

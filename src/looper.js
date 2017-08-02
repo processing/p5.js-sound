@@ -3,87 +3,85 @@
 define(function (require){
   var p5sound = require('master');
   var Metro = require('metro');
+  var Clock = require('Tone/core/Clock');
   var BPM = 60;
 
-  p5.Looper = function(callback, length) {
+  p5.Looper = function(callback, interval, BPM) {
 
     //contents of the looper. will be executed after 
     //each iteration of specified length
+
+
     this.callback = callback;
-    this.length = length;
+    this._interval = interval;
+    this._timeSignature = 4;
 
-    this.loopStep = 0;
-    this.isPlaying = false;
+    this.bpm = BPM || 60;
 
-    this.tatums = 0.0625;
-    this.metro = new Metro();
-    this.metro._init();
-    this.metro.beatLength(0.0625*4);
-    this.bpm = BPM;
-    this.metro.setBPM(this.bpm);
-
-    p5sound.parts.push(this);
-    
-    this.iterations;
-    this.isLoop = true;
+    this.interations;
+    this.clock = new Clock({
+      "callback" : this.callback,
+      "frequency" : this.calcFreq(this._interval)
+    })
   };
 
 
-
-
-  p5.Looper.prototype.setIterations = function(_iterations) {
-    this.iterations = _iterations;
-
+  p5.Looper.prototype.start = function(timeFromNow) {
+    var t = timeFromNow || 0;
+    var now = p5sound.audiocontext.currentTime;
+    this.clock.start(now + t);
   };
 
-  p5.Looper.prototype.setLength = function(_length) {
-    this.length = _length;
-    this.metro.resetSync(this);
-
-
+  p5.Looper.prototype.stop = function(timeFromNow) {
+    var t = timeFromNow || 0;
+    var now = p5sound.audiocontext.currentTime;
+    this.clock.stop(now + t);
   };
-  p5.Looper.prototype.click = function() {
-    console.log(this.loopStep);
-    return true;
+
+  p5.Looper.prototype.pause  = function(time) {
+    this.clock.pause(time);
+  };
+
+  p5.Looper.prototype.changeInterval = function(newInterval){
+    this._interval = newInterval;
+    this.clock.frequency.value = this.calcFreq(this._interval);
   }
+  p5.Looper.prototype.calcFreq = function(interval) {
+    if (typeof interval === 'number') {
+      return this.bpm / 60 / interval * (this._timeSignature / 4);
+    } else if (typeof interval === 'string') {
+      return this.bpm / 60 / this._convertNotation(interval) * (this._timeSignature) / 4;
+    }
+  };
 
-
-  p5.Looper.prototype.start = function(time) {
-
-    this.onended = function() {
-      this.loopStep = 0;
-    };
-
-    if (!this.isPlaying) {
-      this.isPlaying = true;
-      this.metro.resetSync(this);
-      var t = time || 0;
-      this.metro.start(t);
+  p5.Looper.prototype._convertNotation = function(value) {
+    var type = value.slice(-1);
+    value = Number(value.slice(0,-1));
+    switch (type) {
+      case 'm':
+        return this._measure(value);
+      case 'n':
+        return this._note(value);
+      case 't':
+        return this._triplet(value);
+      default:
+       console.warn(something);
     }
 
-  };
+  }
 
-  p5.Looper.prototype.pause = function(time) {
-    this.isPlaying = false;
-    var t = time || 0;
-    this.metro.stop();
-  };
+  p5.Looper.prototype._measure = function(value) {
+    return value;
+  } 
 
-  p5.Looper.prototype.stop = function(time) {
-    this.loopStep = 0;
-    this.pause(time);
+  p5.Looper.prototype._note = function(value) {
+    return 1 / value;
+  } 
 
-  };
-
-  p5.Looper.prototype.setBPM = function(tempo, rampTime) {
-    this.metro.setBPM(tempo, rampTime);
-    this.metro.resetSync(this);
-  };
-
-  p5.Looper.prototype.getBPM = function() {
-    return this.metro.getBPM();
-  };
-
+  p5.Looper.prototype._triplet = function(value) {
+    return 1 / value;
+  } 
 
   return p5.Looper;
+  
 });

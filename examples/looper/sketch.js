@@ -11,6 +11,7 @@ var bboxPhrase = [0, 0, 1, 0, 0, 0, 1, 1];
 
 var synth;
 var looper;
+var num;
 
 function preload() {
   soundFormats('mp3', 'ogg');
@@ -21,20 +22,16 @@ function preload() {
 
 function setup() {
 
-
+  num = 0;
   synth = new p5.MonoSynth();
 
   // create a part with 8 spaces, where each space represents 1/16th note (default)
-  looper = new p5.Looper(function(secondsFromNow){
+  looper = new p5.Looper(function(time){
     
-  	synth.play(40,0.2,secondsFomNow+0,0.5);
-  	synth.play(40,0.2,1,0.5);
-  	synth.play(40,0.2,2,0.5);
-  	synth.play(40,0.2,3,0.5);
+  	console.log(time);
+    looper.changeInterval(num+=0.5);
 
-    }, 8);
-
-
+    }, 4);
 
   looper.start();
 }
