@@ -21,15 +21,13 @@ define(function (require) {
   require('delay');
   require('reverb');
   require('metro');
-  require('_looper');
   require('looper');
+  require('new_looper');
   require('compressor');
   require('soundRecorder');
   require('peakdetect');
   require('gain');
   require('distortion');
-  require('monosynth');
-  require('polysynth');
   return p5SOUND;
 
 });

@@ -9,7 +9,7 @@ var click, beatbox;
 var clickPhrase = [1, 0, 0, 0];
 var bboxPhrase = [0, 0, 1, 0, 0, 0, 1, 1];
 
-var synth;
+
 var looper;
 var num;
 
@@ -22,14 +22,10 @@ function preload() {
 
 function setup() {
 
-  num = 0;
-  synth = new p5.MonoSynth();
-
   // create a part with 8 spaces, where each space represents 1/16th note (default)
   looper = new p5.Looper(function(time){
     
   	console.log(time);
-    looper.changeInterval(num+=0.5);
 
     }, 4);
 
