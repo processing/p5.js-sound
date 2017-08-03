@@ -235,12 +235,16 @@ define(function (require) {
   p5.Part.prototype.loop = function(time) {
     this.looping = true;
     // rest onended function
+    // 
+   
     this.onended = function() {
       this.partStep = 0;
       // dont start phrases over, right?
     };
     var t = time || 0;
     this.start(t);
+
+
   };
 
   /**
@@ -361,7 +365,9 @@ define(function (require) {
         // this.callback(time);
         this.onended();
       }
+     
     }
+
   };
 
   /**
@@ -374,6 +380,7 @@ define(function (require) {
    */
   p5.Part.prototype.onStep = function(callback) {
     this.callback = callback;
+
   };
 
 

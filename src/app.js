@@ -22,12 +22,12 @@ define(function (require) {
   require('reverb');
   require('metro');
   require('looper');
+  require('new_looper');
   require('compressor');
   require('soundRecorder');
   require('peakdetect');
   require('gain');
   require('distortion');
-
   return p5SOUND;
 
 });

@@ -44,6 +44,7 @@ define(function () {
 
     // file extensions to search for
     this.extensions = [];
+
   };
 
   // create a single instance of the p5Sound / master output for use within this sketch

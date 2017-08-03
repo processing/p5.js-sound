@@ -85,11 +85,12 @@ module.exports = function(grunt) {
             'distortion': 'src/distortion',
             'compressor': 'src/compressor',
             'looper': 'src/looper',
+            'new_looper': 'src/new_looper',
             'soundRecorder': 'src/soundRecorder',
             'signal': 'src/signal',
             'metro': 'src/metro',
             'peakdetect': 'src/peakDetect',
-            'gain': 'src/gain'
+            'gain': 'src/gain',
           },
           useStrict: true,
           wrap: {
