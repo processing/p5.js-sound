@@ -81,6 +81,7 @@ module.exports = function(grunt) {
             'effect': 'src/effect',
             'filter': 'src/filter',
             'reverb': 'src/reverb',
+            'eq': 'src/eq',
             'distortion': 'src/distortion',
             'compressor': 'src/compressor',
             'looper': 'src/looper',
