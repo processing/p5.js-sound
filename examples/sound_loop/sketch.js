@@ -5,13 +5,18 @@
  *  
  */
 
-var click, beatbox;
+var click, beatbox ;
 var clickPhrase = [1, 0, 0, 0];
 var bboxPhrase = [0, 0, 1, 0, 0, 0, 1, 1];
 
 
-var looper;
+var looper1, looper2;
 var num;
+
+var c,d;
+var count1, count2;
+
+
 
 function preload() {
   soundFormats('mp3', 'ogg');
@@ -21,13 +26,29 @@ function preload() {
 }
 
 function setup() {
-
+	createCanvas(500,500)
+	count1 = 0;
+	count2 = 0;
+	c = color(50);
+	d = color(50);
   // create a part with 8 spaces, where each space represents 1/16th note (default)
-  looper = new p5.SoundLoop(function(time){
+  looper1 = new p5.SoundLoop(function(time){
+    click.play();
+    }, "4n");
+
+  looper2 = new p5.SoundLoop(function(time){
     
-  	console.log(time);
+	beatbox.play();
+    }, 4/3);
 
-    }, 4);
+  looper1.start();
+  looper2.start();
 
-  looper.start();
+
+  looper1.bpm = 120;
+  looper2.bpm = 120;
+  
 }
+
+
+

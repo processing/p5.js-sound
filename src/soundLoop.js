@@ -7,11 +7,20 @@ define(function (require) {
   p5.SoundLoop = function(callback, interval, BPM) {
 
     this.callback = callback;
+
+    //set private variables
     this._interval = interval;
+
+    //musicalTimeMode is true if time is specified as "4n", "8n" ...etc
+    this.musicalTimeMode = typeof this._interval === 'number' ? false : true;
+
+    //These variables should only be modified if using musicalTimeMode
+    //If these variables are modified when interval is measured in seconds,
+    //the interval will become inaccurate. 
+    //ex. 8 second interval at 60BPM in 4/4 time will be 8 seconds long
+    //8 second interval at 120BPM in 5/4 time will be 3.2 seconds long
     this._timeSignature = 4;
-
-    this.bpm = BPM || 60;
-
+    this._bpm = BPM || 60;
 
     var self = this;
     this.clock = new Clock({
@@ -19,7 +28,7 @@ define(function (require) {
         var timeFromNow = time - p5sound.audiocontext.currentTime;
         self.callback(timeFromNow);
       },
-      'frequency' : this.calcFreq(this._interval)
+      'frequency' : this.calcFreq()
     });
   };
 
@@ -40,29 +49,20 @@ define(function (require) {
     this.clock.pause(time);
   };
 
-  p5.SoundLoop.prototype.setBPM = function (bpm) {
-    this.bpm = bpm;
-    this.changeInterval(this._interval);
+  p5.SoundLoop.prototype._update = function() {
+    this.clock.frequency.value = this.calcFreq();
   };
 
-  p5.SoundLoop.prototype.setTimeSignature = function(timeSig) {
-    this._timeSignature = timeSig;
-    this.changeInterval(this._interval);
-  };
-
-  p5.SoundLoop.prototype.changeInterval = function(newInterval) {
-    this._interval = newInterval;
-    this.clock.frequency.value = this.calcFreq(this._interval);
-  };
-
-  p5.SoundLoop.prototype.calcFreq = function(interval) {
-    if (typeof interval === 'number') {
-      return this.bpm / 60 / interval * (this._timeSignature / 4);
-    } else if (typeof interval === 'string') {
-      return this.bpm / 60 / this._convertNotation(interval) * this._timeSignature / 4;
+  p5.SoundLoop.prototype.calcFreq = function() {
+    if (typeof this._interval === 'number') {
+      console.log(this._interval);
+      return this._bpm / 60 / this._interval * (this._timeSignature / 4);
+    } else if (typeof this._interval === 'string') {
+      return this._bpm / 60 / this._convertNotation(this._interval) * (this._timeSignature / 4);
     }
   };
 
+  //TIME NOTATION FUNCS
   p5.SoundLoop.prototype._convertNotation = function(value) {
     var type = value.slice(-1);
     value = Number(value.slice(0,-1));
@@ -77,13 +77,59 @@ define(function (require) {
 
   };
 
+
   p5.SoundLoop.prototype._measure = function(value) {
-    return value;
+    return value * this._timeSignature;
   };
 
   p5.SoundLoop.prototype._note = function(value) {
-    return 1 / value;
+    return this._timeSignature / value ;
   };
+
+  // PUBLIC VARIABLES 
+  Object.defineProperty(p5.SoundLoop.prototype, 'bpm', {
+    get : function() {
+      return this._bpm;
+    },
+    set : function(bpm) {
+       if (!this.musicalTimeMode) {
+              console.warn('Changing the BPM in "seconds" mode is not advised. '+
+                            'This will make the specified time interval inaccurate. '+
+                            '8 second interval at 60BPM in 4/4 time will be 8 seconds long ' +
+                            '8 second interval at 120BPM in 5/4 time will be 3.2 seconds long. '+
+                            'Use musical timing notation ("2n", "4n", "1m"...etc');
+            }
+      this._bpm = bpm;
+      this._update();
+    }
+  });
+
+  Object.defineProperty(p5.SoundLoop.prototype, 'timeSignature', {
+    get : function() {
+      return this._timeSignature;
+    },
+    set : function(timeSig) {
+      if (!this.musicalTimeMode) {
+        console.warn('Changing the time signature in "seconds" mode is not advised. '+
+                      'This will make the specified time interval inaccurate. '+
+                      '8 second interval at 60BPM in 4/4 time will be 8 seconds long ' +
+                      '8 second interval at 120BPM in 5/4 time will be 3.2 seconds long. '+
+                      'Use musical timing notation ("2n", "4n", "1m"...etc');
+      }
+      this._timeSignature = timeSig;
+      this._update();
+    }
+  });
+
+  Object.defineProperty(p5.SoundLoop.prototype, 'interval', {
+    get : function() {
+      return this._interval;
+    },
+    set : function(interval) {
+      this._interval = interval;
+      this._update();
+    }
+  });
 
 
   return p5.SoundLoop;
