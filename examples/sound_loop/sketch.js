@@ -34,20 +34,20 @@ function setup() {
   // create a part with 8 spaces, where each space represents 1/16th note (default)
   looper1 = new p5.SoundLoop(function(time){
     click.play();
-    }, "4n");
+    console.log('looper1 '+this.clock._nextTick);
+    }, 1);
 
   looper2 = new p5.SoundLoop(function(time){
     
 	beatbox.play();
-    }, 4/3);
+	// console.log(this.clock.ticks);
+  console.log('looper2 ' + this.clock._nextTick); 
+    }, "16n");
 
   looper1.start();
-  looper2.start();
 
+  // looper1.start();
 
-  looper1.bpm = 120;
-  looper2.bpm = 120;
-  
 }
 
 
