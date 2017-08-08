@@ -32,6 +32,8 @@ define(function (require) {
   require('monosynth');
   require('polysynth');
   require('distortion');
+  require('monosynth');
+  require('polysynth');
 
   return p5SOUND;
 
