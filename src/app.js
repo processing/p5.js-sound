@@ -32,6 +32,7 @@ define(function (require) {
   require('monosynth');
   require('polysynth');
   require('distortion');
+  require('audioVoice');
   require('monosynth');
   require('polysynth');
 

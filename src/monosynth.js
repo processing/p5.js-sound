@@ -2,6 +2,7 @@
 define(function (require) {
 
   var p5sound = require('master');
+  var AudioVoice = require('audioVoice');
   require('sndcore');
   require('oscillator');
   require('env');
@@ -19,10 +20,11 @@ define(function (require) {
     **/
 
   p5.MonoSynth = function () {
+    AudioVoice.call(this);
 
-    this.ac = p5sound.audiocontext;
+    // this.ac = p5sound.audiocontext;
 
-    this.output = this.ac.createGain();
+    // this.output = this.ac.createGain();
 
     // this.attack = 0.02;
     // this.decay=0.25;
@@ -53,6 +55,8 @@ define(function (require) {
     this.connect();
 
     this.oscillator.start();
+
+    this._isOn = false;
 
     p5sound.soundArray.push(this);
   };
@@ -112,7 +116,7 @@ define(function (require) {
      */  
   p5.MonoSynth.prototype.triggerAttack = function (note, velocity, secondsFromNow) {
     this._setNote(note, secondsFromNow);
-
+    this._isOn = true;
     this.env.ramp(this.output, secondsFromNow , velocity);
     // this.env.triggerAttack(this.output, secondsFromNow);
   };
@@ -128,6 +132,7 @@ define(function (require) {
 
   p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow) {
     this.env.ramp(this.output, secondsFromNow, 0);
+    this._isOn = false;
     // this.env.triggerRelease(this.output, secondsFromNow);
   };
 
@@ -150,14 +155,17 @@ define(function (require) {
   };
 
 
-
-
   p5.MonoSynth.prototype.loadPreset = function(preset) {
+    var options = this[preset];
+    this.oscillator.setType(options.oscillator.type);
 
+    this.env.setADSR(options.env.attack, options.env.decay,
+            options.env.sustain, options.env.release);
+
+    this.filter.setType(options.filter.type);
+    this.filter.set(options.filter.freq, options.filter.res);
+    return this;
   };
-
-
-
 
   //PRESETS
   //
@@ -166,10 +174,13 @@ define(function (require) {
       'type' : 'sine'
     },
     'env' : {
-      'setADSR': [0.02, 0.25, 0.05, 0.35]
+      'attack' : 0.02,
+      'decay' : 0.25,
+      'sustain': 0.05,
+      'release': 0.35
     },
     'filter': {
-      'setType' : 'highpass',
+      'type' : 'highpass',
       'freq' : 5,
       'res' : 1
     }
@@ -180,14 +191,34 @@ define(function (require) {
       'type' : 'square'
     },
     'env' : {
-      'setADSR': [0.02, 0.25, 0.05, 0.35]
+      'attack': 0,
+      'decay': .60,
+      'sustain': 0.1,
+      'release': .28
     },
-    'filter': {
-      'setType' : 'highpass',
-      'freq' : 5,
+    'filter' : {
+      'type' : 'lowpass',
+      'freq' : 15000,
       'res' : 1
     }
-  }
+  };
+
+  p5.MonoSynth.prototype.electricPiano = {
+    'oscillator' : {
+      'type' : 'sine'
+    },
+    'env' : {
+      'attack': 0.029,
+      'decay': .16,
+      'sustain': 0.1,
+      'release': .1
+    },
+    'filter': {
+      'type' : 'lowpass',
+      'freq' : 15000,
+      'res' : 1
+    }
+  };
   /**
      *  Set values like a traditional
      *  <a href="https://en.wikipedia.org/wiki/Synthesizer#/media/File:ADSR_parameter.svg">
@@ -210,13 +241,49 @@ define(function (require) {
      *  @param {Number} [releaseTime]   Time in seconds from now (defaults to 0)
      **/
 
-  p5.MonoSynth.prototype.setADSR = function (a,d,s,r) {
-    this.attack = a;
-    this.decay=d;
-    this.sustain=s;
-    this.release=r;
-    this.env.setADSR(this.attack, this.decay,  this.sustain, this.release);
+  p5.MonoSynth.prototype.setADSR = function (attack,decay,sustain,release) {
+    this.env.setADSR(attack, decay,  sustain, release);
   };
+
+
+  Object.defineProperties(p5.MonoSynth, {
+    'attack': {
+      get : function() {
+        return this.env.aTime;
+      },
+      set : function(attack) {
+        this.env.setADSR(attack, this.env.dTime,
+          this.env.sPercent, this.env.rTime);
+      }
+    },
+    'decay': {
+      get : function() {
+        return this.env.dTime;
+      },
+      set : function(decay) {
+        this.env.setADSR(this.env.aTime, decay,
+          this.env.sPercent, this.env.rTime);
+      }
+    },
+    'sustain': {
+      get : function() {
+        return this.env.sPercent;
+      },
+      set : function(sustain) {
+        this.env.setADSR(this.env.aTime, this.env.dTime,
+          sustain, this.env.rTime);
+      }
+    },
+    'release': {
+      get : function() {
+        return this.env.rTime;
+      },
+      set : function(release) {
+        this.env.setADSR(this.env.aTime, this.env.dTime,
+          this.env.sPercent, release);
+      }
+    },
+  });
 
   p5.MonoSynth.prototype.amp = function(vol, rampTime) {
     var t = rampTime || 0;
@@ -233,7 +300,7 @@ define(function (require) {
    *  @method  connect
    *  @param  {Object} unit A p5.sound or Web Audio object
    */
- 
+
   p5.MonoSynth.prototype.connect = function(unit) {
     var u = unit || p5sound.input;
     this.output.connect(u.input ? u.input : u);
@@ -255,19 +322,15 @@ define(function (require) {
    *  @method  dispose
    */
   p5.MonoSynth.prototype.dispose = function() {
+    AudioVoice.prototype.disposed.apply(this);
+
     this.filter.dispose();
     this.env.dispose();
-
     try {
       this.oscillator.dispose();
     } catch(e) {
       console.error('mono synth default oscillator already disposed');
     }
-
-    this.output.disconnect();
-    this.output = undefined;
   };
-
-
 
 });

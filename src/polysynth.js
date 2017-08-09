@@ -15,15 +15,39 @@ define(function (require) {
     *  @constructor
     *  
     *  @param {Number} [synthVoice]   A monophonic synth voice inheriting
-    *                                 the AudioVoice class.
-    *  
+    *                                 the AudioVoice class. Defaults ot p5.MonoSynth
+    *
+    * @param {Number} [polyValue] Number of voices, defaults to 8;
     **/
-p5.PolySynth = function(synthVoice){
-  this.voices = {};
-  this.synthVoice = synthVoice;
+  p5.PolySynth = function(audioVoice, polyValue) {
+    //this.voices = {};
 
-  p5sound.soundArray.push(this);
-}
+    //this will hold all possible notes and say if they are being played or not
+    //this.notes = {};
+
+    //array to hold the voices
+    this.audiovoices = [];
+    this._voicesInUse = [];
+
+    this._newest = 0;
+    this._oldest = 0;
+
+    this._voicesInUse = 0;
+
+    this.polyValue = polyValue || 8;
+
+    this.AudioVoice = audioVoice;
+
+    this.allocateVoices();
+
+    p5sound.soundArray.push(this);
+  };
+
+  p5.PolySynth.prototype.allocateVoices = function() {
+    for(var i = 0; i< this.polyValue; i++) {
+      this.audiovoices.push(new this.AudioVoice());
+    }
+  };
 
 /**
    *  Play a note.
@@ -35,12 +59,34 @@ p5.PolySynth = function(synthVoice){
    *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
    */
 p5.PolySynth.prototype.play = function (note,velocity, secondsFromNow, susTime){    
-    if (this.voices[note] == null) {
-      this.voices[note] = new this.synthVoice();
-    }
-    this.voices[note].env.setRange(velocity,0);
-    this.voices[note]._setNote(note);
-    this.voices[note].play(note,velocity, secondsFromNow, susTime);
+    // if (this.voices[note] === null) {
+    //   this.voices[note] = new this.AudioVoice();
+    // }
+    // this.voices[note].env.setRange(velocity,0);
+    // this.voices[note]._setNote(note);
+    // this.voices[note].play(note,velocity, secondsFromNow, susTime);
+
+
+   if(this._voicesInUse < this.polyValue) {
+    var currentVoice = this._voicesInUse;
+    this.noteAttack(currentVoice, note, velocity, secondsFromNow);
+    this.noteRelease(currentVoice, secondsFromNow + susTime);
+   } else {
+      if(this.audiovoices[this._oldest]._isOn) {
+        this.noteRelease(this._oldest);
+      }
+    this.noteAttack(this._oldest, note, velocity, secondsFromNow);
+    this.noteRelease(this._oldest, secondsFromNow + susTime);
+
+    this._newest = this._oldest;
+    this._oldest = ( this._oldest + 1 ) % (this.polyValue - 1);
+   }
+
+
+
+   // this.noteAttack(this._newest, note, velocity,secondsFromNow);
+   // this.noteRelease(this._newest, secondsFromNow+susTime);
+   return this.audiovoices[this._newest];
 }
 
 
@@ -69,9 +115,10 @@ p5.PolySynth.prototype.play = function (note,velocity, secondsFromNow, susTime){
    *                                then decayLevel would increase proportionally, to become 0.5.
    *  @param {Number} [releaseTime]   Time in seconds from now (defaults to 0)
    **/
+
 p5.PolySynth.prototype.noteADSR = function (note,a,d,s,r){
      if(this.voices[note] == null){
-       this.voices[note] = new this.synthVoice();   
+       this.voices[note] = new this.AudioVoice();   
      }
      this.voices[note]._setNote(note);
      this.voices[note].setADSR(a,d,s,r);   
@@ -88,13 +135,19 @@ p5.PolySynth.prototype.noteADSR = function (note,a,d,s,r){
    *  @param  {Number} [secondsFromNow] time from now (in seconds)
    *  
    */  
-p5.PolySynth.prototype.noteAttack = function (note,velocity, secondsFromNow){ 
-    if(this.voices[note] == null){
-       this.voices[note] = new this.synthVoice();   
-    }
-    this.voices[note]._setNote(note);
-    this.voices[note].env.setRange(velocity,0);
-    this.voices[note].triggerAttack(secondsFromNow);
+p5.PolySynth.prototype.noteAttack = function (voice, note, velocity, secondsFromNow){ 
+  this._voicesInUse += 1;
+
+  this._newest = voice;
+  this.audiovoices[voice].triggerAttack(note, velocity, secondsFromNow)
+  console.log
+
+    // if(this.voices[note] == null){
+    //    this.voices[note] = new this.AudioVoice();   
+    // }
+    // this.voices[note]._setNote(note);
+    // this.voices[note].env.setRange(velocity,0);
+    // this.voices[note].triggerAttack(secondsFromNow);
       
 }
 
@@ -109,12 +162,22 @@ p5.PolySynth.prototype.noteAttack = function (note,velocity, secondsFromNow){
    *  
    */  
 
-p5.PolySynth.prototype.noteRelease = function (note,secondsFromNow){
-    if (this.voices[note] != null) {
-       this.voices[note]._setNote(note);
-       this.voices[note].triggerRelease(secondsFromNow);
-       delete this.voices[note];
-    }
+p5.PolySynth.prototype.noteRelease = function (voice,secondsFromNow){
+  console.log('voice '+voice);
+  console.log('release '+ secondsFromNow);
+
+
+  this.audiovoices[voice].triggerRelease(secondsFromNow);
+  this._voicesInUse -= 1;
+  
+  this._newest = this._newest === 0 ? 0 : (this._newest - 1) % (this.polyValue - 1);
+
+
+    // if (this.voices[note] != null) {
+    //    this.voices[note]._setNote(note);
+    //    this.voices[note].triggerRelease(secondsFromNow);
+    //    delete this.voices[note];
+    // }
 }
 
 
@@ -132,7 +195,7 @@ p5.PolySynth.prototype.noteRelease = function (note,secondsFromNow){
    */  
 p5.PolySynth.prototype.noteParams = function (note,params){
   if(this.voices[note] == null){
-       this.voices[note] = new this.synthVoice();   
+       this.voices[note] = new this.AudioVoice();   
   }
   this.voices[note].setParams(params);
   

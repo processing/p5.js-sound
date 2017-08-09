@@ -1,21 +1,32 @@
 var monoSynth;
 var note;
+var octave = 0;
 
 function setup() {
   monoSynth = new p5.MonoSynth();
+  monoSynth.loadPreset('punchyBass');
 }
 
 function keyPressed() {
-  // pick a random midi note
-  var midiVal = round( random(50,72) );
-  monoSynth.triggerAttack(keyToMidi(), 1 );
-  console.log(key);
-  
+ // monoSynth.triggerAttack(keyToMidi() + octave, 1 )
+ 
+     
+
+  //OCTAVEf
+  if (keyCode === UP_ARROW) {
+  	octave +=12;
+  } else if (keyCode === DOWN_ARROW) {
+  	octave -=12;
+  }
+  else {
+  monoSynth.play(keyToMidi() + octave, 1); 
+
+  }
 } 
 
-function keyReleased() {
-  monoSynth.triggerRelease();
-}
+// function keyReleased() {
+//   monoSynth.triggerRelease();
+// }
 
 
 function keyToMidi() {
