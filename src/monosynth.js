@@ -1,10 +1,13 @@
+'use strict';
 define(function (require) {
-  'use strict';
 
   var p5sound = require('master');
   require('sndcore');
+  require('oscillator');
+  require('env');
+  require('filter');
 
-     /**
+  /**
     *  An MonoSynth is used as a single voice for sound synthesis.
     *  This is a class to be used in conjonction with the PolySynth
     *  class. Custom synthetisers should be built inheriting from
@@ -15,37 +18,41 @@ define(function (require) {
     *  
     **/
 
-  p5.MonoSynth = function (){
+  p5.MonoSynth = function () {
 
-    this.context = p5sound.audiocontext;
-    this.output = this.context.createGain();
+    this.ac = p5sound.audiocontext;
 
-    this.attack = 0.02;
-    this.decay=0.25;
-    this.sustain=0.05;
-    this.release=0.35;
+    this.output = this.ac.createGain();
+
+    // this.attack = 0.02;
+    // this.decay=0.25;
+    // this.sustain=0.05;
+    // this.release=0.35;
 
     // default voice
     this.oscillator = new p5.Oscillator();
-    this.oscillator.start();
 
     // envelope
     this.env = new p5.Env();
-    this.env.setADSR(this.attack, this.decay, this.sustain, this.release);
     this.env.setRange(1, 0);
     this.env.setExp(true);
 
+    //set params
+    this.setADSR(0.02, 0.25, 0.05, 0.35);
+
     // filter
-    this.filter = new p5.HighPass();
+    this.filter = new p5.Filter('highpass');
     this.filter.set(5, 1);
 
     // oscillator --> env --> filter --> this.output (gain) --> p5.soundOut
     this.env.setInput(this.oscillator);
-    this.env.connect(this.filter.input);
+    this.env.connect(this.filter);
     this.filter.connect(this.output);
 
     // connect to master output by default
-    this.output.connect(p5sound.input);
+    this.connect();
+
+    this.oscillator.start();
 
     p5sound.soundArray.push(this);
   };
@@ -66,7 +73,7 @@ define(function (require) {
    *                                     to set the note
    *  @private
    */
-  p5.MonoSynth.prototype._setNote = function(note, secondsFromNow){
+  p5.MonoSynth.prototype._setNote = function(note, secondsFromNow) {
     var freqVal = p5.prototype.midiToFreq(note);
     var t = secondsFromNow || 0;
     this.oscillator.freq(freqVal, 0, t);
@@ -83,7 +90,7 @@ define(function (require) {
      *  
      */  
 
-  p5.MonoSynth.prototype.play = function (note, velocity, secondsFromNow, susTime){
+  p5.MonoSynth.prototype.play = function (note, velocity, secondsFromNow, susTime) {
     this._setNote(note, secondsFromNow);
 
     // set range of env (TO DO: allow this to be scheduled in advance)
@@ -103,10 +110,10 @@ define(function (require) {
      *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
      *  @method  triggerAttack
      */  
-  p5.MonoSynth.prototype.triggerAttack = function (note, velocity, secondsFromNow){
+  p5.MonoSynth.prototype.triggerAttack = function (note, velocity, secondsFromNow) {
     this._setNote(note, secondsFromNow);
 
-    this.env.ramp(this.output, secondsFromNow , vel);
+    this.env.ramp(this.output, secondsFromNow , velocity);
     // this.env.triggerAttack(this.output, secondsFromNow);
   };
 
@@ -119,7 +126,7 @@ define(function (require) {
      *  @method  triggerRelease
      */  
 
-  p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow){
+  p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow) {
     this.env.ramp(this.output, secondsFromNow, 0);
     // this.env.triggerRelease(this.output, secondsFromNow);
   };
@@ -138,10 +145,49 @@ define(function (require) {
      * 
      */  
 
-  p5.MonoSynth.prototype.setParams = function(params){
+  p5.MonoSynth.prototype.setParams = function(params) {
 
   };
 
+
+
+
+  p5.MonoSynth.prototype.loadPreset = function(preset) {
+
+  };
+
+
+
+
+  //PRESETS
+  //
+  p5.MonoSynth.prototype.default = {
+    'oscillator' : {
+      'type' : 'sine'
+    },
+    'env' : {
+      'setADSR': [0.02, 0.25, 0.05, 0.35]
+    },
+    'filter': {
+      'setType' : 'highpass',
+      'freq' : 5,
+      'res' : 1
+    }
+  };
+
+  p5.MonoSynth.prototype.simpleBass = {
+    'oscillator' : {
+      'type' : 'square'
+    },
+    'env' : {
+      'setADSR': [0.02, 0.25, 0.05, 0.35]
+    },
+    'filter': {
+      'setType' : 'highpass',
+      'freq' : 5,
+      'res' : 1
+    }
+  }
   /**
      *  Set values like a traditional
      *  <a href="https://en.wikipedia.org/wiki/Synthesizer#/media/File:ADSR_parameter.svg">
@@ -164,12 +210,21 @@ define(function (require) {
      *  @param {Number} [releaseTime]   Time in seconds from now (defaults to 0)
      **/
 
-  p5.MonoSynth.prototype.setADSR = function (a,d,s,r){
+  p5.MonoSynth.prototype.setADSR = function (a,d,s,r) {
     this.attack = a;
     this.decay=d;
     this.sustain=s;
     this.release=r;
-    this.env.setADSR(this.attack, this.decay,  this.sustain, this.release); 
+    this.env.setADSR(this.attack, this.decay,  this.sustain, this.release);
+  };
+
+  p5.MonoSynth.prototype.amp = function(vol, rampTime) {
+    var t = rampTime || 0;
+    if (typeof vol !== 'undefined') {
+      this.oscillator.amp(vol, t);
+    }
+
+    return this.oscillator.amp().value;
   };
 
   /**
@@ -178,6 +233,7 @@ define(function (require) {
    *  @method  connect
    *  @param  {Object} unit A p5.sound or Web Audio object
    */
+ 
   p5.MonoSynth.prototype.connect = function(unit) {
     var u = unit || p5sound.input;
     this.output.connect(u.input ? u.input : u);
@@ -186,7 +242,7 @@ define(function (require) {
   /**
    *  Disconnect all outputs
    *
-   *  @method  disconnect
+   *  @method  disconnects
    */
   p5.MonoSynth.prototype.disconnect = function() {
     this.output.disconnect();
@@ -205,11 +261,13 @@ define(function (require) {
     try {
       this.oscillator.dispose();
     } catch(e) {
-      console.error('mono synth default oscillator already disposed')
+      console.error('mono synth default oscillator already disposed');
     }
 
     this.output.disconnect();
     this.output = undefined;
   };
+
+
 
 });
