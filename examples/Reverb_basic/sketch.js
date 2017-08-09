@@ -22,6 +22,7 @@ function setup() {
   // sonnects soundFile to reverb with a
   // reverbTime of 6 seconds, decayRate of 0.2%
   reverb.process(soundFile, 6, 0.2);
+
   reverb.amp(3); // turn it up!
 }
 

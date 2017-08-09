@@ -92,7 +92,7 @@ define(function (require) {
 	  	}
 	  }
 		if (params.length > 0) {
-      this.__proto__.set.apply(this, params);
+      		Object.getPrototypeOf(this).set.apply(this, params);
     	}
 	};
 
