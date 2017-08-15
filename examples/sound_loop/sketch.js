@@ -31,23 +31,21 @@ function setup() {
 	count2 = 0;
 	c = color(50);
 	d = color(50);
-  // create a part with 8 spaces, where each space represents 1/16th note (default)
-  looper1 = new p5.SoundLoop(function(time){
-    click.play();
-    console.log('looper1 '+this.clock._nextTick);
+  
+  //the looper's callback is passed the timeFromNow
+  //this value should be used as a reference point from 
+  //which to schedule sounds 
+
+  looper1 = new p5.SoundLoop(function(timeFromNow){
+    click.play(timeFromNow);
     }, 1);
 
-  looper2 = new p5.SoundLoop(function(time){
-    
-	beatbox.play();
-	// console.log(this.clock.ticks);
-  console.log('looper2 ' + this.clock._nextTick); 
+  looper2 = new p5.SoundLoop(function(timeFromNow){  
+  	beatbox.play(timeFromNow);
     }, "16n");
 
-  looper1.start();
-
-  // looper1.start();
-
+  //start the loops together
+  looper1.syncedStart(looper2);
 }
 
 

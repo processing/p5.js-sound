@@ -30,6 +30,9 @@ define(function (require) {
     this.clock = new Clock({
       'callback' : function(time) {
         var timeFromNow = time - p5sound.audiocontext.currentTime;
+        //Do not initiate the callback if timeFromNow is < 0
+        //This ususually occurs for a few milliseconds when the page
+        //is not fully loaded
         if (timeFromNow > 0) {self.callback(timeFromNow);}
       },
       'frequency' : this._calcFreq()
@@ -111,7 +114,6 @@ define(function (require) {
   };
 
 
-
   /**
    * Updates frequency value, reflected in next callback
    * @private
@@ -128,10 +130,13 @@ define(function (require) {
    * @return {Number} new clock frequency value
    */
   p5.SoundLoop.prototype._calcFreq = function() {
+    //Seconds mode, bpm / timesignature has no effect
     if (typeof this._interval === 'number') {
       this.musicalTimeMode = false;
-      return this._bpm / 60 / this._interval * (this._timeSignature / 4);
-    } else if (typeof this._interval === 'string') {
+      return 1 / this._interval;
+    }
+    //Musical timing mode, calculate interval based bpm, interval,and time signature
+    else if (typeof this._interval === 'string') {
       this.musicalTimeMode = true;
       return this._bpm / 60 / this._convertNotation(this._interval) * (this._timeSignature / 4);
     }
