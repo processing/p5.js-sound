@@ -6,16 +6,8 @@
  */
 
 var click, beatbox ;
-var clickPhrase = [1, 0, 0, 0];
-var bboxPhrase = [0, 0, 1, 0, 0, 0, 1, 1];
-
 
 var looper1, looper2;
-var num;
-
-var c,d;
-var count1, count2;
-
 
 
 function preload() {
@@ -26,23 +18,23 @@ function preload() {
 }
 
 function setup() {
-	createCanvas(500,500)
-	count1 = 0;
-	count2 = 0;
-	c = color(50);
-	d = color(50);
-  
+
+  //Hemiola! 2 loops, playing sounds in a 4 over 3 pattern
+  //gradually increase the tempo of both loops
+  //
   //the looper's callback is passed the timeFromNow
   //this value should be used as a reference point from 
   //which to schedule sounds 
 
   looper1 = new p5.SoundLoop(function(timeFromNow){
     click.play(timeFromNow);
-    }, 1);
+    looper1.bpm looper1.bpm += 0.5;
+    }, "8n");
 
   looper2 = new p5.SoundLoop(function(timeFromNow){  
   	beatbox.play(timeFromNow);
-    }, "16n");
+    looper2.bpm = looper1.bpm;
+    }, "12n");
 
   //start the loops together
   looper1.syncedStart(looper2);

@@ -9,31 +9,76 @@ define(function (require) {
    *
    * @class p5.SoundLoop
    * @constructor
+   *
+   * @param {Function} callback this function will be called on each iteration of theloop
+   * @param {Number or String} [interval] amount of time or beats for each iteration of the loop
+   *                                       defaults to 1
+   *
+   * @example
+   * <div><code>
+   * var click;
+   * var looper1;
+   * 
+   * function preload() {
+   *   click = loadSound('assets/drum.mp3'
+   * }
+   * 
+   * function setup() {
+   *   //the looper's callback is passed the timeFromNow
+   *   //this value should be used as a reference point from 
+   *   //which to schedule sounds 
+   *   looper1 = new p5.SoundLoop(function(timeFromNow){
+   *     click.play(timeFromNow);
+   *     background(255 * (looper1.iterations % 2));
+   *     }, 2);
+   *
+   *   //stop after 10 iteratios;
+   *   looper1.maxIterations = 10;
+   *   //start the loop
+   *   looper1.start();
+   * }
+   * </code></div>
    */
-  p5.SoundLoop = function(callback, interval, BPM) {
-
+  p5.SoundLoop = function(callback, interval) {
     this.callback = callback;
-
+    /**
+     * musicalTimeMode uses <a href = "https://github.com/Tonejs/Tone.js/wiki/Time">Tone.Time</a> convention
+     * @property {Boolean} musicalTimeMode true if string, false if number
+     */
     this.musicalTimeMode = typeof this._interval === 'number' ? false : true;
-    this._interval = interval;
 
-    //These variables should only be modified if using musicalTimeMode
-    //If these variables are modified when interval is measured in seconds,
-    //the interval will become inaccurate. 
-    //ex. 8 second interval at 60BPM in 4/4 time will be 8 seconds long
-    //8 second interval at 120BPM in 5/4 time will be 3.2 seconds long
+    this._interval = interval || 1;
+
+    /**
+     * musicalTimeMode variables
+     * modify these only when the interval is specified in musicalTime format as a string
+     * @property {Number} [BPM] beats per minute (defaults to 60)
+     * @property {Number} [timeSignature] number of quarter notes in a measure (defaults to 4)
+     */
     this._timeSignature = 4;
-    this._bpm = BPM || 60;
+    this._bpm = 60;
 
     this.isPlaying = false;
+
+    /**
+     * Set a limit to the number of loops to play
+     * @property {Number} [maxIterations]  defaults to Infinity
+     */
+    this.maxIterations = Infinity;
     var self = this;
+
     this.clock = new Clock({
       'callback' : function(time) {
         var timeFromNow = time - p5sound.audiocontext.currentTime;
-        //Do not initiate the callback if timeFromNow is < 0
-        //This ususually occurs for a few milliseconds when the page
-        //is not fully loaded
-        if (timeFromNow > 0) {self.callback(timeFromNow);}
+        /**
+         * Do not initiate the callback if timeFromNow is < 0
+         * This ususually occurs for a few milliseconds when the page
+         * is not fully loaded
+         *
+         * The callback should only be called until maxIterations is reached
+         */
+        if (timeFromNow > 0 && self.iterations <= self.maxIterations) {
+          self.callback(timeFromNow);}
       },
       'frequency' : this._calcFreq()
     });
@@ -67,7 +112,7 @@ define(function (require) {
     }
   };
   /**
-   * Start the loop
+   * Pause the loop
    * @method pause
    * @param  {Number} [timeFromNow] schedule a pausing time
    */
@@ -79,14 +124,7 @@ define(function (require) {
     }
   };
 
-  //use synced start to start 2 loops at the same time
-  //OR
-  //sync the start of one loop with one that is already playing
-  //loop.syncedStart(someother loop)
-  //
-  //
-  //loopToStart.syncedStart( loopToSyncWtih );
-  //
+
   /**
    * Synchronize loops. Use this method to start two more more loops in synchronization
    * or to start a loop in synchronization with a loop that is already playing
@@ -183,7 +221,9 @@ define(function (require) {
    * frequency, that will be reflected after the next callback
    * @param {Number} bpm 
    * @param {Number} timeSignature
-   * @param {Number/String} interval [description]
+   * @param {Number/String} interval length of the loops interval
+   * @param @readOnly {Number} iteations how many times the callback has been called so far
+   * 
    */
   Object.defineProperty(p5.SoundLoop.prototype, 'bpm', {
     get : function() {
@@ -191,11 +231,10 @@ define(function (require) {
     },
     set : function(bpm) {
       if (!this.musicalTimeMode) {
-        console.warn('Changing the BPM in "seconds" mode is not advised. '+
-                            'This will make the specified time interval inaccurate. '+
-                            '8 second interval at 60BPM in 4/4 time will be 8 seconds long ' +
-                            '8 second interval at 120BPM in 5/4 time will be 3.2 seconds long. '+
-                            'Use musical timing notation ("2n", "4n", "1m"...etc');
+        console.warn('Changing the BPM in "seconds" mode has no effect. '+
+                            'BPM is only relevant in musicalTimeMode '+
+                            'when the interval is specified as a string '+
+                            '("2n", "4n", "1m"...etc)');
       }
       this._bpm = bpm;
       this._update();
@@ -208,11 +247,10 @@ define(function (require) {
     },
     set : function(timeSig) {
       if (!this.musicalTimeMode) {
-        console.warn('Changing the time signature in "seconds" mode is not advised. '+
-                      'This will make the specified time interval inaccurate. '+
-                      '8 second interval at 60BPM in 4/4 time will be 8 seconds long ' +
-                      '8 second interval at 120BPM in 5/4 time will be 3.2 seconds long. '+
-                      'Use musical timing notation ("2n", "4n", "1m"...etc');
+        console.warn('Changing the timeSignature in "seconds" mode has no effect. '+
+                            'BPM is only relevant in musicalTimeMode '+
+                            'when the interval is specified as a string '+
+                            '("2n", "4n", "1m"...etc)');
       }
       this._timeSignature = timeSig;
       this._update();
@@ -224,8 +262,15 @@ define(function (require) {
       return this._interval;
     },
     set : function(interval) {
+      this.musicalTimeMode = typeof interval === 'Number'? false : true;
       this._interval = interval;
       this._update();
+    }
+  });
+
+  Object.defineProperty(p5.SoundLoop.prototype, 'iterations', {
+    get : function() {
+      return this.clock.ticks;
     }
   });
 
