@@ -1,13 +1,17 @@
 var monoSynth;
+var polySynth;
 var note;
 var octave = 0;
 
 function setup() {
-  monoSynth = new p5.MonoSynth();
-  monoSynth.loadPreset('punchyBass');
+  // monoSynth = new p5.MonoSynth();
+  // monoSynth.loadPreset('punchyBass');
+
+ polySynth = new p5.PolySynth(p5.MonoSynth, 4);
 }
 
 function keyPressed() {
+ // monoSynth.triggerAttack(keyToMidi() + octave, 1 )
  // monoSynth.triggerAttack(keyToMidi() + octave, 1 )
  
      
@@ -19,8 +23,8 @@ function keyPressed() {
   	octave -=12;
   }
   else {
-  monoSynth.play(keyToMidi() + octave, 1); 
-
+  // monoSynth.play(keyToMidi() + octave, 1); 
+  polySynth.play(keyToMidi() + octave, 1, 0, 4);
   }
 } 
 
