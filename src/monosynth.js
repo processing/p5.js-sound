@@ -22,19 +22,8 @@ define(function (require) {
   p5.MonoSynth = function () {
     AudioVoice.call(this);
 
-    // this.ac = p5sound.audiocontext;
-
-    // this.output = this.ac.createGain();
-
-    // this.attack = 0.02;
-    // this.decay=0.25;
-    // this.sustain=0.05;
-    // this.release=0.35;
-
-    // default voice
     this.oscillator = new p5.Oscillator();
 
-    // envelope
     this.env = new p5.Env();
     this.env.setRange(1, 0);
     this.env.setExp(true);
@@ -99,9 +88,12 @@ define(function (require) {
 
     // set range of env (TO DO: allow this to be scheduled in advance)
     var vel = velocity || 1;
-    this.env.setRange(vel, 0);
+    // this.env.setRange(vel, 0);
 
-    this.env.play(this.output, secondsFromNow, susTime);
+    // this.env.play(this.output, secondsFromNow, susTime);
+
+    this.triggerAttack(note,velocity,secondsFromNow);
+    this.triggerRelease(secondsFromNow + susTime);
   };
 
   /**
@@ -133,7 +125,6 @@ define(function (require) {
   p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow) {
     this.env.ramp(this.output, secondsFromNow, 0);
     this._isOn = false;
-    // this.env.triggerRelease(this.output, secondsFromNow);
   };
 
 
@@ -151,10 +142,13 @@ define(function (require) {
      */  
 
   p5.MonoSynth.prototype.setParams = function(params) {
-
   };
 
-
+  /**
+   * loads preset values
+   * @param  {String} preset  A preset that has been written for MonoSynth
+   * @return {Object}        Return the MonoSynth
+   */
   p5.MonoSynth.prototype.loadPreset = function(preset) {
     var options = this[preset];
     this.oscillator.setType(options.oscillator.type);
@@ -219,6 +213,7 @@ define(function (require) {
       'res' : 1
     }
   };
+
   /**
      *  Set values like a traditional
      *  <a href="https://en.wikipedia.org/wiki/Synthesizer#/media/File:ADSR_parameter.svg">
@@ -246,6 +241,13 @@ define(function (require) {
   };
 
 
+  /**
+   * Getters and Setters
+   * @param {Number} attack
+   * @param {Number} decay
+   * @param {Number} sustain
+   * @param {Number} release
+   */
   Object.defineProperties(p5.MonoSynth, {
     'attack': {
       get : function() {
@@ -285,12 +287,18 @@ define(function (require) {
     },
   });
 
+  /**
+   * MonoSynth amp
+   * @method  amp
+   * @param  {Number} vol      desired volume
+   * @param  {Number} [rampTime] Time to reach new volume
+   * @return {Number}          new volume value
+   */
   p5.MonoSynth.prototype.amp = function(vol, rampTime) {
     var t = rampTime || 0;
     if (typeof vol !== 'undefined') {
       this.oscillator.amp(vol, t);
     }
-
     return this.oscillator.amp().value;
   };
 
@@ -322,7 +330,7 @@ define(function (require) {
    *  @method  dispose
    */
   p5.MonoSynth.prototype.dispose = function() {
-    AudioVoice.prototype.disposed.apply(this);
+    AudioVoice.prototype.dispose.apply(this);
 
     this.filter.dispose();
     this.env.dispose();
