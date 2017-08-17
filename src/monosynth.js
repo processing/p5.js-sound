@@ -17,13 +17,14 @@ define(function (require) {
     *  @class p5.MonoSynth
     *  @constructor
     *  
-    *  
     **/
 
   p5.MonoSynth = function () {
     AudioVoice.call(this);
 
     this.oscillator = new p5.Oscillator();
+    this.oscillator.disconnect();
+
 
     this.env = new p5.Env();
     this.env.setRange(1, 0);
@@ -37,14 +38,15 @@ define(function (require) {
     this.filter.set(5, 1);
 
     // oscillator --> env --> filter --> this.output (gain) --> p5.soundOut
+
+    this.oscillator.connect(this.filter);
     this.env.setInput(this.oscillator);
     this.env.connect(this.filter);
     this.filter.connect(this.output);
 
-    // connect to master output by default
-    this.connect();
-
     this.oscillator.start();
+
+    //Audiovoices are connected to soundout by default
 
     this._isOn = false;
 
@@ -69,8 +71,7 @@ define(function (require) {
    */
   p5.MonoSynth.prototype._setNote = function(note, secondsFromNow) {
     var freqVal = p5.prototype.midiToFreq(note);
-    var t = secondsFromNow || 0;
-    this.oscillator.freq(freqVal, 0, t);
+    this.oscillator.freq(freqVal, 0, secondsFromNow);
   };
 
   /**
@@ -85,13 +86,8 @@ define(function (require) {
      */  
 
   p5.MonoSynth.prototype.play = function (note, velocity, secondsFromNow, susTime) {
-    this._setNote(note, secondsFromNow);
-
     // set range of env (TO DO: allow this to be scheduled in advance)
     var vel = velocity || 1;
-    // this.env.setRange(vel, 0);
-
-    // this.env.play(this.output, secondsFromNow, susTime);
 
     this.triggerAttack(note,velocity,secondsFromNow);
     this.triggerRelease(secondsFromNow + susTime);
@@ -108,10 +104,15 @@ define(function (require) {
      *  @method  triggerAttack
      */  
   p5.MonoSynth.prototype.triggerAttack = function (note, velocity, secondsFromNow) {
-    this._setNote(note, secondsFromNow);
+
+    var now = p5sound.audiocontext.currentTime;
+    var tFromNow = secondsFromNow || 0;
+    var t = now + tFromNow;
+    var n = p5.prototype.midiToFreq(note);
+    
     this._isOn = true;
-    this.env.ramp(this.output, secondsFromNow , velocity);
-    // this.env.triggerAttack(this.output, secondsFromNow);
+    this.oscillator.freq(n, 0, t);
+    this.env.ramp(this.output, t, velocity);
   };
 
   /**
@@ -163,7 +164,6 @@ define(function (require) {
   };
 
   //PRESETS
-  //
   p5.MonoSynth.prototype.default = {
     'oscillator' : {
       'type' : 'sine'

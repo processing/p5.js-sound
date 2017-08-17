@@ -236,11 +236,12 @@ define(function (require) {
       var now = p5sound.audiocontext.currentTime;
       var rampTime = rampTime || 0;
       var tFromNow = tFromNow || 0;
+      var t = now + tFromNow + rampTime;
       // var currentFreq = this.oscillator.frequency.value;
       // this.oscillator.frequency.cancelScheduledValues(now);
 
       if (rampTime === 0) {
-        this.oscillator.frequency.cancelScheduledValues(now);
+        // this.oscillator.frequency.cancelScheduledValues(now);
         this.oscillator.frequency.setValueAtTime(val, tFromNow + now);
       } else {
         if (val > 0 ) {

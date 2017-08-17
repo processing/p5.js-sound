@@ -10,7 +10,6 @@ define(function() {
 	  this.ac = p5sound.audiocontext;
 	  this.output = this.ac.createGain();
 	  this.connect();
-
 	  p5sound.soundArray.push(this);
   };
 
