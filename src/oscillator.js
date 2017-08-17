@@ -241,7 +241,6 @@ define(function (require) {
       // this.oscillator.frequency.cancelScheduledValues(now);
 
       if (rampTime === 0) {
-        // this.oscillator.frequency.cancelScheduledValues(now);
         this.oscillator.frequency.setValueAtTime(val, tFromNow + now);
       } else {
         if (val > 0 ) {
