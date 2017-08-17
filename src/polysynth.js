@@ -19,6 +19,22 @@ define(function (require) {
     *                                 the AudioVoice class. Defaults ot p5.MonoSynth
     *
     *  @param {Number} [polyValue] Number of voices, defaults to 8;
+    *
+    *
+    *
+    *  @example
+    *  <div><code>
+    *  var polysynth;
+    *  function setup() {
+    *    polysynth = new p5.PolySynth();
+    *    polysynth.play(53,1,0,3);
+    *    polysynth.play(60,1,0,2.9);
+    *    polysynth.play(69,1,0,3);
+    *    polysynth.play(71,1,0,3);
+    *    polysynth.play(74,1,0,3);
+    *  }
+    *  </code></div>
+    *  
     **/
   p5.PolySynth = function(audioVoice, polyValue) {
     //audiovoices will contain polyValue many monophonic synths
