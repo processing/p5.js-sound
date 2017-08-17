@@ -20,7 +20,7 @@ define(function (require) {
     *  <div><code>
     *  var monosynth;
     *  var x;
-    *  
+    *
     *  function setup() {
     *    monosynth = new p5.MonoSynth();
     *    monosynth.loadPreset('simpleBass');
@@ -54,7 +54,6 @@ define(function (require) {
 
     // this.oscillator.connect(this.filter);
     this.env.setInput(this.oscillator);
-    this.env.connect(this.filter);
     this.filter.connect(this.output);
 
     this.oscillator.start();
@@ -67,6 +66,7 @@ define(function (require) {
     p5sound.soundArray.push(this);
   };
 
+  p5.MonoSynth.prototype = Object.create(p5.AudioVoice.prototype);
 
   /**
    *  Used internally by play() and triggerAttack()
@@ -75,8 +75,8 @@ define(function (require) {
    *  Synth creators with more complex setups may have overridden
    *  the oscillator chain with more than one oscillator,
    *  and should override this method accordingly.
-   *  
-   *  @param   {Number} note           midi value of a note, where 
+   *
+   *  @param   {Number} note           midi value of a note, where
    *                                   middle c is 60
    *  @param   {Number} [secondsFromNow] (optional) a time (in seconds
    *                                     from now) at which
@@ -90,53 +90,53 @@ define(function (require) {
 
   /**
      *  Play tells the MonoSynth to start playing a note
-     *  
-     *  @method playNote 
+     *
+     *  @method play
      *  @param  {Number} [note] midi note to play (ranging from 0 to 127 - 60 being a middle C)
      *  @param  {Number} [velocity] velocity of the note to play (ranging from 0 to 1)
      *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
      *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
-     *  
-     */  
+     *
+     */
 
   p5.MonoSynth.prototype.play = function (note, velocity, secondsFromNow, susTime) {
     // set range of env (TO DO: allow this to be scheduled in advance)
-    var vel = velocity || 1;
-
-    this.triggerAttack(note,vel,secondsFromNow);
+    var susTime = susTime || this.sustain;
+    this.triggerAttack(note, veocity, secondsFromNow);
     this.triggerRelease(secondsFromNow + susTime);
   };
 
   /**
      *  Trigger the Attack, and Decay portion of the Envelope.
      *  Similar to holding down a key on a piano, but it will
-     *  hold the sustain level until you let go. 
+     *  hold the sustain level until you let go.
      *
      *  @param  {Number} secondsFromNow time from now (in seconds)
      *  @param  {Number} [velocity] velocity of the note to play (ranging from 0 to 1)
      *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
      *  @method  triggerAttack
-     */  
+     */
   p5.MonoSynth.prototype.triggerAttack = function (note, velocity, secondsFromNow) {
-    //scheduling in relation to audioContext.currentTime will be handeled by oscillator.frew() and env.ramp()
-    var tFromNow = secondsFromNow || 0;
-    var n = p5.prototype.midiToFreq(note);
-    this._isOn = true;
+    var secondsFromNow = secondsFromNow || 0;
+    var freq = p5.prototype.midiToFreq(note);
+    var vel = velocity || 1;
 
-    this.oscillator.freq(n, 0, tFromNow);
-    this.env.ramp(this.output, tFromNow, velocity);
+    this._isOn = true;
+    this.oscillator.freq(freq, 0, secondsFromNow);
+    this.env.ramp(this.output, secondsFromNow, vel);
   };
 
   /**
      *  Trigger the Release of the Envelope. This is similar to releasing
      *  the key on a piano and letting the sound fade according to the
      *  release level and release time.
-     *  
+     *
      *  @param  {Number} secondsFromNow time to trigger the release
      *  @method  triggerRelease
-     */  
+     */
 
   p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow) {
+    var secondsFromNow = secondsFromNow || 0;
     this.env.ramp(this.output, secondsFromNow, 0);
     this._isOn = false;
   };
@@ -149,11 +149,11 @@ define(function (require) {
      *  For instance if you want to build a complex synthesizer
      *  with one or more filters, effects etc. this is where you
      *  will want to set their values.
-     *  
+     *
      *  @method  setParams
-     *  @param   
-     * 
-     */  
+     *  @param
+     *
+     */
 
   p5.MonoSynth.prototype.setParams = function(params) {
   };
@@ -232,7 +232,7 @@ define(function (require) {
      *  <a href="https://en.wikipedia.org/wiki/Synthesizer#/media/File:ADSR_parameter.svg">
      *  ADSR envelope
      *  </a>.
-     *  
+     *
      *  @method  setADSR
      *  @param {Number} attackTime    Time (in seconds before envelope
      *                                reaches Attack Level
@@ -261,7 +261,7 @@ define(function (require) {
    * @param {Number} sustain
    * @param {Number} release
    */
-  Object.defineProperties(p5.MonoSynth, {
+  Object.defineProperties(p5.MonoSynth.prototype, {
     'attack': {
       get : function() {
         return this.env.aTime;
@@ -339,7 +339,7 @@ define(function (require) {
 
   /**
    *  Get rid of the MonoSynth and free up its resources / memory.
-   *  
+   *
    *  @method  dispose
    */
   p5.MonoSynth.prototype.dispose = function() {
