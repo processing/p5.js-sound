@@ -17,6 +17,7 @@ define(function (require) {
     *  @class p5.MonoSynth
     *  @constructor
     *  
+    *  
     **/
 
   p5.MonoSynth = function () {
