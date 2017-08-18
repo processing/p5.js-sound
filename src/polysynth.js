@@ -75,6 +75,7 @@ define(function (require) {
     this._voicesInUse = new TimelineSignal(0);
 
     this.output = p5sound.audiocontext.createGain();
+    this.connect();
 
     //Construct the appropriate number of audiovoices
     this._allocateVoices();
@@ -175,7 +176,11 @@ define(function (require) {
    */  
   p5.PolySynth.prototype.noteAttack = function (_note, _velocity, secondsFromNow) {
     var now =  p5sound.audiocontext.currentTime;
+
+    //this value goes to the audiovoices which handle their own scheduling
     var tFromNow = secondsFromNow || 0;
+
+    //this value is used by this._voicesInUse
     var t = now + tFromNow;
 
     var note = _note === undefined ?  60 : _note;
@@ -204,7 +209,7 @@ define(function (require) {
 
     this._newest = currentVoice;
 
-    this.audiovoices[currentVoice].triggerAttack(note, velocity, secondsFromNow);
+    this.audiovoices[currentVoice].triggerAttack(note, velocity, tFromNow);
 
   };
 
@@ -230,7 +235,6 @@ define(function (require) {
       var now =  p5sound.audiocontext.currentTime;
       var tFromNow = secondsFromNow || 0;
       var t = now + tFromNow;
-
 
       this._voicesInUse.setValueAtTime(this._voicesInUse.value - 1, t);
       this.audiovoices[ this.notes[note] ].triggerRelease(secondsFromNow);

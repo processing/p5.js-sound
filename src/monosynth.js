@@ -37,7 +37,7 @@ define(function (require) {
     AudioVoice.call(this);
 
     this.oscillator = new p5.Oscillator();
-    this.oscillator.disconnect();
+    // this.oscillator.disconnect();
 
     this.env = new p5.Env();
     this.env.setRange(1, 0);
@@ -52,12 +52,13 @@ define(function (require) {
 
     // oscillator --> env --> filter --> this.output (gain) --> p5.soundOut
 
-    this.oscillator.connect(this.filter);
+    // this.oscillator.connect(this.filter);
     this.env.setInput(this.oscillator);
     this.env.connect(this.filter);
     this.filter.connect(this.output);
 
     this.oscillator.start();
+    this.connect();
 
     //Audiovoices are connected to soundout by default
 
@@ -102,7 +103,7 @@ define(function (require) {
     // set range of env (TO DO: allow this to be scheduled in advance)
     var vel = velocity || 1;
 
-    this.triggerAttack(note,velocity,secondsFromNow);
+    this.triggerAttack(note,vel,secondsFromNow);
     this.triggerRelease(secondsFromNow + susTime);
   };
 
@@ -117,15 +118,13 @@ define(function (require) {
      *  @method  triggerAttack
      */  
   p5.MonoSynth.prototype.triggerAttack = function (note, velocity, secondsFromNow) {
-
-    var now = p5sound.audiocontext.currentTime;
+    //scheduling in relation to audioContext.currentTime will be handeled by oscillator.frew() and env.ramp()
     var tFromNow = secondsFromNow || 0;
-    var t = now + tFromNow;
     var n = p5.prototype.midiToFreq(note);
-    
     this._isOn = true;
-    this.oscillator.freq(n, 0, t);
-    this.env.ramp(this.output, t, velocity);
+
+    this.oscillator.freq(n, 0, tFromNow);
+    this.env.ramp(this.output, tFromNow, velocity);
   };
 
   /**
@@ -169,7 +168,7 @@ define(function (require) {
     this.oscillator.setType(options.oscillator.type);
 
     this.env.setADSR(options.env.attack, options.env.decay,
-            options.env.sustain, options.env.release);
+          options.env.sustain, options.env.release);
 
     this.filter.setType(options.filter.type);
     this.filter.set(options.filter.freq, options.filter.res);
