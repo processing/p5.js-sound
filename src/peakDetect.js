@@ -1,8 +1,6 @@
-define(function (require) {
-  'use strict';
+'use strict';
 
-  var p5sound = require('master');
-
+define(function () {
   /**
    *  <p>PeakDetect works in conjunction with p5.FFT to
    *  look for onsets in some or all of the frequency spectrum.
@@ -35,7 +33,7 @@ define(function (require) {
    *  href="http://www.airtightinteractive.com/2013/10/making-audio-reactive-visuals/"
    *  target="_blank">Felix Turner</a>.
    *  </p>
-   *  
+   *
    *  @class  p5.PeakDetect
    *  @constructor
    *  @param {Number} [freq1]     lowFrequency - defaults to 20Hz
@@ -46,7 +44,7 @@ define(function (require) {
    *  @param {Number} [framesPerPeak]     Defaults to 20.
    *  @example
    *  <div><code>
-   *  
+   *
    *  var cnv, soundFile, fft, peakDetect;
    *  var ellipseWidth = 10;
    *
@@ -94,11 +92,8 @@ define(function (require) {
    *  </code></div>
    */
   p5.PeakDetect = function(freq1, freq2, threshold, _framesPerPeak) {
-    var framesPerPeak;
-
     // framesPerPeak determines how often to look for a beat.
     // If a beat is provided, try to look for a beat based on bpm
-
     this.framesPerPeak = _framesPerPeak || 20;
     this.framesSinceLastPeak = 0;
     this.decayRate = 0.95;
@@ -106,7 +101,7 @@ define(function (require) {
     this.threshold = threshold || 0.35;
     this.cutoff = 0;
 
-    // how much to increase the cutoff 
+    // how much to increase the cutoff
     // TO DO: document this / figure out how to make it accessible
     this.cutoffMult = 1.5;
 
@@ -118,9 +113,8 @@ define(function (require) {
 
     /**
      *  isDetected is set to true when a peak is detected.
-     *  
-     *  @attribute isDetected
-     *  @type {Boolean}
+     *
+     *  @attribute isDetected {Boolean}
      *  @default  false
      */
     this.isDetected = false;
@@ -145,7 +139,7 @@ define(function (require) {
    */
   p5.PeakDetect.prototype.update = function(fftObject) {
     var nrg = this.energy = fftObject.getEnergy(this.f1,this.f2)/255;
-    if (nrg > this.cutoff && nrg > this.threshold && nrg-this.penergy > 0){
+    if (nrg > this.cutoff && nrg > this.threshold && nrg-this.penergy > 0) {
 
       // trigger callback
       this._onPeak();
@@ -172,7 +166,7 @@ define(function (require) {
    *  onPeak accepts two arguments: a function to call when
    *  a peak is detected. The value of the peak,
    *  between 0.0 and 1.0, is passed to the callback.
-   *   
+   *
    *  @method  onPeak
    *  @param  {Function} callback Name of a function that will
    *                              be called when a peak is
@@ -184,38 +178,38 @@ define(function (require) {
    *  <div><code>
    *  var cnv, soundFile, fft, peakDetect;
    *  var ellipseWidth = 0;
-   *  
+   *
    *  function setup() {
    *    cnv = createCanvas(100,100);
    *    textAlign(CENTER);
-   *  
+   *
    *    soundFile = loadSound('assets/beat.mp3');
    *    fft = new p5.FFT();
    *    peakDetect = new p5.PeakDetect();
-   *  
+   *
    *    setupSound();
-   *  
+   *
    *    // when a beat is detected, call triggerBeat()
    *    peakDetect.onPeak(triggerBeat);
    *  }
-   *  
+   *
    *  function draw() {
    *    background(0);
    *    fill(255);
    *    text('click to play', width/2, height/2);
-   *  
+   *
    *    fft.analyze();
    *    peakDetect.update(fft);
-   *  
+   *
    *    ellipseWidth *= 0.95;
    *    ellipse(width/2, height/2, ellipseWidth, ellipseWidth);
    *  }
-   *  
+   *
    *  // this function is called by peakDetect.onPeak
    *  function triggerBeat() {
    *    ellipseWidth = 50;
    *  }
-   *  
+   *
    *  // mouseclick starts/stops sound
    *  function setupSound() {
    *    cnv.mouseClicked( function() {

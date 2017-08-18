@@ -1,6 +1,6 @@
-define(function (require) {
-  'use strict';
+'use strict';
 
+define(function (require) {
   var p5sound = require('master');
 
   /**
@@ -26,11 +26,11 @@ define(function (require) {
    *  to as <code>bins</code>. The array is 1024 bins long by default.
    *  You can change the bin array length, but it must be a power of 2
    *  between 16 and 1024 in order for the FFT algorithm to function
-   *  correctly. The actual size of the FFT buffer is twice the 
+   *  correctly. The actual size of the FFT buffer is twice the
    *  number of bins, so given a standard sample rate, the buffer is
    *  2048/44100 seconds long.</p>
-   *  
-   * 
+   *
+   *
    *  @class p5.FFT
    *  @constructor
    *  @param {Number} [smoothing]   Smooth results of Freq Spectrum.
@@ -39,24 +39,23 @@ define(function (require) {
    *  @param {Number} [bins]    Length of resulting array.
    *                            Must be a power of two between
    *                            16 and 1024. Defaults to 1024.
-   *  @return {Object}    FFT Object
    *  @example
    *  <div><code>
    *  function preload(){
    *    sound = loadSound('assets/Damscray_DancingTiger.mp3');
    *  }
-   *  
+   *
    *  function setup(){
    *    var cnv = createCanvas(100,100);
    *    cnv.mouseClicked(togglePlay);
    *    fft = new p5.FFT();
    *    sound.amp(0.2);
    *  }
-   *  
+   *
    *  function draw(){
    *    background(0);
-   *  
-   *    var spectrum = fft.analyze(); 
+   *
+   *    var spectrum = fft.analyze();
    *    noStroke();
    *    fill(0,255,0); // spectrum is green
    *    for (var i = 0; i< spectrum.length; i++){
@@ -64,7 +63,7 @@ define(function (require) {
    *      var h = -height + map(spectrum[i], 0, 255, height, 0);
    *      rect(x, height, width / spectrum.length, h )
    *    }
-   *  
+   *
    *    var waveform = fft.waveform();
    *    noFill();
    *    beginShape();
@@ -76,10 +75,10 @@ define(function (require) {
    *      vertex(x,y);
    *    }
    *    endShape();
-   *  
+   *
    *    text('click to play/pause', 4, 10);
    *  }
-   *  
+   *
    *  // fade sound if mouse is over canvas
    *  function togglePlay() {
    *    if (sound.isPlaying()) {
@@ -91,21 +90,42 @@ define(function (require) {
    *  </code></div>
    */
   p5.FFT = function(smoothing, bins) {
-    this.smoothing = smoothing || 0.8;
-    this.bins = bins || 1024;
-    var FFT_SIZE = bins*2 || 2048;
     this.input = this.analyser = p5sound.audiocontext.createAnalyser();
+
+    Object.defineProperties(this, {
+      'bins': {
+        get: function() {
+          return this.analyser.fftSize / 2;
+        },
+        set: function(b) {
+          this.analyser.fftSize = b * 2;
+        },
+        configurable: true,
+        enumerable: true
+      },
+      'smoothing': {
+        get: function() {
+          return this.analyser.smoothingTimeConstant;
+        },
+        set: function(s) {
+          this.analyser.smoothingTimeConstant = s;
+        },
+        configurable: true,
+        enumerable: true
+      }
+    });
+
+    // set default smoothing and bins
+    this.smooth(smoothing);
+    this.bins = bins || 1024;
 
     // default connections to p5sound fftMeter
     p5sound.fftMeter.connect(this.analyser);
 
-    this.analyser.smoothingTimeConstant = this.smoothing;
-    this.analyser.fftSize = FFT_SIZE;
-
     this.freqDomain = new Uint8Array(this.analyser.frequencyBinCount);
     this.timeDomain = new Uint8Array(this.analyser.frequencyBinCount);
 
-    // predefined frequency ranages, these will be tweakable
+    // predefined frequency ranges, these will be tweakable
     this.bass = [20, 140];
     this.lowMid = [140, 400];
     this.mid = [400, 2600];
@@ -140,8 +160,8 @@ define(function (require) {
    *  Returns an array of amplitude values (between -1.0 and +1.0) that represent
    *  a snapshot of amplitude readings in a single buffer. Length will be
    *  equal to bins (defaults to 1024). Can be used to draw the waveform
-   *  of a sound. 
-   *  
+   *  of a sound.
+   *
    *  @method waveform
    *  @param {Number} [bins]    Must be a power of two between
    *                            16 and 1024. Defaults to 1024.
@@ -156,11 +176,11 @@ define(function (require) {
     var bins, mode, normalArray;
 
     for (var i = 0; i < arguments.length; i++) {
-      if (typeof(arguments[i]) === 'number') {
+      if (typeof arguments[i] === 'number') {
         bins = arguments[i];
         this.analyser.fftSize = bins * 2;
       }
-      if (typeof(arguments[i]) === 'string') {
+      if (typeof arguments[i] === 'string') {
         mode = arguments[i];
       }
     }
@@ -174,8 +194,8 @@ define(function (require) {
       timeToInt(this, this.timeDomain);
       this.analyser.getByteTimeDomainData(this.timeDomain);
       var  normalArray = new Array();
-      for (var i = 0; i < this.timeDomain.length; i++) {
-        var scaled = p5.prototype.map(this.timeDomain[i], 0, 255, -1, 1);
+      for (var j = 0; j < this.timeDomain.length; j++) {
+        var scaled = p5.prototype.map(this.timeDomain[j], 0, 255, -1, 1);
         normalArray.push(scaled);
       }
       return normalArray;
@@ -223,7 +243,7 @@ define(function (require) {
    *    freq = constrain(freq, 1, 20000);
    *    osc.freq(freq);
    *
-   *    var spectrum = fft.analyze(); 
+   *    var spectrum = fft.analyze();
    *    noStroke();
    *    fill(0,255,0); // spectrum is green
    *    for (var i = 0; i< spectrum.length; i++){
@@ -233,7 +253,7 @@ define(function (require) {
    *    }
    *
    *    stroke(255);
-   *    text('Freq: ' + round(freq)+'Hz', 10, 10); 
+   *    text('Freq: ' + round(freq)+'Hz', 10, 10);
    *
    *    isMouseOverCanvas();
    *  }
@@ -248,18 +268,18 @@ define(function (require) {
    *    }
    *  }
    *  </code></div>
-   *                                   
+   *
    *
    */
   p5.FFT.prototype.analyze = function() {
-    var bins, mode;
+    var mode;
 
     for (var i = 0; i < arguments.length; i++) {
-      if (typeof(arguments[i]) === 'number') {
-        bins = this.bins = arguments[i];
+      if (typeof arguments[i] === 'number') {
+        this.bins = arguments[i];
         this.analyser.fftSize = this.bins * 2;
       }
-      if (typeof(arguments[i]) === 'string') {
+      if (typeof arguments[i] === 'string') {
         mode = arguments[i];
       }
     }
@@ -287,12 +307,12 @@ define(function (require) {
    *  to frequency (in Hz), or a String corresponding to predefined
    *  frequency ranges ("bass", "lowMid", "mid", "highMid", "treble").
    *  Returns a range between 0 (no energy/volume at that frequency) and
-   *  255 (maximum energy). 
+   *  255 (maximum energy).
    *  <em>NOTE: analyze() must be called prior to getEnergy(). Analyze()
    *  tells the FFT to analyze frequency data, and getEnergy() uses
    *  the results determine the value at a specific frequency or
    *  range of frequencies.</em></p>
-   *  
+   *
    *  @method  getEnergy
    *  @param  {Number|String} frequency1   Will return a value representing
    *                                energy at this frequency. Alternately,
@@ -305,7 +325,7 @@ define(function (require) {
    *                                two frequencies.
    *  @return {Number}   Energy   Energy (volume/amplitude) from
    *                              0 and 255.
-   *                                       
+   *
    */
   p5.FFT.prototype.getEnergy = function(frequency1, frequency2) {
     var nyquist = p5sound.audiocontext.sampleRate/2;
@@ -327,7 +347,7 @@ define(function (require) {
       frequency2 = this.treble[1];
     }
 
-    if (typeof(frequency1) !== 'number') {
+    if (typeof frequency1 !== 'number') {
       throw 'invalid input for getEnergy()';
     }
 
@@ -369,21 +389,19 @@ define(function (require) {
     console.log('getFreq() is deprecated. Please use getEnergy() instead.');
     var x = this.getEnergy(freq1, freq2);
     return x;
-  }
-
-  
+  };
 
   /**
-   *  Returns the 
+   *  Returns the
    *  <a href="http://en.wikipedia.org/wiki/Spectral_centroid" target="_blank">
    *  spectral centroid</a> of the input signal.
    *  <em>NOTE: analyze() must be called prior to getCentroid(). Analyze()
    *  tells the FFT to analyze frequency data, and getCentroid() uses
    *  the results determine the spectral centroid.</em></p>
-   *  
+   *
    *  @method  getCentroid
    *  @return {Number}   Spectral Centroid Frequency   Frequency of the spectral centroid in Hz.
-   * 
+   *
    *
    * @example
    *  <div><code>
@@ -402,27 +420,27 @@ define(function (require) {
    *
    *  var centroidplot = 0.0;
    *  var spectralCentroid = 0;
-   *  
-   *  
+   *
+   *
    *  background(0);
    *  stroke(0,255,0);
-   *  var spectrum = fft.analyze(); 
+   *  var spectrum = fft.analyze();
    *  fill(0,255,0); // spectrum is green
-   *  
+   *
    *  //draw the spectrum
-   *  
+   *
    *  for (var i = 0; i< spectrum.length; i++){
    *    var x = map(log(i), 0, log(spectrum.length), 0, width);
    *    var h = map(spectrum[i], 0, 255, 0, height);
    *    var rectangle_width = (log(i+1)-log(i))*(width/log(spectrum.length));
    *    rect(x, height, rectangle_width, -h )
    *  }
-  
+
    *  var nyquist = 22050;
-   *  
+   *
    *  // get the centroid
    *  spectralCentroid = fft.getCentroid();
-   *  
+   *
    *  // the mean_freq_index calculation is for the display.
    *  var mean_freq_index = spectralCentroid/(nyquist/spectrum.length);
    *
@@ -430,7 +448,7 @@ define(function (require) {
    *
    *
    *  stroke(255,0,0); // the line showing where the centroid is will be red
-   *  
+   *
    *  rect(centroidplot, 0, width / spectrum.length, height)
    *  noStroke();
    *  fill(255,255,255);  // text is white
@@ -452,27 +470,27 @@ define(function (require) {
 
     var mean_freq_index = 0;
 
-    if (centroid_normalization != 0)
+    if (centroid_normalization !== 0)
     {
-      mean_freq_index = (cumulative_sum / centroid_normalization);
+      mean_freq_index = cumulative_sum / centroid_normalization;
     }
 
-    var spec_centroid_freq = (mean_freq_index * (nyquist / this.freqDomain.length));
+    var spec_centroid_freq = mean_freq_index * (nyquist / this.freqDomain.length);
     return spec_centroid_freq;
-  }
+  };
 
   /**
    *  Smooth FFT analysis by averaging with the last analysis frame.
-   *  
+   *
    *  @method smooth
    *  @param {Number} smoothing    0.0 < smoothing < 1.0.
    *                               Defaults to 0.8.
    */
   p5.FFT.prototype.smooth = function(s) {
-    if (s) {
+    if (typeof s !== 'undefined') {
       this.smoothing = s;
     }
-    this.analyser.smoothingTimeConstant = s;
+    return this.smoothing;
   };
 
   p5.FFT.prototype.dispose = function() {
@@ -482,7 +500,123 @@ define(function (require) {
 
     this.analyser.disconnect();
     this.analyser = undefined;
-  }
+  };
+
+  /**
+   *  Returns an array of average amplitude values for a given number
+   *  of frequency bands split equally. N defaults to 16.
+   *  <em>NOTE: analyze() must be called prior to linAverages(). Analyze()
+   *  tells the FFT to analyze frequency data, and linAverages() uses
+   *  the results to group them into a smaller set of averages.</em></p>
+   *
+   *  @method  linAverages
+   *  @param  {Number}  N                Number of returned frequency groups
+   *  @return {Array}   linearAverages   Array of average amplitude values for each group
+   */
+  p5.FFT.prototype.linAverages = function(N) {
+    var N = N || 16; // This prevents undefined, null or 0 values of N
+
+    var spectrum = this.freqDomain;
+    var spectrumLength = spectrum.length;
+    var spectrumStep = Math.floor(spectrumLength / N);
+
+    var linearAverages = new Array(N);
+    // Keep a second index for the current average group and place the values accordingly
+    // with only one loop in the spectrum data
+    var groupIndex = 0;
+
+    for (var specIndex = 0; specIndex < spectrumLength; specIndex++) {
+
+      linearAverages[groupIndex] = linearAverages[groupIndex] !== undefined
+        ? (linearAverages[groupIndex] + spectrum[specIndex]) / 2
+        : spectrum[specIndex];
+
+      // Increase the group index when the last element of the group is processed
+      if (specIndex % spectrumStep === spectrumStep - 1) {
+        groupIndex++;
+      }
+    }
+
+    return linearAverages;
+  };
+
+  /**
+   *  Returns an array of average amplitude values of the spectrum, for a given
+   *  set of <a href="https://en.wikipedia.org/wiki/Octave_band" target="_blank">
+   *  Octave Bands</a>
+   *  <em>NOTE: analyze() must be called prior to logAverages(). Analyze()
+   *  tells the FFT to analyze frequency data, and logAverages() uses
+   *  the results to group them into a smaller set of averages.</em></p>
+   *
+   *  @method  logAverages
+   *  @param  {Array}   octaveBands    Array of Octave Bands objects for grouping
+   *  @return {Array}   logAverages    Array of average amplitude values for each group
+   */
+  p5.FFT.prototype.logAverages = function(octaveBands) {
+    var nyquist = p5sound.audiocontext.sampleRate / 2;
+    var spectrum = this.freqDomain;
+    var spectrumLength = spectrum.length;
+
+    var logAverages = new Array(octaveBands.length);
+    // Keep a second index for the current average group and place the values accordingly
+    // With only one loop in the spectrum data
+    var octaveIndex = 0;
+
+    for (var specIndex = 0; specIndex < spectrumLength; specIndex++) {
+      var specIndexFrequency = Math.round(specIndex * nyquist / this.freqDomain.length);
+
+      // Increase the group index if the current frequency exceeds the limits of the band
+      if (specIndexFrequency > octaveBands[octaveIndex].hi) {
+        octaveIndex++;
+      }
+
+      logAverages[octaveIndex] = logAverages[octaveIndex] !== undefined
+        ? (logAverages[octaveIndex] + spectrum[specIndex]) / 2
+        : spectrum[specIndex];
+    }
+
+    return logAverages;
+  };
+
+  /**
+   *  Calculates and Returns the 1/N
+   *  <a href="https://en.wikipedia.org/wiki/Octave_band" target="_blank">Octave Bands</a>
+   *  N defaults to 3 and minimum central frequency to 15.625Hz.
+   *  (1/3 Octave Bands ~= 31 Frequency Bands)
+   *  Setting fCtr0 to a central value of a higher octave will ignore the lower bands
+   *  and produce less frequency groups.
+   *
+   *  @method   getOctaveBands
+   *  @param  {Number}  N             Specifies the 1/N type of generated octave bands
+   *  @param  {Number}  fCtr0         Minimum central frequency for the lowest band
+   *  @return {Array}   octaveBands   Array of octave band objects with their bounds
+   */
+  p5.FFT.prototype.getOctaveBands = function(N, fCtr0) {
+    var N = N || 3;               // Default to 1/3 Octave Bands
+    var fCtr0 = fCtr0 || 15.625;  // Minimum central frequency, defaults to 15.625Hz
+
+    var octaveBands = [];
+    var lastFrequencyBand = {
+      lo: fCtr0 / Math.pow(2, 1 / (2*N)),
+      ctr: fCtr0,
+      hi: fCtr0 * Math.pow(2, 1 / (2*N)),
+    };
+    octaveBands.push(lastFrequencyBand);
+
+    var nyquist = p5sound.audiocontext.sampleRate / 2;
+    while (lastFrequencyBand.hi < nyquist) {
+
+      var newFrequencyBand = {};
+      newFrequencyBand.lo = lastFrequencyBand.hi;
+      newFrequencyBand.ctr = lastFrequencyBand.ctr * Math.pow(2, 1 / N);
+      newFrequencyBand.hi = newFrequencyBand.ctr * Math.pow(2, 1 / (2*N));
+
+      octaveBands.push(newFrequencyBand);
+      lastFrequencyBand = newFrequencyBand;
+    }
+
+    return octaveBands;
+  };
 
   // helper methods to convert type from float (dB) to int (0-255)
   var freqToFloat = function (fft) {

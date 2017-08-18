@@ -1,42 +1,49 @@
-define(function (require) {
-  'use strict';
+'use strict';
 
-  var p5sound = require('master');
+define(function (require) {
   var Filter = require('filter');
+  var Effect = require('effect');
+
   /**
    *  Delay is an echo effect. It processes an existing sound source,
    *  and outputs a delayed version of that sound. The p5.Delay can
    *  produce different effects depending on the delayTime, feedback,
-   *  filter, and type. In the example below, a feedback of 0.5 will
-   *  produce a looping delay that decreases in volume by
-   *  50% each repeat. A filter will cut out the high frequencies so
-   *  that the delay does not sound as piercing as the original source.
-   *  
+   *  filter, and type. In the example below, a feedback of 0.5 (the
+   *  defaul value) will produce a looping delay that decreases in
+   *  volume by 50% each repeat. A filter will cut out the high
+   *  frequencies so that the delay does not sound as piercing as the
+   *  original source.
+   *
+   *
+   *  This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.  
+   *  Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>, 
+   *  <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and 
+   *  <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
    *  @class p5.Delay
+   *  @extends p5.Effect
    *  @constructor
-   *  @return {Object} Returns a p5.Delay object
    *  @example
    *  <div><code>
    *  var noise, env, delay;
-   *  
+   *
    *  function setup() {
    *    background(0);
    *    noStroke();
    *    fill(255);
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
-   *    
+   *
    *    noise = new p5.Noise('brown');
    *    noise.amp(0);
    *    noise.start();
-   *    
+   *
    *    delay = new p5.Delay();
    *
    *    // delay.process() accepts 4 parameters:
    *    // source, delayTime, feedback, filter frequency
    *    // play with these numbers!!
    *    delay.process(noise, .12, .7, 2300);
-   *    
+   *
    *    // play the noise with an envelope,
    *    // a series of fades ( time / value pairs )
    *    env = new p5.Env(.01, 0.2, .2, .1);
@@ -52,10 +59,7 @@ define(function (require) {
    *  </code></div>
    */
   p5.Delay = function() {
-    this.ac = p5sound.audiocontext;
-
-    this.input = this.ac.createGain();
-    this.output = this.ac.createGain();
+  	Effect.call(this);
 
     this._split = this.ac.createChannelSplitter(2);
     this._merge = this.ac.createChannelMerger(2);
@@ -67,23 +71,21 @@ define(function (require) {
      *  The p5.Delay is built with two
      *  <a href="http://www.w3.org/TR/webaudio/#DelayNode">
      *  Web Audio Delay Nodes</a>, one for each stereo channel.
-     *  
-     *  @property leftDelay
-     *  @type {Object}  Web Audio Delay Node
+     *
+     *  @property {DelayNode} leftDelay
      */
     this.leftDelay = this.ac.createDelay();
     /**
      *  The p5.Delay is built with two
      *  <a href="http://www.w3.org/TR/webaudio/#DelayNode">
      *  Web Audio Delay Nodes</a>, one for each stereo channel.
-     *  
-     *  @property rightDelay
-     *  @type {Object}  Web Audio Delay Node
+     *
+     *  @property {DelayNode} rightDelay
      */
     this.rightDelay = this.ac.createDelay();
 
-    this._leftFilter = new p5.Filter();
-    this._rightFilter = new p5.Filter();
+    this._leftFilter = new Filter();
+    this._rightFilter = new Filter();
     this._leftFilter.disconnect();
     this._rightFilter.disconnect();
 
@@ -98,8 +100,8 @@ define(function (require) {
     this.rightDelay.connect(this._rightGain);
     this._leftGain.connect(this._leftFilter.input);
     this._rightGain.connect(this._rightFilter.input);
-    this._merge.connect(this.output);
-    this.output.connect(p5.soundOut.input);
+    this._merge.connect(this.wet);
+
 
     this._leftFilter.biquad.gain.setValueAtTime(1, this.ac.currentTime);
     this._rightFilter.biquad.gain.setValueAtTime(1, this.ac.currentTime);
@@ -109,14 +111,17 @@ define(function (require) {
 
     this._maxDelay = this.leftDelay.delayTime.maxValue;
 
-    // add this p5.SoundFile to the soundArray
-    p5sound.soundArray.push(this);
+    // set initial feedback to 0.5
+    this.feedback(0.5);
+
+
   };
 
+  p5.Delay.prototype = Object.create(Effect.prototype);
   /**
    *  Add delay to an audio signal according to a set
    *  of delay parameters.
-   *  
+   *
    *  @method  process
    *  @param  {Object} Signal  An object that outputs audio
    *  @param  {Number} [delayTime] Time (in seconds) of the delay/echo.
@@ -142,8 +147,8 @@ define(function (require) {
     src.connect(this.input);
     this.leftDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
     this.rightDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
-    this._leftGain.gain.setValueAtTime(feedback, this.ac.currentTime);
-    this._rightGain.gain.setValueAtTime(feedback, this.ac.currentTime);
+    this._leftGain.gain.value = feedback;
+    this._rightGain.gain.value = feedback;
 
     if (_filter) {
       this._leftFilter.freq(_filter);
@@ -160,14 +165,14 @@ define(function (require) {
    */
   p5.Delay.prototype.delayTime = function(t) {
     // if t is an audio node...
-    if (typeof(t) !== 'number'){
+    if (typeof t !== 'number') {
       t.connect(this.leftDelay.delayTime);
       t.connect(this.rightDelay.delayTime);
     }
 
     else {
       this.leftDelay.delayTime.cancelScheduledValues(this.ac.currentTime);
-      this.rightDelay.delayTime.cancelScheduledValues(this.ac.currentTime);  
+      this.rightDelay.delayTime.cancelScheduledValues(this.ac.currentTime);
       this.leftDelay.delayTime.linearRampToValueAtTime(t, this.ac.currentTime);
       this.rightDelay.delayTime.linearRampToValueAtTime(t, this.ac.currentTime);
     }
@@ -178,34 +183,39 @@ define(function (require) {
    *  in a loop. The feedback amount determines how much signal to send each
    *  time through the loop. A feedback greater than 1.0 is not desirable because
    *  it will increase the overall output each time through the loop,
-   *  creating an infinite feedback loop.
-   *  
+   *  creating an infinite feedback loop. The default value is 0.5
+   *
    *  @method  feedback
    *  @param {Number|Object} feedback 0.0 to 1.0, or an object such as an
    *                                  Oscillator that can be used to
    *                                  modulate this param
+   *  @returns {Number} Feedback value
+   *
    */
   p5.Delay.prototype.feedback = function(f) {
     // if f is an audio node...
-    if (typeof(f) !== 'number'){
+    if (f && typeof f !== 'number') {
       f.connect(this._leftGain.gain);
       f.connect(this._rightGain.gain);
     }
     else if (f >= 1.0) {
       throw new Error('Feedback value will force a positive feedback loop.');
     }
-    else {
-      this._leftGain.gain.exponentialRampToValueAtTime(f, this.ac.currentTime);
-      this._rightGain.gain.exponentialRampToValueAtTime(f, this.ac.currentTime);
+    else if (typeof f === 'number') {
+      this._leftGain.gain.value = f;
+      this._rightGain.gain.value = f;
     }
+
+    // return value of feedback
+    return this._leftGain.gain.value;
   };
 
   /**
    *  Set a lowpass filter frequency for the delay. A lowpass filter
    *  will cut off any frequencies higher than the filter frequency.
-   *   
+   *
    *  @method  filter
-   *  @param {Number|Object} cutoffFreq  A lowpass filter will cut off any 
+   *  @param {Number|Object} cutoffFreq  A lowpass filter will cut off any
    *                              frequencies higher than the filter frequency.
    *  @param {Number|Object} res  Resonance of the filter frequency
    *                              cutoff, or an object (i.e. a p5.Oscillator)
@@ -223,7 +233,7 @@ define(function (require) {
    *  Choose a preset type of delay. 'pingPong' bounces the signal
    *  from the left to the right channel to produce a stereo effect.
    *  Any other parameter will revert to the default delay setting.
-   *  
+   *
    *  @method  setType
    *  @param {String|Number} type 'pingPong' (1) or 'default' (0)
    */
@@ -243,72 +253,50 @@ define(function (require) {
         this._rightFilter.output.connect(this._merge, 0, 1);
         this._leftFilter.output.connect(this.rightDelay);
         this._rightFilter.output.connect(this.leftDelay);
-        break
+        break;
       default:
         this._leftFilter.output.connect(this._merge, 0, 0);
-        this._leftFilter.output.connect(this._merge, 0, 1);
+        this._rightFilter.output.connect(this._merge, 0, 1);
         this._leftFilter.output.connect(this.leftDelay);
-        this._leftFilter.output.connect(this.rightDelay);
+        this._rightFilter.output.connect(this.rightDelay);
     }
   };
 
+  // DocBlocks for methods inherited from p5.Effect
   /**
    *  Set the output level of the delay effect.
-   *  
+   *
    *  @method  amp
    *  @param  {Number} volume amplitude between 0 and 1.0
-   *  @param {Number} [rampTime] create a fade that lasts rampTime 
+   *  @param {Number} [rampTime] create a fade that lasts rampTime
    *  @param {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
    */
-  p5.Delay.prototype.amp = function(vol, rampTime, tFromNow){
-    var rampTime = rampTime || 0;
-    var tFromNow = tFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
-    var currentVol = this.output.gain.value;
-    this.output.gain.cancelScheduledValues(now);
-    this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow + .001);
-    this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
-  };
-
   /**
    *  Send output to a p5.sound or web audio object
-   *  
+   *
    *  @method  connect
    *  @param  {Object} unit
    */
-  p5.Delay.prototype.connect = function(unit) {
-    var u = unit || p5.soundOut.input;
-    this.output.connect(u);
-  };
-
   /**
    *  Disconnect all output.
-   *  
+   *
    *  @method disconnect
    */
-  p5.Delay.prototype.disconnect = function() {
-    this.output.disconnect();
-  };
 
   p5.Delay.prototype.dispose = function() {
-    // remove reference from soundArray
-    var index = p5sound.soundArray.indexOf(this);
-    p5sound.soundArray.splice(index, 1);
 
-    this.input.disconnect();
-    this.output.disconnect();
+    Effect.prototype.dispose.apply(this);
+
     this._split.disconnect();
-    this._leftFilter.disconnect();
-    this._rightFilter.disconnect();
+    this._leftFilter.dispose();
+    this._rightFilter.dispose();
     this._merge.disconnect();
     this._leftGain.disconnect();
     this._rightGain.disconnect();
     this.leftDelay.disconnect();
     this.rightDelay.disconnect();
 
-    this.input = undefined;
-    this.output = undefined;
     this._split = undefined;
     this._leftFilter = undefined;
     this._rightFilter = undefined;
@@ -317,6 +305,6 @@ define(function (require) {
     this._rightGain = undefined;
     this.leftDelay = undefined;
     this.rightDelay = undefined;
-  }
+  };
 
 });

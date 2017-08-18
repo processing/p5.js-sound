@@ -1,5 +1,5 @@
 
-![](http://p5js.org/img/libraries/sound.jpg)
+![](https://cloud.githubusercontent.com/assets/504124/19908328/2cd874ea-a059-11e6-847c-e5da5e957a2f.jpg)
 
 p5.sound
 ========
@@ -9,9 +9,9 @@ p5.sound brings the [Processing](http://processing.org) approach to [Web Audio](
 
  Examples
 ========
-#### [>> p5js.org/learn](http://p5js.org/learn/)  ***<-- interactive examples!***
+#### [>> p5js.org/learn](https://p5js.org/examples/)  ***<-- interactive examples!***
 
-#### [>> examples on github](https://github.com/therewasaguy/p5.sound/tree/master/examples)
+#### [>> examples on github](https://processing.github.io/p5.js-sound/)
 
 
 Docs

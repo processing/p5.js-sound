@@ -1,5 +1,6 @@
+'use strict';
+
 define(function (require) {
-  'use strict';
 
   var p5sound = require('master');
   var Add = require('Tone/signal/Add');
@@ -16,7 +17,7 @@ define(function (require) {
    *  of an object, a series of fades referred to as Attack, Decay,
    *  Sustain and Release (
    *  <a href="https://upload.wikimedia.org/wikipedia/commons/e/ea/ADSR_parameter.svg">ADSR</a>
-   *  ). Envelopes can also control other Web Audio Parameters—for example, a p5.Env can 
+   *  ). Envelopes can also control other Web Audio Parameters—for example, a p5.Env can
    *  control an Oscillator's frequency like this: <code>osc.freq(env)</code>.</p>
    *  <p>Use <code><a href="#/p5.Env/setRange">setRange</a></code> to change the attack/release level.
    *  Use <code><a href="#/p5.Env/setADSR">setADSR</a></code> to change attackTime, decayTime, sustainPercent and releaseTime.</p>
@@ -24,7 +25,7 @@ define(function (require) {
    *  the <code><a href="#/p5.Env/ramp">ramp</a></code> method for a pingable trigger,
    *  or <code><a href="#/p5.Env/triggerAttack">triggerAttack</a></code>/
    *  <code><a href="#/p5.Env/triggerRelease">triggerRelease</a></code> to trigger noteOn/noteOff.</p>
-   *  
+   *
    *  @class p5.Env
    *  @constructor
    *  @example
@@ -62,9 +63,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Env = function(t1, l1, t2, l2, t3, l3){
-    var now = p5sound.audiocontext.currentTime;
-
+  p5.Env = function(t1, l1, t2, l2, t3, l3) {
     /**
      * Time until envelope reaches attackLevel
      * @property attackTime
@@ -101,7 +100,7 @@ define(function (require) {
     this._rampLowPercentage = 0.02;
 
 
-    this.output = p5sound.audiocontext.createGain();;
+    this.output = p5sound.audiocontext.createGain();
 
     this.control = new TimelineSignal();
 
@@ -136,7 +135,7 @@ define(function (require) {
     var t = now;
     this.control.setTargetAtTime(0.00001, t, .001);
     //also, compute the correct time constants
-    this._setRampAD(this.aTime, this.dTime)
+    this._setRampAD(this.aTime, this.dTime);
   };
 
   /**
@@ -152,14 +151,49 @@ define(function (require) {
    *                                 decayLevel = sustainLevel)
    *  @param {Number} releaseTime   Release Time (in seconds)
    *  @param {Number} releaseLevel  Amplitude
+   *  @example
+   *  <div><code>
+   *  var t1 = 0.1; // attack time in seconds
+   *  var l1 = 0.7; // attack level 0.0 to 1.0
+   *  var t2 = 0.3; // decay time in seconds
+   *  var l2 = 0.1; // decay level  0.0 to 1.0
+   *  var t3 = 0.2; // sustain time in seconds
+   *  var l3 = dL; // sustain level  0.0 to 1.0
+   *  // release level defaults to zero
+   *
+   *  var env;
+   *  var triOsc;
+   *
+   *  function setup() {
+   *    background(0);
+   *    noStroke();
+   *    fill(255);
+   *    textAlign(CENTER);
+   *    text('click to play', width/2, height/2);
+   *
+   *    env = new p5.Env(t1, l1, t2, l2, t3, l3);
+   *    triOsc = new p5.Oscillator('triangle');
+   *    triOsc.amp(env); // give the env control of the triOsc's amp
+   *    triOsc.start();
+   *  }
+   *
+   *  // mouseClick triggers envelope if over canvas
+   *  function mouseClicked() {
+   *    // is mouse over canvas?
+   *    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
+   *      env.play(triOsc);
+   *    }
+   *  }
+   *  </code></div>
+   *
    */
-  p5.Env.prototype.set = function(t1, l1, t2, l2, t3, l3){
+  p5.Env.prototype.set = function(t1, l1, t2, l2, t3, l3) {
     this.aTime = t1;
     this.aLevel = l1;
     this.dTime = t2 || 0;
     this.dLevel = l2 || 0;
-    this.rTime = t4 || 0;
-    this.rLevel = l4 || 0;
+    this.rTime = t3 || 0;
+    this.rLevel = l3 || 0;
 
     // set time constants for ramp
     this._setRampAD(t1, t2);
@@ -170,7 +204,7 @@ define(function (require) {
    *  <a href="https://en.wikipedia.org/wiki/Synthesizer#/media/File:ADSR_parameter.svg">
    *  ADSR envelope
    *  </a>.
-   *  
+   *
    *  @method  setADSR
    *  @param {Number} attackTime    Time (in seconds before envelope
    *                                reaches Attack Level
@@ -220,13 +254,13 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Env.prototype.setADSR = function(aTime, dTime, sPercent, rTime){
+  p5.Env.prototype.setADSR = function(aTime, dTime, sPercent, rTime) {
     this.aTime = aTime;
     this.dTime = dTime || 0;
 
     // lerp
     this.sPercent = sPercent || 0;
-    this.dLevel = typeof(sPercent) !== 'undefined' ? sPercent * (this.aLevel - this.rLevel) + this.rLevel : 0;
+    this.dLevel = typeof sPercent !== 'undefined' ? sPercent * (this.aLevel - this.rLevel) + this.rLevel : 0;
 
     this.rTime = rTime || 0;
 
@@ -236,7 +270,7 @@ define(function (require) {
 
   /**
    *  Set max (attackLevel) and min (releaseLevel) of envelope.
-   *  
+   *
    *  @method  setRange
    *  @param {Number} aLevel attack level (defaults to 1)
    *  @param {Number} rLevel release level (defaults to 0)
@@ -287,7 +321,7 @@ define(function (require) {
     // } else if (this.sPercent) {
     //   this.dLevel = this.sPercent ? this.sPercent * (this.aLevel - this.rLevel) + this.rLevel : 0;
     // }
-  }
+  };
 
   //  private (undocumented) method called when ADSR is set to set time constants for ramp
   //
@@ -300,30 +334,30 @@ define(function (require) {
   //  param {Number} attackTimeConstant  attack time constant
   //  param {Number} decayTimeConstant   decay time constant
   //
-  p5.Env.prototype._setRampAD = function(t1, t2){
+  p5.Env.prototype._setRampAD = function(t1, t2) {
     this._rampAttackTime = this.checkExpInput(t1);
     this._rampDecayTime = this.checkExpInput(t2);
 
     var TCDenominator = 1.0;
     /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
-    TCDenominator = Math.log(1.0 / (this.checkExpInput(1.0 - this._rampHighPercentage)));
-    this._rampAttackTC = (t1 / this.checkExpInput(TCDenominator));
+    TCDenominator = Math.log(1.0 / this.checkExpInput(1.0 - this._rampHighPercentage));
+    this._rampAttackTC = t1 / this.checkExpInput(TCDenominator);
     TCDenominator = Math.log(1.0 / this._rampLowPercentage);
-    this._rampDecayTC = (t2 / this.checkExpInput(TCDenominator));
+    this._rampDecayTC = t2 / this.checkExpInput(TCDenominator);
   };
 
   // private method
-  p5.Env.prototype.setRampPercentages = function(p1, p2){
+  p5.Env.prototype.setRampPercentages = function(p1, p2) {
     //set the percentages that the simple exponential ramps go to
     this._rampHighPercentage = this.checkExpInput(p1);
     this._rampLowPercentage = this.checkExpInput(p2);
     var TCDenominator = 1.0;
     //now re-compute the time constants based on those percentages
     /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
-    TCDenominator = Math.log(1.0 / (this.checkExpInput(1.0 - this._rampHighPercentage)));
-    this._rampAttackTC = (this._rampAttackTime / this.checkExpInput(TCDenominator));
+    TCDenominator = Math.log(1.0 / this.checkExpInput(1.0 - this._rampHighPercentage));
+    this._rampAttackTC = this._rampAttackTime / this.checkExpInput(TCDenominator);
     TCDenominator = Math.log(1.0 / this._rampLowPercentage);
-    this._rampDecayTC = (this._rampDecayTime / this.checkExpInput(TCDenominator));
+    this._rampDecayTC = this._rampDecayTime / this.checkExpInput(TCDenominator);
   };
 
 
@@ -332,12 +366,12 @@ define(function (require) {
    *  If a p5.Sound object is given, then the p5.Env will control its
    *  output gain. If multiple inputs are provided, the env will
    *  control all of them.
-   *  
+   *
    *  @method  setInput
-   *  @param  {Object} unit         A p5.sound object or
+   *  @param  {Object} [...inputs]         A p5.sound object or
    *                                Web Audio Param.
    */
-  p5.Env.prototype.setInput = function(unit){
+  p5.Env.prototype.setInput = function() {
     for (var i = 0; i<arguments.length; i++) {
       this.connect(arguments[i]);
     }
@@ -347,11 +381,11 @@ define(function (require) {
    *  Set whether the envelope ramp is linear (default) or exponential.
    *  Exponential ramps can be useful because we perceive amplitude
    *  and frequency logarithmically.
-   *  
+   *
    *  @method  setExp
    *  @param {Boolean} isExp true is exponential, false is linear
    */
-  p5.Env.prototype.setExp = function(isExp){
+  p5.Env.prototype.setExp = function(isExp) {
     this.isExponential = isExp;
   };
 
@@ -414,8 +448,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Env.prototype.play = function(unit, secondsFromNow, susTime){
-    var now =  p5sound.audiocontext.currentTime;
+  p5.Env.prototype.play = function(unit, secondsFromNow, susTime) {
     var tFromNow = secondsFromNow || 0;
     var susTime = susTime || 0;
 
@@ -444,46 +477,46 @@ define(function (require) {
    *  @param  {Number} secondsFromNow time from now (in seconds)
    *  @example
    *  <div><code>
-   *  
+   *
    *  var attackLevel = 1.0;
    *  var releaseLevel = 0;
-   *  
+   *
    *  var attackTime = 0.001
    *  var decayTime = 0.3;
    *  var susPercent = 0.4;
    *  var releaseTime = 0.5;
-   *  
+   *
    *  var env, triOsc;
-   *  
+   *
    *  function setup() {
    *    var cnv = createCanvas(100, 100);
    *    background(200);
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
-   *  
+   *
    *    env = new p5.Env();
    *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
    *    env.setRange(attackLevel, releaseLevel);
-   *  
+   *
    *    triOsc = new p5.Oscillator('triangle');
    *    triOsc.amp(env);
    *    triOsc.start();
    *    triOsc.freq(220);
-   *  
+   *
    *    cnv.mousePressed(envAttack);
    *  }
-   *  
+   *
    *  function envAttack(){
    *    console.log('trigger attack');
    *    env.triggerAttack();
-   *  
+   *
    *    background(0,255,0);
    *    text('attack!', width/2, height/2);
    *  }
-   *  
+   *
    *  function mouseReleased() {
    *    env.triggerRelease();
-   *  
+   *
    *    background(200);
    *    text('click to play', width/2, height/2);
    *  }
@@ -505,7 +538,7 @@ define(function (require) {
     // get and set value (with linear ramp) to anchor automation
     var valToSet = this.control.getValueAtTime(t);
     this.control.cancelScheduledValues(t); // not sure if this is necessary
-    if (this.isExponential == true)
+    if (this.isExponential === true)
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(valToSet), t);
     }
@@ -521,7 +554,7 @@ define(function (require) {
 
     // attack
     t += this.aTime;
-    if (this.isExponential == true)
+    if (this.isExponential === true)
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(this.aLevel), t);
       valToSet = this.checkExpInput(this.control.getValueAtTime(t));
@@ -538,7 +571,7 @@ define(function (require) {
 
     // decay to decay level (if using ADSR, then decay level == sustain level)
     t += this.dTime;
-    if (this.isExponential == true)
+    if (this.isExponential === true)
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(this.dLevel), t);
       valToSet = this.checkExpInput(this.control.getValueAtTime(t));
@@ -564,46 +597,46 @@ define(function (require) {
    *  @param  {Number} secondsFromNow time to trigger the release
    *  @example
    *  <div><code>
-   *  
+   *
    *  var attackLevel = 1.0;
    *  var releaseLevel = 0;
-   *  
+   *
    *  var attackTime = 0.001
    *  var decayTime = 0.3;
    *  var susPercent = 0.4;
    *  var releaseTime = 0.5;
-   *  
+   *
    *  var env, triOsc;
-   *  
+   *
    *  function setup() {
    *    var cnv = createCanvas(100, 100);
    *    background(200);
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
-   *  
+   *
    *    env = new p5.Env();
    *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
    *    env.setRange(attackLevel, releaseLevel);
-   *  
+   *
    *    triOsc = new p5.Oscillator('triangle');
    *    triOsc.amp(env);
    *    triOsc.start();
    *    triOsc.freq(220);
-   *  
+   *
    *    cnv.mousePressed(envAttack);
    *  }
-   *  
+   *
    *  function envAttack(){
    *    console.log('trigger attack');
    *    env.triggerAttack();
-   *  
+   *
    *    background(0,255,0);
    *    text('attack!', width/2, height/2);
    *  }
-   *  
+   *
    *  function mouseReleased() {
    *    env.triggerRelease();
-   *  
+   *
    *    background(200);
    *    text('click to play', width/2, height/2);
    *  }
@@ -615,10 +648,10 @@ define(function (require) {
     if (!this.wasTriggered) {
       // this currently causes a bit of trouble:
       // if a later release has been scheduled (via the play function)
-      // a new earlier release won't interrupt it, because 
+      // a new earlier release won't interrupt it, because
       // this.wasTriggered has already been set to false.
-      // If we want new earlier releases to override, then we need to 
-      // keep track of the last release time, and if the new release time is 
+      // If we want new earlier releases to override, then we need to
+      // keep track of the last release time, and if the new release time is
       // earlier, then use it.
       return;
     }
@@ -636,7 +669,7 @@ define(function (require) {
     // get and set value (with linear or exponential ramp) to anchor automation
     var valToSet = this.control.getValueAtTime(t);
     this.control.cancelScheduledValues(t); // not sure if this is necessary
-    if (this.isExponential == true)
+    if (this.isExponential === true)
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(valToSet), t);
     }
@@ -644,11 +677,11 @@ define(function (require) {
     {
       this.control.linearRampToValueAtTime(valToSet, t);
     }
-    
+
     // release
     t += this.rTime;
 
-    if (this.isExponential == true)
+    if (this.isExponential === true)
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(this.rLevel), t);
       valToSet = this.checkExpInput(this.control.getValueAtTime(t));
@@ -682,38 +715,38 @@ define(function (require) {
    *  @example
    *  <div><code>
    *  var env, osc, amp, cnv;
-   *  
+   *
    *  var attackTime = 0.001;
    *  var decayTime = 0.2;
    *  var attackLevel = 1;
    *  var decayLevel = 0;
-   *  
+   *
    *  function setup() {
    *    cnv = createCanvas(100, 100);
    *    fill(0,255,0);
    *    noStroke();
-   *  
+   *
    *    env = new p5.Env();
    *    env.setADSR(attackTime, decayTime);
-   *  
+   *
    *    osc = new p5.Oscillator();
    *    osc.amp(env);
    *    osc.start();
-   *  
+   *
    *    amp = new p5.Amplitude();
-   *  
+   *
    *    cnv.mousePressed(triggerRamp);
    *  }
-   *  
+   *
    *  function triggerRamp() {
    *    env.ramp(osc, 0, attackLevel, decayLevel);
    *  }
-   *  
+   *
    *  function draw() {
    *    background(20,20,20);
    *    text('click me', 10, 20);
    *    var h = map(amp.getLevel(), 0, 0.4, 0, height);;
-   *  
+   *
    *    rect(0, height, width, -h);
    *  }
    *  </code></div>
@@ -724,7 +757,7 @@ define(function (require) {
     var tFromNow = secondsFromNow || 0;
     var t = now + tFromNow;
     var destination1 = this.checkExpInput(v1);
-    var destination2 = typeof(v2) !== 'undefined' ? this.checkExpInput(v2) : undefined;
+    var destination2 = typeof v2 !== 'undefined' ? this.checkExpInput(v2) : undefined;
 
     // connect env to unit if not already connected
     if (unit) {
@@ -735,14 +768,14 @@ define(function (require) {
 
     //get current value
     var currentVal = this.checkExpInput(this.control.getValueAtTime(t));
-    this.control.cancelScheduledValues(t); 
+    this.control.cancelScheduledValues(t);
 
     //if it's going up
     if (destination1 > currentVal) {
       this.control.setTargetAtTime(destination1, t, this._rampAttackTC);
       t += this._rampAttackTime;
     }
-    
+
     //if it's going down
     else if (destination1 < currentVal) {
       this.control.setTargetAtTime(destination1, t, this._rampDecayTC);
@@ -756,7 +789,7 @@ define(function (require) {
     if (destination2 > destination1) {
       this.control.setTargetAtTime(destination2, t, this._rampAttackTC);
     }
-    
+
     //if it's going down
     else if (destination2 < destination1) {
       this.control.setTargetAtTime(destination2, t, this._rampDecayTC);
@@ -764,7 +797,7 @@ define(function (require) {
   };
 
 
-  p5.Env.prototype.connect = function(unit){
+  p5.Env.prototype.connect = function(unit) {
     this.connection = unit;
 
     // assume we're talking about output gain
@@ -776,23 +809,22 @@ define(function (require) {
         unit instanceof p5.Noise ||
         unit instanceof p5.Filter ||
         unit instanceof p5.Delay
-    ){
+    ) {
       unit = unit.output.gain;
     }
-    if (unit instanceof AudioParam){
+    if (unit instanceof AudioParam) {
       //set the initial value
       unit.setValueAtTime(0, p5sound.audiocontext.currentTime);
     }
-    if (unit instanceof p5.Signal){
+    if (unit instanceof p5.Signal) {
       unit.setValue(0);
     }
     this.output.connect(unit);
   };
 
-  p5.Env.prototype.disconnect = function(unit){
+  p5.Env.prototype.disconnect = function() {
     this.output.disconnect();
   };
-
 
 
   // Signal Math
@@ -801,7 +833,7 @@ define(function (require) {
    *  Add a value to the p5.Oscillator's output amplitude,
    *  and return the oscillator. Calling this method
    *  again will override the initial add() with new values.
-   *  
+   *
    *  @method  add
    *  @param {Number} number Constant number to add
    *  @return {p5.Env} Envelope Returns this envelope
@@ -818,7 +850,7 @@ define(function (require) {
    *  Multiply the p5.Env's output amplitude
    *  by a fixed value. Calling this method
    *  again will override the initial mult() with new values.
-   *  
+   *
    *  @method  mult
    *  @param {Number} number Constant number to multiply
    *  @return {p5.Env} Envelope Returns this envelope
@@ -835,7 +867,7 @@ define(function (require) {
    *  Scale this envelope's amplitude values to a given
    *  range, and return the envelope. Calling this method
    *  again will override the initial scale() with new values.
-   *  
+   *
    *  @method  scale
    *  @param  {Number} inMin  input range minumum
    *  @param  {Number} inMax  input range maximum
@@ -858,14 +890,15 @@ define(function (require) {
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
-    var now = p5sound.audiocontext.currentTime;
     this.disconnect();
     try{
       this.control.dispose();
       this.control = null;
-    } catch(e) {}
+    } catch(e) {
+      console.warn(e, 'already disposed p5.Env');
+    }
     for (var i = 1; i < this.mathOps.length; i++) {
-      mathOps[i].dispose();
+      this.mathOps[i].dispose();
     }
   };
 
