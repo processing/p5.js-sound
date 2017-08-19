@@ -3,10 +3,6 @@ define(function (require) {
 
   var p5sound = require('master');
   var AudioVoice = require('audioVoice');
-  require('sndcore');
-  require('oscillator');
-  require('env');
-  require('filter');
 
   /**
     *  An MonoSynth is used as a single voice for sound synthesis.
@@ -102,6 +98,7 @@ define(function (require) {
   p5.MonoSynth.prototype.play = function (note, velocity, secondsFromNow, susTime) {
     // set range of env (TO DO: allow this to be scheduled in advance)
     var susTime = susTime || this.sustain;
+    this.susTime = susTime;
     this.triggerAttack(note, veocity, secondsFromNow);
     this.triggerRelease(secondsFromNow + susTime);
   };
@@ -256,10 +253,10 @@ define(function (require) {
 
   /**
    * Getters and Setters
-   * @param {Number} attack
-   * @param {Number} decay
-   * @param {Number} sustain
-   * @param {Number} release
+   * @property {Number} attack
+   * @property {Number} decay
+   * @property {Number} sustain
+   * @property {Number} release
    */
   Object.defineProperties(p5.MonoSynth.prototype, {
     'attack': {

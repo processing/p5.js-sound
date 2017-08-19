@@ -1,110 +1,250 @@
-var psynth; 
-var keys = {S:60,E:61,D:62,R:63,F:64,G:65,Y:66,H:67,U:68,J:69,I:70,K:71,L:72}
+
+
+
+var psynth;
+
+var ptable_real,ptable_imag;
+var real_wave = [];
+var imag_wave = []
+
+function preload(){
+  ptable_real = loadStrings('Wurlitzer_2_real.txt'); 
+  ptable_imag = loadStrings('Wurlitzer_2_imag.txt' ); 
+}
+
+
 
 function setup() {
+  
+  createCanvas(800, 300);
+  smooth();
+
   frameRate(25);
-  psynth = new p5.PolySynth(Simple); 
-}
+  
 
-function draw() {
-  background(0);
-  fill(255);  
-  textAlign(CENTER,CENTER);
-  text("Click Me !",width/2,height/2);
-}
+  psynth = new PolySynth(15,PeriodicWave);
 
-function mousePressed(){
-  // play a note when mouse is pressed
-  var note = int(map(mouseX,0,width,60,84)); // a midi note mapped to x-axis
-  var length = map(mouseY,0,300,0,6); // a note length parameter mapped to y-axis.
-  // set the enveloppe with the new note length
-  psynth.noteADSR(note,0.21,1,1,5);
-  psynth.noteParams(note,{osctype: 'square'});
-  // set the note to be played
-   psynth.play(note,0.05,0,length); // play it !  
-}
+  for (var i = 0 ; i < 2048 ; i++) {
+    real_wave[i] = float(ptable_real[i]);
 
-function keyPressed(){
-  if (keys[key]){
-    note = keys[key]
-    psynth.noteParams(note,{osctype: 'sine'});
-    psynth.noteAttack(note,1);
   }
-}
+  for (var i = 0 ; i < 2048 ; i++) {
+    imag_wave[i] = float(ptable_imag[i]);
 
-function keyReleased(){
-  if (keys[key]){
-    note = keys[key]
-    psynth.noteRelease(note);
-  }  
-}
-
-
-// A typical synth class which inherits from AudioVoice class
-function Simple(){
-
-  p5.MonoSynth.call(this); // inherit from AudioVoice class
-
-  // dispose of default oscillator
-  this.oscillator.dispose();
-
-  // create a dsp graph
-  this.osctype = 'sine';
-  this.oscillator = new p5.Oscillator(this.note,this.osctype);
-  this.oscillator.disconnect();
-  this.oscillator.start();
-  // connect the dsp graph to the filtered output of the audiovoice
-  this.oscillator.connect(this.synthOut);
-
-  this._setNote = function(note){
-     this.oscillator.freq( midiToFreq(note) );
-  }
-
-  this.setParams = function(params){
-    this.osctype = params.osctype;
-    this.oscillator.setType(this.osctype);
   }
   
 }
-// make our new synth available for our sketch
-Simple.prototype = Object.create(p5.MonoSynth.prototype);  // browsers support ECMAScript 5 ! warning for compatibility with older browsers
-Simple.prototype.constructor = Simple;
 
 
-/////////////////////////////////////////////////////////////////
-function AdditiveSynth(){
-  p5.MonoSynth.call(this);
 
-  this.osctype = 'triangle';
-  this.harmonics = [1,2,4,6,8];
-  this.note = 60;
 
-  this.oscbank =[];
-  for (var i = 0 ; i < this.harmonics.length; i++){
-    this.oscbank.push(new p5.Oscillator(midiToFreq(this.note),this.osctype) );
-  }
+function draw() {
+  background(0);
+}
 
-  for (var i = 0 ; i < this.harmonics.length ; i++){
-    this.oscbank[i].disconnect();
-    this.oscbank[i].start();
-    this.oscbank[i].connect(this.synthOut);
-  }
+function mousePressed(){
 
-  this._setNote = function(note){
-    for (var i = 0 ; i < this.harmonics.length ; i++){
-      this.oscbank[i].freq(midiToFreq(note+this.harmonics[i]*12)); 
-    }
+    var note = int(map(mouseX,0,width,60,84));
+    var length = map(mouseY,0,300,0,5);
+  
+  	psynth.setAdsr(0.021,0.025,length,0.025);
+
+    //  uncomment for SquareVoice detune parameters
+    //var d = int(random(1,12));
+    //psynth.setParams({detune: d });
+
+    // uncomment for PeriodicWave
+    psynth.setParams({real: real_wave , imag: imag_wave});
+
+  	psynth.setNote(note);
+    psynth.play();
+    
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
+function PeriodicWave(params){
+    AudioVoice.call(this);
+
+    this.real = new Float32Array([0,0]) ;
+    this.imag = new Float32Array([0,1]);
+    
+    this.context = getAudioContext();
+
+    this.wt = this.context.createPeriodicWave(this.real,this.imag);
+
+    this.oscillator = this.context.createOscillator();
+    this.oscillator.setPeriodicWave(this.wt);
+
+    this.oscillator.disconnect();
+    this.oscillator.start();
+
+    this.oscillator.connect(this.filter);
+
+  this.setNote = function(note){
+      this.oscillator.frequency.value = midiToFreq(note);      
   }
 
   this.setParams = function(params){
-    if(params.harmonics != null) this.harmonics = params.harmonics;
-    if (params.osctype != null) {
-      this.osctype = params.osctype;
-      for (var i = 0 ; i < this.harmonics.length ; i++){
-        this.oscbank[i].setType(params.osctype);
-      }
-    }  
+     // console.log(params.real);
+      this.real = new Float32Array(params.real);
+      this.imag = new Float32Array(params.imag);
+      this.wt = this.context.createPeriodicWave(this.real, this.imag);
+      this.oscillator.setPeriodicWave(this. wt);
+  }
+
+
+}
+
+PeriodicWave.prototype = Object.create(AudioVoice.prototype); 
+PeriodicWave.prototype.constructor = PeriodicWave;
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// A typical synth class which inherits from AudioVoice class
+function SquareVoice(){
+
+  AudioVoice.call(this);
+
+  this.osctype = 'square';
+  this.oscillator = new p5.Oscillator(this.note,this.osctype);
+  this.oscillator.disconnect();
+  this.oscillator.start();
+
+  this.oscillator.connect(this.filter);
+
+  this.setNote = function(note){
+    this.note = note;
+    this.oscillator.freq(midiToFreq(note));
+  } 
+}
+SquareVoice.prototype = Object.create(AudioVoice.prototype);  // browsers support ECMAScript 5 ! warning for compatibility with older browsers
+SquareVoice.prototype.constructor = SquareVoice;
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// A second one
+function DetunedOsc(){
+
+  AudioVoice.call(this);
+
+  this.osctype = 'sine';
+  this.detune = 5;
+
+  this.oscOne = new p5.Oscillator(midiToFreq(this.note),this.osctype); 
+  this.oscTwo = new p5.Oscillator(midiToFreq(this.note)-this.detune,this.osctype);
+  this.oscOne.disconnect();
+  this.oscTwo.disconnect();
+  this.oscOne.start();
+  this.oscTwo.start();
+
+  this.oscOne.connect(this.filter);
+  this.oscTwo.connect(this.filter);
+
+  this.setNote = function(note){
+      this.oscOne.freq(midiToFreq(note));
+      this.oscTwo.freq(midiToFreq(note)-this.detune);   
+  }
+
+  this.setParams = function(params){
+      this.detune = params.detune;
   }
 }
-AdditiveSynth.prototype = Object.create(p5.MonoSynth.prototype); 
-AdditiveSynth.prototype.constructor = AdditiveSynth;
+
+DetunedOsc.prototype = Object.create(AudioVoice.prototype); 
+DetunedOsc.prototype.constructor = DetunedOsc;
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// A super AudioVoice class to talk to the PolySynth class
+function AudioVoice () {
+
+  this.osctype = 'sine';
+  this.volume= 0.33;
+  this.note = 60;
+
+  this.attack = 0.25;
+  this.decay=0.25;
+  this.sustain=0.95;
+  this.release=0.25;
+  this.env = new p5.Env(this.attack,this.volume, this.decay,this.volume,  this.sustain, this.volume,this.release);
+
+  this.filter = new p5.LowPass();
+  this.filter.set(22050, 5);
+  
+  this.env.connect(this.filter);
+
+} 
+
+AudioVoice.prototype.voicePlay = function (){
+  this.env.play(this.filter);
+}
+
+AudioVoice.prototype.attackPlay = function (){
+  this.env.triggerAttack(this.oscillator);
+}
+
+AudioVoice.prototype.releasePlay = function (){
+  this.env.triggerRelease(this.oscillator);
+}
+
+AudioVoice.prototype.setNote = function(){
+
+}
+
+AudioVoice.prototype.setParams = function(params){
+
+}
+
+
+AudioVoice.prototype.setAdsr = function (a,d,s,r){
+  this.attack = a;
+  this.decay=d;
+  this.sustain=s;
+  this.release=r;
+  this.env = new p5.Env(this.attack, this.decay,  this.sustain, this.release); 
+  this.env.play(this.filter);
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+// a class to deal with voices allocations, of notes, parameters etc.
+// should be abastracted from the user
+function PolySynth(num,synthVoice){
+  this.voices = [];
+  this.num_voices = num;
+  this.poly_counter=0;
+
+  this.allocateVoices(synthVoice);
+}
+
+PolySynth.prototype.allocateVoices = function(synthVoice){
+  for (var i = 0 ; i < this.num_voices ; i++){
+       this.voices.push(new synthVoice());
+  }
+}
+
+PolySynth.prototype.play = function (){
+    this.voices[this.poly_counter].voicePlay();
+    this.poly_counter += 1;
+    this.poly_counter = this.poly_counter % this.num_voices;
+}
+
+PolySynth.prototype.setAdsr = function (a,d,s,r){
+  this.voices[this.poly_counter].setAdsr(a,d,s,r);
+}
+
+PolySynth.prototype.setNote = function (note){
+  this.voices[this.poly_counter].setNote(note);
+}
+
+PolySynth.prototype.setParams = function (params){
+  this.voices[this.poly_counter].setParams(params);
+}
+
+
+
