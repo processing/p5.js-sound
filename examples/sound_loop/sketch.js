@@ -28,7 +28,7 @@ function setup() {
 
   looper1 = new p5.SoundLoop(function(timeFromNow){
     click.play(timeFromNow);
-    looper1.bpm looper1.bpm += 0.5;
+    looper1.bpm = looper1.bpm += 0.5;
     }, "8n");
 
   looper2 = new p5.SoundLoop(function(timeFromNow){  
