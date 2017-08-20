@@ -128,10 +128,10 @@ define(function (require) {
       if (i>0) {
         this.bands[i-1].connect(this.bands[i].biquad);
       } else {
-        this.input.connect(this.bands[i].biquad);        
+        this.input.connect(this.bands[i].biquad);
       }
     }
-    this.bands[_eqsize-1].connect(this.output);    
+    this.bands[_eqsize-1].connect(this.output);
   };
   p5.EQ.prototype = Object.create(Effect.prototype);
 

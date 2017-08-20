@@ -45,6 +45,7 @@ define(function (require) {
 
 	p5.Compressor.prototype = Object.create(Effect.prototype);
 
+
  /**
   * Performs the same function as .connect, but also accepts
   * optional parameters to set compressor's audioParams
@@ -64,11 +65,40 @@ define(function (require) {
   * @param {Number} [release]    The amount of time (in seconds) to increase the gain by 10dB
   *                            default = .25, range 0 - 1
   */
-	p5.Compressor.prototype.process = function(src, attack, knee, 
-                                      ratio, threshold, release) {
+	p5.Compressor.prototype.process = function(src, _attack, _knee, 
+                                      _ratio, _threshold, _release) {
 		src.connect(this.input);
-		this.set(attack, knee, ratio, threshold, release);
+		this.set(_attack, _knee, _ratio, _threshold, _release);
 	};
+
+
+  p5.Compressor.prototype.default = {
+    "_attack" : .01,
+    "_knee" : 0.7,
+    "_ratio" : 2,
+    "_threshold" : -21.5,
+    "_release" : .1,
+    "_effectDefault": null
+  };
+
+  p5.Compressor.prototype.crudeCompression = {
+    "_attack" : .001,
+    "_knee" : 0,
+    "_ratio" : 12.6,
+    "_threshold" : -31.9,
+    "_release" : .012,
+    "_effectDefault": null
+  };
+
+  p5.Compressor.prototype.gentleCompression = {
+    "_attack" : .001,
+    "_knee" : 12,
+    "_ratio" : 1.5,
+    "_threshold" : -21.5,
+    "_release" : .1,
+    "_effectDefault": null
+  };
+
 
   /**
    * Set the paramters of a compressor. 
@@ -85,14 +115,14 @@ define(function (require) {
    * @param {Number} release    The amount of time (in seconds) to increase the gain by 10dB
    *                            default = .25, range 0 - 1
    */
-  p5.Compressor.prototype.set = function (attack, knee, 
-                                ratio, threshold, release) {
+  p5.Compressor.prototype.set = function (_attack, _knee, 
+                                _ratio, _threshold, _release) {
 
-    if (typeof attack !== 'undefined') {this.attack(attack);}
-    if (typeof knee !== 'undefined') {this.knee(knee);}
-    if (typeof ratio !== 'undefined') {this.ratio(ratio);}
-    if (typeof threshold !== 'undefined') {this.threshold(threshold);}
-    if (typeof release !== 'undefined') {this.release(release);}
+    if (typeof _attack !== 'undefined') {this.attack(_attack);}
+    if (typeof _knee !== 'undefined') {this.knee(_knee);}
+    if (typeof _ratio !== 'undefined') {this.ratio(_ratio);}
+    if (typeof _threshold !== 'undefined') {this.threshold(_threshold);}
+    if (typeof _release !== 'undefined') {this.release(_release);}
   };
 
 
@@ -105,14 +135,14 @@ define(function (require) {
    *                          default = .003, range 0 - 1
    * @param {Number} [time]  Assign time value to schedule the change in value
    */
-  p5.Compressor.prototype.attack = function (attack, time){
+  p5.Compressor.prototype.attack = function (_attack, time){
     var t = time || 0;
-    if (typeof attack == 'number'){
-      this.compressor.attack.value = attack;
+    if (typeof _attack == 'number'){
+      this.compressor.attack.value = _attack;
       this.compressor.attack.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.compressor.attack.linearRampToValueAtTime(attack, this.ac.currentTime + 0.02 + t);
-    } else if (typeof attack !== 'undefined') {
-        attack.connect(this.compressor.attack);
+      this.compressor.attack.linearRampToValueAtTime(_attack, this.ac.currentTime + 0.02 + t);
+    } else if (typeof _attack !== 'undefined') {
+        _attack.connect(this.compressor.attack);
     }
     return this.compressor.attack.value;
   };
@@ -127,14 +157,14 @@ define(function (require) {
    *                        default = 30, range 0 - 40
    * @param {Number} [time]  Assign time value to schedule the change in value
    */
-  p5.Compressor.prototype.knee = function (knee, time){
+  p5.Compressor.prototype.knee = function (_knee, time){
     var t = time || 0;
-    if (typeof knee == 'number'){
-      this.compressor.knee.value = knee;
+    if (typeof _knee == 'number'){
+      this.compressor.knee.value = _knee;
       this.compressor.knee.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.compressor.knee.linearRampToValueAtTime(knee, this.ac.currentTime + 0.02 + t);
-    } else if (typeof knee !== 'undefined') {
-        knee.connect(this.compressor.knee);
+      this.compressor.knee.linearRampToValueAtTime(_knee, this.ac.currentTime + 0.02 + t);
+    } else if (typeof _knee !== 'undefined') {
+        _knee.connect(this.compressor.knee);
     }
     return this.compressor.knee.value;
   };
@@ -148,14 +178,14 @@ define(function (require) {
    *                            default = 12, range 1 - 20 
    * @param {Number} [time]  Assign time value to schedule the change in value
    */
-  p5.Compressor.prototype.ratio = function (ratio, time){
+  p5.Compressor.prototype.ratio = function (_ratio, time){
     var t = time || 0;
-    if (typeof ratio == 'number'){
-      this.compressor.ratio.value = ratio;
+    if (typeof _ratio == 'number'){
+      this.compressor.ratio.value = _ratio;
       this.compressor.ratio.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.compressor.ratio.linearRampToValueAtTime(ratio, this.ac.currentTime + 0.02 + t);
-    } else if (typeof ratio !== 'undefined') {
-        ratio.connect(this.compressor.ratio);
+      this.compressor.ratio.linearRampToValueAtTime(_ratio, this.ac.currentTime + 0.02 + t);
+    } else if (typeof _ratio !== 'undefined') {
+        _ratio.connect(this.compressor.ratio);
     }
     return this.compressor.ratio.value;
   };
@@ -169,14 +199,14 @@ define(function (require) {
    *                            default = -24, range -100 - 0
    * @param {Number} [time]  Assign time value to schedule the change in value
    */
-  p5.Compressor.prototype.threshold = function (threshold, time){
+  p5.Compressor.prototype.threshold = function (_threshold, time){
     var t = time || 0;
-    if (typeof threshold == 'number'){
-      this.compressor.threshold.value = threshold;
+    if (typeof _threshold == 'number'){
+      this.compressor.threshold.value = _threshold;
       this.compressor.threshold.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.compressor.threshold.linearRampToValueAtTime(threshold, this.ac.currentTime + 0.02 + t);
-    } else if (typeof threshold !== 'undefined') {
-        threshold.connect(this.compressor.threshold);
+      this.compressor.threshold.linearRampToValueAtTime(_threshold, this.ac.currentTime + 0.02 + t);
+    } else if (typeof _threshold !== 'undefined') {
+        _threshold.connect(this.compressor.threshold);
     }
     return this.compressor.threshold.value;
   };
@@ -191,14 +221,14 @@ define(function (require) {
    *
    * @param {Number} [time]  Assign time value to schedule the change in value
    */
-  p5.Compressor.prototype.release = function (release, time){
+  p5.Compressor.prototype.release = function (_release, time){
     var t = time || 0;
-    if (typeof release == 'number'){
-      this.compressor.release.value = release;
+    if (typeof _release == 'number'){
+      this.compressor.release.value = _release;
       this.compressor.release.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.compressor.release.linearRampToValueAtTime(release, this.ac.currentTime + 0.02 + t);
-    } else if (typeof number !== 'undefined') {
-        release.connect(this.compressor.release);
+      this.compressor.release.linearRampToValueAtTime(_release, this.ac.currentTime + 0.02 + t);
+    } else if (typeof _release !== 'undefined') {
+        _release.connect(this.compressor.release);
     }
     return this.compressor.release.value;
   };
