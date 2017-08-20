@@ -193,8 +193,8 @@ define(function (require) {
     }
 
 
-    if(this._voicesInUse.value < this.polyValue) {
-      currentVoice = this._voicesInUse.value;
+    if(this._voicesInUse.getValueAtTime(t) < this.polyValue) {
+      currentVoice = this._voicesInUse.getValueAtTime(t);
     } else {
       currentVoice = this._oldest;
 
@@ -205,7 +205,7 @@ define(function (require) {
 
     this.notes[note] = currentVoice;
 
-    this._voicesInUse.setValueAtTime(this._voicesInUse.value + 1, t);
+    this._voicesInUse.setValueAtTime(this._voicesInUse.getValueAtTime(t) + 1, t);
 
     this._newest = currentVoice;
 
@@ -236,7 +236,7 @@ define(function (require) {
       var tFromNow = secondsFromNow || 0;
       var t = now + tFromNow;
 
-      this._voicesInUse.setValueAtTime(this._voicesInUse.value - 1, t);
+      this._voicesInUse.setValueAtTime(this._voicesInUse.getValueAtTime(t) - 1, t);
       this.audiovoices[ this.notes[note] ].triggerRelease(secondsFromNow);
       this.notes[note] = undefined;
 
