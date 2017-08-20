@@ -139,6 +139,91 @@ define(function (require) {
   };
 
   /**
+     *  Set cutoms parameters to a specific synth implementation.
+     *  This method does nothing by default unless you implement
+     *  something for it.
+     *  For instance if you want to build a complex synthesizer
+     *  with one or more filters, effects etc. this is where you
+     *  will want to set their values.
+     *
+     *  @method  setParams
+     *  @param
+     *
+     */
+
+  p5.MonoSynth.prototype.setParams = function(params) {
+  };
+
+  /**
+   * loads preset values
+   * @param  {String} preset  A preset that has been written for MonoSynth
+   * @return {Object}        Return the MonoSynth
+   */
+  p5.MonoSynth.prototype.loadPreset = function(preset) {
+    var options = this[preset];
+    this.oscillator.setType(options.oscillator.type);
+
+    this.env.setADSR(options.env.attack, options.env.decay,
+          options.env.sustain, options.env.release);
+
+    this.filter.setType(options.filter.type);
+    this.filter.set(options.filter.freq, options.filter.res);
+    return this;
+  };
+
+ //PRESET LIBRARY
+  p5.MonoSynth.prototype.default = {
+    'oscillator' : {
+      'type' : 'sine'
+    },
+    'env' : {
+      'attack' : 0.02,
+      'decay' : 0.25,
+      'sustain': 0.05,
+      'release': 0.35
+    },
+    'filter': {
+      'type' : 'highpass',
+      'freq' : 5,
+      'res' : 1
+    }
+  };
+
+  p5.MonoSynth.prototype.simpleBass = {
+    'oscillator' : {
+      'type' : 'square'
+    },
+    'env' : {
+      'attack': 0,
+      'decay': .60,
+      'sustain': 0.1,
+      'release': .28
+    },
+    'filter' : {
+      'type' : 'lowpass',
+      'freq' : 15000,
+      'res' : 1
+    }
+  };
+
+  p5.MonoSynth.prototype.electricPiano = {
+    'oscillator' : {
+      'type' : 'sine'
+    },
+    'env' : {
+      'attack': 0.029,
+      'decay': .16,
+      'sustain': 0.1,
+      'release': .1
+    },
+    'filter': {
+      'type' : 'lowpass',
+      'freq' : 15000,
+      'res' : 1
+    }
+  };
+
+  /**
      *  Set values like a traditional
      *  <a href="https://en.wikipedia.org/wiki/Synthesizer#/media/File:ADSR_parameter.svg">
      *  ADSR envelope
