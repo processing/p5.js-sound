@@ -42,7 +42,7 @@ define(function (require) {
    */
 
 
-  p5.Reverb = function() {
+  p5.Reverb = function(preset) {
     Effect.call(this);
 
     this.convolverNode = this.ac.createConvolver();
@@ -57,12 +57,64 @@ define(function (require) {
     this._seconds = 3;
     this._decay = 2;
     this._reverse = false;
+    this.params = ['_seconds', '_decay', '_reverse'];
+
+    this.chained = [];
 
     this._buildImpulse();
 
   };
 
   p5.Reverb.prototype = Object.create(Effect.prototype);
+
+  /**
+   * Presets
+   *
+   * Simple Reverb
+   * @type {Array} [seconds, decay, reverse]
+   */
+  
+   /**
+    * Default preset, clears out any objects created by previous.
+    * @return {[type]} [description]
+    */
+
+  p5.Reverb.prototype.default = {
+    "seconds" : 3,
+    "decay" : 2,
+    "reverse" : false,
+    "_effectDefault": null
+  };
+  
+  p5.Reverb.prototype.smallRoom = {
+    "seconds" :0.5,
+    "decay" : 16,
+    "reverse" : false,
+  };
+  p5.Reverb.prototype.mediumRoom = {
+    "seconds" : 2,
+    "decay" : 12.5,
+    "reverse" : false,
+  };
+  p5.Reverb.prototype.largeRoom = {
+    "seconds" :3,
+    "decay" : 30,
+    "reverse" : false,
+  };
+  p5.Reverb.prototype.touchOfVerb = {
+    "seconds" : 1.1,
+    "decay" : 6.1,
+    "reverse" : false,
+    "drywet" : 0.4
+  };
+
+  p5.Reverb.prototype.lotsOfVerb = {
+    "seconds" : 4.9,
+    "decay" : 42.3,
+    "reverse" : false,
+  };
+
+
   /**
    *  Connect a source to the reverb, and assign reverb parameters.
    *
