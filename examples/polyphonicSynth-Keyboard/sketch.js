@@ -26,6 +26,7 @@ function setup() {
   description = createP('p5.PolySynth is a handler class for monophonic extensions '+
                 'of the p5.AudioVoice class. Use the computer keyboard to play notes on '+
                 'the piano roll. Use UP_ARROW and DOWN_ARROW to change octave');
+
 }
 
 function draw() {

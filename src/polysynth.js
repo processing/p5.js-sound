@@ -16,7 +16,7 @@ define(function (require) {
     *  @constructor
     *  
     *  @param {Number} [synthVoice]   A monophonic synth voice inheriting
-    *                                 the AudioVoice class. Defaults ot p5.MonoSynth
+    *                                 the AudioVoice class. Defaults to p5.MonoSynth
     *
     *  @param {Number} [polyValue] Number of voices, defaults to 8;
     *
@@ -158,10 +158,10 @@ define(function (require) {
    *  @param {Number} [releaseTime]   Time in seconds from now (defaults to 0)
    **/
   p5.PolySynth.prototype.setADSR = function(a,d,s,r) {
-    this.audiovoices.forEach(function(voice){
+    this.audiovoices.forEach(function(voice) {
       voice.setADSR(a,d,s,r);
-    })
-  }
+    });
+  };
 
   /**
    *  Trigger the Attack, and Decay portion of a MonoSynth.
@@ -205,7 +205,11 @@ define(function (require) {
 
     this.notes[note] = currentVoice;
 
-    this._voicesInUse.setValueAtTime(this._voicesInUse.value + 1, t);
+    //this._voicesInUse.setValueAtTime(this._voicesInUse.getValueAtTime(t) + 1, t);
+
+    var previousVal = this._voicesInUse._searchBefore(t) === null ? 0 : this._voicesInUse._searchBefore(t).value;
+    this._voicesInUse.setValueAtTime(previousVal + 1, t);
+    this._updateAfter(t, 1);
 
     this._newest = currentVoice;
 
@@ -213,8 +217,21 @@ define(function (require) {
 
   };
 
+  p5.PolySynth.prototype._updateAfter = function(time, value) {
+
+    if(this._voicesInUse._searchAfter(time) === null) {
+      return;
+    } else{
+      this._voicesInUse._searchAfter(time).value += value;
+      var nextTime = this._voicesInUse._searchAfter(time).time;
+      this._updateAfter(nextTime, value);
+    }
+  }
+
+
+
   /**
-   *  Trigger the Release of a MonoSynth note. This is similar to releasing
+   *  Trigger the Release of an AudioVoice note. This is similar to releasing
    *  the key on a piano and letting the sound fade according to the
    *  release level and release time.
    *  
@@ -236,8 +253,14 @@ define(function (require) {
       var tFromNow = secondsFromNow || 0;
       var t = now + tFromNow;
 
-      this._voicesInUse.setValueAtTime(this._voicesInUse.value - 1, t);
-      this.audiovoices[ this.notes[note] ].triggerRelease(secondsFromNow);
+      // this._voicesInUse.setValueAtTime(this._voicesInUse.getValueAtTime(t)-1, t);
+      // console.log('value at time: '+ t +' value '+this._voicesInUse.getValueAtTime(t));
+      var previousVal = this._voicesInUse._searchBefore(t) === null ? 0 : this._voicesInUse._searchBefore(t).value;
+      this._voicesInUse.setValueAtTime(previousVal - 1, t);
+      this._updateAfter(t, -1);
+
+
+      this.audiovoices[ this.notes[note] ].triggerRelease(tFromNow);
       this.notes[note] = undefined;
 
       this._newest = this._newest === 0 ? 0 : (this._newest - 1) % (this.polyValue - 1);
