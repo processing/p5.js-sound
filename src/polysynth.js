@@ -193,8 +193,8 @@ define(function (require) {
     }
 
 
-    if(this._voicesInUse.value < this.polyValue) {
-      currentVoice = this._voicesInUse.value;
+    if(this._voicesInUse.getValueAtTime(t) < this.polyValue) {
+      currentVoice = this._voicesInUse.getValueAtTime(t);
     } else {
       currentVoice = this._oldest;
 
