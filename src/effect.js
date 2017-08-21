@@ -60,6 +60,50 @@ define(function (require) {
 
 	/**
 	 *  Set the output volume of the filter.
+	 * loadPreset is a method of the base Effect class
+	 * which loads paramters specified in a preset defintion of 
+	 * a specific effect.
+	 *
+	 * Presets can be saved / loaded as an array of parameters or 
+	 * as a function definition.
+	 * When saved as an array, function calls can be specified by including a
+	 * javascript object as an item in the area, formatted as follows
+	 * {'function' : some_function_name, 'value' : some_value}. Any function objects
+	 * should follow simple variable parameters.
+	 * 
+	 * @param  preset [preset as an array or function definition]
+	 * @return {this}        [returns this]
+	 */
+	p5.Effect.prototype.loadPreset = function(preset) {
+	  //Calling default resets params and deletes chained objects from 
+	  //any previous preset
+	  var params = [];
+	  var options = this[preset];
+	  var keys = Object.keys(options);
+	  if (preset !== 'default' ){
+	  	this.loadPreset('default');
+	  }
+
+	  for (var i = 0; i < keys.length; i++) {
+	  	if (typeof this[keys[i]] === 'function') {
+	  		this[keys[i]](options[keys[i]]);
+	  	} else {
+	  	params.push(options[keys[i]]);
+	  	}
+	  }
+		if (params.length > 0) {
+      		Object.getPrototypeOf(this).set.apply(this, params);
+    	}
+	};
+
+	p5.Effect.prototype._effectDefault = function() {
+		this.amp(1);
+		this.drywet(1);
+	}
+
+
+	/**
+	 *  Set the output level of the filter.
 	 *  
 	 *  @method  amp
 	 *  @param {Number} [vol] amplitude between 0 and 1.0
@@ -139,14 +183,15 @@ define(function (require) {
 		this.output.disconnect();
 		this.output = undefined;
 
-    this._drywet.disconnect();
-    delete this._drywet;
+	    this._drywet.disconnect();
+	    delete this._drywet;
 
-    this.wet.disconnect();
-    delete this.wet;
-
+	    this.wet.disconnect();
+	    delete this.wet;
+    
 		this.ac = undefined;
 	};
+	
 
 	return p5.Effect;
 

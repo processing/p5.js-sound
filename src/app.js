@@ -24,11 +24,17 @@ define(function (require) {
   require('reverb');
   require('metro');
   require('looper');
+  require('soundloop');
   require('compressor');
   require('soundRecorder');
   require('peakdetect');
   require('gain');
+  require('monosynth');
+  require('polysynth');
   require('distortion');
+  require('audioVoice');
+  require('monosynth');
+  require('polysynth');
 
   return p5SOUND;
 

@@ -58,7 +58,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Delay = function() {
+  p5.Delay = function(preset) {
   	Effect.call(this);
 
     this._split = this.ac.createChannelSplitter(2);
@@ -106,53 +106,108 @@ define(function (require) {
     this._leftFilter.biquad.gain.setValueAtTime(1, this.ac.currentTime);
     this._rightFilter.biquad.gain.setValueAtTime(1, this.ac.currentTime);
 
-    // default routing
-    this.setType(0);
-
     this._maxDelay = this.leftDelay.delayTime.maxValue;
 
-    // set initial feedback to 0.5
-    this.feedback(0.5);
 
-
+    if (preset) {
+      this.loadPreset(preset);
+    }
+    else {
+      this.loadPreset('default');
+    }
   };
 
   p5.Delay.prototype = Object.create(Effect.prototype);
+
+
+  /** 
+   * presets
+   */
+
+
+  p5.Delay.prototype.default = {
+    '_delayTime' : 0.7,
+    '_feedback' : 0.5,
+    '_filter' : 1200,
+    'setType' : 0,
+    '_effectDefault' : null
+  };
+  p5.Delay.prototype.panRight = {
+    'leftDelayTime' : .2,
+    'rightDelayTime' : .1,
+    'feedback' : .4
+  };
+  p5.Delay.prototype.panLeft = {
+    'leftDelayTime' : .1,
+    'rightDelayTime' : .2,
+    'feedback' : .4
+  };
+  p5.Delay.prototype.unevenMovement = {
+    'leftDelayTime' : .1,
+    'rightDelayTime' : .3,
+    'feedback' : .56,
+    'setType' : 1,
+    'drywet' : .7
+  };
+  p5.Delay.prototype.delayForever = {
+    '_delayTime' : .1,
+    '_feedback' : .82,
+    '_filter' : 1200,
+    'drywet' : .95
+  };
+  p5.Delay.prototype.harmonics = {
+    'leftDelayTime' : .01,
+    'rightDelayTime' : .015,
+    'feedback' : .8,
+    'filter' : 1200,
+    'drywet' : .6
+  };
+
+
   /**
    *  Add delay to an audio signal according to a set
    *  of delay parameters.
    *
    *  @method  process
    *  @param  {Object} Signal  An object that outputs audio
-   *  @param  {Number} [delayTime] Time (in seconds) of the delay/echo.
+   *  @param  {Number} [_delayTime] Time (in seconds) of the delay/echo.
    *                               Some browsers limit delayTime to
    *                               1 second.
-   *  @param  {Number} [feedback]  sends the delay back through itself
+   *  @param  {Number} [_feedback]  sends the delay back through itself
    *                               in a loop that decreases in volume
    *                               each time.
-   *  @param  {Number} [lowPass]   Cutoff frequency. Only frequencies
+   *  @param  {Number} [_filter]   Cutoff frequency. Only frequencies
    *                               below the lowPass will be part of the
    *                               delay.
    */
   p5.Delay.prototype.process = function(src, _delayTime, _feedback, _filter) {
+    this.set(_delayTime,_feedback,_filter);
+    src.connect(this.input);
+  };
+
+  /**
+   *  Set the audio params for a delay object.
+   *
+   *  @method  set
+   *  @param  {Number} [_delayTime] Time (in seconds) of the delay/echo.
+   *                               Some browsers limit delayTime to
+   *                               1 second.
+   *  @param  {Number} [_feedback]  sends the delay back through itself
+   *                               in a loop that decreases in volume
+   *                               each time.
+   *  @param  {Number} [_filter]   Cutoff frequency. Only frequencies
+   *                               below the lowPass will be part of the
+   *                               delay.
+   */
+  p5.Delay.prototype.set = function(_delayTime, _feedback, _filter) {
     var feedback = _feedback || 0;
     var delayTime = _delayTime || 0;
-    if (feedback >= 1.0) {
-      throw new Error('Feedback value will force a positive feedback loop.');
-    }
-    if (delayTime >= this._maxDelay) {
-      throw new Error('Delay Time exceeds maximum delay time of ' + this._maxDelay + ' second.');
-    }
 
-    src.connect(this.input);
-    this.leftDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
-    this.rightDelay.delayTime.setValueAtTime(delayTime, this.ac.currentTime);
-    this._leftGain.gain.value = feedback;
-    this._rightGain.gain.value = feedback;
+    this.delayTime(delayTime);
+    this.feedback(feedback);
 
     if (_filter) {
-      this._leftFilter.freq(_filter);
-      this._rightFilter.freq(_filter);
+      this.filter(_filter);
     }
   };
 
@@ -164,19 +219,33 @@ define(function (require) {
    *  @param {Number} delayTime Time (in seconds) of the delay
    */
   p5.Delay.prototype.delayTime = function(t) {
-    // if t is an audio node...
+    if (t >= this._maxDelay) {
+      throw new Error('Delay Time exceeds maximum delay time of '+ this._maxDelay + ' second.');
+    }
+    this.leftDelayTime(t);
+    this.rightDelayTime(t);
+  };
+
+  p5.Delay.prototype.leftDelayTime = function(t) {
     if (typeof t !== 'number') {
       t.connect(this.leftDelay.delayTime);
-      t.connect(this.rightDelay.delayTime);
     }
-
     else {
       this.leftDelay.delayTime.cancelScheduledValues(this.ac.currentTime);
-      this.rightDelay.delayTime.cancelScheduledValues(this.ac.currentTime);
       this.leftDelay.delayTime.linearRampToValueAtTime(t, this.ac.currentTime);
+    }
+  };
+
+  p5.Delay.prototype.rightDelayTime = function(t) {
+    if (typeof t !== 'number') {
+      t.connect(this.rightDelay.delayTime);
+    }
+    else {
+      this.rightDelay.delayTime.cancelScheduledValues(this.ac.currentTime);
       this.rightDelay.delayTime.linearRampToValueAtTime(t, this.ac.currentTime);
     }
   };
+
 
   /**
    *  Feedback occurs when Delay sends its signal back through its input

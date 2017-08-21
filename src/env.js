@@ -537,7 +537,7 @@ define(function (require) {
 
     // get and set value (with linear ramp) to anchor automation
     var valToSet = this.control.getValueAtTime(t);
-    this.control.cancelScheduledValues(t); // not sure if this is necessary
+
     if (this.isExponential === true)
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(valToSet), t);
@@ -558,14 +558,12 @@ define(function (require) {
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(this.aLevel), t);
       valToSet = this.checkExpInput(this.control.getValueAtTime(t));
-      this.control.cancelScheduledValues(t);
       this.control.exponentialRampToValueAtTime(valToSet, t);
     }
     else
     {
       this.control.linearRampToValueAtTime(this.aLevel, t);
       valToSet = this.control.getValueAtTime(t);
-      this.control.cancelScheduledValues(t);
       this.control.linearRampToValueAtTime(valToSet, t);
     }
 
@@ -575,14 +573,12 @@ define(function (require) {
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(this.dLevel), t);
       valToSet = this.checkExpInput(this.control.getValueAtTime(t));
-      this.control.cancelScheduledValues(t);
       this.control.exponentialRampToValueAtTime(valToSet, t);
     }
     else
     {
       this.control.linearRampToValueAtTime(this.dLevel, t);
       valToSet = this.control.getValueAtTime(t);
-      this.control.cancelScheduledValues(t);
       this.control.linearRampToValueAtTime(valToSet, t);
     }
   };
@@ -668,7 +664,6 @@ define(function (require) {
 
     // get and set value (with linear or exponential ramp) to anchor automation
     var valToSet = this.control.getValueAtTime(t);
-    this.control.cancelScheduledValues(t); // not sure if this is necessary
     if (this.isExponential === true)
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(valToSet), t);
@@ -685,14 +680,12 @@ define(function (require) {
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(this.rLevel), t);
       valToSet = this.checkExpInput(this.control.getValueAtTime(t));
-      this.control.cancelScheduledValues(t);
       this.control.exponentialRampToValueAtTime(valToSet, t);
     }
     else
     {
       this.control.linearRampToValueAtTime(this.rLevel, t);
       valToSet = this.control.getValueAtTime(t);
-      this.control.cancelScheduledValues(t);
       this.control.linearRampToValueAtTime(valToSet, t);
     }
 
@@ -768,7 +761,7 @@ define(function (require) {
 
     //get current value
     var currentVal = this.checkExpInput(this.control.getValueAtTime(t));
-    this.control.cancelScheduledValues(t);
+    // this.control.cancelScheduledValues(t);
 
     //if it's going up
     if (destination1 > currentVal) {
