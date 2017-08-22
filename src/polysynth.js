@@ -17,9 +17,7 @@ define(function (require) {
     *  
     *  @param {Number} [synthVoice]   A monophonic synth voice inheriting
     *                                 the AudioVoice class. Defaults to p5.MonoSynth
-    *
     *  @param {Number} [polyValue] Number of voices, defaults to 8;
-    *
     *
     *
     *  @example
@@ -85,6 +83,7 @@ define(function (require) {
   /**
    * Construct the appropriate number of audiovoices
    * @private
+   * @method  _allocateVoices
    */
   p5.PolySynth.prototype._allocateVoices = function() {
     for(var i = 0; i< this.polyValue; i++) {
@@ -183,22 +182,26 @@ define(function (require) {
     //this value is used by this._voicesInUse
     var t = now + tFromNow;
 
-    // var note = _note === undefined ?  60 : _note;
-    // 
-    var note = typeof _note === 'string' ? this.AudioVoice.prototype._setNote(_note) 
-            : typeof _note === 'number' ? _note : 440;
+    //Convert note to frequency if necessary. This is because entries into this.notes
+    //should be based on frequency for the sake of consistency.
+    var note = typeof _note === 'string' ? this.AudioVoice.prototype._setNote(_note)
+      : typeof _note === 'number' ? _note : 440;
     var velocity = _velocity === undefined ? 1 : _velocity;
 
     var currentVoice;
 
+    //Release the note if it is already playing
     if (this.notes[note] !== undefined) {
       this.noteRelease(note,0);
     }
 
-
+    //Check to see how many voices are in use at the time the note will start
     if(this._voicesInUse.getValueAtTime(t) < this.polyValue) {
       currentVoice = this._voicesInUse.getValueAtTime(t);
-    } else {
+    }
+    //If we are exceeding the polyvalue, bump off the oldest notes and replace
+    //with a new note
+    else {
       currentVoice = this._oldest;
 
       var oldestNote = p5.prototype.freqToMidi(this.audiovoices[this._oldest].oscillator.freq().value);
@@ -206,20 +209,34 @@ define(function (require) {
       this._oldest = ( this._oldest + 1 ) % (this.polyValue - 1);
     }
 
+    //Overrite the entry in the notes object. A note (frequency value) 
+    //corresponds to the index of the audiovoice that is playing it
     this.notes[note] = currentVoice;
 
-    //this._voicesInUse.setValueAtTime(this._voicesInUse.getValueAtTime(t) + 1, t);
-
+    //Find the scheduled change in this._voicesInUse that will be previous to this new note
+    //Add 1 and schedule this value at time 't', when this note will start playing
     var previousVal = this._voicesInUse._searchBefore(t) === null ? 0 : this._voicesInUse._searchBefore(t).value;
     this._voicesInUse.setValueAtTime(previousVal + 1, t);
+
+    //Then update all scheduled values that follow to increase by 1
     this._updateAfter(t, 1);
 
     this._newest = currentVoice;
 
+    //The audiovoice handles the actual scheduling of the note
     this.audiovoices[currentVoice].triggerAttack(note, velocity, tFromNow);
-
   };
 
+  /**
+   * Private method to ensure accurate values of this._voicesInUse
+   * Any time a new value is scheduled, it is necessary to increment all subsequent
+   * scheduledValues after attack, and decrement all subsequent 
+   * scheduledValues after release
+   * 
+   * @param  {[type]} time  [description]
+   * @param  {[type]} value [description]
+   * @return {[type]}       [description]
+   */
   p5.PolySynth.prototype._updateAfter = function(time, value) {
 
     if(this._voicesInUse._searchAfter(time) === null) {
@@ -229,8 +246,7 @@ define(function (require) {
       var nextTime = this._voicesInUse._searchAfter(time).time;
       this._updateAfter(nextTime, value);
     }
-  }
-
+  };
 
 
   /**
@@ -245,12 +261,9 @@ define(function (require) {
    */  
 
   p5.PolySynth.prototype.noteRelease = function (_note,secondsFromNow) {
-    // var note = _note === undefined ?
-    //   p5.prototype.freqToMidi(this.audiovoices[this._newest].oscillator.freq().value)
-    //   : _note;
+    //Make sure note is in frequency inorder to query the this.notes object
     var note = typeof _note === 'string' ? this.AudioVoice.prototype._setNote(_note)
-            : typeof _note === 'number' ? _note : this.audiovoices[this._newest].oscillator.freq().value;
-
+      : typeof _note === 'number' ? _note : this.audiovoices[this._newest].oscillator.freq().value;
 
     if (this.notes[note] === undefined) {
       console.warn('Cannot release a note that is not already playing');
@@ -259,10 +272,11 @@ define(function (require) {
       var tFromNow = secondsFromNow || 0;
       var t = now + tFromNow;
 
-      // this._voicesInUse.setValueAtTime(this._voicesInUse.getValueAtTime(t)-1, t);
-      // console.log('value at time: '+ t +' value '+this._voicesInUse.getValueAtTime(t));
+      //Find the scheduled change in this._voicesInUse that will be previous to this new note
+      //subtract 1 and schedule this value at time 't', when this note will stop playing
       var previousVal = this._voicesInUse._searchBefore(t) === null ? 0 : this._voicesInUse._searchBefore(t).value;
       this._voicesInUse.setValueAtTime(previousVal - 1, t);
+      //Then update all scheduled values that follow to decrease by 1
       this._updateAfter(t, -1);
 
       // console.log('RELEASE ' + note);
@@ -274,37 +288,33 @@ define(function (require) {
 
   };
 
-
   /**
-   *  Set cutoms parameters to a specific synth implementation 
-   *  with the help of JavaScript Object Notation (JSON).
-   *  
-   *  @method  setParams
-   *  @param   JSON object  
-   * 
-   *  For instance to set the detune parameter of a synth, call :
-   *  setParams({detune: 15 });
-   *
-   */  
-  p5.PolySynth.prototype.noteParams = function (note,params) {
-    if(this.voices[note] == null) {
-      this.voices[note] = new this.AudioVoice();
-    }
-    this.voices[note].setParams(params);
-
-  };
-
+    *  Connect to a p5.sound / Web Audio object.
+    *
+    *  @method  connect
+    *  @param  {Object} unit A p5.sound or Web Audio object
+    */
   p5.PolySynth.prototype.connect = function (unit) {
     var u = unit || p5sound.input;
     this.output.connect(u.input ? u.input : u);
   };
 
+  /**
+  *  Disconnect all outputs
+  *
+  *  @method  disconnect
+  */
   p5.PolySynth.prototype.disconnect = function() {
     this.output.disconnect();
   };
 
+  /**
+    *  Get rid of the MonoSynth and free up its resources / memory.
+    *
+    *  @method  dispose
+    */
   p5.PolySynth.prototype.dispose = function() {
-    this.audiovoices.forEach(function(voice){
+    this.audiovoices.forEach(function(voice) {
       voice.dispose();
     });
 

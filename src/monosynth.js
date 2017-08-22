@@ -65,7 +65,8 @@ define(function (require) {
   p5.MonoSynth.prototype = Object.create(p5.AudioVoice.prototype);
 
   /**
-     *  Play tells the MonoSynth to start playing a note
+     *  Play tells the MonoSynth to start playing a note. This method schedules
+     *  the calling of .triggerAttack and .triggerRelease.
      *
      *  @method play
      *  @param {String | Number} note the note you want to play, specified as a 
@@ -78,7 +79,6 @@ define(function (require) {
      *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
      *
      */
-
   p5.MonoSynth.prototype.play = function (note, velocity, secondsFromNow, susTime) {
     // set range of env (TO DO: allow this to be scheduled in advance)
     var susTime = susTime || this.sustain;
@@ -104,24 +104,24 @@ define(function (require) {
      */
   p5.MonoSynth.prototype.triggerAttack = function (note, velocity, secondsFromNow) {
     var secondsFromNow = secondsFromNow || 0;
-    var freq = typeof note === 'string' ? this._setNote(note) 
-            : typeof note === 'number' ? note : 440;
-    var vel = velocity || 1;
 
+    //triggerAttack uses ._setNote to convert a midi string to a frequency if necessary
+    var freq = typeof note === 'string' ? this._setNote(note)
+      : typeof note === 'number' ? note : 440;
+    var vel = velocity || 1;
     this._isOn = true;
     this.oscillator.freq(freq, 0, secondsFromNow);
     this.env.ramp(this.output, secondsFromNow, vel);
   };
 
   /**
-     *  Trigger the Release of the Envelope. This is similar to releasing
+     *  Trigger the release of the Envelope. This is similar to releasing
      *  the key on a piano and letting the sound fade according to the
      *  release level and release time.
      *
      *  @param  {Number} secondsFromNow time to trigger the release
      *  @method  triggerRelease
      */
-
   p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow) {
     var secondsFromNow = secondsFromNow || 0;
     this.env.ramp(this.output, secondsFromNow, 0);
@@ -148,8 +148,7 @@ define(function (require) {
      *                                increased to 1.0 (using <code>setRange</code>),
      *                                then decayLevel would increase proportionally, to become 0.5.
      *  @param {Number} [releaseTime]   Time in seconds from now (defaults to 0)
-     **/
-
+     */
   p5.MonoSynth.prototype.setADSR = function (attack,decay,sustain,release) {
     this.env.setADSR(attack, decay,  sustain, release);
   };
@@ -232,7 +231,7 @@ define(function (require) {
   /**
    *  Disconnect all outputs
    *
-   *  @method  disconnects
+   *  @method  disconnect
    */
   p5.MonoSynth.prototype.disconnect = function() {
     this.output.disconnect();
