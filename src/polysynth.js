@@ -183,7 +183,10 @@ define(function (require) {
     //this value is used by this._voicesInUse
     var t = now + tFromNow;
 
-    var note = _note === undefined ?  60 : _note;
+    // var note = _note === undefined ?  60 : _note;
+    // 
+    var note = typeof _note === 'string' ? this.AudioVoice.prototype._setNote(_note) 
+            : typeof _note === 'number' ? _note : 440;
     var velocity = _velocity === undefined ? 1 : _velocity;
 
     var currentVoice;
@@ -242,11 +245,14 @@ define(function (require) {
    */  
 
   p5.PolySynth.prototype.noteRelease = function (_note,secondsFromNow) {
-    var note = _note === undefined ?
-      p5.prototype.freqToMidi(this.audiovoices[this._newest].oscillator.freq().value)
-      : _note;
+    // var note = _note === undefined ?
+    //   p5.prototype.freqToMidi(this.audiovoices[this._newest].oscillator.freq().value)
+    //   : _note;
+    var note = typeof _note === 'string' ? this.AudioVoice.prototype._setNote(_note)
+            : typeof _note === 'number' ? _note : this.audiovoices[this._newest].oscillator.freq().value;
 
-    if (this.notes[_note] === undefined) {
+
+    if (this.notes[note] === undefined) {
       console.warn('Cannot release a note that is not already playing');
     } else {
       var now =  p5sound.audiocontext.currentTime;
@@ -259,7 +265,7 @@ define(function (require) {
       this._voicesInUse.setValueAtTime(previousVal - 1, t);
       this._updateAfter(t, -1);
 
-
+      // console.log('RELEASE ' + note);
       this.audiovoices[ this.notes[note] ].triggerRelease(tFromNow);
       this.notes[note] = undefined;
 

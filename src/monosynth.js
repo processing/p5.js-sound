@@ -65,30 +65,14 @@ define(function (require) {
   p5.MonoSynth.prototype = Object.create(p5.AudioVoice.prototype);
 
   /**
-   *  Used internally by play() and triggerAttack()
-   *  to set the note of this.oscillator to a MIDI value.
-   *
-   *  Synth creators with more complex setups may have overridden
-   *  the oscillator chain with more than one oscillator,
-   *  and should override this method accordingly.
-   *
-   *  @param   {Number} note           midi value of a note, where
-   *                                   middle c is 60
-   *  @param   {Number} [secondsFromNow] (optional) a time (in seconds
-   *                                     from now) at which
-   *                                     to set the note
-   *  @private
-   */
-  p5.MonoSynth.prototype._setNote = function(note, secondsFromNow) {
-    var freqVal = p5.prototype.midiToFreq(note);
-    this.oscillator.freq(freqVal, 0, secondsFromNow);
-  };
-
-  /**
      *  Play tells the MonoSynth to start playing a note
      *
      *  @method play
-     *  @param  {Number} [note] midi note to play (ranging from 0 to 127 - 60 being a middle C)
+     *  @param {String | Number} note the note you want to play, specified as a 
+     *                                 frequency in Hertz (Number) or as a midi 
+     *                                 value in Note/Octave format ("C4", "Eb3"...etc")
+     *                                 See <a href = "https://github.com/Tonejs/Tone.js/wiki/Instruments">
+     *                                 Tone</a>. Defaults to 440 hz.
      *  @param  {Number} [velocity] velocity of the note to play (ranging from 0 to 1)
      *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
      *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
@@ -99,7 +83,7 @@ define(function (require) {
     // set range of env (TO DO: allow this to be scheduled in advance)
     var susTime = susTime || this.sustain;
     this.susTime = susTime;
-    this.triggerAttack(note, veocity, secondsFromNow);
+    this.triggerAttack(note, velocity, secondsFromNow);
     this.triggerRelease(secondsFromNow + susTime);
   };
 
@@ -108,6 +92,11 @@ define(function (require) {
      *  Similar to holding down a key on a piano, but it will
      *  hold the sustain level until you let go.
      *
+     *  @param {String | Number} note the note you want to play, specified as a 
+     *                                 frequency in Hertz (Number) or as a midi 
+     *                                 value in Note/Octave format ("C4", "Eb3"...etc")
+     *                                 See <a href = "https://github.com/Tonejs/Tone.js/wiki/Instruments">
+     *                                 Tone</a>. Defaults to 440 hz
      *  @param  {Number} secondsFromNow time from now (in seconds)
      *  @param  {Number} [velocity] velocity of the note to play (ranging from 0 to 1)
      *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
@@ -115,7 +104,8 @@ define(function (require) {
      */
   p5.MonoSynth.prototype.triggerAttack = function (note, velocity, secondsFromNow) {
     var secondsFromNow = secondsFromNow || 0;
-    var freq = p5.prototype.midiToFreq(note);
+    var freq = typeof note === 'string' ? this._setNote(note) 
+            : typeof note === 'number' ? note : 440;
     var vel = velocity || 1;
 
     this._isOn = true;
@@ -210,6 +200,7 @@ define(function (require) {
       }
     },
   });
+
 
   /**
    * MonoSynth amp
