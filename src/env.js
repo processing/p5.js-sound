@@ -558,13 +558,16 @@ define(function (require) {
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(this.aLevel), t);
       valToSet = this.checkExpInput(this.control.getValueAtTime(t));
+      this.control.cancelScheduledValues(t);
       this.control.exponentialRampToValueAtTime(valToSet, t);
     }
     else
     {
       this.control.linearRampToValueAtTime(this.aLevel, t);
       valToSet = this.control.getValueAtTime(t);
+      this.control.cancelScheduledValues(t);
       this.control.linearRampToValueAtTime(valToSet, t);
+     
     }
 
     // decay to decay level (if using ADSR, then decay level == sustain level)
@@ -573,12 +576,14 @@ define(function (require) {
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(this.dLevel), t);
       valToSet = this.checkExpInput(this.control.getValueAtTime(t));
+      this.control.cancelScheduledValues(t);
       this.control.exponentialRampToValueAtTime(valToSet, t);
     }
     else
     {
       this.control.linearRampToValueAtTime(this.dLevel, t);
       valToSet = this.control.getValueAtTime(t);
+      this.control.cancelScheduledValues(t);
       this.control.linearRampToValueAtTime(valToSet, t);
     }
   };
@@ -680,12 +685,14 @@ define(function (require) {
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(this.rLevel), t);
       valToSet = this.checkExpInput(this.control.getValueAtTime(t));
+      this.control.cancelScheduledValues(t);
       this.control.exponentialRampToValueAtTime(valToSet, t);
     }
     else
     {
       this.control.linearRampToValueAtTime(this.rLevel, t);
       valToSet = this.control.getValueAtTime(t);
+      this.control.cancelScheduledValues(t);
       this.control.linearRampToValueAtTime(valToSet, t);
     }
 
