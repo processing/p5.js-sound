@@ -103,6 +103,7 @@ define(function (require) {
    *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
    */
   p5.PolySynth.prototype.play = function (note,velocity, secondsFromNow, susTime) {
+    var susTime = susTime || 1;
     this.noteAttack(note, velocity, secondsFromNow);
     this.noteRelease(note, secondsFromNow + susTime);
   };
@@ -131,8 +132,11 @@ define(function (require) {
    *  @param {Number} [releaseTime]   Time in seconds from now (defaults to 0)
    **/
 
-  p5.PolySynth.prototype.noteADSR = function (note,a,d,s,r) {
-    this.audiovoices[ this.notes[note] ].setADSR(a,d,s,r);
+  p5.PolySynth.prototype.noteADSR = function (note,a,d,s,r,timeFromNow) {
+    var now = p5sound.audiocontext.currentTime;
+    var timeFromNow = timeFromNow || 0;
+    var t = now + timeFromNow
+    this.audiovoices[ this.notes[note].getValueAtTime(t) ].setADSR(a,d,s,r);
   };
 
 
@@ -191,7 +195,7 @@ define(function (require) {
     var currentVoice;
 
     //Release the note if it is already playing
-    if (this.notes[note] !== undefined) {
+    if ( this.notes[note] !== undefined && this.notes[note].getValueAtTime(t) !== null) {
       this.noteRelease(note,0);
     }
 
@@ -211,7 +215,9 @@ define(function (require) {
 
     //Overrite the entry in the notes object. A note (frequency value) 
     //corresponds to the index of the audiovoice that is playing it
-    this.notes[note] = currentVoice;
+
+    this.notes[note] = new TimelineSignal();
+    this.notes[note].setValueAtTime(currentVoice,t);
 
     //Find the scheduled change in this._voicesInUse that will be previous to this new note
     //Add 1 and schedule this value at time 't', when this note will start playing
@@ -265,12 +271,15 @@ define(function (require) {
     var note = typeof _note === 'string' ? this.AudioVoice.prototype._setNote(_note)
       : typeof _note === 'number' ? _note : this.audiovoices[this._newest].oscillator.freq().value;
 
-    if (this.notes[note] === undefined) {
-      console.warn('Cannot release a note that is not already playing');
-    } else {
       var now =  p5sound.audiocontext.currentTime;
       var tFromNow = secondsFromNow || 0;
       var t = now + tFromNow;
+
+    
+    if (this.notes[note].getValueAtTime(t) === null) {
+      console.warn('Cannot release a note that is not already playing');
+    } else {
+      
 
       //Find the scheduled change in this._voicesInUse that will be previous to this new note
       //subtract 1 and schedule this value at time 't', when this note will stop playing
@@ -279,9 +288,9 @@ define(function (require) {
       //Then update all scheduled values that follow to decrease by 1
       this._updateAfter(t, -1);
 
-      // console.log('RELEASE ' + note);
-      this.audiovoices[ this.notes[note] ].triggerRelease(tFromNow);
-      this.notes[note] = undefined;
+      this.audiovoices[ this.notes[note].getValueAtTime(t) ].triggerRelease(tFromNow);
+      
+      this.notes[note].setValueAtTime( null, t);
 
       this._newest = this._newest === 0 ? 0 : (this._newest - 1) % (this.polyValue - 1);
     }

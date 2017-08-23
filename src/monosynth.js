@@ -47,8 +47,8 @@ define(function (require) {
     this.filter.set(5, 1);
 
     // oscillator --> env --> filter --> this.output (gain) --> p5.soundOut
-
-    // this.oscillator.connect(this.filter);
+    this.oscillator.disconnect();
+    this.oscillator.connect(this.filter);
     this.env.setInput(this.oscillator);
     this.filter.connect(this.output);
 
