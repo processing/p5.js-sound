@@ -230,6 +230,10 @@ define(function (require) {
     this._newest = currentVoice;
 
     //The audiovoice handles the actual scheduling of the note
+    if (typeof velocity === 'number') {
+      var maxRange = 1 / this._voicesInUse.getValueAtTime(t) * 2;
+      velocity = velocity > maxRange ? maxRange : velocity;
+    }
     this.audiovoices[currentVoice].triggerAttack(note, velocity, tFromNow);
   };
 

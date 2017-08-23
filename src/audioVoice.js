@@ -60,7 +60,7 @@ define(function() {
    * Disconnect from soundOut
    * @method  disconnect
    */
-  p5.AudioVoice.prototype.disconect = function() {
+  p5.AudioVoice.prototype.disconnect = function() {
     this.output.disconnect();
   };
 
