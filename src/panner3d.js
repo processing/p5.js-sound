@@ -9,7 +9,7 @@ define(function (require) {
    * "https://developer.mozilla.org/en-US/docs/Web/API/PannerNode">
    * Web Audio Spatial Panner Node</a>.
    * This panner is a spatial processing node that allows audio to be positioned
-   * and oriented in 3D space. 
+   * and oriented in 3D space.
    *
    * The position is relative to an <a title="Web Audio Listener docs" href=
    * "https://developer.mozilla.org/en-US/docs/Web/API/AudioListener">
@@ -29,11 +29,15 @@ define(function (require) {
        *  Web Audio Spatial Panner Node</a>
        *
        *  Properties include
-       *    -  panningModel: "equal power" or "HRTF"
-       *    -  distanceModel: "linear", "inverse", or "exponential"
-       * 
+       *    -  <a title="w3 spec for Panning Model"
+       *    href="https://www.w3.org/TR/webaudio/#idl-def-PanningModelType"
+       *    >panningModel</a>: "equal power" or "HRTF"
+       *    -  <a title="w3 spec for Distance Model"
+       *    href="https://www.w3.org/TR/webaudio/#idl-def-DistanceModelType"
+       *    >distanceModel</a>: "linear", "inverse", or "exponential"
+       *
        *  @property {Web Audio Node} panner
-       *  
+       *
        */
       this.panner = this.ac.createPanner();
       this.panner.panningModel = 'HRTF';
@@ -43,7 +47,7 @@ define(function (require) {
 	};
 
   p5.Panner3D.prototype = Object.create(Effect.prototype);
- 
+
 
   /**
    * Connect an audio sorce
@@ -66,7 +70,7 @@ define(function (require) {
     this.positionX(xVal,time);
     this.positionY(yVal,time);
     this.positionZ(zVal,time);
-    return [this.panner.positionX.value, 
+    return [this.panner.positionX.value,
               this.panner.positionY.value,
               this.panner.positionZ.value];
   };
@@ -133,7 +137,7 @@ define(function (require) {
   this.orientX(xVal,time);
   this.orientY(yVal,time);
   this.orientZ(zVal,time);
-  return [this.panner.orientationX.value, 
+  return [this.panner.orientationX.value,
           this.panner.orientationY.value,
           this.panner.orientationZ.value];
   };
@@ -191,7 +195,7 @@ define(function (require) {
    * Set the rolloff factor and max distance
    * @method  setFalloff
    * @param {Number} [maxDistance]
-   * @param {Number} [rolloffFactor]       
+   * @param {Number} [rolloffFactor]
    */
   p5.Panner3D.prototype.setFalloff = function(maxDistance, rolloffFactor) {
     this.maxDist(maxDistance);
@@ -200,8 +204,8 @@ define(function (require) {
   /**
    * Maxium distance between the source and the listener
    * @method  maxDist
-   * @param  {Number} maxDistance 
-   * @return {Number} updated value        
+   * @param  {Number} maxDistance
+   * @return {Number} updated value
    */
   p5.Panner3D.prototype.maxDist = function(maxDistance){
     if (typeof maxDistance === 'number') {
@@ -213,8 +217,8 @@ define(function (require) {
   /**
    * How quickly the volume is reduced as the source moves away from the listener
    * @method  rollof
-   * @param  {Number} rolloffFactor 
-   * @return {Number} updated value      
+   * @param  {Number} rolloffFactor
+   * @return {Number} updated value
    */
   p5.Panner3D.prototype.rolloff = function(rolloffFactor){
     if (typeof rolloffFactor === 'number') {
