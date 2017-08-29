@@ -5,29 +5,40 @@ define(function (require) {
   var Effect = require('effect');
 
   /**
-   * Spatializer is a class that can construct both a Spatial Panner
-   * and a Spatial Listener. The panner is based on the 
-   * Web Audio Spatial Panner Node
-   * https://www.w3.org/TR/webaudio/#the-spatializernode-interface
+   * Panner3D is based on the <a title="Web Audio Panner docs"  href=
+   * "https://developer.mozilla.org/en-US/docs/Web/API/PannerNode">
+   * Web Audio Spatial Panner Node</a>.
    * This panner is a spatial processing node that allows audio to be positioned
-   * and oriented in 3D space. 
+   * and oriented in 3D space.
    *
-   * The Listener modifies the properties of the Audio Context Listener. 
-   * Both objects types use the same methods. The default is a spatial panner.
+   * The position is relative to an <a title="Web Audio Listener docs" href=
+   * "https://developer.mozilla.org/en-US/docs/Web/API/AudioListener">
+   * Audio Context Listener</a>, which can be accessed
+   * by <code>p5.soundOut.audiocontext.listener</code>
    *
-   * <code>p5.Panner3D</code> - Constructs a Spatial Panner<br/>
-   * <code>p5.Listener3D</code> - Constructs a Spatial Listener<br/>
    *
-   * @class Spatializer
+   * @class p5.Panner3D
    * @constructor
-   * @return {Object} p5.Panner3D Object
-   *
-   * @property {Web Audio Node} spatializer Web Audio Spatial Panning Node
-   * @property {AudioParam} spatializer.panningModel "equal power" or "HRTF"
-   * @pproperty {AudioParam} spatializer.distanceModel "linear", "inverse", or "exponential"
    */
 	p5.Panner3D = function() {
       Effect.call(this);
+
+      /**
+       *  <a title="Web Audio Panner docs"  href=
+       *  "https://developer.mozilla.org/en-US/docs/Web/API/PannerNode">
+       *  Web Audio Spatial Panner Node</a>
+       *
+       *  Properties include
+       *    -  <a title="w3 spec for Panning Model"
+       *    href="https://www.w3.org/TR/webaudio/#idl-def-PanningModelType"
+       *    >panningModel</a>: "equal power" or "HRTF"
+       *    -  <a title="w3 spec for Distance Model"
+       *    href="https://www.w3.org/TR/webaudio/#idl-def-DistanceModelType"
+       *    >distanceModel</a>: "linear", "inverse", or "exponential"
+       *
+       *  @property {Web Audio Node} panner
+       *
+       */
       this.panner = this.ac.createPanner();
       this.panner.panningModel = 'HRTF';
       this.panner.distanceModel = 'linear';
@@ -36,10 +47,12 @@ define(function (require) {
 	};
 
   p5.Panner3D.prototype = Object.create(Effect.prototype);
- 
+
 
   /**
    * Connect an audio sorce
+   *
+   * @method  process
    * @param  {Object} src Input source
    */
   p5.Panner3D.prototype.process = function(src) {
@@ -57,7 +70,7 @@ define(function (require) {
     this.positionX(xVal,time);
     this.positionY(yVal,time);
     this.positionZ(zVal,time);
-    return [this.panner.positionX.value, 
+    return [this.panner.positionX.value,
               this.panner.positionY.value,
               this.panner.positionZ.value];
   };
@@ -65,7 +78,15 @@ define(function (require) {
   /**
    * Getter and setter methods for position coordinates
    * @method positionX
+   * @return {Number}      updated coordinate value
+   */
+  /**
+   * Getter and setter methods for position coordinates
    * @method positionY
+   * @return {Number}      updated coordinate value
+   */
+  /**
+   * Getter and setter methods for position coordinates
    * @method positionZ
    * @return {Number}      updated coordinate value
    */
@@ -116,17 +137,25 @@ define(function (require) {
   this.orientX(xVal,time);
   this.orientY(yVal,time);
   this.orientZ(zVal,time);
-  return [this.panner.orientationX.value, 
+  return [this.panner.orientationX.value,
           this.panner.orientationY.value,
           this.panner.orientationZ.value];
   };
 
   /**
    * Getter and setter methods for orient coordinates
-   * @method positionX
-   * @method positionY
-   * @method positionZ
-   * @return {Number}      [updated coordinate value]
+   * @method orientX
+   * @return {Number}      updated coordinate value
+   */
+  /**
+   * Getter and setter methods for orient coordinates
+   * @method orientY
+   * @return {Number}      updated coordinate value
+   */
+  /**
+   * Getter and setter methods for orient coordinates
+   * @method orientZ
+   * @return {Number}      updated coordinate value
    */
   p5.Panner3D.prototype.orientX = function(xVal, time) {
     var t = time || 0;
@@ -166,7 +195,7 @@ define(function (require) {
    * Set the rolloff factor and max distance
    * @method  setFalloff
    * @param {Number} [maxDistance]
-   * @param {Number} [rolloffFactor]       
+   * @param {Number} [rolloffFactor]
    */
   p5.Panner3D.prototype.setFalloff = function(maxDistance, rolloffFactor) {
     this.maxDist(maxDistance);
@@ -175,8 +204,8 @@ define(function (require) {
   /**
    * Maxium distance between the source and the listener
    * @method  maxDist
-   * @param  {Number} maxDistance 
-   * @return {Number} updated value        
+   * @param  {Number} maxDistance
+   * @return {Number} updated value
    */
   p5.Panner3D.prototype.maxDist = function(maxDistance){
     if (typeof maxDistance === 'number') {
@@ -188,8 +217,8 @@ define(function (require) {
   /**
    * How quickly the volume is reduced as the source moves away from the listener
    * @method  rollof
-   * @param  {Number} rolloffFactor 
-   * @return {Number} updated value      
+   * @param  {Number} rolloffFactor
+   * @return {Number} updated value
    */
   p5.Panner3D.prototype.rolloff = function(rolloffFactor){
     if (typeof rolloffFactor === 'number') {
