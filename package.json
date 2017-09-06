@@ -19,6 +19,6 @@
     "grunt-open": "^0.2.3"
   },
   "dependencies": {
-    "tone": "therewasaguy/tone.js#p5-dev"
+    "tone": "0.10.0"
   }
 }

@@ -86,7 +86,7 @@ define(function (require) {
 	 */		
 	p5.Effect.prototype.chain = function(){
 		if (arguments.length>0){
-			this.output.connect(arguments[0]);
+			this.connect(arguments[0]);
 			for(var i=1;i<arguments.length; i+=1){
 				arguments[i-1].connect(arguments[i]);
 			}

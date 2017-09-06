@@ -1,7 +1,7 @@
 'use strict';
 
 define(function (require) {
-
+  var p5sound = require('master');
   var Effect = require('effect');
 
   /**
@@ -103,6 +103,10 @@ define(function (require) {
     if (type) {
       this.setType(type);
     }
+
+    //Properties useful for the toggle method.
+    this._on = true;
+    this._untoggledType = this.biquad.type;
   };
   p5.Filter.prototype = Object.create(Effect.prototype);
 
@@ -191,6 +195,44 @@ define(function (require) {
   };
 
   /**
+   * Controls the gain attribute of a Biquad Filter.
+   * This is distinctly different from .amp() which is inherited from p5.Effect
+   * .amp() controls the volume via the output gain node
+   * p5.Filter.gain() controls the gain parameter of a Biquad Filter node.
+   * 
+   * @param  {Number} gain 
+   * @return {Number} Returns the current or updated gain value
+   */
+  p5.Filter.prototype.gain = function(gain, time) {
+    var t = time || 0;
+    if (typeof gain === 'number') {
+      this.biquad.gain.value = gain;
+      this.biquad.gain.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      this.biquad.gain.linearRampToValueAtTime(gain, this.ac.currentTime + 0.02 + t);
+    } else if (gain) {
+      gain.connect(this.biquad.gain);
+    }
+    return this.biquad.gain.value;
+  };
+
+
+  /**
+   * Toggle function. Switches between the specified type and allpass
+   * @return {boolean} [Toggle value]
+   */
+  p5.Filter.prototype.toggle = function() {
+    this._on = !this._on;
+    
+    if (this._on === true) {
+      this.biquad.type = this._untoggledType;
+    } else if (this._on === false) {
+      this.biquad.type = 'allpass';
+    }
+
+    return this._on;
+  }
+
+  /**
    *  Set the type of a p5.Filter. Possible types include:
    *  "lowpass" (default), "highpass", "bandpass",
    *  "lowshelf", "highshelf", "peaking", "notch",
@@ -201,13 +243,12 @@ define(function (require) {
    */
   p5.Filter.prototype.setType = function(t) {
     this.biquad.type = t;
+    this._untoggledType = this.biquad.type;
   };
 
   p5.Filter.prototype.dispose = function() {
     // remove reference from soundArray
-
     Effect.prototype.dispose.apply(this);
-
     this.biquad.disconnect();
     this.biquad = undefined;
   };
