@@ -99,7 +99,6 @@ define(function (require) {
      *                                 value in Note/Octave format ("C4", "Eb3"...etc")
      *                                 See <a href = "https://github.com/Tonejs/Tone.js/wiki/Instruments">
      *                                 Tone</a>. Defaults to 440 hz
-     *  @param  {Number} secondsFromNow time from now (in seconds)
      *  @param  {Number} [velocity] velocity of the note to play (ranging from 0 to 1)
      *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
      *  @method  triggerAttack

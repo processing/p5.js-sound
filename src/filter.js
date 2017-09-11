@@ -261,7 +261,7 @@ define(function (require) {
    *
    *  @class p5.LowPass
    *  @constructor
-   *  @extends {p5.Filter}
+   *  @extends p5.Filter
    */
   p5.LowPass = function() {
     p5.Filter.call(this, 'lowpass');
@@ -276,7 +276,7 @@ define(function (require) {
    *
    *  @class p5.HighPass
    *  @constructor
-   *  @extends {p5.Filter}
+   *  @extends p5.Filter
    */
   p5.HighPass = function() {
     p5.Filter.call(this, 'highpass');
@@ -289,9 +289,9 @@ define(function (require) {
    *  its method <code>setType('bandpass')</code>.
    *  See p5.Filter for methods.
    *
-   *  @class BandPass
+   *  @class p5.BandPass
    *  @constructor
-   *  @extends {p5.Filter}
+   *  @extends p5.Filter
    */
   p5.BandPass = function() {
     p5.Filter.call(this, 'bandpass');

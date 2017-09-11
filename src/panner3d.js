@@ -36,7 +36,7 @@ define(function (require) {
        *    href="https://www.w3.org/TR/webaudio/#idl-def-DistanceModelType"
        *    >distanceModel</a>: "linear", "inverse", or "exponential"
        *
-       *  @property {Web Audio Node} panner
+       *  @property {WebAudioNode} panner
        *
        */
       this.panner = this.ac.createPanner();

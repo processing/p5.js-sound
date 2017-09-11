@@ -7,7 +7,7 @@ define(function() {
    * should follow the API and implement the methods below in order to 
    * remain compatible with p5.PolySynth();
    *
-   * @class AudioVoice
+   * @class p5.AudioVoice
    * @constructor
    */
   p5.AudioVoice = function () {

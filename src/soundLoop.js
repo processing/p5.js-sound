@@ -11,7 +11,7 @@ define(function (require) {
    * @constructor
    *
    * @param {Function} callback this function will be called on each iteration of theloop
-   * @param {Number or String} [interval] amount of time or beats for each iteration of the loop
+   * @param {Number|String} [interval] amount of time or beats for each iteration of the loop
    *                                       defaults to 1
    *
    * @example
