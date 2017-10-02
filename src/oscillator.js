@@ -52,7 +52,7 @@ define(function (require) {
    *  function mouseClicked() {
    *    if (mouseX > 0 && mouseX < width && mouseY < height && mouseY > 0) {
    *      if (!playing) {
-   *        // ramp amplitude to 0.5 over 0.1 seconds
+   *        // ramp amplitude to 0.5 over 0.05 seconds
    *        osc.amp(0.5, 0.05);
    *        playing = true;
    *        backgroundColor = color(0,255,255);
