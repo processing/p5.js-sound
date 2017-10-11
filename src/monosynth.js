@@ -158,8 +158,14 @@ define(function (require) {
   /**
    * Getters and Setters
    * @property {Number} attack
+   */
+  /**
    * @property {Number} decay
+   */
+  /**
    * @property {Number} sustain
+   */
+  /**
    * @property {Number} release
    */
   Object.defineProperties(p5.MonoSynth.prototype, {
