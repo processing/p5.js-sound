@@ -157,6 +157,7 @@ define(function (require) {
    *  Set the amplitude of the noise between 0 and 1.0. Or,
    *  modulate amplitude with an audio signal such as an oscillator.
    *
+   *  @method amp
    *  @param  {Number|Object} volume amplitude between 0 and 1.0
    *                                     or modulating signal/oscillator
    *  @param {Number} [rampTime] create a fade that lasts rampTime

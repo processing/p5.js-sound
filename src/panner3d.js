@@ -36,7 +36,7 @@ define(function (require) {
        *    href="https://www.w3.org/TR/webaudio/#idl-def-DistanceModelType"
        *    >distanceModel</a>: "linear", "inverse", or "exponential"
        *
-       *  @property {WebAudioNode} panner
+       *  @property {AudioNode} panner
        *
        */
       this.panner = this.ac.createPanner();
@@ -60,6 +60,7 @@ define(function (require) {
   }
   /**
    * Set the X,Y,Z position of the Panner
+   * @method set
    * @param  {Number} xVal
    * @param  {Number} yVal
    * @param  {Number} zVal

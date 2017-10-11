@@ -199,7 +199,8 @@ define(function (require) {
    * This is distinctly different from .amp() which is inherited from p5.Effect
    * .amp() controls the volume via the output gain node
    * p5.Filter.gain() controls the gain parameter of a Biquad Filter node.
-   * 
+   *
+   * @method gain
    * @param  {Number} gain 
    * @return {Number} Returns the current or updated gain value
    */
@@ -218,6 +219,8 @@ define(function (require) {
 
   /**
    * Toggle function. Switches between the specified type and allpass
+   *
+   * @method toggle
    * @return {boolean} [Toggle value]
    */
   p5.Filter.prototype.toggle = function() {

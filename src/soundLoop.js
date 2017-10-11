@@ -219,6 +219,7 @@ define(function (require) {
   /**
    * Getters and Setters, setting any paramter will result in a change in the clock's
    * frequency, that will be reflected after the next callback
+   * @property bpm
    * @param {Number} bpm 
    * @param {Number} timeSignature
    * @param {Number/String} interval length of the loops interval

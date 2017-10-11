@@ -68,6 +68,7 @@ define(function (require) {
     /**
      * This value must only change as a note is attacked or released. Due to delay
      * and sustain times, Tone.TimelineSignal is required to schedule the change in value.
+	 * @private
      * @property {Tone.TimelineSignal} _voicesInUse
      */
     this._voicesInUse = new TimelineSignal(0);
@@ -242,7 +243,8 @@ define(function (require) {
    * Any time a new value is scheduled, it is necessary to increment all subsequent
    * scheduledValues after attack, and decrement all subsequent 
    * scheduledValues after release
-   * 
+   *
+   * @private
    * @param  {[type]} time  [description]
    * @param  {[type]} value [description]
    * @return {[type]}       [description]

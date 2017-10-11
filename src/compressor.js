@@ -33,7 +33,7 @@ define(function (require) {
      * The p5.Compressor is built with a <a href="https://www.w3.org/TR/webaudio/#the-dynamicscompressornode-interface" 
    *   target="_blank" title="W3 spec for Dynamics Compressor Node">Web Audio Dynamics Compressor Node
    *   </a>
-     * @property {WebAudioNode} compressor 
+     * @property {AudioNode} compressor 
      */
     
 
@@ -205,6 +205,8 @@ define(function (require) {
 
   /**
    * Return the current reduction value
+   *
+   * @method reduction
    * @return {Number} Value of the amount of gain reduction that is applied to the signal
    */
   p5.Compressor.prototype.reduction =function() {

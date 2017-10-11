@@ -95,20 +95,22 @@ define(function (require) {
     return this.listener.positionZ.value;
   };
 
-  /**
-   * Overrides the listener orient() method because Listener has slightly
-   * different params. In human terms, Forward vectors are the direction the 
-   * nose is pointing. Up vectors are the direction of the top of the head.
-   * 
-   * @param  {Number} xValF  Forward vector X direction
-   * @param  {Number} yValF  Forward vector Y direction
-   * @param  {Number} zValF  Forward vector Z direction
-   * @param  {Number} xValU  Up vector X direction
-   * @param  {Number} yValU  Up vector Y direction
-   * @param  {Number} zValU  Up vector Z direction
-   * @param  {Number} time  
-   * @return {Array}       All orienation params
-   */
+// cannot define method when class definition is commented
+//  /**
+//   * Overrides the listener orient() method because Listener has slightly
+//   * different params. In human terms, Forward vectors are the direction the 
+//   * nose is pointing. Up vectors are the direction of the top of the head.
+//   *
+//   * @method orient
+//   * @param  {Number} xValF  Forward vector X direction
+//   * @param  {Number} yValF  Forward vector Y direction
+//   * @param  {Number} zValF  Forward vector Z direction
+//   * @param  {Number} xValU  Up vector X direction
+//   * @param  {Number} yValU  Up vector Y direction
+//   * @param  {Number} zValU  Up vector Z direction
+//   * @param  {Number} time  
+//   * @return {Array}       All orienation params
+//   */
   p5.Listener3D.prototype.orient = function(xValF, yValF, zValF, 
                                               xValU, yValU, zValU, time) {
 

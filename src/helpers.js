@@ -24,6 +24,7 @@ define(function (require) {
    *  Returns the closest MIDI note value for
    *  a given frequency.
    *
+   *  @method freqToMidi
    *  @param  {Number} frequency A freqeuncy, for example, the "A"
    *                             above Middle C is 440Hz
    *  @return {Number}   MIDI note value
