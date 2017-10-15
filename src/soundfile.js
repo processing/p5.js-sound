@@ -447,10 +447,11 @@ define(function (require) {
    *  p5.SoundFile if it is triggered while in the middle of playback.
    *  In sustain mode, playback will continue simultaneous to the
    *  new playback. In restart mode, play() will stop playback
-   *  and start over. Sustain is the default mode.
+   *  and start over. With untilDone, a sound will play only if it's
+   *  not already playing. Sustain is the default mode.
    *
    *  @method  playMode
-   *  @param  {String} str 'restart' or 'sustain'
+   *  @param  {String} str 'restart' or 'sustain' or 'untilDone'
    *  @example
    *  <div><code>
    *  function setup(){
@@ -644,7 +645,6 @@ define(function (require) {
       var t = time || 0;
       this.pauseTime = 0;
       this.bufferSourceNode.stop(now + t);
-
       this._counterNode.stop(now + t);
       this._playing = false;
       this._paused = false;
