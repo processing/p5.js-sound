@@ -353,6 +353,11 @@ define(function (require) {
         this._counterNode.stop(time);
       }
 
+      //dont create another instance if already playing
+      if (this.mode === 'untildone' && this.isPlaying()){
+        return;
+      } 
+
       // make a new source and counter. They are automatically assigned playbackRate and buffer
       this.bufferSourceNode = this._initSourceNode();
 
@@ -474,7 +479,7 @@ define(function (require) {
     }
 
     // set play mode to effect future playback
-    if (s === 'restart' || s === 'sustain') {
+    if (s === 'restart' || s === 'sustain' || s === 'untildone') {
       this.mode = s;
     } else {
       throw 'Invalid play mode. Must be either "restart" or "sustain"';
@@ -628,7 +633,7 @@ define(function (require) {
   p5.SoundFile.prototype.stop = function(timeFromNow) {
     var time = timeFromNow || 0;
 
-    if (this.mode === 'sustain') {
+    if (this.mode === 'sustain' || this.mode === 'untildone') {
       this.stopAll(time);
       this._playing = false;
       this.pauseTime = 0;
