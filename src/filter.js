@@ -199,7 +199,8 @@ define(function (require) {
    * This is distinctly different from .amp() which is inherited from p5.Effect
    * .amp() controls the volume via the output gain node
    * p5.Filter.gain() controls the gain parameter of a Biquad Filter node.
-   * 
+   *
+   * @method gain
    * @param  {Number} gain 
    * @return {Number} Returns the current or updated gain value
    */
@@ -218,6 +219,8 @@ define(function (require) {
 
   /**
    * Toggle function. Switches between the specified type and allpass
+   *
+   * @method toggle
    * @return {boolean} [Toggle value]
    */
   p5.Filter.prototype.toggle = function() {
@@ -261,7 +264,7 @@ define(function (require) {
    *
    *  @class p5.LowPass
    *  @constructor
-   *  @extends {p5.Filter}
+   *  @extends p5.Filter
    */
   p5.LowPass = function() {
     p5.Filter.call(this, 'lowpass');
@@ -276,7 +279,7 @@ define(function (require) {
    *
    *  @class p5.HighPass
    *  @constructor
-   *  @extends {p5.Filter}
+   *  @extends p5.Filter
    */
   p5.HighPass = function() {
     p5.Filter.call(this, 'highpass');
@@ -289,9 +292,9 @@ define(function (require) {
    *  its method <code>setType('bandpass')</code>.
    *  See p5.Filter for methods.
    *
-   *  @class BandPass
+   *  @class p5.BandPass
    *  @constructor
-   *  @extends {p5.Filter}
+   *  @extends p5.Filter
    */
   p5.BandPass = function() {
     p5.Filter.call(this, 'bandpass');

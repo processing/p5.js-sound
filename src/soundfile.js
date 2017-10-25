@@ -550,7 +550,7 @@ define(function (require) {
    *                             seconds from now
    * @param {Number} [rate]        (optional) playback rate
    * @param {Number} [amp]         (optional) playback volume
-   * @param {Number} [cueLoopStart](optional) startTime in seconds
+   * @param {Number} [cueLoopStart] (optional) startTime in seconds
    * @param {Number} [duration]  (optional) loop duration in seconds
    */
   p5.SoundFile.prototype.loop = function(startTime, rate, amp, loopStart, duration) {
@@ -563,6 +563,7 @@ define(function (require) {
    * is currently playing, this change will take effect when it
    * reaches the end of the current playback.
    *
+   * @method setLoop
    * @param {Boolean} Boolean   set looping to true or false
    */
   p5.SoundFile.prototype.setLoop = function(bool) {
@@ -584,6 +585,7 @@ define(function (require) {
   /**
    * Returns 'true' if a p5.SoundFile is currently looping and playing, 'false' if not.
    *
+   * @method isLooping
    * @return {Boolean}
    */
   p5.SoundFile.prototype.isLooping = function() {
@@ -758,6 +760,7 @@ define(function (require) {
   /**
    * Returns the current stereo pan position (-1.0 to 1.0)
    *
+   * @method getPan
    * @return {Number} Returns the stereo pan setting of the Oscillator
    *                          as a number between -1.0 (left) and 1.0 (right).
    *                          0.0 is center and default.
@@ -1149,6 +1152,7 @@ define(function (require) {
   /**
    *  Replace the current Audio Buffer with a new Buffer.
    *
+   *  @method setBuffer
    *  @param {Array} buf Array of Float32 Array(s). 2 Float32 Arrays
    *                     will create a stereo source. 1 will create
    *                     a mono source.

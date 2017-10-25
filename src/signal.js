@@ -76,6 +76,7 @@ define(function (require) {
    *  Connect a p5.sound object or Web Audio node to this
    *  p5.Signal so that its amplitude values can be scaled.
    *
+   *  @method setInput
    *  @param {Object} input
    */
   Signal.prototype.setInput = function(_input) {
@@ -96,7 +97,7 @@ define(function (require) {
    *
    *  @method  add
    *  @param {Number} number
-   *  @return {p5.SignalAdd} object
+   *  @return {p5.Signal} object
    */
   Signal.prototype.add = function(num) {
     var add = new Add(num);
@@ -116,7 +117,7 @@ define(function (require) {
    *
    *  @method  mult
    *  @param {Number} number to multiply
-   *  @return {Tone.Multiply} object
+   *  @return {p5.Signal} object
    */
   Signal.prototype.mult = function(num) {
     var mult = new Mult(num);
@@ -140,7 +141,7 @@ define(function (require) {
    *  @param  {Number} inMax  input range maximum
    *  @param  {Number} outMin input range minumum
    *  @param  {Number} outMax input range maximum
-   *  @return {p5.SignalScale} object
+   *  @return {p5.Signal} object
    */
   Signal.prototype.scale = function(inMin, inMax, outMin, outMax) {
     var mapOutMin, mapOutMax;
@@ -159,4 +160,7 @@ define(function (require) {
   Mult.prototype.scale =   Signal.prototype.scale;
   Add.prototype.scale =   Signal.prototype.scale;
   Scale.prototype.scale =   Signal.prototype.scale;
+
 });
+
+

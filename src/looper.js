@@ -9,6 +9,7 @@ define(function (require) {
    *  Set the global tempo, in beats per minute, for all
    *  p5.Parts. This method will impact all active p5.Parts.
    *
+   *  @method setBPM
    *  @param {Number} BPM      Beats Per Minute
    *  @param {Number} rampTime Seconds from now
    */
@@ -494,6 +495,7 @@ define(function (require) {
   /**
    *  Set the tempo for all parts in the score
    *
+   *  @method setBPM
    *  @param {Number} BPM      Beats Per Minute
    *  @param {Number} rampTime Seconds from now
    */

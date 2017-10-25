@@ -11,7 +11,7 @@ define(function (require) {
    * @constructor
    *
    * @param {Function} callback this function will be called on each iteration of theloop
-   * @param {Number or String} [interval] amount of time or beats for each iteration of the loop
+   * @param {Number|String} [interval] amount of time or beats for each iteration of the loop
    *                                       defaults to 1
    *
    * @example
@@ -43,7 +43,8 @@ define(function (require) {
     this.callback = callback;
     /**
      * musicalTimeMode uses <a href = "https://github.com/Tonejs/Tone.js/wiki/Time">Tone.Time</a> convention
-     * @property {Boolean} musicalTimeMode true if string, false if number
+	 * true if string, false if number
+     * @property {Boolean} musicalTimeMode
      */
     this.musicalTimeMode = typeof this._interval === 'number' ? false : true;
 
@@ -52,8 +53,6 @@ define(function (require) {
     /**
      * musicalTimeMode variables
      * modify these only when the interval is specified in musicalTime format as a string
-     * @property {Number} [BPM] beats per minute (defaults to 60)
-     * @property {Number} [timeSignature] number of quarter notes in a measure (defaults to 4)
      */
     this._timeSignature = 4;
     this._bpm = 60;
@@ -61,8 +60,8 @@ define(function (require) {
     this.isPlaying = false;
 
     /**
-     * Set a limit to the number of loops to play
-     * @property {Number} [maxIterations]  defaults to Infinity
+     * Set a limit to the number of loops to play. defaults to Infinity
+     * @property {Number} maxIterations
      */
     this.maxIterations = Infinity;
     var self = this;
@@ -206,6 +205,7 @@ define(function (require) {
    * Helper conversion methods of measure and note
    * @private
    * @method  _measure
+   * @private
    * @method  _note
    */
   p5.SoundLoop.prototype._measure = function(value) {
@@ -219,11 +219,8 @@ define(function (require) {
   /**
    * Getters and Setters, setting any paramter will result in a change in the clock's
    * frequency, that will be reflected after the next callback
-   * @param {Number} bpm 
-   * @param {Number} timeSignature
-   * @param {Number/String} interval length of the loops interval
-   * @param @readOnly {Number} iteations how many times the callback has been called so far
-   * 
+   * beats per minute (defaults to 60)
+   * @property {Number} bpm
    */
   Object.defineProperty(p5.SoundLoop.prototype, 'bpm', {
     get : function() {
@@ -241,6 +238,10 @@ define(function (require) {
     }
   });
 
+  /**
+   * number of quarter notes in a measure (defaults to 4)
+   * @property {Number} timeSignature
+   */
   Object.defineProperty(p5.SoundLoop.prototype, 'timeSignature', {
     get : function() {
       return this._timeSignature;
@@ -257,6 +258,10 @@ define(function (require) {
     }
   });
 
+  /**
+   * length of the loops interval
+   * @property {Number|String} interval
+   */
   Object.defineProperty(p5.SoundLoop.prototype, 'interval', {
     get : function() {
       return this._interval;
@@ -268,6 +273,11 @@ define(function (require) {
     }
   });
 
+  /**
+   * how many times the callback has been called so far
+   * @property {Number} iterations
+   * @readonly
+   */
   Object.defineProperty(p5.SoundLoop.prototype, 'iterations', {
     get : function() {
       return this.clock.ticks;

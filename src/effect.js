@@ -18,12 +18,12 @@ define(function (require) {
 	 *
 	 * @class  p5.Effect
 	 * @constructor
-	 *
+	 * 
 	 * @param {Object} [ac]   Reference to the audio context of the p5 object
-	 * @param {WebAudioNode} [input]  Gain Node effect wrapper
-	 * @param {WebAudioNode} [output] Gain Node effect wrapper
+	 * @param {AudioNode} [input]  Gain Node effect wrapper
+	 * @param {AudioNode} [output] Gain Node effect wrapper
 	 * @param {Object} [_drywet]   Tone.JS CrossFade node (defaults to value: 1)
-	 * @param {WebAudioNode} [wet]  Effects that extend this class should connect
+	 * @param {AudioNode} [wet]  Effects that extend this class should connect
 	 *                              to the wet signal to this gain node, so that dry and wet 
 	 *                              signals are mixed properly.
 	 */

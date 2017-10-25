@@ -188,7 +188,7 @@ define(function (require) {
    * @method  _newBand
    * @param  {Number} freq
    * @param  {Number} res
-   * @return {Obect}      Abstracted Filter
+   * @return {Object}      Abstracted Filter
    */
   p5.EQ.prototype._newBand = function(freq, res) {
     return new EQFilter(freq, res);

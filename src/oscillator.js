@@ -497,7 +497,7 @@ define(function (require) {
    *
    *  @class  p5.SinOsc
    *  @constructor
-   *  @extends {p5.Oscillator}
+   *  @extends p5.Oscillator
    *  @param {Number} [freq] Set the frequency
    */
   p5.SinOsc = function(freq) {
@@ -516,7 +516,7 @@ define(function (require) {
    *
    *  @class  p5.TriOsc
    *  @constructor
-   *  @extends {p5.Oscillator}
+   *  @extends p5.Oscillator
    *  @param {Number} [freq] Set the frequency
    */
   p5.TriOsc = function(freq) {
@@ -535,7 +535,7 @@ define(function (require) {
    *
    *  @class  p5.SawOsc
    *  @constructor
-   *  @extends {p5.Oscillator}
+   *  @extends p5.Oscillator
    *  @param {Number} [freq] Set the frequency
    */
   p5.SawOsc = function(freq) {
@@ -554,7 +554,7 @@ define(function (require) {
    *
    *  @class  p5.SqrOsc
    *  @constructor
-   *  @extends {p5.Oscillator}
+   *  @extends p5.Oscillator
    *  @param {Number} [freq] Set the frequency
    */
   p5.SqrOsc = function(freq) {
