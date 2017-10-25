@@ -27,6 +27,9 @@ function togglePlayMode(){
   if (playMode == 'sustain'){
     playMode = 'restart';
   }
+  else if (playMode == 'restart'){
+    playMode = 'untilDone';
+  }
   else {
     playMode = 'sustain';
   }
