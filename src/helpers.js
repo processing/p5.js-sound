@@ -2,7 +2,7 @@
 define(function (require) {
   var p5sound = require('master');
   /**
-   * @class p5
+   * @for p5
    */
 
   /**
