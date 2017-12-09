@@ -1,6 +1,6 @@
 'use strict';
 
-define(function (require) {
+define(function(require) {
   var p5sound = require('master');
 
   /**
@@ -93,7 +93,7 @@ define(function (require) {
     this.input = this.analyser = p5sound.audiocontext.createAnalyser();
 
     Object.defineProperties(this, {
-      'bins': {
+      bins: {
         get: function() {
           return this.analyser.fftSize / 2;
         },
@@ -103,7 +103,7 @@ define(function (require) {
         configurable: true,
         enumerable: true
       },
-      'smoothing': {
+      smoothing: {
         get: function() {
           return this.analyser.smoothingTimeConstant;
         },
@@ -193,14 +193,13 @@ define(function (require) {
     } else {
       timeToInt(this, this.timeDomain);
       this.analyser.getByteTimeDomainData(this.timeDomain);
-      var  normalArray = new Array();
+      var normalArray = new Array();
       for (var j = 0; j < this.timeDomain.length; j++) {
         var scaled = p5.prototype.map(this.timeDomain[j], 0, 255, -1, 1);
         normalArray.push(scaled);
       }
       return normalArray;
     }
-
   };
 
   /**
@@ -291,17 +290,16 @@ define(function (require) {
     } else {
       freqToInt(this, this.freqDomain);
       this.analyser.getByteFrequencyData(this.freqDomain);
-      var normalArray = Array.apply( [], this.freqDomain );
+      var normalArray = Array.apply([], this.freqDomain);
       normalArray.length === this.analyser.fftSize;
       normalArray.constructor === Array;
       return normalArray;
     }
-
   };
 
   /**
    *  Returns the amount of energy (volume) at a specific
-   *  <a href="en.wikipedia.org/wiki/Audio_frequency" target="_blank">
+   *  <a href="https://en.wikipedia.org/wiki/Audio_frequency" target="_blank">
    *  frequency</a>, or the average amount of energy between two
    *  frequencies. Accepts Number(s) corresponding
    *  to frequency (in Hz), or a String corresponding to predefined
@@ -328,7 +326,7 @@ define(function (require) {
    *
    */
   p5.FFT.prototype.getEnergy = function(frequency1, frequency2) {
-    var nyquist = p5sound.audiocontext.sampleRate/2;
+    var nyquist = p5sound.audiocontext.sampleRate / 2;
 
     if (frequency1 === 'bass') {
       frequency1 = this.bass[0];
@@ -349,37 +347,32 @@ define(function (require) {
 
     if (typeof frequency1 !== 'number') {
       throw 'invalid input for getEnergy()';
-    }
-
-    // if only one parameter:
-    else if (!frequency2) {
-      var index = Math.round(frequency1/nyquist * this.freqDomain.length);
+    } else if (!frequency2) {
+      // if only one parameter:
+      var index = Math.round(frequency1 / nyquist * this.freqDomain.length);
       return this.freqDomain[index];
-    }
-
-    // if two parameters:
-    else if (frequency1 && frequency2) {
+    } else if (frequency1 && frequency2) {
+      // if two parameters:
       // if second is higher than first
       if (frequency1 > frequency2) {
         var swap = frequency2;
         frequency2 = frequency1;
         frequency1 = swap;
       }
-      var lowIndex = Math.round(frequency1/nyquist * this.freqDomain.length);
-      var highIndex = Math.round(frequency2/nyquist * this.freqDomain.length);
+      var lowIndex = Math.round(frequency1 / nyquist * this.freqDomain.length);
+      var highIndex = Math.round(frequency2 / nyquist * this.freqDomain.length);
 
       var total = 0;
       var numFrequencies = 0;
       // add up all of the values for the frequencies
-      for (var i = lowIndex; i<=highIndex; i++) {
+      for (var i = lowIndex; i <= highIndex; i++) {
         total += this.freqDomain[i];
         numFrequencies += 1;
       }
       // divide by total number of frequencies
-      var toReturn = total/numFrequencies;
+      var toReturn = total / numFrequencies;
       return toReturn;
-    }
-    else {
+    } else {
       throw 'invalid input for getEnergy()';
     }
   };
@@ -458,24 +451,23 @@ define(function (require) {
    * </code></div>
    */
   p5.FFT.prototype.getCentroid = function() {
-    var nyquist = p5sound.audiocontext.sampleRate/2;
+    var nyquist = p5sound.audiocontext.sampleRate / 2;
     var cumulative_sum = 0;
     var centroid_normalization = 0;
 
-    for (var i = 0; i < this.freqDomain.length; i++)
-    {
+    for (var i = 0; i < this.freqDomain.length; i++) {
       cumulative_sum += i * this.freqDomain[i];
       centroid_normalization += this.freqDomain[i];
     }
 
     var mean_freq_index = 0;
 
-    if (centroid_normalization !== 0)
-    {
+    if (centroid_normalization !== 0) {
       mean_freq_index = cumulative_sum / centroid_normalization;
     }
 
-    var spec_centroid_freq = mean_freq_index * (nyquist / this.freqDomain.length);
+    var spec_centroid_freq =
+      mean_freq_index * (nyquist / this.freqDomain.length);
     return spec_centroid_freq;
   };
 
@@ -526,10 +518,10 @@ define(function (require) {
     var groupIndex = 0;
 
     for (var specIndex = 0; specIndex < spectrumLength; specIndex++) {
-
-      linearAverages[groupIndex] = linearAverages[groupIndex] !== undefined
-        ? (linearAverages[groupIndex] + spectrum[specIndex]) / 2
-        : spectrum[specIndex];
+      linearAverages[groupIndex] =
+        linearAverages[groupIndex] !== undefined
+          ? (linearAverages[groupIndex] + spectrum[specIndex]) / 2
+          : spectrum[specIndex];
 
       // Increase the group index when the last element of the group is processed
       if (specIndex % spectrumStep === spectrumStep - 1) {
@@ -563,16 +555,19 @@ define(function (require) {
     var octaveIndex = 0;
 
     for (var specIndex = 0; specIndex < spectrumLength; specIndex++) {
-      var specIndexFrequency = Math.round(specIndex * nyquist / this.freqDomain.length);
+      var specIndexFrequency = Math.round(
+        specIndex * nyquist / this.freqDomain.length
+      );
 
       // Increase the group index if the current frequency exceeds the limits of the band
       if (specIndexFrequency > octaveBands[octaveIndex].hi) {
         octaveIndex++;
       }
 
-      logAverages[octaveIndex] = logAverages[octaveIndex] !== undefined
-        ? (logAverages[octaveIndex] + spectrum[specIndex]) / 2
-        : spectrum[specIndex];
+      logAverages[octaveIndex] =
+        logAverages[octaveIndex] !== undefined
+          ? (logAverages[octaveIndex] + spectrum[specIndex]) / 2
+          : spectrum[specIndex];
     }
 
     return logAverages;
@@ -592,24 +587,23 @@ define(function (require) {
    *  @return {Array}   octaveBands   Array of octave band objects with their bounds
    */
   p5.FFT.prototype.getOctaveBands = function(N, fCtr0) {
-    var N = N || 3;               // Default to 1/3 Octave Bands
-    var fCtr0 = fCtr0 || 15.625;  // Minimum central frequency, defaults to 15.625Hz
+    var N = N || 3; // Default to 1/3 Octave Bands
+    var fCtr0 = fCtr0 || 15.625; // Minimum central frequency, defaults to 15.625Hz
 
     var octaveBands = [];
     var lastFrequencyBand = {
-      lo: fCtr0 / Math.pow(2, 1 / (2*N)),
+      lo: fCtr0 / Math.pow(2, 1 / (2 * N)),
       ctr: fCtr0,
-      hi: fCtr0 * Math.pow(2, 1 / (2*N)),
+      hi: fCtr0 * Math.pow(2, 1 / (2 * N))
     };
     octaveBands.push(lastFrequencyBand);
 
     var nyquist = p5sound.audiocontext.sampleRate / 2;
     while (lastFrequencyBand.hi < nyquist) {
-
       var newFrequencyBand = {};
       newFrequencyBand.lo = lastFrequencyBand.hi;
       newFrequencyBand.ctr = lastFrequencyBand.ctr * Math.pow(2, 1 / N);
-      newFrequencyBand.hi = newFrequencyBand.ctr * Math.pow(2, 1 / (2*N));
+      newFrequencyBand.hi = newFrequencyBand.ctr * Math.pow(2, 1 / (2 * N));
 
       octaveBands.push(newFrequencyBand);
       lastFrequencyBand = newFrequencyBand;
@@ -619,26 +613,24 @@ define(function (require) {
   };
 
   // helper methods to convert type from float (dB) to int (0-255)
-  var freqToFloat = function (fft) {
+  var freqToFloat = function(fft) {
     if (fft.freqDomain instanceof Float32Array === false) {
       fft.freqDomain = new Float32Array(fft.analyser.frequencyBinCount);
     }
   };
-  var freqToInt = function (fft) {
+  var freqToInt = function(fft) {
     if (fft.freqDomain instanceof Uint8Array === false) {
       fft.freqDomain = new Uint8Array(fft.analyser.frequencyBinCount);
     }
   };
-  var timeToFloat = function (fft) {
+  var timeToFloat = function(fft) {
     if (fft.timeDomain instanceof Float32Array === false) {
       fft.timeDomain = new Float32Array(fft.analyser.frequencyBinCount);
     }
   };
-  var timeToInt = function (fft) {
+  var timeToInt = function(fft) {
     if (fft.timeDomain instanceof Uint8Array === false) {
       fft.timeDomain = new Uint8Array(fft.analyser.frequencyBinCount);
     }
   };
-
-
 });
