@@ -19,9 +19,6 @@ define(function () {
 
     this.output.disconnect();
 
-    // an array of input sources
-    this.inputSources = [];
-
     // connect input to limiter
     this.input.connect(this.limiter);
 
