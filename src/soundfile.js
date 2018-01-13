@@ -338,8 +338,13 @@ define(function (require) {
 
     time = time + now;
 
-    this.rate(rate);
-    this.setVolume(amp);
+    if (typeof rate !== 'undefined') {
+      this.rate(rate);
+    }
+
+    if (typeof rate !== 'undefined') {
+      this.setVolume(amp);
+    }
 
     // TO DO: if already playing, create array of buffers for easy stop()
     if (this.buffer) {
@@ -354,9 +359,9 @@ define(function (require) {
       }
 
       //dont create another instance if already playing
-      if (this.mode === 'untildone' && this.isPlaying()){
+      if (this.mode === 'untildone' && this.isPlaying()) {
         return;
-      } 
+      }
 
       // make a new source and counter. They are automatically assigned playbackRate and buffer
       this.bufferSourceNode = this._initSourceNode();
@@ -377,8 +382,6 @@ define(function (require) {
       if (duration) {
         // if duration is greater than buffer.duration, just play entire file anyway rather than throw an error
         duration = duration <= this.buffer.duration - cueStart ? duration : this.buffer.duration;
-      } else {
-        duration = this.buffer.duration - cueStart;
       }
 
       this.bufferSourceNode.connect(this.output);
@@ -431,12 +434,11 @@ define(function (require) {
     this._counterNode.loop = this._looping;
 
     if (this._looping === true) {
-      cueEnd = cueStart + duration;
+      cueEnd = duration ? duration : cueStart - 0.000000000000001;
       this.bufferSourceNode.loopStart = cueStart;
       this.bufferSourceNode.loopEnd = cueEnd;
       this._counterNode.loopStart = cueStart;
       this._counterNode.loopEnd = cueEnd;
-
     }
   };
 
@@ -814,25 +816,24 @@ define(function (require) {
    *
    */
   p5.SoundFile.prototype.rate = function(playbackRate) {
+    var reverse = false;
     if (typeof playbackRate === 'undefined') {
       return this.playbackRate;
     }
+
+    this.playbackRate = playbackRate;
 
     if (playbackRate === 0) {
       playbackRate = 0.0000000000001;
     }
 
     else if (playbackRate < 0 && !this.reversed) {
-      var cPos = this.currentTime();
-      var newPos = ( cPos - this.duration() ) / playbackRate;
-      this.pauseTime = newPos;
-
-      this.reverseBuffer();
       playbackRate = Math.abs(playbackRate);
+      reverse = true;
     }
 
     else if (playbackRate > 0 && this.reversed) {
-      this.reverseBuffer();
+      reverse = true;
     }
 
     if (this.bufferSourceNode) {
@@ -843,7 +844,9 @@ define(function (require) {
       this._counterNode.playbackRate.linearRampToValueAtTime(Math.abs(playbackRate), now);
     }
 
-    this.playbackRate = playbackRate;
+    if (reverse) {
+      this.reverseBuffer();
+    }
     return this.playbackRate;
   };
 
@@ -874,19 +877,16 @@ define(function (require) {
 
   /**
    * Return the current position of the p5.SoundFile playhead, in seconds.
-   * Note that if you change the playbackRate while the p5.SoundFile is
-   * playing, the results may not be accurate.
+   * Time is relative to the normal buffer direction, so if `reverseBuffer`
+   * has been called, currentTime will count backwards.
    *
    * @method currentTime
    * @return {Number}   currentTime of the soundFile in seconds.
    */
   p5.SoundFile.prototype.currentTime = function() {
-    // TO DO --> make reverse() flip these values appropriately
-    if (this._pauseTime > 0) {
-      return this._pauseTime;
-    } else {
-      return this._lastPos / ac.sampleRate;
-    }
+    return this.reversed
+      ? Math.abs(this._lastPos - this.buffer.length) / ac.sampleRate
+      : this._lastPos / ac.sampleRate;
   };
 
   /**
@@ -907,10 +907,10 @@ define(function (require) {
     }
 
     var cTime = cueTime || 0;
-    var dur = duration || this.buffer.duration - cueTime;
+    var dur = duration || undefined;
 
     if (this.isPlaying()) {
-      this.stop();
+      this.stop(0);
     }
 
     this.play(0, this.playbackRate, this.output.gain.value, cTime, dur);
@@ -1029,18 +1029,26 @@ define(function (require) {
    * </div>
    */
   p5.SoundFile.prototype.reverseBuffer = function() {
-    var curVol = this.getVolume();
-    this.setVolume(0, 0.01, 0);
     if (this.buffer) {
+      var currentTime = this._lastPos / ac.sampleRate;
+      var curVol = this.getVolume();
+      this.setVolume(0, 0.01, 0);
+
       for (var i = 0; i < this.buffer.numberOfChannels; i++) {
         Array.prototype.reverse.call( this.buffer.getChannelData(i) );
       }
+
       // set reversed flag
       this.reversed = !this.reversed;
+
+      if (currentTime) {
+        this.jump(this.duration() - currentTime);
+      }
+
+      this.setVolume(curVol, 0.01, 0);
     } else {
       throw 'SoundFile is not done loading';
     }
-    this.setVolume(curVol, 0.01, 0.0101);
   };
 
   /**
@@ -1192,7 +1200,7 @@ define(function (require) {
 
   var _createCounterBuffer = function(buffer) {
     var array = new Float32Array( buffer.length );
-    var audioBuf = ac.createBuffer( 1, buffer.length, 44100 );
+    var audioBuf = ac.createBuffer( 1, buffer.length, ac.sampleRate );
 
     for ( var index = 0; index < buffer.length; index++ ) {
       array[ index ] = index;
@@ -1229,7 +1237,6 @@ define(function (require) {
     self._scopeNode.onaudioprocess = function(processEvent) {
       var inputBuffer = processEvent.inputBuffer.getChannelData( 0 );
 
-      // update the lastPos
       self._lastPos = inputBuffer[ inputBuffer.length - 1 ] || 0;
 
       // do any callbacks that have been scheduled
@@ -1455,7 +1462,7 @@ define(function (require) {
 
         if ( Math.abs(intervalBPM - tempo) < bpmVariance ) {
           // convert sampleIndex to seconds
-          peaksAtTopTempo.push(peak.sampleIndex/44100);
+          peaksAtTopTempo.push(peak.sampleIndex/sampleRate);
         }
       }
     }
