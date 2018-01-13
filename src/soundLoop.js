@@ -20,7 +20,7 @@ define(function (require) {
    * var looper1;
    * 
    * function preload() {
-   *   click = loadSound('assets/drum.mp3'
+   *   click = loadSound('assets/drum.mp3');
    * }
    * 
    * function setup() {
