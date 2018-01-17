@@ -342,7 +342,7 @@ define(function (require) {
       this.rate(rate);
     }
 
-    if (typeof rate !== 'undefined') {
+    if (typeof amp !== 'undefined') {
       this.setVolume(amp);
     }
 
@@ -362,12 +362,11 @@ define(function (require) {
       if (this.mode === 'untildone' && this.isPlaying()) {
         return;
       }
-
       // make a new source and counter. They are automatically assigned playbackRate and buffer
       this.bufferSourceNode = this._initSourceNode();
 
       // garbage collect counterNode and create a new one
-      if (this._counterNode) this._counterNode = undefined;
+      delete this._counterNode;
       this._counterNode = this._initCounterNode();
 
       if (_cueStart) {
@@ -384,15 +383,11 @@ define(function (require) {
         duration = duration <= this.buffer.duration - cueStart ? duration : this.buffer.duration;
       }
 
-      this.bufferSourceNode.connect(this.output);
-
       // if it was paused, play at the pause position
       if (this._paused) {
         this.bufferSourceNode.start(time, this.pauseTime, duration);
         this._counterNode.start(time, this.pauseTime, duration);
-
-      }
-      else {
+      } else {
         this.bufferSourceNode.start(time, cueStart, duration);
         this._counterNode.start(time, cueStart, duration);
       }
@@ -899,7 +894,7 @@ define(function (require) {
    * @param {Number} duration    duration in seconds.
    */
   p5.SoundFile.prototype.jump = function(cueTime, duration) {
-    if (cueTime<0 || cueTime > this.buffer.duration) {
+    if (cueTime < 0 || cueTime > this.buffer.duration) {
       throw 'jump time out of range';
     }
     if (duration > this.buffer.duration - cueTime) {
@@ -908,11 +903,9 @@ define(function (require) {
 
     var cTime = cueTime || 0;
     var dur = duration || undefined;
-
     if (this.isPlaying()) {
       this.stop(0);
     }
-
     this.play(0, this.playbackRate, this.output.gain.value, cTime, dur);
   };
 
@@ -1030,22 +1023,21 @@ define(function (require) {
    */
   p5.SoundFile.prototype.reverseBuffer = function() {
     if (this.buffer) {
-      var currentTime = this._lastPos / ac.sampleRate;
+      var currentPos = this._lastPos / ac.sampleRate;
       var curVol = this.getVolume();
-      this.setVolume(0, 0.01, 0);
+      this.setVolume(0, 0.001);
 
-      for (var i = 0; i < this.buffer.numberOfChannels; i++) {
-        Array.prototype.reverse.call( this.buffer.getChannelData(i) );
+      const numChannels = this.buffer.numberOfChannels;
+      for (var i = 0; i < numChannels; i++) {
+        this.buffer.getChannelData(i).reverse();
       }
-
       // set reversed flag
       this.reversed = !this.reversed;
 
-      if (currentTime) {
-        this.jump(this.duration() - currentTime);
+      if (currentPos) {
+        this.jump(this.duration() - currentPos);
       }
-
-      this.setVolume(curVol, 0.01, 0);
+      this.setVolume(curVol, 0.001);
     } else {
       throw 'SoundFile is not done loading';
     }
@@ -1199,14 +1191,12 @@ define(function (require) {
   ////////////////////////////////////////////////////////////////////////////////////
 
   var _createCounterBuffer = function(buffer) {
-    var array = new Float32Array( buffer.length );
-    var audioBuf = ac.createBuffer( 1, buffer.length, ac.sampleRate );
-
-    for ( var index = 0; index < buffer.length; index++ ) {
-      array[ index ] = index;
+    const len = buffer.length;
+    const audioBuf = ac.createBuffer( 1, buffer.length, ac.sampleRate );
+    const arrayBuffer = audioBuf.getChannelData(0);
+    for (var index = 0; index < len; index++) {
+      arrayBuffer[index] = index;
     }
-
-    audioBuf.getChannelData( 0 ).set( array );
     return audioBuf;
   };
 
@@ -1214,16 +1204,14 @@ define(function (require) {
   p5.SoundFile.prototype._initCounterNode = function() {
     var self = this;
     var now = ac.currentTime;
-
     var cNode = ac.createBufferSource();
 
     // dispose of scope node if it already exists
     if (self._scopeNode) {
       self._scopeNode.disconnect();
-      self._scopeNode.onaudioprocess = undefined;
-      self._scopeNode = null;
+      delete self._scopeNode.onaudioprocess;
+      delete self._scopeNode;
     }
-
     self._scopeNode = ac.createScriptProcessor( 256, 1, 1 );
 
     // create counter buffer of the same length as self.buffer
@@ -1241,7 +1229,6 @@ define(function (require) {
 
       // do any callbacks that have been scheduled
       self._onTimeUpdate(self._lastPos);
-
     };
 
     return cNode;
@@ -1252,6 +1239,7 @@ define(function (require) {
     var bufferSourceNode = ac.createBufferSource();
     bufferSourceNode.buffer = this.buffer;
     bufferSourceNode.playbackRate.value = this.playbackRate;
+    bufferSourceNode.connect(this.output);
     return bufferSourceNode;
   };
 
