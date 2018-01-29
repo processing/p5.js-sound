@@ -112,11 +112,6 @@ define(function (require) {
     return this.buffer.type;
   };
 
-  /**
-   *  Start the noise
-   *
-   *  @method start
-   */
   p5.Noise.prototype.start = function() {
     if (this.started) {
       this.stop();
@@ -130,11 +125,6 @@ define(function (require) {
     this.started = true;
   };
 
-  /**
-   *  Stop the noise.
-   *
-   *  @method  stop
-   */
   p5.Noise.prototype.stop = function() {
     var now = p5sound.audiocontext.currentTime;
     if (this.noise) {
@@ -142,41 +132,6 @@ define(function (require) {
       this.started = false;
     }
   };
-
-  /**
-   *  Pan the noise.
-   *
-   *  @method  pan
-   *  @param  {Number} panning Number between -1 (left)
-   *                           and 1 (right)
-   *  @param  {Number} timeFromNow schedule this event to happen
-   *                                seconds from now
-   */
-
-  /**
-   *  Set the amplitude of the noise between 0 and 1.0. Or,
-   *  modulate amplitude with an audio signal such as an oscillator.
-   *
-   *  @method amp
-   *  @param  {Number|Object} volume amplitude between 0 and 1.0
-   *                                     or modulating signal/oscillator
-   *  @param {Number} [rampTime] create a fade that lasts rampTime
-   *  @param {Number} [timeFromNow] schedule this event to happen
-   *                                seconds from now
-   */
-
-  /**
-   *  Send output to a p5.sound or web audio object
-   *
-   *  @method  connect
-   *  @param  {Object} unit
-   */
-
-  /**
-   *  Disconnect all output.
-   *
-   *  @method disconnect
-   */
 
   p5.Noise.prototype.dispose = function() {
     var now = p5sound.audiocontext.currentTime;
