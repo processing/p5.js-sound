@@ -401,7 +401,7 @@ define(function(require) {
    *
    *
    *function setup(){
-   *  cnv = createCanvas(800,400);
+   *  cnv = createCanvas(100,100);
    *  sound = new p5.AudioIn();
    *  sound.start();
    *  fft = new p5.FFT();
@@ -421,7 +421,6 @@ define(function(require) {
    *  fill(0,255,0); // spectrum is green
    *
    *  //draw the spectrum
-   *
    *  for (var i = 0; i< spectrum.length; i++){
    *    var x = map(log(i), 0, log(spectrum.length), 0, width);
    *    var h = map(spectrum[i], 0, 255, 0, height);
@@ -445,8 +444,8 @@ define(function(require) {
    *  rect(centroidplot, 0, width / spectrum.length, height)
    *  noStroke();
    *  fill(255,255,255);  // text is white
-   *  textSize(40);
-   *  text("centroid: "+round(spectralCentroid)+" Hz", 10, 40);
+   *  text("centroid: ", 10, 20);
+   *  text(round(spectralCentroid)+" Hz", 10, 40);
    *}
    * </code></div>
    */
