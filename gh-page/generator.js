@@ -26,7 +26,7 @@ function buildHtml(exampleNames, learningProcessingExamples) {
   var body = '<div id="container">\n'
   + '<div id="lockup">\n <a href="http://p5js.org/">\n'
   + '<div id="p5_logo">'
-  + '<img type="image/svg+xml" src="http://p5js.org/assets/img/p5js-beta.svg" id="logo_image" class="logo" />'
+  + '<img type="image/svg+xml" src="http://p5js.org/assets/img/p5js.svg" id="logo_image" class="logo" />'
   + '</div></a></div>\n'
   + '<div class="column-span"> \n'
   + '<h2>p5.sound\n'
