@@ -33,6 +33,10 @@ function buildHtml(exampleNames, learningProcessingExamples) {
   + ' ~ <a href="http://p5js.org/reference/#/libraries/p5.sound">Documentation</a>\n'
   + ' ~ <a href="http://github.com/processing/p5.js-sound">Source</a></h2>'
   + '<h3>Examples:</h3>';
+  // Sort examples case-insensitive
+  exampleNames = exampleNames.sort(function (a, b) {
+    return a.toLowerCase().localeCompare(b.toLowerCase());
+  });
   exampleNames.forEach(function(example) {
     // include everything in example folder except for the files and _* folders:
     if (example != 'files' && example[0] != '_' && example.indexOf('learning') != 0) {
