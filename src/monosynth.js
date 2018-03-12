@@ -19,7 +19,6 @@ define(function (require) {
     *
     *  function setup() {
     *    monosynth = new p5.MonoSynth();
-    *    monosynth.loadPreset('simpleBass');
     *    monosynth.play(45,1,x=0,1);
     *    monosynth.play(49,1,x+=1,0.25);
     *    monosynth.play(50,1,x+=0.25,0.25);
