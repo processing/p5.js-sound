@@ -1,66 +1,6 @@
-/**
- *  p5.sound extends p5 with <a href="http://caniuse.com/audio-api"
- *  target="_blank">Web Audio</a> functionality including audio input,
- *  playback, analysis and synthesis.
- *  <br/><br/>
- *  <a href="#/p5.SoundFile"><b>p5.SoundFile</b></a>: Load and play sound files.<br/>
- *  <a href="#/p5.Amplitude"><b>p5.Amplitude</b></a>: Get the current volume of a sound.<br/>
- *  <a href="#/p5.AudioIn"><b>p5.AudioIn</b></a>: Get sound from an input source, typically
- *    a computer microphone.<br/>
- *  <a href="#/p5.FFT"><b>p5.FFT</b></a>: Analyze the frequency of sound. Returns
- *    results from the frequency spectrum or time domain (waveform).<br/>
- *  <a href="#/p5.Oscillator"><b>p5.Oscillator</b></a>: Generate Sine,
- *    Triangle, Square and Sawtooth waveforms. Base class of
- *    <a href="#/p5.Noise">p5.Noise</a> and <a href="#/p5.Pulse">p5.Pulse</a>.
- *    <br/>
- *  <a href="#/p5.Env"><b>p5.Env</b></a>: An Envelope is a series
- *    of fades over time. Often used to control an object's
- *    output gain level as an "ADSR Envelope" (Attack, Decay,
- *    Sustain, Release). Can also modulate other parameters.<br/>
- *  <a href="#/p5.Delay"><b>p5.Delay</b></a>: A delay effect with
- *    parameters for feedback, delayTime, and lowpass filter.<br/>
- *  <a href="#/p5.Filter"><b>p5.Filter</b></a>: Filter the frequency range of a
- *    sound.
- *  <br/>
- *  <a href="#/p5.Reverb"><b>p5.Reverb</b></a>: Add reverb to a sound by specifying
- *    duration and decay. <br/>
- *  <b><a href="#/p5.Convolver">p5.Convolver</a>:</b> Extends
- *  <a href="#/p5.Reverb">p5.Reverb</a> to simulate the sound of real
- *    physical spaces through convolution.<br/>
- *  <b><a href="#/p5.SoundRecorder">p5.SoundRecorder</a></b>: Record sound for playback 
- *    / save the .wav file.
- *  <b><a href="#/p5.Phrase">p5.Phrase</a></b>, <b><a href="#/p5.Part">p5.Part</a></b> and
- *  <b><a href="#/p5.Score">p5.Score</a></b>: Compose musical sequences.
- *  <br/><br/>
- *  p5.sound is on <a href="https://github.com/therewasaguy/p5.sound/">GitHub</a>.
- *  Download the latest version 
- *  <a href="https://github.com/therewasaguy/p5.sound/blob/master/lib/p5.sound.js">here</a>.
- *  
- *  @module p5.sound
- *  @submodule p5.sound
- *  @for p5.sound
- *  @main
- */
+'use strict';
 
-
-/**
- *  p5.sound developed by Jason Sigal for the Processing Foundation, Google Summer of Code 2014. The MIT License (MIT).
- *  
- *  http://github.com/therewasaguy/p5.sound
- *
- *  Some of the many audio libraries & resources that inspire p5.sound:
- *   - TONE.js (c) Yotam Mann, 2014. Licensed under The MIT License (MIT). https://github.com/TONEnoTONE/Tone.js
- *   - buzz.js (c) Jay Salvat, 2013. Licensed under The MIT License (MIT). http://buzz.jaysalvat.com/
- *   - Boris Smus Web Audio API book, 2013. Licensed under the Apache License http://www.apache.org/licenses/LICENSE-2.0
- *   - wavesurfer.js https://github.com/katspaugh/wavesurfer.js
- *   - Web Audio Components by Jordan Santell https://github.com/web-audio-components
- *   - Wilm Thoben's Sound library for Processing https://github.com/processing/processing/tree/master/java/libraries/sound
- *   
- *   Web Audio API: http://w3.org/TR/webaudio/
- */
-
-define(function (require) {
-  'use strict';
+define(function () {
 
   /* AudioContext Monkeypatch
      Copyright 2013 Chris Wilson
@@ -74,9 +14,7 @@ define(function (require) {
      See the License for the specific language governing permissions and
      limitations under the License.
   */
-  (function (global, exports, perf) {
-    'use strict';
-
+  (function () {
     function fixSetTarget(param) {
       if (!param) // if NYI, just return
         return;
@@ -86,7 +24,7 @@ define(function (require) {
 
     if (window.hasOwnProperty('webkitAudioContext') &&
         !window.hasOwnProperty('AudioContext')) {
-      window.AudioContext = webkitAudioContext;
+      window.AudioContext = window.webkitAudioContext;
 
       if (typeof AudioContext.prototype.createGain !== 'function')
         AudioContext.prototype.createGain = AudioContext.prototype.createGainNode;
@@ -202,10 +140,10 @@ define(function (require) {
 
     if (window.hasOwnProperty('webkitOfflineAudioContext') &&
         !window.hasOwnProperty('OfflineAudioContext')) {
-      window.OfflineAudioContext = webkitOfflineAudioContext;
+      window.OfflineAudioContext = window.webkitOfflineAudioContext;
     }
 
-  }(window));
+  })(window);
   // <-- end MonkeyPatch.
 
   // Create the Audio Context
@@ -220,12 +158,15 @@ define(function (require) {
    * @method getAudioContext
    * @return {Object}    AudioContext for this sketch
    */
-  p5.prototype.getAudioContext = function(){
+  p5.prototype.getAudioContext = function() {
     return audiocontext;
   };
 
   // Polyfill for AudioIn, also handled by p5.dom createCapture
-  navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+  navigator.getUserMedia = navigator.getUserMedia ||
+    navigator.webkitGetUserMedia ||
+    navigator.mozGetUserMedia ||
+    navigator.msGetUserMedia;
 
 
   /**
@@ -261,9 +202,12 @@ define(function (require) {
         return isWAVSupported();
       case 'ogg':
         return isOGGSupported();
-      case 'aac', 'm4a', 'mp4':
+      case 'aac':
+      case 'm4a':
+      case 'mp4':
         return isAACSupported();
-      case 'aif', 'aiff':
+      case 'aif':
+      case 'aiff':
         return isAIFSupported();
       default:
         return false;
@@ -272,7 +216,7 @@ define(function (require) {
 
   // if it is iOS, we have to have a user interaction to start Web Audio
   // http://paulbakaus.com/tutorials/html5/web-audio-on-ios/
-  var iOS = ( navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false );
+  var iOS =  navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false ;
   if (iOS) {
     var iosStarted = false;
     var startIOS = function() {

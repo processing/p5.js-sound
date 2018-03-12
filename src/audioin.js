@@ -1,8 +1,10 @@
-define(function (require) {
-  'use strict';
+'use strict';
 
+define(function (require) {
   var p5sound = require('master');
-  var CustomError = require('errorHandler');
+
+  // an array of input sources
+  p5sound.inputSources = [];
 
   /**
    *  <p>Get audio from an input, i.e. your computer's microphone.</p>
@@ -10,10 +12,10 @@ define(function (require) {
    *  <p>Turn the mic on/off with the start() and stop() methods. When the mic
    *  is on, its volume can be measured with getLevel or by connecting an
    *  FFT object.</p>
-   *  
-   *  <p>If you want to hear the AudioIn, use the .connect() method. 
+   *
+   *  <p>If you want to hear the AudioIn, use the .connect() method.
    *  AudioIn does not connect to p5.sound output by default to prevent
-   *  feedback.</p> 
+   *  feedback.</p>
    *
    *  <p><em>Note: This uses the <a href="http://caniuse.com/stream">getUserMedia/
    *  Stream</a> API, which is not supported by certain browsers. Access in Chrome browser
@@ -25,7 +27,6 @@ define(function (require) {
    *                                    accessing the AudioIn. For example,
    *                                    Safari and iOS devices do not
    *                                    currently allow microphone access.
-   *  @return {Object} AudioIn
    *  @example
    *  <div><code>
    *  var mic;
@@ -47,8 +48,7 @@ define(function (require) {
 
     this.stream = null;
     this.mediaStream = null;
-
-    this.currentSource = 0;
+    this.currentSource = null;
 
     /**
      *  Client must allow browser to access their microphone / audioin source.
@@ -62,18 +62,8 @@ define(function (require) {
     this.amplitude = new p5.Amplitude();
     this.output.connect(this.amplitude.input);
 
-    // Some browsers let developer determine their input sources
-    if (typeof window.MediaStreamTrack === 'undefined'){
-      if (errorCallback) {
-        errorCallback();
-      } else {
-        window.alert('This browser does not support AudioIn');        
-      }
-    } else if (typeof window.MediaStreamTrack.getSources === 'function') {
-      // Chrome supports getSources to list inputs. Dev picks default
-      window.MediaStreamTrack.getSources(this._gotSources);
-    } else {
-      // Firefox has no getSources() but lets user choose their input
+    if (!window.MediaStreamTrack || !window.navigator.mediaDevices || !window.navigator.mediaDevices.getUserMedia) {
+      errorCallback ? errorCallback() : window.alert('This browser does not support MediaStreamTrack and mediaDevices');
     }
 
     // add to soundArray so we can dispose on close
@@ -92,9 +82,9 @@ define(function (require) {
    *  the browser won't provide mic access.
    *
    *  @method start
-   *  @param {Function} successCallback Name of a function to call on
+   *  @param {Function} [successCallback] Name of a function to call on
    *                                    success.
-   *  @param {Function} errorCallback Name of a function to call if
+   *  @param {Function} [errorCallback] Name of a function to call if
    *                                    there was an error. For example,
    *                                    some browsers do not support
    *                                    getUserMedia.
@@ -102,50 +92,39 @@ define(function (require) {
   p5.AudioIn.prototype.start = function(successCallback, errorCallback) {
     var self = this;
 
-    // if stream was already started...
+    if (this.stream) {
+      this.stop();
+    }
 
+    // set the audio source
+    var audioSource = p5sound.inputSources[self.currentSource];
+    var constraints = {
+      audio: {
+        sampleRate: p5sound.audiocontext.sampleRate,
+        echoCancellation: false
+      }
+    };
 
-    // if _gotSources() i.e. developers determine which source to use
-    if (p5sound.inputSources[self.currentSource]) {
-      // set the audio source
-      var audioSource = p5sound.inputSources[self.currentSource].id;
-      var constraints = {
-          audio: {
-            optional: [{sourceId: audioSource}]
-          }};
-      window.navigator.getUserMedia( constraints,
-        this._onStream = function(stream) {
+    // if developers determine which source to use
+    if (p5sound.inputSources[this.currentSource]) {
+      constraints.audio.deviceId = audioSource.deviceId;
+    }
+
+    window.navigator.mediaDevices.getUserMedia( constraints )
+      .then( function(stream) {
         self.stream = stream;
         self.enabled = true;
         // Wrap a MediaStreamSourceNode around the live input
         self.mediaStream = p5sound.audiocontext.createMediaStreamSource(stream);
         self.mediaStream.connect(self.output);
-        if (successCallback) successCallback();
         // only send to the Amplitude reader, so we can see it but not hear it.
         self.amplitude.setInput(self.output);
-      }, this._onStreamError = function(e) {
-        if (errorCallback) errorCallback(e);
-        else console.error(e);
+        if (successCallback) successCallback();
+      })
+      .catch( function(err) {
+        if (errorCallback) errorCallback(err);
+        else console.error(err);
       });
-    } else {
-    // if Firefox where users select their source via browser
-    // if (typeof MediaStreamTrack.getSources === 'undefined') {
-      // Only get the audio stream.
-      window.navigator.getUserMedia( {'audio':true},
-        this._onStream = function(stream) {
-          self.stream = stream;
-          self.enabled = true;
-          // Wrap a MediaStreamSourceNode around the live input
-          self.mediaStream = p5sound.audiocontext.createMediaStreamSource(stream);
-          self.mediaStream.connect(self.output);
-          // only send to the Amplitude reader, so we can see it but not hear it.
-          self.amplitude.setInput(self.output);
-          if (successCallback) successCallback();
-        }, this._onStreamError = function(e) {
-          if (errorCallback) errorCallback(e);
-          else console.error(e);
-        });
-    }
   };
 
   /**
@@ -156,15 +135,21 @@ define(function (require) {
    */
   p5.AudioIn.prototype.stop = function() {
     if (this.stream) {
-      // assume only one track
-      this.stream.getTracks()[0].stop();
+      this.stream.getTracks().forEach(function(track) {
+        track.stop();
+      });
+
+      this.mediaStream.disconnect();
+
+      delete this.mediaStream;
+      delete this.stream;
     }
   };
 
   /**
    *  Connect to an audio unit. If no parameter is provided, will
    *  connect to the master output (i.e. your speakers).<br/>
-   *  
+   *
    *  @method  connect
    *  @param  {Object} [unit] An object that accepts audio input,
    *                          such as an FFT
@@ -188,15 +173,15 @@ define(function (require) {
 
   /**
    *  Disconnect the AudioIn from all audio units. For example, if
-   *  connect() had been called, disconnect() will stop sending 
+   *  connect() had been called, disconnect() will stop sending
    *  signal to your speakers.<br/>
    *
    *  @method  disconnect
    */
   p5.AudioIn.prototype.disconnect = function() {
-      this.output.disconnect();
-      // stay connected to amplitude even if not outputting to p5
-      this.output.connect(this.amplitude.input);
+    this.output.disconnect();
+    // stay connected to amplitude even if not outputting to p5
+    this.output.connect(this.amplitude.input);
   };
 
   /**
@@ -205,7 +190,7 @@ define(function (require) {
    *  make it easy to get a microphone's volume level. Accepts an
    *  optional smoothing value (0.0 < 1.0). <em>NOTE: AudioIn must
    *  .start() before using .getLevel().</em><br/>
-   *  
+   *
    *  @method  getLevel
    *  @param  {Number} [smoothing] Smoothing is 0.0 by default.
    *                               Smooths values based on previous values.
@@ -219,29 +204,13 @@ define(function (require) {
   };
 
   /**
-   *  Add input sources to the list of available sources.
-   *  
-   *  @private
-   */
-  p5.AudioIn.prototype._gotSources = function(sourceInfos) {
-    for (var i = 0; i< sourceInfos.length; i++) {
-      var sourceInfo = sourceInfos[i];
-      if (sourceInfo.kind === 'audio') {
-        // add the inputs to inputSources
-        //p5sound.inputSources.push(sourceInfo);
-        return sourceInfo;
-      }
-    }
-  };
-
-  /**
    *  Set amplitude (volume) of a mic input between 0 and 1.0. <br/>
    *
    *  @method  amp
    *  @param  {Number} vol between 0 and 1.0
    *  @param {Number} [time] ramp time (optional)
    */
-  p5.AudioIn.prototype.amp = function(vol, t){
+  p5.AudioIn.prototype.amp = function(vol, t) {
     if (t) {
       var rampTime = t || 0;
       var currentVol = this.output.gain.value;
@@ -254,101 +223,102 @@ define(function (require) {
     }
   };
 
-  p5.AudioIn.prototype.listSources = function() {
-    console.log('listSources is deprecated - please use AudioIn.getSources')
-    console.log('input sources: ');
-    if (p5sound.inputSources.length > 0) {
-      return p5sound.inputSources;
-    } else {
-      return 'This browser does not support MediaStreamTrack.getSources()';
-    }
-  };
   /**
-   * Chrome only. Returns a list of available input sources 
-   * and allows the user to set the media source. Firefox allows 
-   * the user to choose from input sources in the permissions dialogue
-   * instead of enumerating available sources and selecting one.
-   * Note: in order to have descriptive media names your page must be 
-   * served over a secure (HTTPS) connection and the page should 
-   * request user media before enumerating devices. Otherwise device 
-   * ID will be a long device ID number and does not specify device 
-   * type. For example see 
-   * https://simpl.info/getusermedia/sources/index.html vs.
-   * http://simpl.info/getusermedia/sources/index.html
+   * Returns a list of available input sources. This is a wrapper
+   * for <a title="MediaDevices.enumerateDevices() - Web APIs | MDN" target="_blank" href=
+   *  "https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices"
+   *  > and it returns a Promise.
    *
    * @method  getSources
-   * @param  {Function} callback a callback to handle the sources 
-   *                               when they have been enumerated
+   * @param  {Function} [successCallback] This callback function handles the sources when they
+   *                                      have been enumerated. The callback function
+   *                                      receives the deviceList array as its only argument
+   * @param  {Function} [errorCallback] This optional callback receives the error
+   *                                    message as its argument.
+   * @returns {Promise} Returns a Promise that can be used in place of the callbacks, similar
+   *                            to the enumerateDevices() method
    * @example
    *  <div><code>
    *  var audiograb;
-   *      
+   *
    *  function setup(){
    *    //new audioIn
    *    audioGrab = new p5.AudioIn();
-   *    
-   *    audioGrab.getSources(function(sourceList) {
+   *
+   *    audioGrab.getSources(function(deviceList) {
    *      //print out the array of available sources
-   *      console.log(sourceList);
-   *      //set the source to the first item in the inputSources array
+   *      console.log(deviceList);
+   *      //set the source to the first item in the deviceList array
    *      audioGrab.setSource(0);
    *    });
    *  }
    *  </code></div>
    */
-  p5.AudioIn.prototype.getSources = function (callback) {
-    if(typeof window.MediaStreamTrack.getSources === 'function') {
-      window.MediaStreamTrack.getSources(function (data) {
-        for (var i = 0, max = data.length; i < max; i++) {
-          var sourceInfo = data[i];
-          if (sourceInfo.kind === 'audio') {
-          // add the inputs to inputSources
-          p5sound.inputSources.push(sourceInfo);
+  p5.AudioIn.prototype.getSources = function (onSuccess, onError) {
+    return new Promise( function(resolve, reject) {
+      window.navigator.mediaDevices.enumerateDevices()
+        .then( function(devices) {
+          p5sound.inputSources = devices.filter(function(device) {
+            return device.kind === 'audioinput';
+          });
+          resolve(p5sound.inputSources);
+          if (onSuccess) {
+            onSuccess(p5sound.inputSources);
           }
-        }
-        callback(p5sound.inputSources);
-      });
-    } else {
-      console.log('This browser does not support MediaStreamTrack.getSources()');
-    }
+        })
+        .catch( function(error) {
+          reject(error);
+          if (onError) {
+            onError(error);
+          } else {
+            console.error('This browser does not support MediaStreamTrack.getSources()');
+          }
+        });
+    });
   };
+
   /**
    *  Set the input source. Accepts a number representing a
-   *  position in the array returned by listSources().
-   *  This is only available in browsers that support 
-   *  MediaStreamTrack.getSources(). Instead, some browsers
-   *  give users the option to set their own media source.<br/>
-   *  
+   *  position in the array returned by getSources().
+   *  This is only available in browsers that support
+   *  <a title="MediaDevices.enumerateDevices() - Web APIs | MDN" target="_blank" href=
+   *  "https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices"
+   *  >navigator.mediaDevices.enumerateDevices()</a>.<br/>
+   *
    *  @method setSource
    *  @param {number} num position of input source in the array
    */
   p5.AudioIn.prototype.setSource = function(num) {
-    // TO DO - set input by string or # (array position)
-    var self = this;
-    if ((p5sound.inputSources.length > 0) && (num < p5sound.inputSources.length)) {
+    if (p5sound.inputSources.length > 0 && num < p5sound.inputSources.length) {
       // set the current source
-      self.currentSource = num;
-      console.log('set source to ' + p5sound.inputSources[self.currentSource].id);
+      this.currentSource = num;
+      console.log('set source to ', p5sound.inputSources[this.currentSource]);
     } else {
       console.log('unable to set input source');
+    }
+
+    // restart stream if currently active
+    if (this.stream && this.stream.active) {
+      this.start();
     }
   };
 
   // private method
-  p5.AudioIn.prototype.dispose = function(){
+  p5.AudioIn.prototype.dispose = function() {
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
     this.stop();
+
     if (this.output) {
       this.output.disconnect();
     }
     if (this.amplitude) {
       this.amplitude.disconnect();
     }
-    this.amplitude = null;
-    this.output = null;
+    delete this.amplitude;
+    delete this.output;
   };
 
 });

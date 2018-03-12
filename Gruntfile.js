@@ -2,65 +2,25 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    jshint: {
-      build: {
-        options: {jshintrc: '.jshintrc'},
-        src: ['Gruntfile.js']
-      },
+
+    // Configure style consistency
+    eslint: {
       source: {
-        options: {jshintrc: 'src/.jshintrc'},
+        options: {configFile: './src/.eslintrc'},
         src: ['src/**/*.js']
-      },
-      test: {
-        options: {jshintrc: 'test/.jshintrc'},
-        src: ['test/unit/**/*.js']
-      }
-    },
-    yuidoc: {
-      compile: {
-        name: '<%= pkg.name %>',
-        description: '<%= pkg.description %>',
-        version: '<%= pkg.version %>',
-        url: '<%= pkg.homepage %>',
-        options: {
-          paths: ['src/'],
-          //helpers: [],
-          themedir: 'docs/yuidoc-p5-theme/',
-          outdir: 'docs/reference/'
-        }
       }
     },
     watch: {
       // p5 dist
       main: {
         files: ['src/**/*.js'],
-        tasks: ['jshint', 'requirejs'],
-        options: { livereload: true }
-      },
-      // reference
-      reference_build: {
-        files: ['docs/yuidoc-p5-theme/**/*'],
-        tasks: ['yuidoc'],
-        options: { livereload: true, interrupt: true }
-      },
-      // scripts for yuidoc/reference theme
-      yuidoc_theme_build: {
-        files: ['docs/yuidoc-p5-theme-src/scripts/**/*'],
-        tasks: ['requirejs:yuidoc_theme']
-      }
-    },
-    mocha: {
-      test: {
-        src: ['test/*.html'],
-        // src: ['test/**/*.html'],
+        tasks: ['requirejs'],
         options: {
-          // reporter: 'test/reporter/simple.js',
-          reporter: 'Nyan',
-          run: true,
-          log: true,
-          logErrors: true
-        }
-      },
+          livereload: {
+            port: 35728
+          }
+        },
+      }
     },
     requirejs: {
       unmin: {
@@ -118,15 +78,24 @@ module.exports = function(grunt) {
             'audioin': 'src/audioin',
             'env': 'src/env',
             'delay': 'src/delay',
+            'effect': 'src/effect',
+            'panner3d' : 'src/panner3d',
+            'listener3d': 'src/listener3d',
             'filter': 'src/filter',
             'reverb': 'src/reverb',
+            'eq': 'src/eq',
             'distortion': 'src/distortion',
+            'compressor': 'src/compressor',
             'looper': 'src/looper',
+            'soundloop': 'src/soundLoop',
             'soundRecorder': 'src/soundRecorder',
             'signal': 'src/signal',
             'metro': 'src/metro',
             'peakdetect': 'src/peakDetect',
-            'gain': 'src/gain'
+            'gain': 'src/gain',
+            'audioVoice': 'src/audioVoice',
+            'monosynth': 'src/monosynth',
+            'polysynth': 'src/polysynth'
           },
           useStrict: true,
           wrap: {
@@ -167,15 +136,42 @@ module.exports = function(grunt) {
           }
         }
       },
+    },
+    open: {
+      testChrome: {
+        path: 'http://localhost:8000/test',
+        app: 'Chrome'
+      },
+      testFirefox : {
+        path: 'http://localhost:8000/test',
+        app: 'Firefox'
+      },
+      testSafari : {
+        path: 'http://localhost:8000/test',
+        app: 'Safari'
+      }
+    },
+    connect: {
+      server: {
+        options: {
+          port: 8000,
+          livereload: 35727,
+          hostname: '*'
+        }
+      }
     }
   });
 
 
   grunt.loadNpmTasks('grunt-contrib-requirejs');
-  grunt.loadNpmTasks('grunt-contrib-yuidoc');
-  grunt.registerTask('yui', ['yuidoc']);
-  // grunt.loadNpmTasks('grunt-mocha');
+  grunt.loadNpmTasks('grunt-eslint');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-open');
 
+  grunt.registerTask('lint', ['eslint:source']);
   grunt.registerTask('default', ['requirejs']);
-
+  grunt.registerTask('dev', ['connect','requirejs', 'watch']);
+  grunt.registerTask('serve', 'connect:server:keepalive');
+  grunt.registerTask('run-tests', ['serve', 'open']);
 };

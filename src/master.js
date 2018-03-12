@@ -1,8 +1,6 @@
-define(function (require) {
+'use strict';
 
-  'use strict';
-
-  require('sndcore');
+define(function () {
 
   /**
    * Master contains AudioContext and the master sound output.
@@ -20,9 +18,6 @@ define(function (require) {
     this.audiocontext = audiocontext;
 
     this.output.disconnect();
-
-    // an array of input sources
-    this.inputSources = [];
 
     // connect input to limiter
     this.input.connect(this.limiter);
@@ -48,14 +43,10 @@ define(function (require) {
     this.extensions = [];
   };
 
-
-
-
   // create a single instance of the p5Sound / master output for use within this sketch
   var p5sound = new Master();
 
-
-   /**
+  /**
    * Returns a number representing the master amplitude (volume) for sound
    * in this sketch.
    *
@@ -63,11 +54,11 @@ define(function (require) {
    * @return {Number} Master amplitude (volume) for sound in this sketch.
    *                  Should be between 0.0 (silence) and 1.0.
    */
-  p5.prototype.getMasterVolume = function(){
+  p5.prototype.getMasterVolume = function() {
     return p5sound.output.gain.value;
   };
 
-/**
+  /**
    *  <p>Scale the output of all sound in this sketch</p>
    *  Scaled between 0.0 (silence) and 1.0 (full volume).
    *  1.0 is the maximum amplitude of a digital sound, so multiplying
@@ -93,8 +84,8 @@ define(function (require) {
    *  @param {Number} [timeFromNow]  Schedule this event to happen at
    *                                 t seconds in the future
    */
-  p5.prototype.masterVolume = function(vol, rampTime, tFromNow){
-    if (typeof(vol) === 'number') {
+  p5.prototype.masterVolume = function(vol, rampTime, tFromNow) {
+    if (typeof vol === 'number') {
       var rampTime = rampTime || 0;
       var tFromNow = tFromNow || 0;
       var now = p5sound.audiocontext.currentTime;
@@ -117,8 +108,7 @@ define(function (require) {
    *  Web Audio API nodes including a dyanmicsCompressor (<code>.limiter</code>),
    *  and Gain Nodes for <code>.input</code> and <code>.output</code>.
    *
-   *  @property soundOut
-   *  @type {Object}
+   *  @property {Object} soundOut
    */
   p5.prototype.soundOut = p5.soundOut = p5sound;
 

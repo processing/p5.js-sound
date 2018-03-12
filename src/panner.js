@@ -1,14 +1,14 @@
-define(function (require) {
+'use strict';
 
-  'use strict';
+define(function (require) {
 
   var p5sound = require('master');
   var ac = p5sound.audiocontext;
 
   // Stereo panner
   // if there is a stereo panner node use it
-  if(typeof ac.createStereoPanner !== "undefined"){
-    p5.Panner = function (input, output, numInputChannels) {
+  if(typeof ac.createStereoPanner !== 'undefined') {
+    p5.Panner = function (input, output) {
       this.stereoPanner = this.input = ac.createStereoPanner();
       input.connect(this.stereoPanner);
       this.stereoPanner.connect(output);
@@ -21,17 +21,17 @@ define(function (require) {
       this.stereoPanner.pan.linearRampToValueAtTime(val, t);
     };
 
-    p5.Panner.prototype.inputChannels = function(numChannels) {
-      //not implemented because stereopanner 
-      //node does not require this and will automatically
-      //convert single channel or multichannel to stereo.
-      //tested with single and stereo, not with (>2) multichannel 
-    };
+    //not implemented because stereopanner
+    //node does not require this and will automatically
+    //convert single channel or multichannel to stereo.
+    //tested with single and stereo, not with (>2) multichannel
+    p5.Panner.prototype.inputChannels = function() {};
 
     p5.Panner.prototype.connect = function(obj) {
       this.stereoPanner.connect(obj);
     };
-    p5.Panner.prototype.disconnect = function(obj) {
+
+    p5.Panner.prototype.disconnect = function() {
       this.stereoPanner.disconnect();
     };
 
@@ -45,8 +45,8 @@ define(function (require) {
 
       this.left = ac.createGain();
       this.right = ac.createGain();
-      this.left.channelInterpretation = "discrete";
-      this.right.channelInterpretation = "discrete";
+      this.left.channelInterpretation = 'discrete';
+      this.right.channelInterpretation = 'discrete';
 
       // if input is stereo
       if (numInputChannels > 1) {
@@ -84,7 +84,7 @@ define(function (require) {
         this.input.connect(this.left);
         this.input.connect(this.right);
       } else if (numChannels === 2) {
-        if (typeof(this.splitter === 'undefined')){
+        if (typeof(this.splitter === 'undefined')) {
           this.splitter = ac.createChannelSplitter(2);
         }
         this.input.disconnect();
@@ -98,25 +98,8 @@ define(function (require) {
       this.output.connect(obj);
     };
 
-    p5.Panner.prototype.disconnect = function(obj) {
+    p5.Panner.prototype.disconnect = function() {
       this.output.disconnect();
     };
   }
-
-  // 3D panner
-  p5.Panner3D = function(input, output) {
-    var panner3D = ac.createPanner();
-    panner3D.panningModel = 'HRTF';
-    panner3D.distanceModel = 'linear';
-    panner3D.setPosition(0,0,0);
-    input.connect(panner3D);
-    panner3D.connect(output);
-
-    panner3D.pan = function(xVal, yVal, zVal) {
-      panner3D.setPosition(xVal, yVal, zVal);
-    }
-
-    return panner3D;
-  };
-
 });

@@ -22,7 +22,7 @@ function setup() {
   sound1.disconnect(); // diconnect from p5 output
 
   gain1 = new p5.Gain(); // setup a gain node
-  gain1.connectSource(sound1); // connect the first sound to its input
+  gain1.setInput(sound1); // connect the first sound to its input
   gain1.connect(gain3); // connect its output to the 'master'
 
   sound2.rate(1);
@@ -30,7 +30,7 @@ function setup() {
   sound2.loop();
 
   gain2 = new p5.Gain();
-  gain2.connectSource(sound2);
+  gain2.setInput(sound2);
   gain2.connect(gain3);
 
 }
