@@ -451,7 +451,8 @@ define(function (require) {
    *  @param  {String} str 'restart' or 'sustain' or 'untilDone'
    *  @example
    *  <div><code>
-   *  function setup(){
+   *  var mySound;
+   *  function preload(){
    *    mySound = loadSound('assets/Damscray_DancingTiger.mp3');
    *  }
    *  function mouseClicked() {
@@ -734,7 +735,7 @@ define(function (require) {
    *  var ball = {};
    *  var soundFile;
    *
-   *  function setup() {
+   *  function preload() {
    *    soundFormats('ogg', 'mp3');
    *    soundFile = loadSound('assets/beatbox.mp3');
    *  }
@@ -1521,14 +1522,17 @@ define(function (require) {
    *                      useful for removeCue(id)
    *  @example
    *  <div><code>
+   *  var mySound;
+   *  function preload() {
+   *    mySound = loadSound('assets/beat.mp3');
+   *  }
+   *
    *  function setup() {
    *    background(0);
    *    noStroke();
    *    fill(255);
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
-   *
-   *    mySound = loadSound('assets/beat.mp3');
    *
    *    // schedule calls to changeText
    *    mySound.addCue(0.50, changeText, "hello" );

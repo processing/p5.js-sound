@@ -316,7 +316,13 @@ define(function (require) {
     if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined') {
       alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
-    var cReverb = new p5.Convolver(path, callback, errorCallback);
+    var self = this;
+    var cReverb = new p5.Convolver(path, function(buffer) {
+      if (typeof callback === 'function') {
+        callback(buffer);
+      }
+      self._decrementPreload();
+    }, errorCallback);
     cReverb.impulses = [];
     return cReverb;
   };
