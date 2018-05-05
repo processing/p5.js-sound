@@ -166,7 +166,9 @@ define(function (require) {
   };
 
   p5.Amplitude.prototype.disconnect = function() {
-    this.output.disconnect();
+    if (this.output) {
+      this.output.disconnect();
+    }
   };
 
   // TO DO make this stereo / dependent on # of audio channels
@@ -305,11 +307,16 @@ define(function (require) {
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
-    this.input.disconnect();
-    this.output.disconnect();
+    if (this.input) {
+      this.input.disconnect();
+      delete this.input;
+    }
+    if (this.output) {
+      this.output.disconnect();
+      delete this.output;
+    }
 
-    this.input = this.processor = undefined;
-    this.output = undefined;
+    delete this.processor;
   };
 
 });

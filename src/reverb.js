@@ -529,8 +529,10 @@ define(function (require) {
       }
     }
 
-    this.convolverNode.disconnect();
-    this.concolverNode = null;
+    if (this.convolverNode) {
+      this.convolverNode.disconnect();
+      this.concolverNode = null;
+    }
   };
 
 });

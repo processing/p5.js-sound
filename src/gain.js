@@ -114,7 +114,9 @@ define(function (require) {
    *  @method disconnect
    */
   p5.Gain.prototype.disconnect = function() {
-    this.output.disconnect();
+    if (this.output) {
+      this.output.disconnect();
+    }
   };
 
   /**
@@ -140,10 +142,14 @@ define(function (require) {
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
-    this.output.disconnect();
-    this.input.disconnect();
-    this.output = undefined;
-    this.input = undefined;
+    if (this.output) {
+      this.output.disconnect();
+      delete this.output;
+    }
+    if (this.input) {
+      this.input.disconnect();
+      delete this.input;
+    }
   };
 
 });

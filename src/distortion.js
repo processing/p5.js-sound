@@ -132,7 +132,9 @@ define(function (require) {
 
   p5.Distortion.prototype.dispose = function() {
     Effect.prototype.dispose.apply(this);
-    this.waveShaperNode.disconnect();
-    this.waveShaperNode = null;
+    if (this.waveShaperNode) {
+      this.waveShaperNode.disconnect();
+      this.waveShaperNode = null;
+    }
   };
 });

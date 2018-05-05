@@ -489,8 +489,10 @@ define(function(require) {
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
-    this.analyser.disconnect();
-    this.analyser = undefined;
+    if (this.analyser) {
+      this.analyser.disconnect();
+      delete this.analyser;
+    }
   };
 
   /**

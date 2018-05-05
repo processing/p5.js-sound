@@ -39,7 +39,9 @@ define(function (require) {
   };
 
   EQFilter.prototype.disconnect = function() {
-    this.biquad.disconnect();
+    if (this.biquad) {
+      this.biquad.disconnect();
+    }
   };
   EQFilter.prototype.dispose = function() {
     // remove reference form soundArray

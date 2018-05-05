@@ -146,7 +146,9 @@ define(function (require) {
       var t = time || 0;
       var now = p5sound.audiocontext.currentTime;
       this.oscillator.stop(t + now);
-      this.osc2.oscillator.stop(t + now);
+      if (this.osc2.oscillator) {
+        this.osc2.oscillator.stop(t + now);
+      }
       this.dcOffset.stop(t + now);
       this.started = false;
       this.osc2.started = false;

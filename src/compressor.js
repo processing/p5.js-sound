@@ -215,9 +215,11 @@ define(function (require) {
 
 
 	p5.Compressor.prototype.dispose = function() {
-		Effect.prototype.dispose.apply(this);
-		this.compressor.disconnect();
-		this.compressor = undefined;
+    Effect.prototype.dispose.apply(this);
+    if (this.compressor) {
+      this.compressor.disconnect();
+      delete this.compressor;
+    }
 	};
 
   return p5.Compressor;

@@ -32,7 +32,9 @@ define(function (require) {
     };
 
     p5.Panner.prototype.disconnect = function() {
-      this.stereoPanner.disconnect();
+      if (this.stereoPanner) {
+        this.stereoPanner.disconnect();
+      }
     };
 
   } else {
@@ -99,7 +101,9 @@ define(function (require) {
     };
 
     p5.Panner.prototype.disconnect = function() {
-      this.output.disconnect();
+      if (this.output) {
+        this.output.disconnect();
+      }
     };
   }
 });

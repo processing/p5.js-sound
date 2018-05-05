@@ -230,8 +230,10 @@ define(function (require) {
 
   p5.Panner3D.dispose = function() {
     Effect.prototype.dispose.apply(this);
-    this.panner.disconnect();
-    delete this.panner;
+    if (this.panner) {
+      this.panner.disconnect();
+      delete this.panner;
+    }
   };
 
   return p5.Panner3D;
