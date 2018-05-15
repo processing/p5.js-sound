@@ -240,7 +240,9 @@ define(function (require) {
    *  @method  disconnect
    */
   p5.MonoSynth.prototype.disconnect = function() {
-    this.output.disconnect();
+    if (this.output) {
+      this.output.disconnect();
+    }
   };
 
 
@@ -252,12 +254,14 @@ define(function (require) {
   p5.MonoSynth.prototype.dispose = function() {
     AudioVoice.prototype.dispose.apply(this);
 
-    this.filter.dispose();
-    this.env.dispose();
-    try {
+    if (this.filter) {
+      this.filter.dispose();
+    }
+    if (this.env) {
+      this.env.dispose();
+    }
+    if (this.oscillator) {
       this.oscillator.dispose();
-    } catch(e) {
-      console.error('mono synth default oscillator already disposed');
     }
   };
 

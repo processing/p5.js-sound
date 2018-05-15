@@ -823,7 +823,9 @@ define(function (require) {
   };
 
   p5.Env.prototype.disconnect = function() {
-    this.output.disconnect();
+    if (this.output) {
+      this.output.disconnect();
+    }
   };
 
 
@@ -891,11 +893,9 @@ define(function (require) {
     p5sound.soundArray.splice(index, 1);
 
     this.disconnect();
-    try{
+    if (this.control) {
       this.control.dispose();
       this.control = null;
-    } catch(e) {
-      console.warn(e, 'already disposed p5.Env');
     }
     for (var i = 1; i < this.mathOps.length; i++) {
       this.mathOps[i].dispose();

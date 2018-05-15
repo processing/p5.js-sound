@@ -328,6 +328,11 @@ define(function (require) {
    * @param {Number} [duration]          (optional) duration of playback in seconds
    */
   p5.SoundFile.prototype.play = function(startTime, rate, amp, _cueStart, duration) {
+    if (!this.output) {
+      console.warn('SoundFile.play() called after dispose');
+      return;
+    }
+
     var self = this;
     var now = p5sound.audiocontext.currentTime;
     var cueStart, cueEnd;
@@ -1132,7 +1137,9 @@ define(function (require) {
    * @method disconnect
    */
   p5.SoundFile.prototype.disconnect = function() {
-    this.panner.disconnect();
+    if (this.panner) {
+      this.panner.disconnect();
+    }
   };
 
   /**

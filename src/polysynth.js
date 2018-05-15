@@ -320,7 +320,9 @@ define(function (require) {
   *  @method  disconnect
   */
   p5.PolySynth.prototype.disconnect = function() {
-    this.output.disconnect();
+    if (this.output) {
+      this.output.disconnect();
+    }
   };
 
   /**
@@ -333,8 +335,10 @@ define(function (require) {
       voice.dispose();
     });
 
-    this.output.disconnect();
-    delete this.output;
+    if (this.output) {
+      this.output.disconnect();
+      delete this.output;
+    }
   };
 
 });

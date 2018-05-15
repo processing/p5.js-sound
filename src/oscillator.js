@@ -128,7 +128,7 @@ define(function (require) {
       // set old osc free to be garbage collected (memory)
       if (this.oscillator) {
         this.oscillator.disconnect();
-        this.oscillator = undefined;
+        delete this.oscillator;
       }
 
       // var detune = this.oscillator.frequency.value;
@@ -314,9 +314,15 @@ define(function (require) {
    *  @method  disconnect
    */
   p5.Oscillator.prototype.disconnect = function() {
-    this.output.disconnect();
-    this.panner.disconnect();
-    this.output.connect(this.panner);
+    if (this.output) {
+      this.output.disconnect();
+    }
+    if (this.panner) {
+      this.panner.disconnect();
+      if (this.output) {
+        this.output.connect(this.panner);
+      }
+    }
     this.oscMods = [];
   };
 

@@ -65,8 +65,10 @@ define(function() {
   };
 
   p5.AudioVoice.prototype.dispose = function() {
-    this.output.disconnect();
-    delete this.output;
+    if (this.output) {
+      this.output.disconnect();
+      delete this.output;
+    }
   };
 
   return p5.AudioVoice;
