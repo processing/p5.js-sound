@@ -1,4 +1,3 @@
-
 var attackTime = 0.001
 var attackLevel = 1.0;
 var decayTime = 0.2;
@@ -7,22 +6,19 @@ var releaseTime = 0.5;
 var releaseLevel = 0;
 var sustainTime = 0.5;
 
-var attackTimeInput;
-var attackLevelInput;
-var decayTimeInput;
-var decayLevelInput;
-var releaseTimeInput;
-var releaseLevelInput;
+var attackTimeInput, attackLevelInput;
+var decayTimeInput, decayLevelInput;
+var releaseTimeInput, releaseLevelInput;
 var sustainTimeInput;
 
-var MAX_TIME = 1;
-var MAX_LEVEL = 5;
-var drawScale = 100;
+var maxTime = 1;
+var maxLevel = 5;
+var xScale = 100;
 
 var env, osc;
 
 function setup() {
-  var cnv = createCanvas(4*MAX_TIME*drawScale, MAX_LEVEL*drawScale);
+  var cnv = createCanvas(500, 500);
   cnv.mousePressed(playEnv);
 
   env = new p5.Env();  
@@ -31,24 +27,24 @@ function setup() {
   osc.start();
   osc.freq(440);
 
-  attackTimeInput = createSlider(0, MAX_TIME, attackTime, 0);
-  attackTimeInput.position(10, 10);
-  attackLevelInput = createSlider(0, MAX_LEVEL, attackLevel, 0);
-  attackLevelInput.position(10, 40);
-  decayTimeInput = createSlider(0, MAX_TIME, decayTime, 0);
-  decayTimeInput.position(10, 70);
-  decayLevelInput = createSlider(0, MAX_LEVEL, decayLevel, 0);
-  decayLevelInput.position(10, 100);
-  sustainTimeInput = createSlider(0, MAX_TIME, sustainTime, 0);
-  sustainTimeInput.position(10, 120);
-  releaseTimeInput = createSlider(0, MAX_TIME, releaseTime, 0);
-  releaseTimeInput.position(10, 150);
-  releaseLevelInput = createSlider(0, MAX_LEVEL, releaseLevel, 0);
-  releaseLevelInput.position(10, 180);
+  attackTimeInput = createSlider(0, maxTime, attackTime, 0);
+  attackTimeInput.position(20, 15);
+  attackLevelInput = createSlider(0, maxLevel, attackLevel, 0);
+  attackLevelInput.position(160, 15);
+  decayTimeInput = createSlider(0, maxTime, decayTime, 0);
+  decayTimeInput.position(20, 45);
+  decayLevelInput = createSlider(0, maxLevel, decayLevel, 0);
+  decayLevelInput.position(160, 45);
+  sustainTimeInput = createSlider(0, maxTime, sustainTime, 0);
+  sustainTimeInput.position(20, 75);
+  releaseTimeInput = createSlider(0, maxTime, releaseTime, 0);
+  releaseTimeInput.position(20, 105);
+  releaseLevelInput = createSlider(0, maxLevel, releaseLevel, 0);
+  releaseLevelInput.position(160, 105);
 }
 
 function draw() {
-  background(255);
+  background(30, 100, 155);
   attackTime = attackTimeInput.value();
   attackLevel = attackLevelInput.value();
   decayTime = decayTimeInput.value();
@@ -58,39 +54,50 @@ function draw() {
   releaseLevel = releaseLevelInput.value();
   drawADSR();
 
-  fill(0);
+  // Text
   textAlign(CENTER);
   text('click to play', width/2, height/2);
-}
-
-function drawADSR() {
-  fill(130, 200, 255);
-  noStroke();
-  beginShape();
-  vertex(0, height);
-  // Attack
-  x = attackTime*drawScale;
-  y = height - attackLevel*drawScale;
-  vertex(x, y);
-  // Decay
-  x = x + decayTime*drawScale;
-  y = height - decayLevel*drawScale;
-  vertex(x, y);
-  // Sustain
-  x = x + sustainTime*drawScale;
-  y = y;
-  vertex(x, y);
-  // Release
-  x = x + releaseTime*drawScale;
-  y = height - releaseLevel*drawScale;
-  vertex(x, y);
-  // Forever
-  vertex(width, y);
-  vertex(width, height);
-  endShape();
 }
 
 function playEnv() {
   env.set(attackTime, attackLevel, decayTime, decayLevel, releaseTime, releaseLevel);
   env.play(osc, 0, sustainTime);
+}
+
+function drawADSR() {
+  var textPadding = 50;
+  var xScale = (width - textPadding) / maxTime / 4;
+  var yScale = (height - textPadding) / maxLevel;
+
+  fill(130, 200, 255);
+  noStroke();
+  textAlign(LEFT, BOTTOM);
+
+  beginShape();
+  // Start
+  vertex(0, height);
+  // Attack
+  x = attackTime*xScale;
+  y = height - attackLevel*yScale;
+  vertex(x, y);
+  text(`Attack: \n${attackTime.toFixed(3)}s \n${attackLevel.toFixed(3)}`, x, y);
+  // Decay
+  x = x + decayTime*xScale;
+  y = height - decayLevel*yScale;
+  vertex(x, y);
+  text(`Decay: \n${decayTime.toFixed(3)}s \n${decayLevel.toFixed(3)}`, x, y);
+  // Sustain
+  x = x + sustainTime*xScale;
+  y = y;
+  vertex(x, y);
+  text(`Sustain: \n${sustainTime.toFixed(3)}s`, x, y);
+  // Release
+  x = x + releaseTime*xScale;
+  y = height - releaseLevel*yScale;
+  text(`Release: \n${releaseTime.toFixed(3)}s \n${releaseLevel.toFixed(3)}`, x, y);
+  vertex(x, y);
+  // End
+  vertex(width, y);
+  vertex(width, height);
+  endShape();
 }
