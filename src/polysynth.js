@@ -19,21 +19,39 @@ define(function (require) {
     *  @param {Number} [synthVoice]   A monophonic synth voice inheriting
     *                                 the AudioVoice class. Defaults to p5.MonoSynth
     *  @param {Number} [maxVoices] Number of voices, defaults to 8;
-    *
-    *
     *  @example
     *  <div><code>
-    *  var polysynth;
+    *  var polySynth;
+    *
     *  function setup() {
-    *    polysynth = new p5.PolySynth();
-    *    polysynth.play(53,1,0,3);
-    *    polysynth.play(60,1,0,2.9);
-    *    polysynth.play(69,1,0,3);
-    *    polysynth.play(71,1,0,3);
-    *    polysynth.play(74,1,0,3);
+    *    var cnv = createCanvas(100, 100);
+    *    cnv.mousePressed(playSynth);
+    *
+    *    polySynth = new p5.PolySynth();
+    *
+    *    textAlign(CENTER);
+    *    text('click to play', width/2, height/2);
+    *  }
+    *
+    *  function playSynth() {
+    *    // note duration (in seconds)
+    *    var dur = 1.5;
+    *
+    *    // time from now (in seconds)
+    *    var time = 0;
+    *
+    *    // velocity (volume, from 0 to 1)
+    *    var vel = 0.1;
+    *
+    *    // notes can overlap with each other
+    *    polySynth.play("G2", vel, 0, dur);
+    *    polySynth.play("C3", vel, time += 1/3, dur);
+    *    polySynth.play("G3", vel, time += 1/3, dur);
+    *
+    *    background(random(255), random(255), 255);
+    *    text('click to play', width/2, height/2);
     *  }
     *  </code></div>
-    *
     **/
   p5.PolySynth = function(audioVoice, maxVoices) {
     //audiovoices will contain maxVoices many monophonic synths
@@ -103,6 +121,38 @@ define(function (require) {
    *  @param  {Number} [velocity] velocity of the note to play (ranging from 0 to 1)
    *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
    *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
+   *  @example
+   *  <div><code>
+   *  var polySynth;
+   *
+   *  function setup() {
+   *    var cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playSynth);
+   *
+   *    polySynth = new p5.PolySynth();
+   *
+   *    textAlign(CENTER);
+   *    text('click to play', width/2, height/2);
+   *  }
+   *
+   *  function playSynth() {
+   *    // note duration (in seconds)
+   *    var dur = 0.1;
+   *
+   *    // time from now (in seconds)
+   *    var time = 0;
+   *
+   *    // velocity (volume, from 0 to 1)
+   *    var vel = 0.1;
+   *
+   *    polySynth.play("G2", vel, 0, dur);
+   *    polySynth.play("C3", vel, 0, dur);
+   *    polySynth.play("G3", vel, 0, dur);
+   *
+   *    background(random(255), random(255), 255);
+   *    text('click to play', width/2, height/2);
+   *  }
+   *  </code></div>
    */
   p5.PolySynth.prototype.play = function (note,velocity, secondsFromNow, susTime) {
     var susTime = susTime || 1;
@@ -177,7 +227,25 @@ define(function (require) {
    *  @param  {Number} [note]           midi note on which attack should be triggered.
    *  @param  {Number} [velocity]       velocity of the note to play (ranging from 0 to 1)/
    *  @param  {Number} [secondsFromNow] time from now (in seconds)
+   *  @example
+   *  <div><code>
+   *  var polySynth = new p5.PolySynth();
+   *  var pitches = ["G", "D", "G", "C"];
+   *  var octaves = [2, 3, 4];
    *
+   *  function mousePressed() {
+   *    // play a chord: multiple notes at the same time
+   *    for (var i = 0; i < 4; i++) {
+   *      var note = random(pitches) + random(octaves);
+   *      polySynth.noteAttack(note, 0.1);
+   *    }
+   *  }
+   *
+   *  function mouseReleased() {
+   *    // release all voices
+   *    polySynth.noteRelease();
+   *  }
+   *  </code></div>
    */
   p5.PolySynth.prototype.noteAttack = function (_note, _velocity, secondsFromNow) {
     var now =  p5sound.audiocontext.currentTime;
@@ -266,25 +334,53 @@ define(function (require) {
    *
    *  @method  noteRelease
    *  @param  {Number} [note]           midi note on which attack should be triggered.
+   *                                    If no value is provided, all notes will be released.
    *  @param  {Number} [secondsFromNow] time to trigger the release
+   *  @example
+   *  <div><code>
+   *  var pitches = ["G", "D", "G", "C"];
+   *  var octaves = [2, 3, 4];
+   *  var polySynth = new p5.PolySynth();
+   *
+   *  function mousePressed() {
+   *    // play a chord: multiple notes at the same time
+   *    for (var i = 0; i < 4; i++) {
+   *      var note = random(pitches) + random(octaves);
+   *      polySynth.noteAttack(note, 0.1);
+   *    }
+   *  }
+   *
+   *  function mouseReleased() {
+   *    // release all voices
+   *    polySynth.noteRelease();
+   *  }
+   *  </code></div>
    *
    */
-
   p5.PolySynth.prototype.noteRelease = function (_note,secondsFromNow) {
+    var now =  p5sound.audiocontext.currentTime;
+    var tFromNow = secondsFromNow || 0;
+    var t = now + tFromNow;
+
+    // if a note value is not provided, release all voices
+    if (!_note) {
+      this.audiovoices.forEach(function(voice) {
+        voice.triggerRelease(tFromNow)
+      });
+      this._voicesInUse.setValueAtTime(0, t);
+      for (var n in this.notes) {
+        this.notes[n].setValueAtTime(null, t)
+      }
+      return;
+    }
+
     //Make sure note is in frequency inorder to query the this.notes object
     var note = typeof _note === 'string' ? this.AudioVoice.prototype._setNote(_note)
       : typeof _note === 'number' ? _note : this.audiovoices[this._newest].oscillator.freq().value;
 
-      var now =  p5sound.audiocontext.currentTime;
-      var tFromNow = secondsFromNow || 0;
-      var t = now + tFromNow;
-
-
     if (this.notes[note].getValueAtTime(t) === null) {
       console.warn('Cannot release a note that is not already playing');
     } else {
-
-
       //Find the scheduled change in this._voicesInUse that will be previous to this new note
       //subtract 1 and schedule this value at time 't', when this note will stop playing
       var previousVal = Math.max(~~this._voicesInUse.getValueAtTime(t).value, 1);
