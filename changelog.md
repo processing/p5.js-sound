@@ -1,3 +1,39 @@
+p5.sound v. 0.3.7
+- fix audioIn getSources
+- improvements to soundFile.rate
+- documentation updates
+
+p5.sound v. 0.3.6
+- add MonoSynth, PolySynth and AudioVoice classes by @jvntf
+- add playmode untilDone to p5.SoundFile https://github.com/processing/p5.js-sound/pull/223
+- fix comment in p5.oscillator example https://github.com/processing/p5.js-sound/commit/7927e0f928816562c01ac8f4cedb34aeae30f838
+- doc comment fixes (https://github.com/processing/p5.js-sound/pull/222) that go along with this https://github.com/processing/p5.js/pull/2279
+
+p5.sound v. 0.3.5
+* New FFT methods by @mkontogiannis
+  * getOctaveBands
+  * linAverages
+  * logAverages
+
+* SoundFile `onended` does not trigger on pause, fix by @aksperiod 
+
+* Remove calls to `AudioContext.prototype.hasOwnProperty` in case [this](https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/QOR76GjwrkA) is an issue
+
+p5.sound v. 0.3.1
+- add p5.Distortion effect
+- add p5.AudioIn error handler for ios and safari
+- fix p5.SoundFile playbackRate in Chrome 53+
+- fix DynamicsCompressor.ratio.value clamping warning
+- fix for p5.Noise constructor ignores argument
+- fix p5.SoundFile whileLoading callback
+- fix for Oscillator dispose method & general improvements to oscillator memory management
+- fix WAV format in soundRecorder saveSound()
+- fix p5.AudioIn stop error due to mediastream api changes
+- fix p5.Part timing
+- fix p5.Part removePhrase
+- fix a bug when passing a parameter to the disconnect method
+- updates to documentation / inline examples for p5js.org
+
 p5.sound v. 0.3.0
 - ensure proper dispose methods for all p5.sound classes
 - many improvements to p5.Env
