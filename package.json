@@ -20,5 +20,11 @@
   },
   "dependencies": {
     "tone": "0.10.0"
+  },
+  "scripts": {
+    "build": "grunt",
+    "test": "grunt run-tests",
+    "lint": "grunt lint",
+    "dev": "grunt dev"
   }
 }
