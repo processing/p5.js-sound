@@ -60,7 +60,6 @@ define(['chai'],
 
     it('can play again and keep currentTime', function() {
       sf.play();
-      expect(sf.wasUnpaused).to.equal(true);
       expect( sf.isPaused() ).to.equal(false);
       expect( sf.isPlaying() ).to.equal(true);
 
