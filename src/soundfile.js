@@ -188,7 +188,9 @@ define(function (require) {
         callback.apply(self, arguments);
       }
 
-      self._decrementPreload();
+      if (typeof self._decrementPreload === 'function') {
+        self._decrementPreload();
+      }
     }, onerror, whileLoading);
 
     return s;

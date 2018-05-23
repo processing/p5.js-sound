@@ -321,7 +321,10 @@ define(function (require) {
       if (typeof callback === 'function') {
         callback(buffer);
       }
-      self._decrementPreload();
+
+      if (typeof self._decrementPreload === 'function') {
+        self._decrementPreload();
+      }
     }, errorCallback);
     cReverb.impulses = [];
     return cReverb;

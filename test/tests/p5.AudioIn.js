@@ -18,7 +18,7 @@ define(['chai'],
 
     it('can get sources', function(done) {
       var mic = new p5.AudioIn();
-      mic.getSources(function(sources) {
+      mic.getSources().then(function(sources) {
         console.log(sources);
         expect(sources).to.be.an('array');
         done();
@@ -29,9 +29,9 @@ define(['chai'],
       var mic = new p5.AudioIn();
       expect(mic.currentSource).to.be.null;
 
-      return mic.getSources(function(sources) {
+      return mic.getSources().then(function(sources) {
         mic.setSource(0);
-        expect(mic.currentSource).to.be(0);
+        expect(mic.currentSource).to.equal(0);
         done();
       });
     });
