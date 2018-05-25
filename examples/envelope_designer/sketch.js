@@ -1,19 +1,18 @@
 var attackTime = 0.001
 var attackLevel = 1.0;
 var decayTime = 0.2;
-var decayLevel = 0.2;
+var sustainTime = 0.5;
+var sustainRatio = 0.2;
 var releaseTime = 0.5;
 var releaseLevel = 0.0;
-var sustainTime = 0.5;
 
 var attackTimeInput, attackLevelInput;
-var decayTimeInput, decayLevelInput;
+var decayTimeInput;
+var sustainTimeInput, sustainRatioInput;
 var releaseTimeInput, releaseLevelInput;
-var sustainTimeInput;
 
 var maxTime = 1;
 var maxLevel = 5;
-var xScale = 100;
 
 var env, osc;
 
@@ -30,21 +29,21 @@ function setup() {
   attackTimeInput = createLabeledSlider('Attack time', 0, maxTime, attackTime, 20, 15);
   attackLevelInput = createLabeledSlider('Attack level', 0, maxLevel, attackLevel, 20, 40);
   decayTimeInput = createLabeledSlider('Decay time', 0, maxTime, decayTime, 20, 65);
-  decayLevelInput = createLabeledSlider('Decay level', 0, maxLevel, decayLevel, 20, 90);
-  sustainTimeInput = createLabeledSlider('Sustain time', 0, maxTime, sustainTime, 20, 115);
+  sustainTimeInput = createLabeledSlider('Sustain time', 0, maxTime, sustainTime, 20, 90);
+  sustainRatioInput = createLabeledSlider('Sustain ratio', 0, 1, sustainRatio, 20, 115);
   releaseTimeInput = createLabeledSlider('Release time', 0, maxTime, releaseTime, 20, 140);
   releaseLevelInput = createLabeledSlider('Release level', 0, maxLevel, 0, 20, 165);
 }
 
 function draw() {
-  background(30, 100, 155);
+  background(255);
 
   // Update latest values
   attackTime = float(attackTimeInput.value());
   attackLevel = float(attackLevelInput.value());
   decayTime = float(decayTimeInput.value());
-  decayLevel = float(decayLevelInput.value());
   sustainTime = float(sustainTimeInput.value());
+  sustainRatio = float(sustainRatioInput.value());
   releaseTime = float(releaseTimeInput.value());
   releaseLevel = float(releaseLevelInput.value());
 
@@ -56,7 +55,7 @@ function draw() {
 }
 
 function playEnv() {
-  env.set(attackTime, attackLevel, decayTime, decayLevel, releaseTime, releaseLevel);
+  env.set(attackTime, attackLevel, decayTime, sustainRatio, releaseTime, releaseLevel);
   env.play(osc, 0, sustainTime);
 }
 
@@ -65,8 +64,9 @@ function drawADSR() {
   var xScale = (width - textPadding) / maxTime / 4;
   var yScale = (height - textPadding) / maxLevel;
   var x, y;
+  var shape_color = color(30, 200, 205);
 
-  fill(130, 200, 255);
+  fill(shape_color);
   noStroke();
   textAlign(LEFT, BOTTOM);
 
@@ -74,24 +74,32 @@ function drawADSR() {
   // Start
   vertex(0, height);
   // Attack
-  x = attackTime*xScale;
-  y = height - attackLevel*yScale;
+  x = attackTime * xScale;
+  y = height - attackLevel * yScale;
   vertex(x, y);
+  fill(0);
   text("Attack", x, y);
+  fill(shape_color);
   // Decay
   x = x + decayTime*xScale;
-  y = height - decayLevel*yScale;
+  y = height - (releaseLevel + sustainRatio * (attackLevel - releaseLevel)) * yScale;
   vertex(x, y);
+  fill(0);
   text("Decay", x, y);
+  fill(shape_color);
   // Sustain
-  x = x + sustainTime*xScale;
+  x = x + sustainTime * xScale;
   y = y;
   vertex(x, y);
+  fill(0);
   text("Sustain", x, y);
+  fill(shape_color);
   // Release
-  x = x + releaseTime*xScale;
-  y = height - releaseLevel*yScale;
-  text("Sustain", x, y);
+  x = x + releaseTime * xScale;
+  y = height - releaseLevel * yScale;
+  fill(0);
+  text("Release", x, y);
+  fill(shape_color);
   vertex(x, y);
   // End
   vertex(width, y);
