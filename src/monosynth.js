@@ -5,8 +5,8 @@ define(function (require) {
   var AudioVoice = require('audioVoice');
 
   /**
-    *  An MonoSynth is used as a single voice for sound synthesis.
-    *  This is a class to be used in conjonction with the PolySynth
+    *  A MonoSynth is used as a single voice for sound synthesis.
+    *  This is a class to be used in conjunction with the PolySynth
     *  class. Custom synthetisers should be built inheriting from
     *  this class.
     *
@@ -14,16 +14,31 @@ define(function (require) {
     *  @constructor
     *  @example
     *  <div><code>
-    *  var monosynth;
-    *  var x;
+    *  var monoSynth;
     *
     *  function setup() {
-    *    monosynth = new p5.MonoSynth();
-    *    monosynth.play(45,1,x=0,1);
-    *    monosynth.play(49,1,x+=1,0.25);
-    *    monosynth.play(50,1,x+=0.25,0.25);
-    *    monosynth.play(49,1,x+=0.5,0.25);
-    *    monosynth.play(50,1,x+=0.25,0.25);
+    *    var cnv = createCanvas(100, 100);
+    *    cnv.mousePressed(playSynth);
+    *
+    *    monoSynth = new p5.MonoSynth();
+    *
+    *    textAlign(CENTER);
+    *    text('click to play', width/2, height/2);
+    *  }
+    *
+    *  function playSynth() {
+    *    // time from now (in seconds)
+    *    var time = 0;
+    *    // note duration (in seconds)
+    *    var dur = 0.25;
+    *    // velocity (volume, from 0 to 1)
+    *    var v = 0.2;
+    *
+    *    monoSynth.play("G3", v, time, dur);
+    *    monoSynth.play("C4", v, time += dur, dur);
+    *
+    *    background(random(255), random(255), 255);
+    *    text('click to play', width/2, height/2);
     *  }
     *  </code></div>
     **/
@@ -66,20 +81,49 @@ define(function (require) {
   p5.MonoSynth.prototype = Object.create(p5.AudioVoice.prototype);
 
   /**
-     *  Play tells the MonoSynth to start playing a note. This method schedules
-     *  the calling of .triggerAttack and .triggerRelease.
-     *
-     *  @method play
-     *  @param {String | Number} note the note you want to play, specified as a 
-     *                                 frequency in Hertz (Number) or as a midi 
-     *                                 value in Note/Octave format ("C4", "Eb3"...etc")
-     *                                 See <a href = "https://github.com/Tonejs/Tone.js/wiki/Instruments">
-     *                                 Tone</a>. Defaults to 440 hz.
-     *  @param  {Number} [velocity] velocity of the note to play (ranging from 0 to 1)
-     *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
-     *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
-     *
-     */
+    *  Play tells the MonoSynth to start playing a note. This method schedules
+    *  the calling of .triggerAttack and .triggerRelease.
+    *
+    *  @method play
+    *  @param {String | Number} note the note you want to play, specified as a
+    *                                 frequency in Hertz (Number) or as a midi
+    *                                 value in Note/Octave format ("C4", "Eb3"...etc")
+    *                                 See <a href = "https://github.com/Tonejs/Tone.js/wiki/Instruments">
+    *                                 Tone</a>. Defaults to 440 hz.
+    *  @param  {Number} [velocity] velocity of the note to play (ranging from 0 to 1)
+    *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
+    *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
+    *  @example
+    *  <div><code>
+    *  var monoSynth;
+    *
+    *  function setup() {
+    *    var cnv = createCanvas(100, 100);
+    *    cnv.mousePressed(playSynth);
+    *
+    *    monoSynth = new p5.MonoSynth();
+    *
+    *    textAlign(CENTER);
+    *    text('click to play', width/2, height/2);
+    *  }
+    *
+    *  function playSynth() {
+    *    // time from now (in seconds)
+    *    var time = 0;
+    *    // note duration (in seconds)
+    *    var dur = 1/6;
+    *    // note velocity (volume, from 0 to 1)
+    *    var v = random();
+    *
+    *    monoSynth.play("Fb3", v, 0, dur);
+    *    monoSynth.play("Gb3", v, time += dur, dur);
+    *
+    *    background(random(255), random(255), 255);
+    *    text('click to play', width/2, height/2);
+    *  }
+    *  </code></div>
+    *
+    */
   p5.MonoSynth.prototype.play = function (note, velocity, secondsFromNow, susTime) {
     // set range of env (TO DO: allow this to be scheduled in advance)
     var susTime = susTime || this.sustain;
@@ -93,14 +137,26 @@ define(function (require) {
      *  Similar to holding down a key on a piano, but it will
      *  hold the sustain level until you let go.
      *
-     *  @param {String | Number} note the note you want to play, specified as a 
-     *                                 frequency in Hertz (Number) or as a midi 
+     *  @param {String | Number} note the note you want to play, specified as a
+     *                                 frequency in Hertz (Number) or as a midi
      *                                 value in Note/Octave format ("C4", "Eb3"...etc")
      *                                 See <a href = "https://github.com/Tonejs/Tone.js/wiki/Instruments">
      *                                 Tone</a>. Defaults to 440 hz
      *  @param  {Number} [velocity] velocity of the note to play (ranging from 0 to 1)
      *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
      *  @method  triggerAttack
+     *  @example
+     *  <div><code>
+     *  var monoSynth = new p5.MonoSynth();
+     *
+     *  function mousePressed() {
+     *    monoSynth.triggerAttack("E3");
+     *  }
+     *
+     *  function mouseReleased() {
+     *    monoSynth.triggerRelease();
+     *  }
+     *  </code></div>
      */
   p5.MonoSynth.prototype.triggerAttack = function (note, velocity, secondsFromNow) {
     var secondsFromNow = secondsFromNow || 0;
@@ -121,6 +177,18 @@ define(function (require) {
      *
      *  @param  {Number} secondsFromNow time to trigger the release
      *  @method  triggerRelease
+     *  @example
+     *  <div><code>
+     *  var monoSynth = new p5.MonoSynth();
+     *
+     *  function mousePressed() {
+     *    monoSynth.triggerAttack("E3");
+     *  }
+     *
+     *  function mouseReleased() {
+     *    monoSynth.triggerRelease();
+     *  }
+     *  </code></div>
      */
   p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow) {
     var secondsFromNow = secondsFromNow || 0;
