@@ -2,6 +2,7 @@
 
 define(function (require) {
 
+  require('shims');
   require('audiocontext');
   var p5SOUND = require('master');
   require('helpers');

@@ -65,6 +65,7 @@ module.exports = function(grunt) {
             'Tone' : 'node_modules/tone/Tone',
             'automation-timeline': 'node_modules/web-audio-automation-timeline/build/automation-timeline-amd',
             'panner' : 'src/panner',
+            'shims': 'src/shims',
             'audiocontext': 'src/audiocontext',
             'master': 'src/master',
             'helpers': 'src/helpers',
