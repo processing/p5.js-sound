@@ -2,7 +2,6 @@
 
 define(function (require) {
 
-  require('sndcore');
   var CustomError = require('errorHandler');
   var p5sound = require('master');
   var ac = p5sound.audiocontext;

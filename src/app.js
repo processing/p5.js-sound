@@ -2,8 +2,8 @@
 
 define(function (require) {
 
-  var p5SOUND = require('sndcore');
-  require('master');
+  require('audiocontext');
+  var p5SOUND = require('master');
   require('helpers');
   require('errorHandler');
   require('panner');
