@@ -2,7 +2,6 @@
 
 define(function (require) {
   var p5sound = require('master');
-  require('sndcore');
 
   /**
    *  A gain node is usefull to set the relative volume of sound.

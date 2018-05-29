@@ -4,7 +4,6 @@ define(function (require) {
 
   // inspiration: recorder.js, Tone.js & typedarray.org
 
-  require('sndcore');
   var p5sound = require('master');
   var ac = p5sound.audiocontext;
 

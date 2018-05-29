@@ -1,11 +1,8 @@
 'use strict';
 define(function (require) {
 
-
   var p5sound = require('master');
   var TimelineSignal = require('Tone/signal/TimelineSignal');
-  require('sndcore');
-
 
   /**
     *  An AudioVoice is used as a single voice for sound synthesis.
