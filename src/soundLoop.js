@@ -117,8 +117,9 @@ define(function (require) {
    */
   p5.SoundLoop.prototype.pause  = function(timeFromNow) {
     var t = timeFromNow || 0;
+    var now = p5sound.audiocontext.currentTime;
     if (this.isPlaying) {
-      this.clock.pause(t);
+      this.clock.pause(now + t);
       this.isPlaying = false;
     }
   };
