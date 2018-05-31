@@ -197,7 +197,6 @@ define(function (require) {
    * monosynth so that all notes are played with this envelope.
    *
    *  @method  setADSR
-   *  @param {Number} [note]        Midi note on which ADSR should be set.
    *  @param {Number} [attackTime]  Time (in seconds before envelope
    *                                reaches Attack Level
    *  @param {Number} [decayTime]   Time (in seconds) before envelope
