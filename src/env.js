@@ -17,16 +17,16 @@ define(function (require) {
    *  of an object, a series of fades referred to as Attack, Decay,
    *  Sustain and Release (
    *  <a href="https://upload.wikimedia.org/wikipedia/commons/e/ea/ADSR_parameter.svg">ADSR</a>
-   *  ). Envelopes can also control other Web Audio Parameters—for example, a p5.Env can
+   *  ). Envelopes can also control other Web Audio Parameters—for example, a p5.Envelope can
    *  control an Oscillator's frequency like this: <code>osc.freq(env)</code>.</p>
-   *  <p>Use <code><a href="#/p5.Env/setRange">setRange</a></code> to change the attack/release level.
-   *  Use <code><a href="#/p5.Env/setADSR">setADSR</a></code> to change attackTime, decayTime, sustainPercent and releaseTime.</p>
-   *  <p>Use the <code><a href="#/p5.Env/play">play</a></code> method to play the entire envelope,
-   *  the <code><a href="#/p5.Env/ramp">ramp</a></code> method for a pingable trigger,
-   *  or <code><a href="#/p5.Env/triggerAttack">triggerAttack</a></code>/
-   *  <code><a href="#/p5.Env/triggerRelease">triggerRelease</a></code> to trigger noteOn/noteOff.</p>
+   *  <p>Use <code><a href="#/p5.Envelope/setRange">setRange</a></code> to change the attack/release level.
+   *  Use <code><a href="#/p5.Envelope/setADSR">setADSR</a></code> to change attackTime, decayTime, sustainPercent and releaseTime.</p>
+   *  <p>Use the <code><a href="#/p5.Envelope/play">play</a></code> method to play the entire envelope,
+   *  the <code><a href="#/p5.Envelope/ramp">ramp</a></code> method for a pingable trigger,
+   *  or <code><a href="#/p5.Envelope/triggerAttack">triggerAttack</a></code>/
+   *  <code><a href="#/p5.Envelope/triggerRelease">triggerRelease</a></code> to trigger noteOn/noteOff.</p>
    *
-   *  @class p5.Env
+   *  @class p5.Envelope
    *  @constructor
    *  @example
    *  <div><code>
@@ -46,7 +46,7 @@ define(function (require) {
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
    *
-   *    env = new p5.Env();
+   *    env = new p5.Envelope();
    *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
    *    env.setRange(attackLevel, releaseLevel);
    *
@@ -63,7 +63,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Env = function(t1, l1, t2, l2, t3, l3) {
+  p5.Envelope = function(t1, l1, t2, l2, t3, l3) {
     /**
      * Time until envelope reaches attackLevel
      * @property attackTime
@@ -128,9 +128,15 @@ define(function (require) {
     p5sound.soundArray.push(this);
   };
 
+  // THIS DOESN'T WORK YET
+  p5.Env = function(t1, l1, t2, l2, t3, l3) {
+    console.warn('WARNING: p5.Env is now deprecated and may be removed in future versions. Please use the new p5.Envelope instead.');
+    p5.Envelope(t1, l1, t2, l2, t3, l3);
+  };
+
   // this init function just smooths the starting value to zero and gives a start point for the timeline
   // - it was necessary to remove glitches at the beginning.
-  p5.Env.prototype._init = function () {
+  p5.Envelope.prototype._init = function () {
     var now = p5sound.audiocontext.currentTime;
     var t = now;
     this.control.setTargetAtTime(0.00001, t, .001);
@@ -171,7 +177,7 @@ define(function (require) {
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
    *
-   *    env = new p5.Env(t1, l1, t2, l2, t3, l3);
+   *    env = new p5.Envelope(t1, l1, t2, l2, t3, l3);
    *    triOsc = new p5.Oscillator('triangle');
    *    triOsc.amp(env); // give the env control of the triOsc's amp
    *    triOsc.start();
@@ -187,7 +193,7 @@ define(function (require) {
    *  </code></div>
    *
    */
-  p5.Env.prototype.set = function(t1, l1, t2, l2, t3, l3) {
+  p5.Envelope.prototype.set = function(t1, l1, t2, l2, t3, l3) {
     this.aTime = t1;
     this.aLevel = l1;
     this.dTime = t2 || 0;
@@ -237,7 +243,7 @@ define(function (require) {
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
    *
-   *    env = new p5.Env();
+   *    env = new p5.Envelope();
    *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
    *    env.setRange(attackLevel, releaseLevel);
    *
@@ -254,7 +260,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Env.prototype.setADSR = function(aTime, dTime, sPercent, rTime) {
+  p5.Envelope.prototype.setADSR = function(aTime, dTime, sPercent, rTime) {
     this.aTime = aTime;
     this.dTime = dTime || 0;
 
@@ -292,7 +298,7 @@ define(function (require) {
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
    *
-   *    env = new p5.Env();
+   *    env = new p5.Envelope();
    *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
    *    env.setRange(attackLevel, releaseLevel);
    *
@@ -309,7 +315,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Env.prototype.setRange = function(aLevel, rLevel) {
+  p5.Envelope.prototype.setRange = function(aLevel, rLevel) {
     this.aLevel = aLevel || 1;
     this.rLevel = rLevel || 0;
 
@@ -334,7 +340,7 @@ define(function (require) {
   //  param {Number} attackTimeConstant  attack time constant
   //  param {Number} decayTimeConstant   decay time constant
   //
-  p5.Env.prototype._setRampAD = function(t1, t2) {
+  p5.Envelope.prototype._setRampAD = function(t1, t2) {
     this._rampAttackTime = this.checkExpInput(t1);
     this._rampDecayTime = this.checkExpInput(t2);
 
@@ -347,7 +353,7 @@ define(function (require) {
   };
 
   // private method
-  p5.Env.prototype.setRampPercentages = function(p1, p2) {
+  p5.Envelope.prototype.setRampPercentages = function(p1, p2) {
     //set the percentages that the simple exponential ramps go to
     this._rampHighPercentage = this.checkExpInput(p1);
     this._rampLowPercentage = this.checkExpInput(p2);
@@ -363,7 +369,7 @@ define(function (require) {
 
   /**
    *  Assign a parameter to be controlled by this envelope.
-   *  If a p5.Sound object is given, then the p5.Env will control its
+   *  If a p5.Sound object is given, then the p5.Envelope will control its
    *  output gain. If multiple inputs are provided, the env will
    *  control all of them.
    *
@@ -371,7 +377,7 @@ define(function (require) {
    *  @param  {Object} [...inputs]         A p5.sound object or
    *                                Web Audio Param.
    */
-  p5.Env.prototype.setInput = function() {
+  p5.Envelope.prototype.setInput = function() {
     for (var i = 0; i<arguments.length; i++) {
       this.connect(arguments[i]);
     }
@@ -385,12 +391,12 @@ define(function (require) {
    *  @method  setExp
    *  @param {Boolean} isExp true is exponential, false is linear
    */
-  p5.Env.prototype.setExp = function(isExp) {
+  p5.Envelope.prototype.setExp = function(isExp) {
     this.isExponential = isExp;
   };
 
   //helper method to protect against zero values being sent to exponential functions
-  p5.Env.prototype.checkExpInput = function(value) {
+  p5.Envelope.prototype.checkExpInput = function(value) {
     if (value <= 0)
     {
       value = 0.00000001;
@@ -401,7 +407,7 @@ define(function (require) {
   /**
    *  Play tells the envelope to start acting on a given input.
    *  If the input is a p5.sound object (i.e. AudioIn, Oscillator,
-   *  SoundFile), then Env will control its output volume.
+   *  SoundFile), then Envelope will control its output volume.
    *  Envelopes can also be used to control any <a href="
    *  http://docs.webplatform.org/wiki/apis/webaudio/AudioParam">
    *  Web Audio Audio Param.</a>
@@ -429,7 +435,7 @@ define(function (require) {
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
    *
-   *    env = new p5.Env();
+   *    env = new p5.Envelope();
    *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
    *    env.setRange(attackLevel, releaseLevel);
    *
@@ -448,7 +454,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Env.prototype.play = function(unit, secondsFromNow, susTime) {
+  p5.Envelope.prototype.play = function(unit, secondsFromNow, susTime) {
     var tFromNow = secondsFromNow || 0;
     var susTime = susTime || 0;
 
@@ -494,7 +500,7 @@ define(function (require) {
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
    *
-   *    env = new p5.Env();
+   *    env = new p5.Envelope();
    *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
    *    env.setRange(attackLevel, releaseLevel);
    *
@@ -522,7 +528,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Env.prototype.triggerAttack = function(unit, secondsFromNow) {
+  p5.Envelope.prototype.triggerAttack = function(unit, secondsFromNow) {
     var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
     var t = now + tFromNow;
@@ -615,7 +621,7 @@ define(function (require) {
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
    *
-   *    env = new p5.Env();
+   *    env = new p5.Envelope();
    *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
    *    env.setRange(attackLevel, releaseLevel);
    *
@@ -643,7 +649,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Env.prototype.triggerRelease = function(unit, secondsFromNow) {
+  p5.Envelope.prototype.triggerRelease = function(unit, secondsFromNow) {
 
     // only trigger a release if an attack was triggered
     if (!this.wasTriggered) {
@@ -701,7 +707,7 @@ define(function (require) {
 
   /**
    *  Exponentially ramp to a value using the first two
-   *  values from <code><a href="#/p5.Env/setADSR">setADSR(attackTime, decayTime)</a></code>
+   *  values from <code><a href="#/p5.Envelope/setADSR">setADSR(attackTime, decayTime)</a></code>
    *  as <a href="https://en.wikipedia.org/wiki/RC_time_constant">
    *  time constants</a> for simple exponential ramps.
    *  If the value is higher than current value, it uses attackTime,
@@ -726,7 +732,7 @@ define(function (require) {
    *    fill(0,255,0);
    *    noStroke();
    *
-   *    env = new p5.Env();
+   *    env = new p5.Envelope();
    *    env.setADSR(attackTime, decayTime);
    *
    *    osc = new p5.Oscillator();
@@ -751,7 +757,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Env.prototype.ramp = function(unit, secondsFromNow, v1, v2) {
+  p5.Envelope.prototype.ramp = function(unit, secondsFromNow, v1, v2) {
 
     var now =  p5sound.audiocontext.currentTime;
     var tFromNow = secondsFromNow || 0;
@@ -797,7 +803,7 @@ define(function (require) {
   };
 
 
-  p5.Env.prototype.connect = function(unit) {
+  p5.Envelope.prototype.connect = function(unit) {
     this.connection = unit;
 
     // assume we're talking about output gain
@@ -822,7 +828,7 @@ define(function (require) {
     this.output.connect(unit);
   };
 
-  p5.Env.prototype.disconnect = function() {
+  p5.Envelope.prototype.disconnect = function() {
     if (this.output) {
       this.output.disconnect();
     }
@@ -838,10 +844,10 @@ define(function (require) {
    *
    *  @method  add
    *  @param {Number} number Constant number to add
-   *  @return {p5.Env} Envelope Returns this envelope
+   *  @return {p5.Envelope} Envelope Returns this envelope
    *                                     with scaled output
    */
-  p5.Env.prototype.add = function(num) {
+  p5.Envelope.prototype.add = function(num) {
     var add = new Add(num);
     var thisChain = this.mathOps.length;
     var nextChain = this.output;
@@ -849,16 +855,16 @@ define(function (require) {
   };
 
   /**
-   *  Multiply the p5.Env's output amplitude
+   *  Multiply the p5.Envelope's output amplitude
    *  by a fixed value. Calling this method
    *  again will override the initial mult() with new values.
    *
    *  @method  mult
    *  @param {Number} number Constant number to multiply
-   *  @return {p5.Env} Envelope Returns this envelope
+   *  @return {p5.Envelope} Envelope Returns this envelope
    *                                     with scaled output
    */
-  p5.Env.prototype.mult = function(num) {
+  p5.Envelope.prototype.mult = function(num) {
     var mult = new Mult(num);
     var thisChain = this.mathOps.length;
     var nextChain = this.output;
@@ -875,10 +881,10 @@ define(function (require) {
    *  @param  {Number} inMax  input range maximum
    *  @param  {Number} outMin input range minumum
    *  @param  {Number} outMax input range maximum
-   *  @return {p5.Env} Envelope Returns this envelope
+   *  @return {p5.Envelope} Envelope Returns this envelope
    *                                     with scaled output
    */
-  p5.Env.prototype.scale = function(inMin, inMax, outMin, outMax) {
+  p5.Envelope.prototype.scale = function(inMin, inMax, outMin, outMax) {
     var scale = new Scale(inMin, inMax, outMin, outMax);
     var thisChain = this.mathOps.length;
     var nextChain = this.output;
@@ -887,7 +893,7 @@ define(function (require) {
 
 
   // get rid of the oscillator
-  p5.Env.prototype.dispose = function() {
+  p5.Envelope.prototype.dispose = function() {
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
