@@ -906,7 +906,7 @@ define(function (require) {
   p5.Env = function(t1, l1, t2, l2, t3, l3) {
     console.warn('WARNING: p5.Env is now deprecated and may be removed in future versions. ' +
       'Please use the new p5.Envelope instead.');
-    p5.Envelope.call(this, arguments);
+    p5.Envelope.call(this, t1, l1, t2, l2, t3, l3);
   };
   p5.Env.prototype = Object.create(p5.Envelope.prototype);
 
