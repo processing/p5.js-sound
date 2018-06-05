@@ -128,12 +128,6 @@ define(function (require) {
     p5sound.soundArray.push(this);
   };
 
-  // THIS DOESN'T WORK YET
-  p5.Env = function(t1, l1, t2, l2, t3, l3) {
-    console.warn('WARNING: p5.Env is now deprecated and may be removed in future versions. Please use the new p5.Envelope instead.');
-    p5.Envelope(t1, l1, t2, l2, t3, l3);
-  };
-
   // this init function just smooths the starting value to zero and gives a start point for the timeline
   // - it was necessary to remove glitches at the beginning.
   p5.Envelope.prototype._init = function () {
@@ -907,5 +901,13 @@ define(function (require) {
       this.mathOps[i].dispose();
     }
   };
+
+  // Different name for backwards compatibility, replicates p5.Envelope class
+  p5.Env = function(t1, l1, t2, l2, t3, l3) {
+    console.warn('WARNING: p5.Env is now deprecated and may be removed in future versions. ' +
+      'Please use the new p5.Envelope instead.');
+    p5.Envelope.call(this, arguments);
+  };
+  p5.Env.prototype = Object.create(p5.Envelope.prototype);
 
 });
