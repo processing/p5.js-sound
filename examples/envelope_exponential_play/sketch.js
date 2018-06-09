@@ -11,7 +11,7 @@ var numWaveforms = 50;
 function setup() {
   createCanvas(710, 200);
   osc = new p5.SinOsc();
-  envelope = new p5.Env(0.1, 1.0, 0.1, .5, .1, .5, .1, 0.0); // 
+  envelope = new p5.Envelope(0.1, 1.0, 0.1, .5, .1, .5, .1, 0.0); // 
   envelope.setExp(true);
   //envelope.setADSR(0.1, 1.0, 1.0, 0.2, 5.0, 0.0); //AT, AL, DT, SL, RT, RL
   osc.amp(0.);

@@ -46,7 +46,7 @@ define(function (require) {
    *
    *    // play the noise with an envelope,
    *    // a series of fades ( time / value pairs )
-   *    env = new p5.Env(.01, 0.2, .2, .1);
+   *    env = new p5.Envelope(.01, 0.2, .2, .1);
    *  }
    *
    *  // mouseClick triggers envelope

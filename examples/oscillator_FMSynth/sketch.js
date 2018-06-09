@@ -17,7 +17,7 @@ function setup() {
   carrier.freq(carrierFreq);
   carrier.start();
 
-  env = new p5.Env(0.05, 1, 0.5, 0);
+  env = new p5.Envelope(0.05, 1, 0.5, 0);
   carrier.amp(env);
 
   modulator = new p5.Oscillator();

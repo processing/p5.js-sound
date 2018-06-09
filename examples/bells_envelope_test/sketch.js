@@ -56,7 +56,7 @@ function setup()
     {
       // make arrays of sine waves for each note, additive synthesis, and assign independent envelopes, amplitudes, and slight detunings for each harmonic
       osc[i][j] = new p5.SinOsc();
-      envelope[i][j] = new p5.Env();
+      envelope[i][j] = new p5.Envelope();
       if (random(0, 1) > percentWashed)
       {
         myMaxAttack = maxAttack;

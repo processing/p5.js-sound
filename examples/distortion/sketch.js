@@ -13,7 +13,7 @@ function setup() {
   fft = new p5.FFT(0, 256);
 
 
-  env = new p5.Env();
+  env = new p5.Envelope();
   env.setADSR(0.01, 0.2, 0.1, 0.3);
   env.setRange(1.0, 0.0);
 

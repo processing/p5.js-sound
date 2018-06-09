@@ -45,7 +45,7 @@ function setup(){
   triOsc.amp(0);
   triOsc.start();
 
-  env = new p5.Env();
+  env = new p5.Envelope();
   env.setADSR(attackTime, decayTime, susPercent, releaseTime);
   env.setRange(attackLevel, releaseLevel);
 

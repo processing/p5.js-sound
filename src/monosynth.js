@@ -49,7 +49,7 @@ define(function (require) {
     this.oscillator = new p5.Oscillator();
     // this.oscillator.disconnect();
 
-    this.env = new p5.Env();
+    this.env = new p5.Envelope();
     this.env.setRange(1, 0);
     this.env.setExp(true);
 

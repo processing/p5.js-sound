@@ -53,7 +53,7 @@ function setup(){
   noise.setType('brown');
   noise.start();
 
-  env = new p5.Env(attackTime, attackLevel, decayTime, decayLevel, sustainTime, sustainLevel, releaseTime);
+  env = new p5.Envelope(attackTime, attackLevel, decayTime, decayLevel, sustainTime, sustainLevel, releaseTime);
 
   // noise.amp(env);
   // triOsc.amp(env);
