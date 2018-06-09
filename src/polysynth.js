@@ -363,7 +363,8 @@ define(function (require) {
       });
       this._voicesInUse.setValueAtTime(0, t);
       for (var n in this.notes) {
-        this.notes[n].setValueAtTime(null, t)
+        this.notes[n].dispose();
+        delete this.notes[n];
       }
       return;
     }
@@ -371,7 +372,7 @@ define(function (require) {
     //Make sure note is in frequency inorder to query the this.notes object
     var note = noteToFreq(_note);
 
-    if (this.notes[note].getValueAtTime(t) === null) {
+    if (!this.notes[note] || this.notes[note].getValueAtTime(t) === null) {
       console.warn('Cannot release a note that is not already playing');
     } else {
       //Find the scheduled change in this._voicesInUse that will be previous to this new note
@@ -384,7 +385,8 @@ define(function (require) {
       }
 
       this.audiovoices[ this.notes[note].getValueAtTime(t) ].triggerRelease(tFromNow);
-      this.notes[note].setValueAtTime( null, t);
+      this.notes[note].dispose();
+      delete this.notes[note];
 
       this._newest = this._newest === 0 ? 0 : (this._newest - 1) % (this.maxVoices - 1);
     }
