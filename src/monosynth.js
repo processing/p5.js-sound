@@ -126,10 +126,11 @@ define(function (require) {
     */
   p5.MonoSynth.prototype.play = function (note, velocity, secondsFromNow, susTime) {
     // set range of env (TO DO: allow this to be scheduled in advance)
-    var susTime = susTime || this.sustain;
-    this.susTime = susTime;
-    this.triggerAttack(note, velocity, secondsFromNow);
-    this.triggerRelease(secondsFromNow + susTime);
+    if (typeof susTime === 'number') {
+      this.susTime = susTime;
+    }
+    this.triggerAttack(note, velocity, ~~secondsFromNow);
+    this.triggerRelease(~~secondsFromNow + susTime);
   };
 
   /**
@@ -160,11 +161,10 @@ define(function (require) {
      */
   p5.MonoSynth.prototype.triggerAttack = function (note, velocity, secondsFromNow) {
     var secondsFromNow = secondsFromNow || 0;
-
     //triggerAttack uses ._setNote to convert a midi string to a frequency if necessary
     var freq = typeof note === 'string' ? this._setNote(note)
       : typeof note === 'number' ? note : 440;
-    var vel = velocity || 1;
+    var vel = velocity || 0.1;
     this._isOn = true;
     this.oscillator.freq(freq, 0, secondsFromNow);
     this.env.ramp(this.output, secondsFromNow, vel);
