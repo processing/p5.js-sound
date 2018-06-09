@@ -17,23 +17,6 @@ define(function() {
 	  p5sound.soundArray.push(this);
   };
 
-  /**
-   * This method converts midi notes specified as a string "C4", "Eb3"...etc
-   * to frequency
-   * @private
-   * @method  _setNote
-   * @param {String} note 
-   */
-  p5.AudioVoice.prototype._setNote = function(note) {
-    var wholeNotes = {A:21, B:23, C:24, D:26, E:28, F:29, G:31};
-    var value = wholeNotes[ note[0] ];
-    var octave = typeof Number(note.slice(-1)) === 'number'? note.slice(-1) : 0;
-    value += 12 * octave;
-    value = note[1] === '#' ? value+1 : note[1] ==='b' ? value - 1 : value;
-    //return midi value converted to frequency
-    return p5.prototype.midiToFreq(value);
-  };
-
   p5.AudioVoice.prototype.play = function (note, velocity, secondsFromNow, sustime) {
   };
 

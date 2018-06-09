@@ -65,9 +65,32 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.prototype.midiToFreq = function(m) {
+  var midiToFreq = p5.prototype.midiToFreq = function(m) {
     return 440 * Math.pow(2, (m-69)/12.0);
   };
+
+  // This method converts ANSI notes specified as a string "C4", "Eb3" to a frequency
+  noteToFreq = function(note) {
+    if (typeof note !== 'string') {
+      return note;
+    }
+    var wholeNotes = {A:21, B:23, C:24, D:26, E:28, F:29, G:31};
+    var value = wholeNotes[ note[0].toUpperCase() ];
+    var octave = ~~note.slice(-1);
+    value += 12 * (octave -1);
+
+    switch(note[1]) {
+      case '#':
+        value += 1;
+        break;
+      case 'b':
+        value -= 1;
+        break;
+      default:
+        break;
+    }
+    return midiToFreq(value);
+  }
 
   /**
    *  List the SoundFile formats that you will include. LoadSound
@@ -202,7 +225,8 @@ define(function (require) {
   };
 
   return {
-    midiToFreq: p5.prototype.midiToFreq
+    midiToFreq: midiToFreq,
+    noteToFreq: noteToFreq
   };
 
 });

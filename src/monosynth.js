@@ -3,6 +3,9 @@ define(function (require) {
 
   var p5sound = require('master');
   var AudioVoice = require('audioVoice');
+  var noteToFreq = require('helpers').noteToFreq;
+
+  var DEFAULT_SUSTAIN = 0.15;
 
   /**
     *  A MonoSynth is used as a single voice for sound synthesis.
@@ -125,12 +128,8 @@ define(function (require) {
     *
     */
   p5.MonoSynth.prototype.play = function (note, velocity, secondsFromNow, susTime) {
-    // set range of env (TO DO: allow this to be scheduled in advance)
-    if (typeof susTime === 'number') {
-      this.susTime = susTime;
-    }
     this.triggerAttack(note, velocity, ~~secondsFromNow);
-    this.triggerRelease(~~secondsFromNow + susTime);
+    this.triggerRelease(~~secondsFromNow + (susTime || DEFAULT_SUSTAIN));
   };
 
   /**
@@ -160,10 +159,8 @@ define(function (require) {
      *  </code></div>
      */
   p5.MonoSynth.prototype.triggerAttack = function (note, velocity, secondsFromNow) {
-    var secondsFromNow = secondsFromNow || 0;
-    //triggerAttack uses ._setNote to convert a midi string to a frequency if necessary
-    var freq = typeof note === 'string' ? this._setNote(note)
-      : typeof note === 'number' ? note : 440;
+    var secondsFromNow = ~~secondsFromNow;
+    var freq = noteToFreq(note);
     var vel = velocity || 0.1;
     this._isOn = true;
     this.oscillator.freq(freq, 0, secondsFromNow);
