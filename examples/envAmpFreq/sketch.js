@@ -7,11 +7,11 @@ var osc; // this oscillator will modulate the amplitude of the carrier
 var freqEnv; // env for frequency
 
 function setup() {
-  env = new p5.Env();
+  env = new p5.Envelope();
   env.setADSR(0.01, 0.2, 0.2, 0.3);
   env.setRange(0, 1);
 
-  freqEnv = new p5.Env();
+  freqEnv = new p5.Envelope();
   freqEnv.setADSR(0.01, 0.2, 0.2, 0.3);
   freqEnv.setRange(300, 5000);
 

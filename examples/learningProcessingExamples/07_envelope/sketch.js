@@ -27,7 +27,7 @@ function setup() {
   osc = new p5.SinOsc();
 
   // Instantiate the envelope with time / value pairs
-  envelope = new p5.Env(0.01, 0.5, 1, 0.5);
+  envelope = new p5.Envelope(0.01, 0.5, 1, 0.5);
 
   osc.start();
 }

@@ -63,7 +63,7 @@ function PeriodicWave(params){
     this.osc.disconnect();
     this.osc.start();
 
-    this.env = new p5.Env(0.021,0.025,0.025,0.025,0.95,0.33,0.25);
+    this.env = new p5.Envelope(0.021,0.025,0.025,0.025,0.95,0.33,0.25);
     this.env.disconnect();
 
     this.filter = new p5.LowPass();

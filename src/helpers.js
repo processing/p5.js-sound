@@ -181,7 +181,7 @@ define(function (require) {
   };
 
   /**
-   *  Used by Osc and Env to chain signal math
+   *  Used by Osc and Envelope to chain signal math
    */
   p5.prototype._mathChain = function(o, math, thisChain, nextChain, type) {
     // if this type of math already exists in the chain, replace it

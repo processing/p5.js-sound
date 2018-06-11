@@ -1,5 +1,5 @@
 /**
- *  Example: Create an Envelope (p5.Env) to control oscillator amplitude.
+ *  Example: Create an Envelope (p5.Envelope) to control oscillator amplitude.
  *  Trigger the Attack portion of the envelope when the mouse is clicked.
  *  Trigger the Release when the mouse is released.
  */
@@ -35,7 +35,7 @@ function setup(){
   osc.freq(220);
   osc.start();
 
-  env = new p5.Env();
+  env = new p5.Envelope();
   env.setADSR(attackTime, decayTime, susPercent, releaseTime);
   env.setRange(attackLevel, releaseLevel);
 

@@ -1,5 +1,5 @@
 /**
- *  Example: p5.Delay w/ p5.Noise, p5.Env & p5.Amplitude
+ *  Example: p5.Delay w/ p5.Noise, p5.Envelope & p5.Amplitude
  *  
  *  Click the mouse to hear the p5.Delay process a Noise Envelope.
  *  
@@ -13,7 +13,7 @@ function setup() {
   createCanvas(710, 400);
   noise = new p5.Noise('white'); // other types include 'brown' and 'pink'
 
-  // Turn down because we'll control .amp with a p5.Env
+  // Turn down because we'll control .amp with a p5.Envelope
   noise.amp(0);
 
   noise.start();
@@ -22,8 +22,8 @@ function setup() {
   delay = new p5.Delay();
   delay.process(noise, .12, .7, 2300); // tell delay to process noise
 
-  // the Env ADSR: attackTime, decayTime, sustainLevel, releaseTime
-  env = new p5.Env();
+  // the Envelope ADSR: attackTime, decayTime, sustainLevel, releaseTime
+  env = new p5.Envelope();
   env.setADSR(0.01, 0.2, 0.2, 0.1)
   env.setRange(1, 0);
 

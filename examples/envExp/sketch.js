@@ -34,7 +34,7 @@ function setup() {
   audioContext = getAudioContext();
 
   // Instantiate the envelope with time / value pairs
-  envelope = new p5.Env(0.1, 0.5, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0);
+  envelope = new p5.Envelope(0.1, 0.5, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0);
   osc.amp(0.);
   osc.start();
   myPhraseAttack = new p5.Phrase('testerAttack', makeSoundAttack, atPattern);

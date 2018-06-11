@@ -15,7 +15,7 @@ var prevTime = 0;
 
 function setup() {
   // prepare the osc and env used by playNote()
-  env = new p5.Env(0.01, 0.8, 0.2, 0);
+  env = new p5.Envelope(0.01, 0.8, 0.2, 0);
   osc = new p5.TriOsc(); // connects to master output by default
   osc.start(0);
   osc.connect();
@@ -25,7 +25,7 @@ function setup() {
   noise = new p5.Noise();
   // noise.amp(0.0);
   noise.start();
-  noiseEnv = new p5.Env(0.01, 0.5, 0.1, 0);
+  noiseEnv = new p5.Envelope(0.01, 0.5, 0.1, 0);
   noiseEnv.setInput(noise);
   // create a part with 8 spaces, where each space represents 1/16th note (default)
   part = new p5.Part(8, 1/16);

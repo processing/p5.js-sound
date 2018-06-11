@@ -13,7 +13,7 @@ p5.sound to do list
 - Figure out a way to keep track of connections between objects. From there, .disconnect() can accept a specific object rather than disconnecting all output.
 
 
-- Make sure all methods that should be modular can accept a Number, AudioParam, p5.Env, p5.Oscillator or p5.Signal as input.
+- Make sure all methods that should be modular can accept a Number, AudioParam, p5.Envelope, p5.Oscillator or p5.Signal as input.
 
 
 - Log a message to the console if a user calls FFT methods like getEnergy without first calling .analyze() in either the draw loop, or in the method in which they call getEnergy. Maybe log the time that .analyze was last called, and compare it to the current time, and if it is a big gap, then log the message?
@@ -74,8 +74,8 @@ p5.sound to do list
 
 - Add option to p5.FFT that returns data in decibels (from Float32Array)
 
-- p5.Env should be able to connect to multiple
-- p5.Env takes no action on triggerRelease unless currently playing
+- p5.Envelope should be able to connect to multiple
+- p5.Envelope takes no action on triggerRelease unless currently playing
 
 - Add a logarithmic scaling option for p5.FFT
 - p5.SoundFile.getPeaks should be able to return stereo peaks. Like [this](https://github.com/olosmusic/olos-soundfile/blob/master/olos-soundfile.html#L379) 

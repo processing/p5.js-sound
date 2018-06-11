@@ -64,7 +64,7 @@ define(function () {
    *  1.0 is the maximum amplitude of a digital sound, so multiplying
    *  by greater than 1.0 may cause digital distortion. To
    *  fade, provide a <code>rampTime</code> parameter. For more
-   *  complex fades, see the Env class.
+   *  complex fades, see the Envelope class.
    *
    *  Alternately, you can pass in a signal source such as an
    *  oscillator to modulate the amplitude with an audio signal.

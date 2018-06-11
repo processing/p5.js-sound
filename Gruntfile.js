@@ -76,7 +76,7 @@ module.exports = function(grunt) {
             'pulse': 'src/pulse',
             'noise': 'src/noise',
             'audioin': 'src/audioin',
-            'env': 'src/env',
+            'envelope': 'src/envelope',
             'delay': 'src/delay',
             'effect': 'src/effect',
             'panner3d' : 'src/panner3d',

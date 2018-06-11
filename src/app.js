@@ -12,7 +12,7 @@ define(function (require) {
   require('fft');
   require('signal');
   require('oscillator');
-  require('env');
+  require('envelope');
   require('pulse');
   require('noise');
   require('audioin');

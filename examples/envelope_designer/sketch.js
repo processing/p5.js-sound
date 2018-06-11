@@ -20,7 +20,7 @@ function setup() {
   var cnv = createCanvas(500, 500);
   cnv.mousePressed(playEnv);
 
-  env = new p5.Env();  
+  env = new p5.Envelope();  
   osc = new p5.Oscillator('triangle');
   osc.amp(env);
   osc.start();
