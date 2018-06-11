@@ -11,14 +11,13 @@ var prevNoteCount = 0;
 function setup() {
   createCanvas(500,500);
   background(0);
-
+  textAlign(CENTER, CENTER);
+  // Create a synth to make sound with
   synth = new p5.PolySynth();
   synth.setADSR(0.01, 0.05, 0.3, 1.0);
-  sloop = new p5.SoundLoop(soundLoop, "16n"); // 16th-note-long loop interval
-  sloop.bpm = 60;
-
-  button = createButton('Play/Pause');
-  button.mousePressed(togglePlayPause);
+  // Create SoundLoop with 16th-note-long loop interval
+  sloop = new p5.SoundLoop(soundLoop, "16n"); 
+  sloop.bpm = 60; // 60 beats per minute
 }
 
 function soundLoop(cycleStartTime) {
@@ -34,6 +33,13 @@ function soundLoop(cycleStartTime) {
 
 function draw() {
   background(0, 25); // 10% opacity gives a visual fade effect
+
+  fill(255);
+  if (sloop.isPlaying) {
+    text('Click to Pause', width/2, height/2);
+  } else {
+    text('Click to Play', width/2, height/2);
+  }
 
   // Draw if there is a new note
   if (noteCount != prevNoteCount) {
@@ -51,7 +57,7 @@ function drawNote(noteName) {
   ellipse(width/10 + pitch_class_pos*width/5, height - octave*height/numOctaves, 20, 20);
 }
 
-function togglePlayPause() {
+function mouseClicked() {
   if (sloop.isPlaying) {
     sloop.pause();
   } else {
