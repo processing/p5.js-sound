@@ -10,8 +10,33 @@ define(function () {
    * 'http://webaudio.github.io/web-audio-api/'>Web Audio API
    * </a>.</p>
    *
+   * <p>Some browsers require users to startAudioContext
+   * with a user gesture, such as touchStarted in the example below.</p>
+   *
    * @method getAudioContext
    * @return {Object}    AudioContext for this sketch
+   * @example
+   * <div><code>
+   *  function draw() {
+   *    background(255);
+   *    textAlign(CENTER);
+   *
+   *    if (getAudioContext().state !== 'running') {
+   *      text('click to start audio', width/2, height/2);
+   *    } else {
+   *      text('audio is enabled', width/2, height/2);
+   *    }
+   *  }
+   *
+   *  function touchStarted() {
+   *    if (getAudioContext().state !== 'running') {
+   *      getAudioContext().resume();
+   *    }
+   *    var synth = new p5.MonoSynth();
+   *    synth.play('A4', 0.5, 0, 0.2);
+   *  }
+   *
+   * </div></code>
    */
   p5.prototype.getAudioContext = function() {
     return audiocontext;
