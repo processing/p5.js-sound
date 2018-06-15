@@ -1,3 +1,9 @@
+p5.sound v. 0.3.8
+- many updates to documentation and examples
+- protect against errors during duplicate dispose/disconnect calls to ensure dispose methods free up resources, and to enable testing in headless Chrome
+- Deprecate p5.Env in favor of p5.Envelope
+- p5.MonoSynth and p5.PolySynth updates and bug fixes
+
 p5.sound v. 0.3.7
 - fix audioIn getSources
 - improvements to soundFile.rate
