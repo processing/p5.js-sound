@@ -1,11 +1,9 @@
 'use strict';
 define(function (require) {
 
-
   var p5sound = require('master');
   var TimelineSignal = require('Tone/signal/TimelineSignal');
-  require('sndcore');
-
+  var noteToFreq = require('helpers').noteToFreq;
 
   /**
     *  An AudioVoice is used as a single voice for sound synthesis.
@@ -247,30 +245,27 @@ define(function (require) {
    *  </code></div>
    */
   p5.PolySynth.prototype.noteAttack = function (_note, _velocity, secondsFromNow) {
-    var now =  p5sound.audiocontext.currentTime;
-
     //this value goes to the audiovoices which handle their own scheduling
-    var tFromNow = secondsFromNow || 0;
+    var secondsFromNow = ~~secondsFromNow;
 
     //this value is used by this._voicesInUse
-    var t = now + tFromNow;
+    var acTime = p5sound.audiocontext.currentTime + secondsFromNow;
 
     //Convert note to frequency if necessary. This is because entries into this.notes
     //should be based on frequency for the sake of consistency.
-    var note = typeof _note === 'string' ? this.AudioVoice.prototype._setNote(_note)
-      : typeof _note === 'number' ? _note : 440;
-    var velocity = _velocity === undefined ? 1 : _velocity;
+    var note = noteToFreq(_note);
+    var velocity = _velocity || 0.1;
 
     var currentVoice;
 
     //Release the note if it is already playing
-    if ( this.notes[note] !== undefined && this.notes[note].getValueAtTime(t) !== null) {
-      this.noteRelease(note,0);
+    if (this.notes[note] && this.notes[note].getValueAtTime(acTime) !== null) {
+      this.noteRelease(note, 0);
     }
 
     //Check to see how many voices are in use at the time the note will start
-    if(this._voicesInUse.getValueAtTime(t) < this.maxVoices) {
-      currentVoice = Math.max(~~this._voicesInUse.getValueAtTime(t), 0);
+    if (this._voicesInUse.getValueAtTime(acTime) < this.maxVoices) {
+      currentVoice = Math.max(~~this._voicesInUse.getValueAtTime(acTime), 0);
     }
     //If we are exceeding the polyvalue, bump off the oldest notes and replace
     //with a new note
@@ -285,23 +280,23 @@ define(function (require) {
     //Overrite the entry in the notes object. A note (frequency value)
     //corresponds to the index of the audiovoice that is playing it
     this.notes[note] = new TimelineSignal();
-    this.notes[note].setValueAtTime(currentVoice,t);
+    this.notes[note].setValueAtTime(currentVoice, acTime);
 
     //Find the scheduled change in this._voicesInUse that will be previous to this new note
     //Add 1 and schedule this value at time 't', when this note will start playing
-    var previousVal = this._voicesInUse._searchBefore(t) === null ? 0 : this._voicesInUse._searchBefore(t).value;
-    this._voicesInUse.setValueAtTime(previousVal + 1, t);
+    var previousVal = this._voicesInUse._searchBefore(acTime) === null ? 0 : this._voicesInUse._searchBefore(acTime).value;
+    this._voicesInUse.setValueAtTime(previousVal + 1, acTime);
 
     //Then update all scheduled values that follow to increase by 1
-    this._updateAfter(t, 1);
+    this._updateAfter(acTime, 1);
 
     this._newest = currentVoice;
     //The audiovoice handles the actual scheduling of the note
     if (typeof velocity === 'number') {
-      var maxRange = 1 / this._voicesInUse.getValueAtTime(t) * 2;
+      var maxRange = 1 / this._voicesInUse.getValueAtTime(acTime) * 2;
       velocity = velocity > maxRange ? maxRange : velocity;
     }
-    this.audiovoices[currentVoice].triggerAttack(note, velocity, tFromNow);
+    this.audiovoices[currentVoice].triggerAttack(note, velocity, secondsFromNow);
   };
 
   /**
@@ -368,16 +363,16 @@ define(function (require) {
       });
       this._voicesInUse.setValueAtTime(0, t);
       for (var n in this.notes) {
-        this.notes[n].setValueAtTime(null, t)
+        this.notes[n].dispose();
+        delete this.notes[n];
       }
       return;
     }
 
     //Make sure note is in frequency inorder to query the this.notes object
-    var note = typeof _note === 'string' ? this.AudioVoice.prototype._setNote(_note)
-      : typeof _note === 'number' ? _note : this.audiovoices[this._newest].oscillator.freq().value;
+    var note = noteToFreq(_note);
 
-    if (this.notes[note].getValueAtTime(t) === null) {
+    if (!this.notes[note] || this.notes[note].getValueAtTime(t) === null) {
       console.warn('Cannot release a note that is not already playing');
     } else {
       //Find the scheduled change in this._voicesInUse that will be previous to this new note
@@ -390,7 +385,8 @@ define(function (require) {
       }
 
       this.audiovoices[ this.notes[note].getValueAtTime(t) ].triggerRelease(tFromNow);
-      this.notes[note].setValueAtTime( null, t);
+      this.notes[note].dispose();
+      delete this.notes[note];
 
       this._newest = this._newest === 0 ? 0 : (this._newest - 1) % (this.maxVoices - 1);
     }

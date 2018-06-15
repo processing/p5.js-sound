@@ -14,7 +14,7 @@ function setup() {
 
 function mousePressed() {
   // pick a random midi note
-  var midiVal = round( random(50,72) );
+  var midiVal = midiToFreq(round( random(50,72) ));
   monoSynth.triggerAttack(midiVal, random() );
 }
 
