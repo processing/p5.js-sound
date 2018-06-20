@@ -88,7 +88,7 @@ define(function (require) {
 
     // cues for scheduling events with addCue() removeCue()
     this._cues = [];
-	this._cueIDCounter = 0;
+    this._cueIDCounter = 0;
 
     //  position of the most recently played sample
     this._lastPos = 0;
@@ -1597,7 +1597,7 @@ define(function (require) {
       var cue = this._cues[i];
       if (cue.id === id) {
         this._cues.splice(i, 1);
-		break;
+        break;
       }
     }
 
