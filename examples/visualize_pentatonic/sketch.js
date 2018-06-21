@@ -14,7 +14,6 @@ function setup() {
   textAlign(CENTER, CENTER);
   // Create a synth to make sound with
   synth = new p5.PolySynth();
-  synth.setADSR(0.01, 0.05, 0.3, 1.0);
   // Create SoundLoop with 16th-note-long loop interval
   sloop = new p5.SoundLoop(soundLoop, "16n"); 
   sloop.bpm = 60; // 60 beats per minute
