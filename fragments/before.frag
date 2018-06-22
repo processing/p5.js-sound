@@ -13,7 +13,7 @@
  *    Triangle, Square and Sawtooth waveforms. Base class of
  *    <a href="#/p5.Noise">p5.Noise</a> and <a href="#/p5.Pulse">p5.Pulse</a>.
  *    <br/>
- *  <a href="#/p5.Env"><b>p5.Env</b></a>: An Envelope is a series
+ *  <a href="#/p5.Envelope"><b>p5.Envelope</b></a>: An Envelope is a series
  *    of fades over time. Often used to control an object's
  *    output gain level as an "ADSR Envelope" (Attack, Decay,
  *    Sustain, Release). Can also modulate other parameters.<br/>
