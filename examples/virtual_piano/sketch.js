@@ -79,7 +79,8 @@ function keyPressed() {
   if (key in keyMap) {
     midiNoteNumber = baseNote + keyMap[key]; // 0-127; 60 is Middle C (C4)
     velocity = 0.1; // From 0-1
-    polySynth.noteAttack(midiToFreq(midiNoteNumber), velocity, 0);
+    freq = midiToFreq(midiNoteNumber);
+    polySynth.noteAttack(freq, velocity, 0);
   }
 }
 
@@ -87,6 +88,7 @@ function keyReleased() {
   // Check if valid note key pressed
   if (key in keyMap) {
     midiNoteNumber = baseNote + keyMap[key]; // 0-127; 60 is Middle C (C4)
-    polySynth.noteRelease(midiToFreq(midiNoteNumber), 0);
+    freq = midiToFreq(midiNoteNumber);
+    polySynth.noteRelease(freq, 0);
   }
 }
