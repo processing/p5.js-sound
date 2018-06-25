@@ -71,10 +71,6 @@ define(function (require) {
     this.oscillator.start();
     this.connect();
 
-    //Audiovoices are connected to soundout by default
-
-    this._isOn = false;
-
     p5sound.soundArray.push(this);
   };
 
@@ -159,7 +155,6 @@ define(function (require) {
     var secondsFromNow = ~~secondsFromNow;
     var freq = noteToFreq(note);
     var vel = velocity || 0.1;
-    this._isOn = true;
     this.oscillator.freq(freq, 0, secondsFromNow);
     this.env.ramp(this.output.gain, secondsFromNow, vel);
   };
@@ -187,7 +182,6 @@ define(function (require) {
   p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow) {
     var secondsFromNow = secondsFromNow || 0;
     this.env.ramp(this.output.gain, secondsFromNow, 0);
-    this._isOn = false;
   };
 
   /**
