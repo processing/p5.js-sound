@@ -50,7 +50,6 @@ define(function (require) {
     AudioVoice.call(this);
 
     this.oscillator = new p5.Oscillator();
-    // this.oscillator.disconnect();
 
     this.env = new p5.Envelope();
     this.env.setRange(1, 0);
@@ -59,24 +58,18 @@ define(function (require) {
     //set params
     this.setADSR(0.02, 0.25, 0.05, 0.35);
 
-    // filter
-    this.filter = new p5.Filter('highpass');
-    this.filter.set(5, 1);
-
-    // oscillator --> env --> filter --> this.output (gain) --> p5.soundOut
+    // oscillator --> env --> this.output (gain) --> p5.soundOut
     this.oscillator.disconnect();
-    this.oscillator.connect(this.filter);
+    this.oscillator.connect(this.output);
+
     this.env.disconnect();
-    this.env.setInput(this.oscillator);
-    // this.env.connect(this.filter);
-    this.filter.connect(this.output);
+    this.env.setInput(this.output.gain);
+
+    // reset oscillator gain to 1.0
+    this.oscillator.output.gain.value = 1.0;
 
     this.oscillator.start();
     this.connect();
-
-    //Audiovoices are connected to soundout by default
-
-    this._isOn = false;
 
     p5sound.soundArray.push(this);
   };
@@ -162,9 +155,8 @@ define(function (require) {
     var secondsFromNow = ~~secondsFromNow;
     var freq = noteToFreq(note);
     var vel = velocity || 0.1;
-    this._isOn = true;
     this.oscillator.freq(freq, 0, secondsFromNow);
-    this.env.ramp(this.output, secondsFromNow, vel);
+    this.env.ramp(this.output.gain, secondsFromNow, vel);
   };
 
   /**
@@ -189,8 +181,7 @@ define(function (require) {
      */
   p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow) {
     var secondsFromNow = secondsFromNow || 0;
-    this.env.ramp(this.output, secondsFromNow, 0);
-    this._isOn = false;
+    this.env.ramp(this.output.gain, secondsFromNow, 0);
   };
 
   /**
@@ -319,9 +310,6 @@ define(function (require) {
   p5.MonoSynth.prototype.dispose = function() {
     AudioVoice.prototype.dispose.apply(this);
 
-    if (this.filter) {
-      this.filter.dispose();
-    }
     if (this.env) {
       this.env.dispose();
     }

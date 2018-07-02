@@ -12,8 +12,9 @@ define(function () {
 
     //put a hard limiter on the output
     this.limiter = audiocontext.createDynamicsCompressor();
-    this.limiter.threshold.value = 0;
+    this.limiter.threshold.value = -3;
     this.limiter.ratio.value = 20;
+    this.limiter.knee.value = 1;
 
     this.audiocontext = audiocontext;
 
