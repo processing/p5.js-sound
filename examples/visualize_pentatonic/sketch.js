@@ -39,7 +39,7 @@ function soundLoop(cycleStartTime) {
   var octave = baseOctave + heightLevel;
   var currentNote = pitchClass + str(octave);
   // Play sound
-  var velocity = 0.1; // Between 0-1
+  var velocity = 1; // Between 0-1
   quaverSeconds = this._convertNotation('8n'); // 8th note = quaver duration
   synth.play(currentNote, velocity, cycleStartTime, quaverSeconds);
   // Add a particle to visualize the note
