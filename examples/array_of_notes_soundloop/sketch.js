@@ -3,7 +3,7 @@ var sloop;
 var beatIndex = 0;
 var songIndex = 0;
 var song = [ 
-  // Note pitch, velocity (between 0-1), start time (s), note duration (s)
+  // Note pitch, velocity (between 0-1), start time (beat), note duration (beats)
   {pitch:'E4', velocity:1, time:0, duration:1},
   {pitch:'D4', velocity:1, time:1, duration:1},
   {pitch:'C4', velocity:1, time:2, duration:1},
