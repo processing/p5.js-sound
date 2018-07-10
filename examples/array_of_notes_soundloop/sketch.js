@@ -24,7 +24,6 @@ var song = [
 
 function setup() {
   createCanvas(720, 200)
-  textAlign(CENTER, CENTER);
   synth = new p5.PolySynth();
   sloop = new p5.SoundLoop(soundLoop, "4n"); // Repeats at every beat (1/4 of a whole note)
   sloop.bpm = 100; // 120 beats per minute
@@ -51,9 +50,11 @@ function draw() {
   // Change beats-per-minute based on mouse speed
   var new_bpm = map(mouseX, 0, width, 60, 200);
   line(mouseX, 0, mouseX, height);
-  text(mouseX, height*2/3, new_bpm);
+  textAlign(LEFT, BOTTOM);
+  text("BPM: " + nfc(new_bpm, 0), mouseX+5, height-10);
   sloop.bpm = new_bpm;
 
+  textAlign(CENTER, CENTER);
   if (sloop.isPlaying) {
     text('click to pause', width/2, height/2);
   } else {
