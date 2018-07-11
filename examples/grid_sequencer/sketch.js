@@ -1,40 +1,56 @@
 var sloop;
+var bpm = 80; // 80 beats per minute
 
+var numTimeSteps = 16;
+var timeStepCounter = 0;
 var pitches = [60,61,62,63,64,65,66,67,68,69,70,71];
+
 var cells = [];
 var cellWidth, cellHeight;
-var numTimeSteps = 16;
-var numPitches = 12;
-
-var timeStepCounter = 0;
 
 function setup() {
   createCanvas(720, 400);
   frameRate(10);
+
   // Prepare cells
   cellWidth = width / numTimeSteps;
-  cellHeight = height / numPitches;
+  cellHeight = height / pitches.length;
   for (var i=0; i<numTimeSteps; i++) {
-    for (var j=0; j<numPitches; j++) {
+    for (var j=0; j<pitches.length; j++) {
       var x = i*cellWidth;
       var y = j*cellHeight;
-      var pitch = pitches[numPitches - j]; // Pitches go from bottom to top
+      var pitch = pitches[pitches.length - j - 1]; // Pitches go from bottom to top
       cells.push(
         new Cell(createVector(x, y), pitch)
       );
     }
   }
+  
   // Create a synth to make sound with
   synth = new p5.PolySynth();
+  
   // Create SoundLoop with 8th-note-long loop interval
   sloop = new p5.SoundLoop(soundLoop, "8n");
-  sloop.bpm = 80; // 80 beats per minute
-  sloop.start();
+  sloop.bpm = bpm;
+  
+  // UI
+  playPauseButton = createButton('Play/Pause');
+  playPauseButton.mousePressed(togglePlayPause);
+  playPauseButton.position(10, height + 20);
+
+  tempoSlider = createSlider(30, 300, bpm);
+  tempoSlider.position(110, 420);
+  tempoText = createP("BPM: " + bpm);
+  tempoText.position(250, height + 8);
+  
+  clearButton = createButton('Clear All');
+  clearButton.mousePressed(clearAll);
+  clearButton.position(width - 60, height + 20);
 }
 
 function soundLoop(cycleStartTime) {
   for (var i=0; i<cells.length; i++) {
-    if (floor(i / numPitches) == timeStepCounter) {
+    if (floor(i / pitches.length) == timeStepCounter) {
       cells[i].active = true;
       if (cells[i].enabled) {
         // Play sound
@@ -47,6 +63,7 @@ function soundLoop(cycleStartTime) {
       cells[i].active = false;
     }
   }
+  this.bpm = bpm;
   timeStepCounter = (timeStepCounter + 1) % numTimeSteps;
 }
 
@@ -56,6 +73,8 @@ function draw() {
     cells[i].checkIfHovered();
     cells[i].display();
   }
+  bpm = tempoSlider.value();
+  tempoText.html("BPM: " + bpm);
 }
 
 function mouseClicked() {
@@ -66,36 +85,52 @@ function mouseClicked() {
   }
 }
 
+function togglePlayPause() {
+  if (sloop.isPlaying) {
+    sloop.pause();
+  } else {
+    sloop.start();
+  }
+}
+
+function clearAll() {
+  for (var i=0; i<cells.length; i++) {
+    cells[i].enabled = false;
+  }
+}
+
+
 var Cell = function(position, pitch) {
   // Sound
   this.pitch = pitch;
   // Appearance
   this.padding = 2;
   this.position = position.copy();
-  this.width = cellWidth - 2*this.padding;
-  this.height = cellHeight - 2*this.padding;
-  this.color = [230, 230, 255];
+  this.width = cellWidth - 2 * this.padding;
+  this.height = cellHeight - 2 * this.padding;
+  this.defaultColor = [190, 240, 255];
   // Mouse hover
   this.hovered = false;
-  this.hoverColor = [200, 200, 240];
+  this.hoverColor = [230, 255, 255];
   // Enabled when clicked
   this.enabled = false;
-  this.enabledColor = [255, random(255), random(150)];
+  var varyingColorVal = 22 * (this.pitch % pitches.length);
+  this.enabledColor = [20 + varyingColorVal, 255 - varyingColorVal, 255];
   // Active when soundloop plays the cell
   this.active = false;
-  this.activeColor = [240, 240, 255]; //[230, 230, random(100,255)];
+  this.activeColor = [230, 255, 255];
 }
 
 Cell.prototype.display = function() {
   noStroke();
-  if (this.hovered) {
-    fill(this.hoverColor[0], this.hoverColor[1], this.hoverColor[2]);
-  } else if (this.enabled) {
+  if (this.enabled) {
     fill(this.enabledColor[0], this.enabledColor[1], this.enabledColor[2]);
+  } else if (this.hovered) {
+    fill(this.hoverColor[0], this.hoverColor[1], this.hoverColor[2]);
   } else if (this.active) {
     fill(this.activeColor[0], this.activeColor[1], this.activeColor[2]);
   } else {
-    fill(this.color[0], this.color[1], this.color[2]);
+    fill(this.defaultColor[0], this.defaultColor[1], this.defaultColor[2]);
   }
   rect(this.position.x + this.padding, this.position.y + this.padding, this.width, this.height);
 }
