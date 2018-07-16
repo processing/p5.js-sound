@@ -1,94 +1,109 @@
+/**
+ *  Example: Fractal Music
+ *  Generate a fractal pattern of music using L-Systems. 
+ *  We begin with an initial sequence of tokens, and use a programmer-
+ *  defined set of rules to generate new tokens. Here, we apply the rules:
+ *  + > + -
+ *  - > +
+ *  to each token in existing sequences to generate new sequences. The 
+ *  tokens used here are "+","-" which steer the melody's pitch upward or 
+ *  downward. Note durations are selected randomly.
+ */
+
 var rules = {
-  "A":["A","B"],
-  "B":["E","C"],
-  "C":["F","G"],
-  "D":["D","F"],
-  "E":["G"],
-  "F":["B","A"],
-  "G":["C"]
+  "+":["+","-"],
+  "-":["+"]
 };
 var seqIndex = 0;
-var noteIndex = 0;
-var initSeq = ["C","E","G"];
-var sequences = [initSeq, rules[initSeq[0]]];
+var noteIndex = -1;
+var initSeq = ["+","-","+"];
+var newTokens = [];
+var generatingTokenColor;
+var newTokenColor;
+var sequences = [initSeq, []];
 var fontSize = 20;
 var maxNumSequences = 8;
 var maxSequenceLength = 25;
+var pitch = 60;
 
 function setup() {
   createCanvas(720, 400);
   textAlign(CENTER, CENTER);
   textFont('monospace');
   textSize(fontSize);
-  
+  generatingTokenColor = color(200,250,255);
+  newTokenColor  = color(240);
+
   synth = new p5.PolySynth();
-  sloop = new p5.SoundLoop(soundLoop, "8n"); // Repeats at every quaver (1/8 of a whole note)
-  sloop.bpm = 100; // 100 beats per minute
+  sloop = new p5.SoundLoop(soundLoop, 0.5);
+
+  playPauseButton = createButton('Play/Pause');
+  playPauseButton.position(width - 80, height - 20);
+  playPauseButton.mousePressed(togglePlayPause);
+  stepButton = createButton("Step");
+  stepButton.position(10, height - 20);
+  stepButton.mousePressed(stepSoundLoop)
 }
 
 function soundLoop(cycleStartTime) {
-  var beatSeconds = 0.5 || this._convertNotation('8n'); // 1/8th note duration
-  var pitch = sequences[seqIndex][noteIndex] + "6"; // Octave 6
-  var velocity = 0.8;
-  synth.play(pitch, velocity, cycleStartTime, beatSeconds*0.8);
-
-  var token = sequences[seqIndex][noteIndex];
-  var newTokens = rules[token];
-  sequences[seqIndex+1] = sequences[seqIndex+1].concat(newTokens);
-  // If the sequence overruns maxSequenceLength, truncate it
-  if (sequences[seqIndex+1].length >= maxSequenceLength) {
-    sequences[seqIndex+1] = sequences[seqIndex+1].slice(0, maxSequenceLength);
-  }
-
   noteIndex++;
   if (noteIndex >= min(sequences[seqIndex].length, maxSequenceLength)) {
-    noteIndex = 0;
-    seqIndex++;
-    sequences.push(rules[sequences[seqIndex][0]]); // Add a new sequence with the first tokens generated
-    // If the number of sequences overruns maxNumSequences, remove oldest
-    if (sequences.length > maxNumSequences) {
-      sequences.shift(); // Removes first element from array
-    }  
+    nextSequence();
+  }
+
+  var beatSeconds = 0.5; // Define 1 beat as half a second
+  if (sequences[seqIndex][noteIndex] === "+") {
+    pitch++;
+  } else {
+    pitch--;
+  }
+  var velocity = 0.8;
+  var duration = random([beatSeconds, beatSeconds/2, beatSeconds/2, beatSeconds/4]);
+  this.interval = duration;
+  synth.play(midiToFreq(pitch), velocity, cycleStartTime, duration);
+
+  var token = sequences[seqIndex][noteIndex];
+  newTokens = rules[token];
+  sequences[seqIndex+1] = sequences[seqIndex+1].concat(newTokens);
+  // If the sequence overruns maxSequenceLength, truncate it and proceed to next sequence
+  if (sequences[seqIndex+1].length >= maxSequenceLength) {
+    sequences[seqIndex+1] = sequences[seqIndex+1].slice(0, maxSequenceLength);
+    nextSequence();
   }
 }
 
 function draw() {
-  background(240);
-  highlightNote(seqIndex, noteIndex);
+  background(255);
+
+  highlightNote(seqIndex, noteIndex, generatingTokenColor);
+  for (var i=0; i<newTokens.length; i++) {
+    highlightNote(seqIndex + 1, sequences[seqIndex + 1].length - 1 - i, newTokenColor);
+  }
 
   textAlign(CENTER, CENTER);
+  noStroke();
   for (var i=0; i<sequences.length; i++) {
-    fill(255 - 195 * i / sequences.length);
-    if (i == sequences.length - 1) fill(255, 150, 50);
+    fill(255 - 195 * (i+1) / sequences.length);
+    if (i == sequences.length - 1) {
+      fill(0, 150, 255); // Generated tokens text
+    }
     var seq = sequences[i];
     var lineHeight = fontSize + 10;
     text(seq.join(" "), width/2, height*2/3 - lineHeight * (sequences.length - i - 1));
   }
 
-  textAlign(RIGHT, BOTTOM);
-  if (sloop.isPlaying) {
-    fill(180);
-    text('Pause', width - 10, height - 10);
-  } else {
-    fill(100);
-	  text('Play', width - 10, height - 10);
-  }
-  textAlign(LEFT, BOTTOM)
-  text('Step', 10, height - 10);
+  // Display current pitch
+  fill(100);
+  text("Pitch: " + pitch, width/2, height-20);
 }
 
-function touchStarted() {
-  if (mouseX > width/2) {
-    // Play/pause
-    if (sloop.isPlaying) {
-      sloop.pause();
-    } else {
-      sloop.maxIterations = Infinity;
-      sloop.start();
-    }  
+function togglePlayPause() {
+  // Play/pause
+  if (sloop.isPlaying) {
+    sloop.pause();
   } else {
-    // Step
-    stepSoundLoop();
+    sloop.maxIterations = Infinity;
+    sloop.start();
   }
 }
 
@@ -97,7 +112,19 @@ function stepSoundLoop() {
   soundLoop(0);
 }
 
-function highlightNote(seqInd, noteInd, color) {
+function nextSequence() {
+  noteIndex = 0;
+  seqIndex++;
+  sequences.push(rules[sequences[seqIndex][0]]); // Add a new sequence with the first tokens generated
+  // If the number of sequences overruns maxNumSequences, remove oldest
+  if (sequences.length > maxNumSequences) {
+    seqIndex--;
+    sequences.shift(); // Removes first element from array
+  }
+}
+
+function highlightNote(seqInd, noteInd, highlightColor) {
+  if (noteInd < 0) return; // Skip if we haven't started
   var seqWidth = (fontSize+4) * sequences[seqInd].length;
   var xOffset = width/2 - seqWidth/2;
   var x = xOffset + seqWidth * noteInd / sequences[seqInd].length;
@@ -105,7 +132,8 @@ function highlightNote(seqInd, noteInd, color) {
   var y = fontSize + height * 2 / 3 - lineHeight * (sequences.length - seqInd - 0);
   var highlightWidth = fontSize;
   var highlightHeight = fontSize;
-  noStroke();
-  fill(0, 230, 255);
+  strokeWeight(1);
+  stroke(150);
+  fill(highlightColor);
   rect(x, y, highlightWidth, highlightHeight);
 }
