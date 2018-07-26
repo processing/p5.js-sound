@@ -3,7 +3,7 @@ var bpm = 80; // 80 beats per minute
 
 var numTimeSteps = 16;
 var timeStepCounter = 0;
-var pitches = [60,61,62,63,64,65,66,67,68,69,70,71];
+var pitches = [57,60,62,64,67,69,72,74,76,79,81,84]; // A minor pentatonic scale
 
 var cells = [];
 var cellWidth, cellHeight;
