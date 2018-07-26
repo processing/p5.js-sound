@@ -1,32 +1,32 @@
+// Music
 var synth;
 var velocity = 0.7; // From 0-1
 var baseNote = 60;
 var keyOrder = "ASDFGHJKL";
 var keyScale = [0,2,4,5,7,9,11,12,14];
 var keyStates = [0,0,0,0,0,0,0,0,0];
-
-var sloop;
-var transition_table = {};
-var nodes = [];
+// Markov Chain
 var graph;
 var latestNodeId;
+// Playback SoundLoops
+var sloop;
 var playing = false;
-var timeQuantization = 0.1;
+var mloop;
+var secondsPerTick = 0.1;
+var ticksSincePrevEvent = 0;
 
 function setup() {
-  createCanvas(700, 400);
-  frameRate(20);
-
-  synth = new p5.PolySynth();
+  createCanvas(window.innerWidth, window.innerHeight);
+  frameRate(15);
 
   graph = new Graph();
-  
+  synth = new p5.PolySynth();
   sloop = new p5.SoundLoop(soundLoop, "16n");
-  mloop = new p5.SoundLoop(metronomeLoop, timeQuantization);
+  mloop = new p5.SoundLoop(metronomeLoop, secondsPerTick);
   mloop.start();
   
   playPauseButton = createButton("Play / Pause");
-  playPauseButton.position(20, 20);
+  playPauseButton.position(20, height-40);
   playPauseButton.mousePressed(togglePlayPause);
 }
 
@@ -40,40 +40,56 @@ function draw() {
     graph.nodes[i].update();
     graph.nodes[i].display();
   }
+  fill(0);
+  noStroke();
+  textAlign(CENTER, CENTER);
+  // If there are no nodes, tell the users to play something
+  if (graph.nodes.length == 0) {
+    text("Press any of ASDFGHJKL to add notes to the Markov chain.", width/2, height/8);
+  }
+  // If we are at the end of the chain, tell the users
+  if (latestNodeId != null && graph.edges[latestNodeId].length == 0) {
+    text("Reached end of Markov chain. Play a new note to add to chain.", width/2, height/2);
+  }
 }
 
 function soundLoop(cycleStartTime) {
-  // Transition to a random new node
-  latestNodeId = random(graph.edges[latestNodeId]);
   // Play the sound of this node
   var midiNoteNumber = graph.nodes[latestNodeId].pitch;
   var freq = midiToFreq(midiNoteNumber);
-  var duration = graph.nodes[latestNodeId].duration * timeQuantization;
-  synth.play(freq, velocity, cycleStartTime, duration);
+  var type = graph.nodes[latestNodeId].type;
+  if (type == 1) {
+    synth.noteAttack(freq, velocity, cycleStartTime);
+  } else {
+    synth.noteRelease(freq, cycleStartTime);
+  }
+  // Transition to a random new node
+  if (graph.edges[latestNodeId].length) {
+    latestNodeId = random(graph.edges[latestNodeId]);
+  }
+  // Wait for the timeFromPrevEvent of the new node
+  var duration = graph.nodes[latestNodeId].duration * secondsPerTick;
   this.interval = duration;
 }
 
 function metronomeLoop(cycleStartTime) {
-  // This loop measures the duration of each keypress
-  // key-down durations are stored in the keyStates array
-  for (var i=0; i<keyStates.length; i++) {
-    if (keyStates[i] > 0) {
-      keyStates[i] = keyStates[i] + 1;
-    }
-  }
+  ticksSincePrevEvent = constrain(ticksSincePrevEvent + 1, 0, 30); // Limit the maximum ticks
 }
 
 function keyPressed() {
   var keyIndex = keyOrder.indexOf(key);
   // Check if valid note key pressed
   if (keyIndex >= 0) {
-    // Activate key state
-    keyStates[keyIndex] = 1;
     // Play synth
     var midiNoteNumber = baseNote + keyScale[keyIndex]; // 0-127; 60 is Middle C (C4)
     var freq = midiToFreq(midiNoteNumber);
     synth.noteAttack(freq, velocity, 0);
+    // Register node
+    graph.registerNewNode(1, midiNoteNumber, ticksSincePrevEvent); //keyStates[keyIndex]);
+    // Activate key state
+    keyStates[keyIndex] = 1;
   }
+  ticksSincePrevEvent = 0;
 }
 
 function keyReleased() {
@@ -85,34 +101,36 @@ function keyReleased() {
     freq = midiToFreq(midiNoteNumber);
     synth.noteRelease(freq, 0);
     // Register node
-    graph.registerNewNode(midiNoteNumber, keyStates[keyIndex]);
+    graph.registerNewNode(0, midiNoteNumber, ticksSincePrevEvent);
     // Reset key state
     keyStates[keyIndex] = 0;
   }
+  ticksSincePrevEvent = 0;
 }
 
 function togglePlayPause() {
   if (sloop.isPlaying) {
     sloop.stop();
+    synth.noteRelease(); // Release all notes
   } else {
     sloop.start();
   }
 }
 
-
 // Class for a single node
 // characterized by ID, pitch and duration of the note it represents
-function Node(id, pitch, duration) {
+function Node(id, type, pitch, duration) {
   this.id = id;
   this.color = [255, 0, 100];
   this.diameter = 10;
   this.position = createVector(width/2 + random(-100,100), height/2 + random(-100,100));
   this.velocity = createVector(random(-1,1), random(-1,1));
+  this.type = type; // 1 (note on) or 0 (note off)
   this.pitch = pitch;
   this.duration = duration;
 }
 Node.prototype.isSimilar = function(node) {
-  var squaredDist = (this.pitch - node.pitch)**2 + (this.duration - node.duration)**2;
+  var squaredDist = (this.type - node.type)**2 + (this.pitch - node.pitch)**2 + (this.duration - node.duration)**2;
   if (squaredDist == 0) {
     return true;
   } else {
@@ -131,14 +149,21 @@ Node.prototype.update = function() {
 };
 Node.prototype.display = function() {
   noStroke();
-  // Highlight latest node
-  if (this.id == latestNodeId) { 
-    fill(this.color[0], this.color[1], this.color[2]);
-    ellipse(this.position.x,this.position.y,this.diameter,this.diameter);
-  } else {
-    fill(200);
-    ellipse(this.position.x,this.position.y,this.diameter,this.diameter);
+  var color = [200, 200, 200];
+  if (this.id == latestNodeId) {
+    // Highlight latest node
+    color = this.color;
   }
+  // Fill circle if note-on, stroke circle if note-off
+  if (this.type == 1) {
+    noStroke();
+    fill(color[0], color[1], color[2]);
+  } else {
+    noFill();
+    strokeWeight(2);
+    stroke(color[0], color[1], color[2]);
+  }
+  ellipse(this.position.x,this.position.y,this.diameter,this.diameter);
 };
 Node.prototype.bounceOnBoundaries = function() {
   if (this.position.x >= width || this.position.x <= 0) {
@@ -150,7 +175,6 @@ Node.prototype.bounceOnBoundaries = function() {
     this.position.y = constrain(this.position.y, 0, height);
   }
 };
-
 
 // Graph data structure code adapted from 
 // http://blog.benoitvallon.com/data-structures-in-javascript/the-graph-data-structure/
@@ -168,8 +192,8 @@ Graph.prototype.findNode = function(node) {
   }
   return -1; // Not found
 };
-Graph.prototype.registerNewNode = function(midiNoteNumber, duration) {
-  var node = new Node(0, midiNoteNumber, duration);
+Graph.prototype.registerNewNode = function(type, midiNoteNumber, duration) {
+  var node = new Node(0, type, midiNoteNumber, duration);
   var nodeId = graph.findNode(node);
   if (nodeId == -1) { // If necessary, create the node
     nodeId = this.nodes.length;
