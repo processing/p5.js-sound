@@ -12,11 +12,10 @@ var graph;
 var latestNodeId;
 var playing = false;
 var timeQuantization = 0.1;
-var sphereRadius = 200;
 
 function setup() {
-  createCanvas(window.innerWidth, window.innerHeight);
-  frameRate(15);
+  createCanvas(700, 400);
+  frameRate(20);
 
   synth = new p5.PolySynth();
 
@@ -31,12 +30,15 @@ function setup() {
   playPauseButton.mousePressed(togglePlayPause);
 }
 
-function metronomeLoop(cycleStartTime) {
-  for (var i=0; i<keyStates.length; i++) {
-    if (keyStates[i] > 0) {
-      keyStates[i] = keyStates[i] + 1;
-      console.log(keyStates[i]);
-    }
+function draw() {
+  background(255);
+  // Draw edges
+  graph.drawEdges();
+  // Draw nodes
+  for (var i=0; i<graph.nodes.length; i++) {
+    graph.nodes[i].bounceOnBoundaries();
+    graph.nodes[i].update();
+    graph.nodes[i].display();
   }
 }
 
@@ -51,11 +53,13 @@ function soundLoop(cycleStartTime) {
   this.interval = duration;
 }
 
-function togglePlayPause() {
-  if (sloop.isPlaying) {
-    sloop.stop();
-  } else {
-    sloop.start();
+function metronomeLoop(cycleStartTime) {
+  // This loop measures the duration of each keypress
+  // key-down durations are stored in the keyStates array
+  for (var i=0; i<keyStates.length; i++) {
+    if (keyStates[i] > 0) {
+      keyStates[i] = keyStates[i] + 1;
+    }
   }
 }
 
@@ -63,7 +67,7 @@ function keyPressed() {
   var keyIndex = keyOrder.indexOf(key);
   // Check if valid note key pressed
   if (keyIndex >= 0) {
-    // Update key state
+    // Activate key state
     keyStates[keyIndex] = 1;
     // Play synth
     var midiNoteNumber = baseNote + keyScale[keyIndex]; // 0-127; 60 is Middle C (C4)
@@ -82,41 +86,22 @@ function keyReleased() {
     synth.noteRelease(freq, 0);
     // Register node
     graph.registerNewNode(midiNoteNumber, keyStates[keyIndex]);
-    // Update key state
+    // Reset key state
     keyStates[keyIndex] = 0;
   }
 }
 
-function draw() {
-  background(255);
-  noStroke();
-  fill(245);
-  ellipse(width/2, height/2, sphereRadius*2, sphereRadius*2);
-
-  // Draw edges
-  for (var i=0; i<graph.edges.length; i++) {
-    var startNode = i;
-    if (startNode == latestNodeId) {
-      strokeWeight(1);
-      stroke(graph.nodes[startNode].color[0], graph.nodes[startNode].color[1], graph.nodes[startNode].color[2]);
-    } else {
-      strokeWeight(1);
-      stroke(200, 100);
-    }
-    for (var j=0; j<graph.edges[i].length; j++) {
-      var endNode = graph.edges[i][j];
-      line(graph.nodes[startNode].position.x, graph.nodes[startNode].position.y, graph.nodes[endNode].position.x, graph.nodes[endNode].position.y);
-    }
-  }
-
-  // Draw nodes
-  for (var i=0; i<graph.nodes.length; i++) {
-    graph.nodes[i].checkEdges();
-    graph.nodes[i].update();
-    graph.nodes[i].display();
+function togglePlayPause() {
+  if (sloop.isPlaying) {
+    sloop.stop();
+  } else {
+    sloop.start();
   }
 }
 
+
+// Class for a single node
+// characterized by ID, pitch and duration of the note it represents
 function Node(id, pitch, duration) {
   this.id = id;
   this.color = [255, 0, 100];
@@ -126,10 +111,14 @@ function Node(id, pitch, duration) {
   this.pitch = pitch;
   this.duration = duration;
 }
-Node.prototype.distance = function(node) {
+Node.prototype.isSimilar = function(node) {
   var squaredDist = (this.pitch - node.pitch)**2 + (this.duration - node.duration)**2;
-  return squaredDist;
-}
+  if (squaredDist == 0) {
+    return true;
+  } else {
+    return false;
+  }
+};
 Node.prototype.applyForce = function(force) {
   var f = p5.Vector.div(force,this.diameter);
   this.acceleration.add(f);
@@ -151,13 +140,17 @@ Node.prototype.display = function() {
     ellipse(this.position.x,this.position.y,this.diameter,this.diameter);
   }
 };
-Node.prototype.checkEdges = function() {
-  var distanceFromCenter = sqrt((this.position.y - height/2)**2 + (this.position.x - width/2)**2);
-  if (distanceFromCenter > sphereRadius) {
+Node.prototype.bounceOnBoundaries = function() {
+  if (this.position.x >= width || this.position.x <= 0) {
     this.velocity.x *= -1;
+    this.position.x = constrain(this.position.x, 0, width);
+  }
+  if (this.position.y >= height || this.position.y <= 0) {
     this.velocity.y *= -1;
+    this.position.y = constrain(this.position.y, 0, height);
   }
 };
+
 
 // Graph data structure code adapted from 
 // http://blog.benoitvallon.com/data-structures-in-javascript/the-graph-data-structure/
@@ -169,25 +162,25 @@ function Graph() {
 }
 Graph.prototype.findNode = function(node) {
   for (var i=0; i<this.nodes.length; i++) {
-    if (abs(node.distance(this.nodes[i])) == 0) {
+    if (node.isSimilar(this.nodes[i])) {
       return i;
     }
   }
-  return -1; // Not found, add to end of array
-}
+  return -1; // Not found
+};
 Graph.prototype.registerNewNode = function(midiNoteNumber, duration) {
   var node = new Node(0, midiNoteNumber, duration);
   var nodeId = graph.findNode(node);
-  // If necessary, create the node
-  if (nodeId == -1) {
+  if (nodeId == -1) { // If necessary, create the node
     nodeId = this.nodes.length;
     this.addNode(node);
   }
   node.id = nodeId;
-  // Add an edge from the previous node to this one
-  if (latestNodeId != null) { // On the first start it will be null
+  if (latestNodeId != null) { // On initialization it will be null
+    // Add an edge from the previous node to this one
     this.addEdge(latestNodeId, nodeId);
   }
+  // Update the latest node ID
   latestNodeId = nodeId;
 };
 Graph.prototype.addNode = function(node) {
@@ -195,8 +188,24 @@ Graph.prototype.addNode = function(node) {
   this.nodeIds.push(nodeId);
   this.nodes.push(node);
   this.edges[nodeId] = [];
-}
+};
 Graph.prototype.addEdge = function(nodeId1, nodeId2) {
   this.edges[nodeId1].push(nodeId2);
   this.numberOfEdges++;
+};
+Graph.prototype.drawEdges = function() {
+  // Draw all edges leading away from this node
+  strokeWeight(1);
+  for (var i=0; i<graph.edges.length; i++) {
+    var startNode = i;
+    if (startNode == latestNodeId) { // Highlight the latest node's edges
+      stroke(graph.nodes[startNode].color[0], graph.nodes[startNode].color[1], graph.nodes[startNode].color[2], 100);
+    } else {
+      stroke(200, 100);
+    }
+    for (var j=0; j<graph.edges[i].length; j++) {
+      var endNode = graph.edges[i][j];
+      line(graph.nodes[startNode].position.x, graph.nodes[startNode].position.y, graph.nodes[endNode].position.x, graph.nodes[endNode].position.y);
+    }
+  }
 };
