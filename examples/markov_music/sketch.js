@@ -1,3 +1,21 @@
+/**
+ *  Example: Markov music
+ *  Demonstrates the use of Markov chains to model musical sequences.
+ * 
+ *  The user adds notes to the Markov chain by playing notes ASDFGHJKL
+ *  on the keyboard. Every note event (note on and note off) is registered
+ *  as a new node in the graph, and the graph records all transitions 
+ *  between note events as edges along the graph.
+ * 
+ *  During playback mode, the algorithm simply traverses the graph randomly,
+ *  playing notes based on the nodes upon which it traverses.
+ * 
+ *  The Markov chain (graph) is visualized as a standard network of nodes, 
+ *  with transitions represented by edges between nodes. The current/latest 
+ *  node as well as the edges of its previously recorded transitions are 
+ *  highlighted.
+ */
+
 // Music
 var synth;
 var velocity = 0.7; // From 0-1
