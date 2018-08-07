@@ -245,6 +245,18 @@ define(function (require) {
   };
 
   /**
+   *  Export a usable url for blob object.
+   *
+   *  @method saveSoundToBlob
+   *  @param  {p5.SoundFile} soundFile p5.SoundFile that you wish to export
+   */
+  p5.prototype.saveSoundToBlob = function(soundFile) {
+    const dataView = convertToWav(soundFile)
+    const audioBlob = new Blob([dataView], {type: 'audio/wav'})
+    return URL.createObjectURL(audioBlob)
+  }
+
+  /**
    *  Save a p5.SoundFile as a .wav audio file.
    *
    *  @method saveSound
@@ -252,6 +264,13 @@ define(function (require) {
    *  @param  {String} name      name of the resulting .wav file.
    */
   p5.prototype.saveSound = function(soundFile, name) {
+    const dataView = convertToWav(soundFile)
+    p5.prototype.writeFile( [ dataView ], name, 'wav');
+  };
+
+  // helper methods to convert audio file as .wav format,
+  // will use as saving .wav file and saving blob object
+  function convertToWav(soundFile){
     var leftChannel, rightChannel;
     leftChannel = soundFile.buffer.getChannelData(0);
 
@@ -297,9 +316,8 @@ define(function (require) {
       index += 2;
     }
 
-    p5.prototype.writeFile( [ view ], name, 'wav');
-  };
-
+    return view
+  }
 
   // helper methods to save waves
   function interleave(leftChannel, rightChannel) {
