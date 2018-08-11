@@ -6,6 +6,7 @@ define(function (require) {
   var p5sound = require('master');
   var ac = p5sound.audiocontext;
   var midiToFreq = require('helpers').midiToFreq;
+  var convertToWav = require('helpers').convertToWav;
 
   /**
    *  <p>SoundFile object with a path to a file.</p>
@@ -1640,4 +1641,51 @@ define(function (require) {
     this._prevTime = playbackTime;
   };
 
+  /**
+   * Save a p5.SoundFile as a .wav file. The browser will prompt the user
+   * to download the file to their device.
+   * 
+   * @method save
+   * @param  {String} [fileName]      name of the resulting .wav file.
+   */
+  p5.SoundFile.prototype.save = function(fileName) {
+    const dataView = convertToWav(this.buffer);
+    p5.prototype.writeFile([dataView], fileName, 'wav');
+  };
+
+  /**
+   * This method is useful for sending a SoundFile to a server. It returns a URL to
+   * the .wav-encoded audio data as a "<a target="_blank" title="Blob reference at MDN"
+   * href="https://developer.mozilla.org/en-US/docs/Web/API/Blob">Blob</a>". A Blob is a
+   * file-like data object that can be uploaded to a server with an <a
+   * href="/docs/reference/#/p5/httpPost">httpPost</a> request.
+   *
+   * @method saveBlob
+   * @returns {ObjectURL} URL to the Blob of audio data. This URL is local to the browser,
+   * but can be sent to a server with an <a href="/docs/reference/#/p5/httpPost">httpPost</a>
+   * request.
+   * @example
+   *  <div><code>
+   *
+   *  function preload() {
+   *    mySound = loadSound('assets/doorbell.mp3');
+   *  }
+   *
+   *  function setup() {
+   *    var dataUrl = mySound.saveBlob();
+
+   *    text("Here's the Blob!", 0, height - 5);
+   *    var input = createInput(dataUrl);
+   * 
+   *    input.attribute('readonly', true);
+   *    input.mouseClicked(function() { input.elt.select() });
+   *  }
+   *
+   * </code></div>
+   */
+  p5.SoundFile.prototype.saveBlob = function() {
+    const dataView = convertToWav(this.buffer);
+    const audioBlob = new Blob([dataView], { type: 'audio/wav' });
+    return URL.createObjectURL(audioBlob);
+  }
 });
