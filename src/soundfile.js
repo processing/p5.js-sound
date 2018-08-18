@@ -1654,16 +1654,18 @@ define(function (require) {
   };
 
   /**
-   * This method is useful for sending a SoundFile to a server. It returns a URL to
-   * the .wav-encoded audio data as a "<a target="_blank" title="Blob reference at MDN"
-   * href="https://developer.mozilla.org/en-US/docs/Web/API/Blob">Blob</a>". A Blob is a
-   * file-like data object that can be uploaded to a server with an <a
-   * href="/docs/reference/#/p5/httpPost">httpPost</a> request.
+   * This method is useful for sending a SoundFile to a server. It returns the
+   * .wav-encoded audio data as a "<a target="_blank" title="Blob reference at
+   * MDN" href="https://developer.mozilla.org/en-US/docs/Web/API/Blob">Blob</a>".
+   * A Blob is a file-like data object that can be uploaded to a server
+   * with an <a href="/docs/reference/#/p5/httpDo">http</a> request. We'll
+   * use the `httpDo` options object to send a POST request with some
+   * specific options: we encode the request as `multipart/form-data`,
+   * and attach the blob as one of the form values using `FormData`.
+   * 
    *
-   * @method saveBlob
-   * @returns {ObjectURL} URL to the Blob of audio data. This URL is local to the browser,
-   * but can be sent to a server with an <a href="/docs/reference/#/p5/httpPost">httpPost</a>
-   * request.
+   * @method getBlob
+   * @returns {Blob} A file-like data object
    * @example
    *  <div><code>
    *
@@ -1672,20 +1674,39 @@ define(function (require) {
    *  }
    *
    *  function setup() {
-   *    var dataUrl = mySound.saveBlob();
-
-   *    text("Here's the Blob!", 0, height - 5);
-   *    var input = createInput(dataUrl);
-   * 
+   *    noCanvas();
+   *    var soundBlob = mySound.getBlob();
+   *
+   *    // Now we can send the blob to a server...
+   *    var serverUrl = 'https://jsonplaceholder.typicode.com/posts';
+   *    var httpRequestOptions = {
+   *      method: 'POST',
+   *      body: new FormData().append('soundBlob', soundBlob),
+   *      headers: new Headers({
+   *        'Content-Type': 'multipart/form-data'
+   *      })
+   *    };
+   *    httpDo(serverUrl, httpRequestOptions);
+   *
+   *    // We can also create an `ObjectURL` pointing to the Blob
+   *    var blobUrl = URL.createObjectURL(soundBlob);
+   *
+   *    // The `<Audio>` Element accepts Object URL's
+   *    var htmlAudioElt = createAudio(blobUrl).showControls();
+   *
+   *    createDiv();
+   *
+   *    // The ObjectURL exists as long as this tab is open
+   *    var input = createInput(blobUrl);
    *    input.attribute('readonly', true);
    *    input.mouseClicked(function() { input.elt.select() });
    *  }
    *
    * </code></div>
    */
-  p5.SoundFile.prototype.saveBlob = function() {
+  p5.SoundFile.prototype.getBlob = function() {
     const dataView = convertToWav(this.buffer);
-    const audioBlob = new Blob([dataView], { type: 'audio/wav' });
-    return URL.createObjectURL(audioBlob);
-  }
+    return new Blob([dataView], { type: 'audio/wav' });
+  };
+
 });
