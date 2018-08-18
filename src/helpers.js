@@ -70,7 +70,7 @@ define(function (require) {
   };
 
   // This method converts ANSI notes specified as a string "C4", "Eb3" to a frequency
-  noteToFreq = function(note) {
+  var noteToFreq = function(note) {
     if (typeof note !== 'string') {
       return note;
     }
@@ -224,7 +224,85 @@ define(function (require) {
     return o;
   };
 
+
+  // helper methods to convert audio file as .wav format,
+  // will use as saving .wav file and saving blob object
+  // Thank you to Matt Diamond's RecorderJS (MIT License)
+  // https://github.com/mattdiamond/Recorderjs
+  function convertToWav(audioBuffer) {
+    var leftChannel, rightChannel;
+    leftChannel = audioBuffer.getChannelData(0);
+
+    // handle mono files
+    if (audioBuffer.numberOfChannels > 1) {
+      rightChannel = audioBuffer.getChannelData(1);
+    } else {
+      rightChannel = leftChannel;
+    }
+
+    var interleaved = interleave(leftChannel, rightChannel);
+
+    // create the buffer and view to create the .WAV file
+    var buffer = new window.ArrayBuffer(44 + interleaved.length * 2);
+    var view = new window.DataView(buffer);
+
+    // write the WAV container,
+    // check spec at: https://web.archive.org/web/20171215131933/http://tiny.systems/software/soundProgrammer/WavFormatDocs.pdf
+
+    // RIFF chunk descriptor
+    writeUTFBytes(view, 0, 'RIFF');
+    view.setUint32(4, 36 + interleaved.length * 2, true);
+    writeUTFBytes(view, 8, 'WAVE');
+    // FMT sub-chunk
+    writeUTFBytes(view, 12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    // stereo (2 channels)
+    view.setUint16(22, 2, true);
+    view.setUint32(24, 44100, true);
+    view.setUint32(28, 44100 * 4, true);
+    view.setUint16(32, 4, true);
+    view.setUint16(34, 16, true);
+    // data sub-chunk
+    writeUTFBytes(view, 36, 'data');
+    view.setUint32(40, interleaved.length * 2, true);
+
+    // write the PCM samples
+    var lng = interleaved.length;
+    var index = 44;
+    var volume = 1;
+    for (var i = 0; i < lng; i++) {
+      view.setInt16(index, interleaved[i] * (0x7FFF * volume), true);
+      index += 2;
+    }
+
+    return view;
+  }
+
+  // helper methods to save waves
+  function interleave(leftChannel, rightChannel) {
+    var length = leftChannel.length + rightChannel.length;
+    var result = new Float32Array(length);
+
+    var inputIndex = 0;
+
+    for (var index = 0; index < length;) {
+      result[index++] = leftChannel[inputIndex];
+      result[index++] = rightChannel[inputIndex];
+      inputIndex++;
+    }
+    return result;
+  }
+
+  function writeUTFBytes(view, offset, string) {
+    var lng = string.length;
+    for (var i = 0; i < lng; i++) {
+      view.setUint8(offset + i, string.charCodeAt(i));
+    }
+  }
+
   return {
+    convertToWav: convertToWav,
     midiToFreq: midiToFreq,
     noteToFreq: noteToFreq
   };
