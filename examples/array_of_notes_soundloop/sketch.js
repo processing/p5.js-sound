@@ -1,3 +1,11 @@
+/**
+ * Using the SoundLoop to play back an array of notes with dynamic control.
+ * 
+ * The array of notes uses a note-on and note-off event representation;
+ * this separation is necessary so that we can have polyphonic sound
+ * and dynamic starting and stopping of notes during playback.
+ */
+
 var synth;
 var sloop;
 var eventIndex = 0;
@@ -53,7 +61,7 @@ function soundLoop(cycleStartTime) {
   // Prepare for next event
   eventIndex++;
   if (eventIndex >= song.length) {
-    this.stop();
+    this.stop(cycleStartTime);
   } else {
     var nextEvent = song[eventIndex];
     // This cycle will last for the time since previous event of the next event

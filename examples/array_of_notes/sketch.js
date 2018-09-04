@@ -1,3 +1,11 @@
+/**
+ * Basic example of playing back a static array of notes.
+ * 
+ * Note that this implementation does not allow for starting/stopping
+ * or dynamically modifying playback once it has started. For a more
+ * versatile example of playback, see the SoundLoop version.
+ */
+
 var synth;
 var songStarted = false;
 var song = [

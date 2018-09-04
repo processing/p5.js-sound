@@ -1,3 +1,12 @@
+/**
+ * Example of dynamic note-scheduling using the p5.SoundLoop.
+ * 
+ * This example produces random sequences of notes drawn from a
+ * minor pentatonic scale, but allow the user to interact with
+ * the composition by moving the cursor to change the octave
+ * of the note palette.
+ */
+
 var sloop;
 var pentatonic_scale = ['A', 'C', 'D', 'E', 'G'];
 var pitchClass_map = { 'A': 0, 'C': 1, 'D': 2, 'E': 3, 'G': 4 };

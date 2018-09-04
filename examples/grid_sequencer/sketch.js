@@ -1,3 +1,12 @@
+/**
+ * Example of using the p5.SoundLoop in a dynamic user-controlled
+ * manner: the grid sequencer.
+ * 
+ * Users can select what tune the sequencer plays by clicking to
+ * activate/deactive notes, start and pause playback, and control
+ * playback tempo on-the-fly.
+ */
+
 var sloop;
 var bpm = 140; // 140 beats per minute
 

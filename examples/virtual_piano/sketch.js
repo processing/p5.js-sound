@@ -1,3 +1,10 @@
+/**
+ * Virtual Piano: Example for event-driven sound playback.
+ * 
+ * This example uses the p5.PolySynth to produce instantaneously,
+ * driven by user events.
+ */
+
 var polySynth;
 var velocity = 0.7; // From 0-1
 var baseNote = 72;
