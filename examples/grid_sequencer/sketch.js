@@ -1,55 +1,60 @@
 var sloop;
-var bpm = 80; // 80 beats per minute
+var bpm = 140; // 140 beats per minute
 
 var numTimeSteps = 16;
 var timeStepCounter = 0;
-var pitches = [57,60,62,64,67,69,72,74,76,79,81,84]; // A minor pentatonic scale
+var pitches = [57, 60, 62, 64, 67, 69, 72, 74, 76, 79, 81, 84]; // A minor pentatonic scale
 
 var cells = [];
 var cellWidth, cellHeight;
+var controlPanelHeight;
 
 function setup() {
   createCanvas(720, 400);
   frameRate(10);
+  controlPanelHeight = height / pitches.length;
 
   // Prepare cells
   cellWidth = width / numTimeSteps;
-  cellHeight = height / pitches.length;
-  for (var i=0; i<numTimeSteps; i++) {
-    for (var j=0; j<pitches.length; j++) {
-      var x = i*cellWidth;
-      var y = j*cellHeight;
+  cellHeight = (height - controlPanelHeight) / pitches.length;
+  for (var i = 0; i < numTimeSteps; i++) {
+    for (var j = 0; j < pitches.length; j++) {
+      var x = i * cellWidth;
+      var y = controlPanelHeight + j * cellHeight;
       var pitch = pitches[pitches.length - j - 1]; // Pitches go from bottom to top
-      cells.push(
-        new Cell(createVector(x, y), pitch)
-      );
+      var newCell = new Cell(createVector(x, y), pitch);
+      cells.push(newCell);
     }
   }
-  
+
   // Create a synth to make sound with
   synth = new p5.PolySynth();
-  
+
   // Create SoundLoop with 8th-note-long loop interval
   sloop = new p5.SoundLoop(soundLoop, "8n");
   sloop.bpm = bpm;
-  
+
   // UI
-  playPauseButton = createButton('Play/Pause');
+  playPauseButton = createButton('PLAY/PAUSE');
   playPauseButton.mousePressed(togglePlayPause);
-  playPauseButton.position(10, height + 20);
+  playPauseButton.position(0, 0);
+  playPauseButton.size(width / 4, controlPanelHeight);
 
   tempoSlider = createSlider(30, 300, bpm);
-  tempoSlider.position(110, 420);
+  tempoSlider.position(width / 4, 0);
+  tempoSlider.size(width / 4, controlPanelHeight);
   tempoText = createP("BPM: " + bpm);
-  tempoText.position(250, height + 8);
-  
-  clearButton = createButton('Clear All');
+  tempoText.position(width / 2, 0);
+  tempoText.size(width / 4, controlPanelHeight);
+
+  clearButton = createButton('CLEAR ALL');
   clearButton.mousePressed(clearAll);
-  clearButton.position(width - 60, height + 20);
+  clearButton.position(width * 3 / 4, 0);
+  clearButton.size(width / 4, controlPanelHeight);
 }
 
 function soundLoop(cycleStartTime) {
-  for (var i=0; i<cells.length; i++) {
+  for (var i = 0; i < cells.length; i++) {
     if (floor(i / pitches.length) == timeStepCounter) {
       cells[i].active = true;
       if (cells[i].enabled) {
@@ -69,7 +74,7 @@ function soundLoop(cycleStartTime) {
 
 function draw() {
   background(255);
-  for (var i=0; i<cells.length; i++) {
+  for (var i = 0; i < cells.length; i++) {
     cells[i].checkIfHovered();
     cells[i].display();
   }
@@ -78,7 +83,7 @@ function draw() {
 }
 
 function mouseClicked() {
-  for (var i=0; i<cells.length; i++) {
+  for (var i = 0; i < cells.length; i++) {
     if (cells[i].hovered) {
       cells[i].enabled = !cells[i].enabled;
     }
@@ -94,13 +99,13 @@ function togglePlayPause() {
 }
 
 function clearAll() {
-  for (var i=0; i<cells.length; i++) {
+  for (var i = 0; i < cells.length; i++) {
     cells[i].enabled = false;
   }
 }
 
 
-var Cell = function(position, pitch) {
+var Cell = function (position, pitch) {
   // Sound
   this.pitch = pitch;
   // Appearance
@@ -121,7 +126,7 @@ var Cell = function(position, pitch) {
   this.activeColor = [230, 255, 255];
 }
 
-Cell.prototype.display = function() {
+Cell.prototype.display = function () {
   noStroke();
   if (this.enabled) {
     fill(this.enabledColor[0], this.enabledColor[1], this.enabledColor[2]);
@@ -135,7 +140,7 @@ Cell.prototype.display = function() {
   rect(this.position.x + this.padding, this.position.y + this.padding, this.width, this.height);
 }
 
-Cell.prototype.checkIfHovered = function() {
+Cell.prototype.checkIfHovered = function () {
   var xMin = this.position.x + this.padding;
   var xMax = xMin + this.width;
   var yMin = this.position.y + this.padding;
