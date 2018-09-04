@@ -1,74 +1,92 @@
 var synth;
 var sloop;
-var beatIndex = 0;
-var songIndex = 0;
-var song = [ 
-  // Note pitch, velocity (between 0-1), start time (beat), note duration (beats)
-  {pitch:'E4', velocity:1, time:0, duration:1},
-  {pitch:'D4', velocity:1, time:1, duration:1},
-  {pitch:'C4', velocity:1, time:2, duration:1},
-  {pitch:'D4', velocity:1, time:3, duration:1},
-  {pitch:'E4', velocity:1, time:4, duration:1},
-  {pitch:'E4', velocity:1, time:5, duration:1},
-  {pitch:'E4', velocity:1, time:6, duration:1},
-  // Rest indicated by offset in start time
-  {pitch:'D4', velocity:1, time:8, duration:1},
-  {pitch:'D4', velocity:1, time:9, duration:1},
-  {pitch:'E4', velocity:1, time:10, duration:1},
-  {pitch:'D4', velocity:1, time:11, duration:1},
-  // Chord indicated by simultaneous note start times
-  {pitch:'C4', velocity:1, time:12, duration:2},
-  {pitch:'E4', velocity:1, time:12, duration:2},
-  {pitch:'G4', velocity:1, time:12, duration:2},
+var eventIndex = 0;
+var beatsPerMinute = 120;
+var secondsPerBeat;
+var song = [
+  // event pitch, velocity (between 0-1), time since previous event (beats), type (1:ON or 0:OFF)
+  { pitch: 'E4', velocity: 1, timeSincePrevEvent: 0, type: 1 },
+  { pitch: 'E4', velocity: 1, timeSincePrevEvent: 1, type: 0 },
+  { pitch: 'D4', velocity: 1, timeSincePrevEvent: 0, type: 1 },
+  { pitch: 'D4', velocity: 1, timeSincePrevEvent: 1, type: 0 },
+  { pitch: 'C4', velocity: 1, timeSincePrevEvent: 0, type: 1 },
+  { pitch: 'C4', velocity: 1, timeSincePrevEvent: 1, type: 0 },
+  { pitch: 'D4', velocity: 1, timeSincePrevEvent: 0, type: 1 },
+  { pitch: 'D4', velocity: 1, timeSincePrevEvent: 1, type: 0 },
+  { pitch: 'E4', velocity: 1, timeSincePrevEvent: 0, type: 1 },
+  { pitch: 'E4', velocity: 1, timeSincePrevEvent: 1, type: 0 },
+  { pitch: 'E4', velocity: 1, timeSincePrevEvent: 0, type: 1 },
+  { pitch: 'E4', velocity: 1, timeSincePrevEvent: 1, type: 0 },
+  { pitch: 'E4', velocity: 1, timeSincePrevEvent: 0, type: 1 },
+  { pitch: 'E4', velocity: 1, timeSincePrevEvent: 1, type: 0 },
+  // Rest
+  { pitch: 'D4', velocity: 1, timeSincePrevEvent: 1, type: 1 },
+  { pitch: 'D4', velocity: 1, timeSincePrevEvent: 1, type: 0 },
+  { pitch: 'D4', velocity: 1, timeSincePrevEvent: 0, type: 1 },
+  { pitch: 'D4', velocity: 1, timeSincePrevEvent: 1, type: 0 },
+  { pitch: 'E4', velocity: 1, timeSincePrevEvent: 0, type: 1 },
+  { pitch: 'E4', velocity: 1, timeSincePrevEvent: 1, type: 0 },
+  { pitch: 'D4', velocity: 1, timeSincePrevEvent: 0, type: 1 },
+  { pitch: 'D4', velocity: 1, timeSincePrevEvent: 1, type: 0 },
+  // Chord indicated by multiple notes being ON at the same time
+  { pitch: 'C4', velocity: 1, timeSincePrevEvent: 0, type: 1 },
+  { pitch: 'E4', velocity: 1, timeSincePrevEvent: 0, type: 1 },
+  { pitch: 'G4', velocity: 1, timeSincePrevEvent: 0, type: 1 },
+  { pitch: 'C4', velocity: 1, timeSincePrevEvent: 2, type: 0 },
+  { pitch: 'E4', velocity: 1, timeSincePrevEvent: 2, type: 0 },
+  { pitch: 'G4', velocity: 1, timeSincePrevEvent: 2, type: 0 },
 ];
 
 function setup() {
-  createCanvas(720, 200)
+  createCanvas(720, 400);
   synth = new p5.PolySynth();
-  sloop = new p5.SoundLoop(soundLoop, "4n"); // Repeats at every beat (1/4 of a whole note)
-  sloop.bpm = 100; // 120 beats per minute
+  sloop = new p5.SoundLoop(soundLoop, 0.1); // Interval doesn't matter; it changes in each loop iteration
 }
 
 function soundLoop(cycleStartTime) {
-  var beatSeconds = this._convertNotation('4n'); // 1/4th note = 1 crotchet = beat duration
-  // Loop through all notes that start within this beat
-  while (songIndex < song.length && song[songIndex].time < beatIndex + 1) {
-    note = song[songIndex];
-    var offsetFromBeatStart = (note.time - beatIndex) * beatSeconds;
-    synth.play(note.pitch, note.velocity, cycleStartTime + offsetFromBeatStart, note.duration*beatSeconds*0.8);
-    
-    songIndex++;
-    if (songIndex >= song.length) {
-      this.stop();
-    }
+  var event = song[eventIndex];
+  if (event.type == 1) {
+    synth.noteAttack(event.pitch, event.velocity, cycleStartTime);
+  } else {
+    synth.noteRelease(event.pitch, cycleStartTime);
   }
-  beatIndex++;
+  // Prepare for next event
+  eventIndex++;
+  if (eventIndex >= song.length) {
+    this.stop();
+  } else {
+    var nextEvent = song[eventIndex];
+    // This cycle will last for the time since previous event of the next event
+    secondsPerBeat = 60 / beatsPerMinute;
+
+    var duration = nextEvent.timeSincePrevEvent * secondsPerBeat;
+    this.interval = max(duration, 0.01); // Cannot have interval of exactly 0
+  }
 }
 
 function draw() {
-  background(200);
+  background(255, 220, 90);
   // Change beats-per-minute based on mouse speed
-  var new_bpm = map(mouseX, 0, width, 60, 200);
+  beatsPerMinute = map(mouseX, 0, width, 60, 200);
   line(mouseX, 0, mouseX, height);
   textAlign(LEFT, BOTTOM);
-  text("BPM: " + nfc(new_bpm, 0), mouseX+5, height-10);
-  sloop.bpm = new_bpm;
+  text("BPM: " + nfc(beatsPerMinute, 0), mouseX + 5, height - 10);
 
   textAlign(CENTER, CENTER);
   if (sloop.isPlaying) {
-    text('click to pause', width/2, height/2);
+    text('click to stop song', width / 2, height / 2);
   } else {
-	  text('click to play song', width/2, height/2);
+    text('click to play song', width / 2, height / 2);
   }
 }
 
 function touchStarted() {
   if (sloop.isPlaying) {
-    sloop.pause();
+    sloop.stop();
+    synth.noteRelease(); // Release all notes
   } else {
     // Reset counters
-    beatIndex = 0;
-    songIndex = 0;
+    eventIndex = 0;
     sloop.start();
   }
 }
