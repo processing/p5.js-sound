@@ -29,32 +29,39 @@ var latestNodeId;
 // Playback SoundLoops
 var sloop;
 var playing = false;
-var mloop;
 var secondsPerTick = 0.1;
-var ticksSincePrevEvent = 0;
+var prevEventMillis = 0;
+var timeQuantizationStep = 100; // Quantize to 10 milliseconds
+var maxDuration = 5000;
+var longestDurationSoFar = timeQuantizationStep;
+// Colors
+var DEFAULT_NODE_COLOR = [85, 120, 138];
+var ACTIVE_NODE_COLOR = [205, 0, 100];
 
 function setup() {
-  createCanvas(window.innerWidth, window.innerHeight);
+  createCanvas(720, 400);
   frameRate(15);
+  angleMode(DEGREES);
 
   graph = new Graph();
   synth = new p5.PolySynth();
-  sloop = new p5.SoundLoop(soundLoop, "16n");
-  mloop = new p5.SoundLoop(metronomeLoop, secondsPerTick);
-  mloop.start();
+  sloop = new p5.SoundLoop(soundLoop, 0.1);
   
   playPauseButton = createButton("Play / Pause");
   playPauseButton.position(20, height-40);
   playPauseButton.mousePressed(togglePlayPause);
+
+  prevEventMillis = millis();
 }
 
 function draw() {
-  background(255);
+  background(242, 221, 164);
+  fill(163, 196, 188);
+  rect(0, 0, width/2, height);
   // Draw edges
   graph.drawEdges();
   // Draw nodes
   for (var i=0; i<graph.nodes.length; i++) {
-    graph.nodes[i].bounceOnBoundaries();
     graph.nodes[i].update();
     graph.nodes[i].display();
   }
@@ -63,11 +70,19 @@ function draw() {
   textAlign(CENTER, CENTER);
   // If there are no nodes, tell the users to play something
   if (graph.nodes.length == 0) {
-    text("Press any of ASDFGHJKL to add notes to the Markov chain.", width/2, height/8);
+    text("Press any of ASDFGHJKL to add notes to the Markov chain.", width/2, 20);
   }
   // If we are at the end of the chain, tell the users
   if (latestNodeId != null && graph.edges[latestNodeId].length == 0) {
-    text("Reached end of Markov chain. Play a new note to add to chain.", width/2, height/2);
+    text("Reached end of Markov chain. Play a new note to add to chain.", width/2, 20);
+    sloop.stop();
+    synth.noteRelease(); // Release all notes
+  }
+
+  if (sloop.isPlaying) {
+    text("Generating from chain...", width/2, height - 20);
+  } else {
+    text("PAUSED", width/2, height - 20);
   }
 }
 
@@ -86,12 +101,8 @@ function soundLoop(cycleStartTime) {
     latestNodeId = random(graph.edges[latestNodeId]);
   }
   // Wait for the timeFromPrevEvent of the new node
-  var duration = graph.nodes[latestNodeId].duration * secondsPerTick;
-  this.interval = duration;
-}
-
-function metronomeLoop(cycleStartTime) {
-  ticksSincePrevEvent = constrain(ticksSincePrevEvent + 1, 0, 30); // Limit the maximum ticks
+  var timeSincePrevEvent = graph.nodes[latestNodeId].timeSincePrevEvent / 1000; // Millis to seconds
+  this.interval = max(timeSincePrevEvent, 0.01); // Cannot have interval of exactly 0
 }
 
 function keyPressed() {
@@ -102,12 +113,15 @@ function keyPressed() {
     var midiNoteNumber = baseNote + keyScale[keyIndex]; // 0-127; 60 is Middle C (C4)
     var freq = midiToFreq(midiNoteNumber);
     synth.noteAttack(freq, velocity, 0);
+    // Update time
+    var timeSincePrevEvent = min(millis() - prevEventMillis, maxDuration);
+    prevEventMillis = millis();
+    var quantizedTimeSincePrevEvent = round(timeSincePrevEvent / timeQuantizationStep) * timeQuantizationStep;
     // Register node
-    graph.registerNewNode(1, midiNoteNumber, ticksSincePrevEvent); //keyStates[keyIndex]);
+    graph.registerNewNode(1, midiNoteNumber, quantizedTimeSincePrevEvent);
     // Activate key state
     keyStates[keyIndex] = 1;
   }
-  ticksSincePrevEvent = 0;
 }
 
 function keyReleased() {
@@ -118,12 +132,17 @@ function keyReleased() {
     midiNoteNumber = baseNote + keyScale[keyIndex]; // 0-127; 60 is Middle C (C4)
     freq = midiToFreq(midiNoteNumber);
     synth.noteRelease(freq, 0);
+    // Update time
+    var timeSincePrevEvent = min(millis() - prevEventMillis, maxDuration);
+    prevEventMillis = millis();
+    var quantizedTimeSincePrevEvent = round(timeSincePrevEvent / timeQuantizationStep) * timeQuantizationStep;
     // Register node
-    graph.registerNewNode(0, midiNoteNumber, ticksSincePrevEvent);
+    graph.registerNewNode(0, midiNoteNumber, quantizedTimeSincePrevEvent);
     // Reset key state
     keyStates[keyIndex] = 0;
+    
+    timeSincePrevEvent = 0;
   }
-  ticksSincePrevEvent = 0;
 }
 
 function togglePlayPause() {
@@ -136,38 +155,44 @@ function togglePlayPause() {
 }
 
 // Class for a single node
-// characterized by ID, pitch and duration of the note it represents
-function Node(id, type, pitch, duration) {
+// characterized by ID, pitch and timeSincePrevEvent of the note it represents
+function Node(id, type, pitch, timeSincePrevEvent) {
   this.id = id;
-  this.color = [255, 0, 100];
-  this.diameter = 10;
-  this.position = createVector(width/2 + random(-100,100), height/2 + random(-100,100));
-  this.velocity = createVector(random(-1,1), random(-1,1));
   this.type = type; // 1 (note on) or 0 (note off)
   this.pitch = pitch;
-  this.duration = duration;
+  this.timeSincePrevEvent = timeSincePrevEvent;
+  this.oscillateCounter = 0;
+
+  var x = map(this.timeSincePrevEvent, 0, maxDuration/2, 0, width/2);
+  if (type === 1) {
+    x = width / 2 + x;
+  } else {
+    x = width / 2 - x;
+  }
+  var y = map(this.pitch, baseNote, baseNote + max(keyScale), height*0.9, height*0.1);
+  this.center = createVector(x, y);
+  this.position = createVector(x, y);
+
+  this.color = ACTIVE_NODE_COLOR;
+  this.diameter = map(this.timeSincePrevEvent, 0, maxDuration, 2, height/20);
 }
 Node.prototype.isSimilar = function(node) {
-  var squaredDist = (this.type - node.type)**2 + (this.pitch - node.pitch)**2 + (this.duration - node.duration)**2;
-  if (squaredDist == 0) {
+  if (this.type === node.type && this.pitch === node.pitch && this.duration === node.duration) {
     return true;
   } else {
     return false;
   }
 };
-Node.prototype.applyForce = function(force) {
-  var f = p5.Vector.div(force,this.diameter);
-  this.acceleration.add(f);
-};
 Node.prototype.update = function() {
-  // Velocity changes according to acceleration
-  this.velocity.add(this.acceleration);
-  // position changes by velocity
-  this.position.add(this.velocity);
+  var yAmplitude = height / 150;
+  var xAmplitude = height / 300;
+  this.position.y = this.center.y + (yAmplitude * sin(this.oscillateCounter));
+  this.position.x = this.center.x + (xAmplitude * cos(this.oscillateCounter));
+  this.oscillateCounter = this.oscillateCounter + 6;
 };
 Node.prototype.display = function() {
   noStroke();
-  var color = [200, 200, 200];
+  var color = DEFAULT_NODE_COLOR;
   if (this.id == latestNodeId) {
     // Highlight latest node
     color = this.color;
@@ -181,17 +206,7 @@ Node.prototype.display = function() {
     strokeWeight(2);
     stroke(color[0], color[1], color[2]);
   }
-  ellipse(this.position.x,this.position.y,this.diameter,this.diameter);
-};
-Node.prototype.bounceOnBoundaries = function() {
-  if (this.position.x >= width || this.position.x <= 0) {
-    this.velocity.x *= -1;
-    this.position.x = constrain(this.position.x, 0, width);
-  }
-  if (this.position.y >= height || this.position.y <= 0) {
-    this.velocity.y *= -1;
-    this.position.y = constrain(this.position.y, 0, height);
-  }
+  ellipse(this.position.x, this.position.y, this.diameter, this.diameter);
 };
 
 // Graph data structure code adapted from 
@@ -210,8 +225,8 @@ Graph.prototype.findNode = function(node) {
   }
   return -1; // Not found
 };
-Graph.prototype.registerNewNode = function(type, midiNoteNumber, duration) {
-  var node = new Node(0, type, midiNoteNumber, duration);
+Graph.prototype.registerNewNode = function(type, midiNoteNumber, timeSincePrevEvent) {
+  var node = new Node(0, type, midiNoteNumber, timeSincePrevEvent);
   var nodeId = graph.findNode(node);
   if (nodeId == -1) { // If necessary, create the node
     nodeId = this.nodes.length;
@@ -243,7 +258,7 @@ Graph.prototype.drawEdges = function() {
     if (startNode == latestNodeId) { // Highlight the latest node's edges
       stroke(graph.nodes[startNode].color[0], graph.nodes[startNode].color[1], graph.nodes[startNode].color[2], 100);
     } else {
-      stroke(200, 100);
+      stroke(DEFAULT_NODE_COLOR);
     }
     for (var j=0; j<graph.edges[i].length; j++) {
       var endNode = graph.edges[i][j];
