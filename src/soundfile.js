@@ -1643,14 +1643,31 @@ define(function (require) {
 
   /**
    * Save a p5.SoundFile as a .wav file. The browser will prompt the user
-   * to download the file to their device.
+   * to download the file to their device. To upload a file to a server, see
+   * <a href="/docs/reference/#/p5.SoundFile/getBlob">getBlob</a>
    * 
    * @method save
    * @param  {String} [fileName]      name of the resulting .wav file.
+   * @example
+   *  <div><code>
+   *  var inp, button, mySound;
+   *  var fileName = 'cool';
+   *  function setup() {
+   *    mySound = loadSound('assets/doorbell.mp3');
+   *
+   *    btn = createButton('click to save file');
+   *    btn.position(0, 0);
+   *    btn.mouseClicked(handleMouseClick);
+   *  }
+   *
+   *  function handleMouseClick() {
+   *    mySound.save(fileName);
+   *  }
+   * </code></div>
    */
   p5.SoundFile.prototype.save = function(fileName) {
     const dataView = convertToWav(this.buffer);
-    p5.prototype.writeFile([dataView], fileName, 'wav');
+    p5.prototype.saveSound([dataView], fileName, 'wav');
   };
 
   /**
