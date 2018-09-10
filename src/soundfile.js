@@ -1660,9 +1660,10 @@ define(function (require) {
    *  <div><code>
    *  var inp, button, mySound;
    *  var fileName = 'cool';
-   *  function setup() {
+   *  function preload() {
    *    mySound = loadSound('assets/doorbell.mp3');
-   *
+   *  }
+   *  function setup() {
    *    btn = createButton('click to save file');
    *    btn.position(0, 0);
    *    btn.mouseClicked(handleMouseClick);
