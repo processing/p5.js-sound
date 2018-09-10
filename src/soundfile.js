@@ -221,9 +221,11 @@ define(function (require) {
       request.onload = function() {
         if (request.status === 200) {
           // on sucess loading file:
+          if (!self.panner) return;
           ac.decodeAudioData(request.response,
             // success decoding buffer:
             function(buff) {
+              if (!self.panner) return;
               self.buffer = buff;
               self.panner.inputChannels(buff.numberOfChannels);
               if (callback) {
@@ -232,6 +234,7 @@ define(function (require) {
             },
             // error decoding buffer. "e" is undefined in Chrome 11/22/2015
             function() {
+              if (!self.panner) return;
               var err = new CustomError('decodeAudioData', errorTrace, self.url);
               var msg = 'AudioContext error at decodeAudioData for ' + self.url;
               if (errorCallback) {
@@ -245,6 +248,7 @@ define(function (require) {
         }
         // if request status != 200, it failed
         else {
+          if (!self.panner) return;
           var err = new CustomError('loadSound', errorTrace, self.url);
           var msg = 'Unable to load ' + self.url + '. The request status was: ' +
             request.status + ' (' + request.statusText + ')';
@@ -276,7 +280,9 @@ define(function (require) {
     else if (this.file !== undefined) {
       var reader = new FileReader();
       reader.onload = function() {
+        if (!self.panner) return;
         ac.decodeAudioData(reader.result, function(buff) {
+          if (!self.panner) return;
           self.buffer = buff;
           self.panner.inputChannels(buff.numberOfChannels);
           if (callback) {
@@ -285,6 +291,7 @@ define(function (require) {
         });
       };
       reader.onerror = function(e) {
+        if (!self.panner) return;
         if (onerror) {
           onerror(e);
         }
@@ -1301,6 +1308,7 @@ define(function (require) {
 
     // act on the result
     offlineContext.oncomplete = function(e) {
+      if (!self.panner) return;
       var filteredBuffer = e.renderedBuffer;
       var bufferData = filteredBuffer.getChannelData(0);
 
