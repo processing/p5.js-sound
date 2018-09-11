@@ -19,6 +19,7 @@
     "grunt-open": "^0.2.3"
   },
   "dependencies": {
+    "startaudiocontext": "^1.2.1",
     "tone": "0.10.0"
   },
   "scripts": {

@@ -1,6 +1,6 @@
 'use strict';
 
-define(function () {
+define(['StartAudioContext'], function (require, StartAudioContext) {
   // Create the Audio Context
   var audiocontext = new window.AudioContext();
 
@@ -42,34 +42,40 @@ define(function () {
     return audiocontext;
   };
 
-  // if it is iOS, we have to have a user interaction to start Web Audio
-  // http://paulbakaus.com/tutorials/html5/web-audio-on-ios/
-  var iOS =  navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ? true : false ;
-  if (iOS) {
-    var iosStarted = false;
-    var startIOS = function() {
-      if (iosStarted) return;
 
-      // create empty buffer
-      var buffer = audiocontext.createBuffer(1, 1, 22050);
-      var source = audiocontext.createBufferSource();
-      source.buffer = buffer;
-
-      // connect to output (your speakers)
-      source.connect(audiocontext.destination);
-      // play the file
-      source.start(0);
-      console.log('start ios!');
-
-      if (audiocontext.state === 'running') {
-        iosStarted = true;
-      }
-    };
-    document.addEventListener('touchend', startIOS, false);
-    document.addEventListener('touchstart', startIOS, false);
-
-    // TO DO: fake touch event so that audio will just start
-  }
+  /**
+   *  <p>It is good practice to wait for a user gesture before starting audio.
+   *  This practice is enforced by Google Chrome's autoplay policy as of r70
+   *  (<a href="https://goo.gl/7K7WLu">info</a>), iOS Safari, and other browsers.
+   *  </p>
+   *
+   *  <p>
+   *  This method starts the audio context on a user gesture. It utilizes
+   *  StartAudioContext library by Yotam Mann (MIT Licence, 2016). Read more
+   *  at https://github.com/tambien/StartAudioContext.
+   *  </p>
+   *  @param  {Element|Array}   [element(s)] This argument can be an Element,
+   *                                Selector String, NodeList, jQuery Element,
+   *                                or an Array of any of those.
+   *  @param  {Function} [callback] Callback to invoke when the AudioContext has started
+   *  @return {Promise}            Returns a Promise which is resolved when
+   *                                       the AudioContext state is 'running'
+   * @method userStartAudio
+   *  @example
+   *  <div><code>
+   *  function setup() {
+   *    var myButton = createButton('click to start audio');
+   *    myButton.position(0, 0);
+   *
+   *    userStartAudio(myButton, function() {
+   *      alert('audio started!');
+   *    });
+   *  }
+   *  </code></div>
+   */
+  p5.prototype.userStartAudio = function(elements, callback) {
+    return StartAudioContext(audiocontext, elements, callback);
+  };
 
   return audiocontext;
 });
