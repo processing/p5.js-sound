@@ -55,8 +55,8 @@ define(['StartAudioContext'], function (require, StartAudioContext) {
    *  at https://github.com/tambien/StartAudioContext.
    *  </p>
    *  @param  {Element|Array}   [element(s)] This argument can be an Element,
-   *                                Selector String, NodeList, jQuery Element,
-   *                                or an Array of any of those.
+   *                                Selector String, NodeList, p5.Element,
+   *                                jQuery Element, or an Array of any of those.
    *  @param  {Function} [callback] Callback to invoke when the AudioContext has started
    *  @return {Promise}            Returns a Promise which is resolved when
    *                                       the AudioContext state is 'running'
@@ -74,7 +74,13 @@ define(['StartAudioContext'], function (require, StartAudioContext) {
    *  </code></div>
    */
   p5.prototype.userStartAudio = function(elements, callback) {
-    return StartAudioContext(audiocontext, elements, callback);
+    var elt = elements;
+    if (elements instanceof p5.Element) {
+      elt = elements.elt;
+    } else if (elements instanceof Array && elements[0] instanceof p5.Element ) {
+      elt = elements.map(function(e) { return e.elt});
+    }
+    return StartAudioContext(audiocontext, elt, callback);
   };
 
   return audiocontext;
