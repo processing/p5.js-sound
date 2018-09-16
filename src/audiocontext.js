@@ -44,7 +44,7 @@ define(['StartAudioContext'], function (require, StartAudioContext) {
 
 
   /**
-   *  <p>It is good practice to wait for a user gester before starting audio.
+   *  <p>It is good practice to wait for a user gesture before starting audio.
    *  This practice is enforced by Google Chrome's autoplay policy as of r70
    *  (<a href="https://goo.gl/7K7WLu">info</a>), iOS Safari, and other browsers.
    *  </p>
