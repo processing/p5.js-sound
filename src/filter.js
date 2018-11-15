@@ -162,7 +162,6 @@ define(function (require) {
       freq = 1;
     }
     if (typeof freq === 'number') {
-      this.biquad.frequency.value = freq;
       this.biquad.frequency.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
       this.biquad.frequency.exponentialRampToValueAtTime(freq, this.ac.currentTime + 0.02 + t);
     } else if (freq) {
