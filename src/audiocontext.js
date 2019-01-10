@@ -44,16 +44,21 @@ define(['StartAudioContext'], function (require, StartAudioContext) {
 
 
   /**
-   *  <p>It is good practice to wait for a user gesture before starting audio.
+   *  <p>It is a good practice to give users control over starting audio playback.
    *  This practice is enforced by Google Chrome's autoplay policy as of r70
    *  (<a href="https://goo.gl/7K7WLu">info</a>), iOS Safari, and other browsers.
    *  </p>
    *
    *  <p>
-   *  This method starts the audio context on a user gesture. It utilizes
-   *  StartAudioContext library by Yotam Mann (MIT Licence, 2016). Read more
-   *  at https://github.com/tambien/StartAudioContext.
+   *  userStartAudio() starts the <a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext"
+   *  target="_blank" title="Audio Context @ MDN">Audio Context</a> on a user gesture. It utilizes
+   *  the <a href="https://github.com/tambien/StartAudioContext">StartAudioContext</a> library by
+   *  Yotam Mann (MIT Licence, 2016). Read more at https://github.com/tambien/StartAudioContext.
    *  </p>
+   *
+   *  <p>Starting the audio context on a user gesture can be as simple as <code>userStartAudio()</code>.
+   *  Optional parameters let you decide on a specific element that will start the audio context,
+   *  and/or call a function once the audio context is started.</p>
    *  @param  {Element|Array}   [element(s)] This argument can be an Element,
    *                                Selector String, NodeList, p5.Element,
    *                                jQuery Element, or an Array of any of those.
@@ -64,12 +69,18 @@ define(['StartAudioContext'], function (require, StartAudioContext) {
    *  @example
    *  <div><code>
    *  function setup() {
-   *    var myButton = createButton('click to start audio');
-   *    myButton.position(0, 0);
+   *    var myDiv = createDiv('click to start audio');
+   *    myDiv.position(0, 0);
    *
-   *    userStartAudio(myButton, function() {
-   *      alert('audio started!');
-   *    });
+   *    var mySynth = new p5.MonoSynth();
+   * 
+   *    // This won't play until the context has started
+   *    mySynth.play('A6');
+   *
+   *    // Start the audio context on a click/touch event
+   *    userStartAudio().then(function() {
+   *       myDiv.remove();
+   *     });
    *  }
    *  </code></div>
    */
