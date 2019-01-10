@@ -6,6 +6,7 @@ define(function (require) {
   var p5sound = require('master');
   var ac = p5sound.audiocontext;
   var midiToFreq = require('helpers').midiToFreq;
+  var convertToWav = require('helpers').convertToWav;
 
   /**
    *  <p>SoundFile object with a path to a file.</p>
@@ -220,9 +221,11 @@ define(function (require) {
       request.onload = function() {
         if (request.status === 200) {
           // on sucess loading file:
+          if (!self.panner) return;
           ac.decodeAudioData(request.response,
             // success decoding buffer:
             function(buff) {
+              if (!self.panner) return;
               self.buffer = buff;
               self.panner.inputChannels(buff.numberOfChannels);
               if (callback) {
@@ -231,6 +234,7 @@ define(function (require) {
             },
             // error decoding buffer. "e" is undefined in Chrome 11/22/2015
             function() {
+              if (!self.panner) return;
               var err = new CustomError('decodeAudioData', errorTrace, self.url);
               var msg = 'AudioContext error at decodeAudioData for ' + self.url;
               if (errorCallback) {
@@ -244,6 +248,7 @@ define(function (require) {
         }
         // if request status != 200, it failed
         else {
+          if (!self.panner) return;
           var err = new CustomError('loadSound', errorTrace, self.url);
           var msg = 'Unable to load ' + self.url + '. The request status was: ' +
             request.status + ' (' + request.statusText + ')';
@@ -275,7 +280,9 @@ define(function (require) {
     else if (this.file !== undefined) {
       var reader = new FileReader();
       reader.onload = function() {
+        if (!self.panner) return;
         ac.decodeAudioData(reader.result, function(buff) {
+          if (!self.panner) return;
           self.buffer = buff;
           self.panner.inputChannels(buff.numberOfChannels);
           if (callback) {
@@ -284,6 +291,7 @@ define(function (require) {
         });
       };
       reader.onerror = function(e) {
+        if (!self.panner) return;
         if (onerror) {
           onerror(e);
         }
@@ -1300,6 +1308,7 @@ define(function (require) {
 
     // act on the result
     offlineContext.oncomplete = function(e) {
+      if (!self.panner) return;
       var filteredBuffer = e.renderedBuffer;
       var bufferData = filteredBuffer.getChannelData(0);
 
@@ -1638,6 +1647,92 @@ define(function (require) {
     }
 
     this._prevTime = playbackTime;
+  };
+
+  /**
+   * Save a p5.SoundFile as a .wav file. The browser will prompt the user
+   * to download the file to their device. To upload a file to a server, see
+   * <a href="/docs/reference/#/p5.SoundFile/getBlob">getBlob</a>
+   * 
+   * @method save
+   * @param  {String} [fileName]      name of the resulting .wav file.
+   * @example
+   *  <div><code>
+   *  var inp, button, mySound;
+   *  var fileName = 'cool';
+   *  function preload() {
+   *    mySound = loadSound('assets/doorbell.mp3');
+   *  }
+   *  function setup() {
+   *    btn = createButton('click to save file');
+   *    btn.position(0, 0);
+   *    btn.mouseClicked(handleMouseClick);
+   *  }
+   *
+   *  function handleMouseClick() {
+   *    mySound.save(fileName);
+   *  }
+   * </code></div>
+   */
+  p5.SoundFile.prototype.save = function(fileName) {
+    const dataView = convertToWav(this.buffer);
+    p5.prototype.saveSound([dataView], fileName, 'wav');
+  };
+
+  /**
+   * This method is useful for sending a SoundFile to a server. It returns the
+   * .wav-encoded audio data as a "<a target="_blank" title="Blob reference at
+   * MDN" href="https://developer.mozilla.org/en-US/docs/Web/API/Blob">Blob</a>".
+   * A Blob is a file-like data object that can be uploaded to a server
+   * with an <a href="/docs/reference/#/p5/httpDo">http</a> request. We'll
+   * use the `httpDo` options object to send a POST request with some
+   * specific options: we encode the request as `multipart/form-data`,
+   * and attach the blob as one of the form values using `FormData`.
+   * 
+   *
+   * @method getBlob
+   * @returns {Blob} A file-like data object
+   * @example
+   *  <div><code>
+   *
+   *  function preload() {
+   *    mySound = loadSound('assets/doorbell.mp3');
+   *  }
+   *
+   *  function setup() {
+   *    noCanvas();
+   *    var soundBlob = mySound.getBlob();
+   *
+   *    // Now we can send the blob to a server...
+   *    var serverUrl = 'https://jsonplaceholder.typicode.com/posts';
+   *    var httpRequestOptions = {
+   *      method: 'POST',
+   *      body: new FormData().append('soundBlob', soundBlob),
+   *      headers: new Headers({
+   *        'Content-Type': 'multipart/form-data'
+   *      })
+   *    };
+   *    httpDo(serverUrl, httpRequestOptions);
+   *
+   *    // We can also create an `ObjectURL` pointing to the Blob
+   *    var blobUrl = URL.createObjectURL(soundBlob);
+   *
+   *    // The `<Audio>` Element accepts Object URL's
+   *    var htmlAudioElt = createAudio(blobUrl).showControls();
+   *
+   *    createDiv();
+   *
+   *    // The ObjectURL exists as long as this tab is open
+   *    var input = createInput(blobUrl);
+   *    input.attribute('readonly', true);
+   *    input.mouseClicked(function() { input.elt.select() });
+   *  }
+   *
+   * </code></div>
+   */
+  p5.SoundFile.prototype.getBlob = function() {
+    const dataView = convertToWav(this.buffer);
+    return new Blob([dataView], { type: 'audio/wav' });
   };
 
 });

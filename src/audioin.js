@@ -43,11 +43,26 @@ define(function (require) {
    */
   p5.AudioIn = function(errorCallback) {
     // set up audio input
+    /**
+     * @property {GainNode} input
+     */
     this.input = p5sound.audiocontext.createGain();
+    /**
+     * @property {GainNode} output
+     */
     this.output = p5sound.audiocontext.createGain();
 
+    /**
+     * @property {MediaStream|null} stream
+     */
     this.stream = null;
+    /**
+     * @property {MediaStreamAudioSourceNode|null} mediaStream
+     */
     this.mediaStream = null;
+    /**
+     * @property {Number|null} currentSource
+     */
     this.currentSource = null;
 
     /**
@@ -58,7 +73,11 @@ define(function (require) {
      */
     this.enabled = false;
 
-    // create an amplitude, connect to it by default but not to master out
+    /**
+     * Input amplitude, connect to it by default but not to master out
+     *
+     *  @property {p5.Amplitude} amplitude
+     */
     this.amplitude = new p5.Amplitude();
     this.output.connect(this.amplitude.input);
 

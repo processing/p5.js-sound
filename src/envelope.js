@@ -33,7 +33,7 @@ define(function (require) {
    *  var attackLevel = 1.0;
    *  var releaseLevel = 0;
    *
-   *  var attackTime = 0.001
+   *  var attackTime = 0.001;
    *  var decayTime = 0.2;
    *  var susPercent = 0.2;
    *  var releaseTime = 0.5;
@@ -58,7 +58,7 @@ define(function (require) {
    *    cnv.mousePressed(playEnv);
    *  }
    *
-   *  function playEnv(){
+   *  function playEnv()  {
    *    env.play();
    *  }
    *  </code></div>
@@ -224,7 +224,7 @@ define(function (require) {
    *  var attackLevel = 1.0;
    *  var releaseLevel = 0;
    *
-   *  var attackTime = 0.001
+   *  var attackTime = 0.001;
    *  var decayTime = 0.2;
    *  var susPercent = 0.2;
    *  var releaseTime = 0.5;
@@ -249,7 +249,7 @@ define(function (require) {
    *    cnv.mousePressed(playEnv);
    *  }
    *
-   *  function playEnv(){
+   *  function playEnv()  {
    *    env.play();
    *  }
    *  </code></div>
@@ -279,7 +279,7 @@ define(function (require) {
    *  var attackLevel = 1.0;
    *  var releaseLevel = 0;
    *
-   *  var attackTime = 0.001
+   *  var attackTime = 0.001;
    *  var decayTime = 0.2;
    *  var susPercent = 0.2;
    *  var releaseTime = 0.5;
@@ -304,7 +304,7 @@ define(function (require) {
    *    cnv.mousePressed(playEnv);
    *  }
    *
-   *  function playEnv(){
+   *  function playEnv()  {
    *    env.play();
    *  }
    *  </code></div>
@@ -416,7 +416,7 @@ define(function (require) {
    *  var attackLevel = 1.0;
    *  var releaseLevel = 0;
    *
-   *  var attackTime = 0.001
+   *  var attackTime = 0.001;
    *  var decayTime = 0.2;
    *  var susPercent = 0.2;
    *  var releaseTime = 0.5;
@@ -441,7 +441,7 @@ define(function (require) {
    *    cnv.mousePressed(playEnv);
    *  }
    *
-   *  function playEnv(){
+   *  function playEnv()  {
    *    // trigger env on triOsc, 0 seconds from now
    *    // After decay, sustain for 0.2 seconds before release
    *    env.play(triOsc, 0, 0.2);
@@ -481,7 +481,7 @@ define(function (require) {
    *  var attackLevel = 1.0;
    *  var releaseLevel = 0;
    *
-   *  var attackTime = 0.001
+   *  var attackTime = 0.001;
    *  var decayTime = 0.3;
    *  var susPercent = 0.4;
    *  var releaseTime = 0.5;
@@ -506,7 +506,7 @@ define(function (require) {
    *    cnv.mousePressed(envAttack);
    *  }
    *
-   *  function envAttack(){
+   *  function envAttack()  {
    *    console.log('trigger attack');
    *    env.triggerAttack();
    *
@@ -602,7 +602,7 @@ define(function (require) {
    *  var attackLevel = 1.0;
    *  var releaseLevel = 0;
    *
-   *  var attackTime = 0.001
+   *  var attackTime = 0.001;
    *  var decayTime = 0.3;
    *  var susPercent = 0.4;
    *  var releaseTime = 0.5;
@@ -627,7 +627,7 @@ define(function (require) {
    *    cnv.mousePressed(envAttack);
    *  }
    *
-   *  function envAttack(){
+   *  function envAttack()  {
    *    console.log('trigger attack');
    *    env.triggerAttack();
    *

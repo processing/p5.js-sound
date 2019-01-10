@@ -44,13 +44,10 @@ define(function (require) {
   p5.Reverb = function() {
     Effect.call(this);
 
-    this.convolverNode = this.ac.createConvolver();
+    this._initConvolverNode();
 
     // otherwise, Safari distorts
     this.input.gain.value = 0.5;
-
-    this.input.connect(this.convolverNode);
-    this.convolverNode.connect(this.wet);
 
     // default params
     this._seconds = 3;
@@ -62,6 +59,25 @@ define(function (require) {
   };
 
   p5.Reverb.prototype = Object.create(Effect.prototype);
+
+  p5.Reverb.prototype._initConvolverNode = function() {
+    this.convolverNode = this.ac.createConvolver();
+    this.input.connect(this.convolverNode);
+    this.convolverNode.connect(this.wet);
+  };
+
+  p5.Reverb.prototype._teardownConvolverNode = function() {
+    if (this.convolverNode) {
+      this.convolverNode.disconnect();
+      delete this.convolverNode;
+    }
+  };
+
+  p5.Reverb.prototype._setBuffer = function(audioBuffer) {
+    this._teardownConvolverNode();
+    this._initConvolverNode();
+    this.convolverNode.buffer = audioBuffer;
+  };
   /**
    *  Connect a source to the reverb, and assign reverb parameters.
    *
@@ -164,15 +180,12 @@ define(function (require) {
       impulseL[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
       impulseR[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
     }
-    this.convolverNode.buffer = impulse;
+    this._setBuffer(impulse);
   };
 
   p5.Reverb.prototype.dispose = function() {
     Effect.prototype.dispose.apply(this);
-    if (this.convolverNode) {
-      this.convolverNode.buffer = null;
-      this.convolverNode = null;
-    }
+    this._teardownConvolverNode();
   };
 
   // =======================================================================
@@ -233,22 +246,19 @@ define(function (require) {
    *  </code></div>
    */
   p5.Convolver = function(path, callback, errorCallback) {
- 	  Effect.call(this);
+ 	  p5.Reverb.call(this);
 
     /**
      *  Internally, the p5.Convolver uses the a
      *  <a href="http://www.w3.org/TR/webaudio/#ConvolverNode">
      *  Web Audio Convolver Node</a>.
      *
-     *  @property {ConvolverNode} convolverNod
+     *  @property {ConvolverNode} convolverNode
      */
-    this.convolverNode = this.ac.createConvolver();
+    this._initConvolverNode();
 
     // otherwise, Safari distorts
     this.input.gain.value = 0.5;
-
-    this.input.connect(this.convolverNode);
-    this.convolverNode.connect(this.wet);
 
     if (path) {
       this.impulses = [];
@@ -358,7 +368,7 @@ define(function (require) {
             buffer.name = chunks[chunks.length - 1];
             buffer.audioBuffer = buff;
             self.impulses.push(buffer);
-            self.convolverNode.buffer = buffer.audioBuffer;
+            self._setBuffer(buffer.audioBuffer);
             if (callback) {
               callback(buffer);
             }
@@ -509,12 +519,12 @@ define(function (require) {
    */
   p5.Convolver.prototype.toggleImpulse = function(id) {
     if (typeof id === 'number' && id < this.impulses.length) {
-      this.convolverNode.buffer = this.impulses[id].audioBuffer;
+      this._setBuffer(this.impulses[id].audioBuffer);
     }
     if (typeof id === 'string') {
       for (var i = 0; i < this.impulses.length; i++) {
         if (this.impulses[i].name === id) {
-          this.convolverNode.buffer = this.impulses[i].audioBuffer;
+          this._setBuffer(this.impulses[i].audioBuffer);
           break;
         }
       }
@@ -522,18 +532,13 @@ define(function (require) {
   };
 
   p5.Convolver.prototype.dispose = function() {
-    Effect.prototype.dispose.apply(this);
+    p5.Reverb.prototype.dispose.apply(this);
 
     // remove all the Impulse Response buffers
     for (var i in this.impulses) {
       if (this.impulses[i]) {
         this.impulses[i] = null;
       }
-    }
-
-    if (this.convolverNode) {
-      this.convolverNode.disconnect();
-      this.concolverNode = null;
     }
   };
 
