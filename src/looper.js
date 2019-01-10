@@ -1,6 +1,6 @@
 'use strict';
 
-define(function (require) {
+define(function(require) {
   var p5sound = require('master');
 
   var BPM = 120;
@@ -110,14 +110,14 @@ define(function (require) {
 
   /**
    *  <p>A p5.Part plays back one or more p5.Phrases. Instantiate a part
-   *  with steps and tatums. By default, each step represents 1/16th note.</p>
+   *  with steps and tatums. By default, each step represents a 1/16th note.</p>
    *
    *  <p>See p5.Phrase for more about musical timing.</p>
    *
    *  @class p5.Part
    *  @constructor
    *  @param {Number} [steps]   Steps in the part
-   *  @param {Number} [tatums] Divisions of a beat (default is 1/16, a quarter note)
+   *  @param {Number} [tatums] Divisions of a beat, e.g. use 1/4, or 0.25 for a quater note (default is 1/16, a sixteenth note)
    *  @example
    *  <div><code>
    *  var box, drum, myPart;
@@ -173,9 +173,7 @@ define(function (require) {
     this.partStep = 0;
     this.phrases = [];
     this.isPlaying = false;
-
     this.noLoop();
-
     this.tatums = bLength || 0.0625; // defaults to quarter note
 
     this.metro = new p5.Metro();
@@ -183,7 +181,6 @@ define(function (require) {
     this.metro.beatLength(this.tatums);
     this.metro.setBPM(BPM);
     p5sound.parts.push(this);
-
     this.callback = function() {};
   };
 
@@ -199,7 +196,7 @@ define(function (require) {
   };
 
   /**
-   *  Returns the Beats Per Minute of this currently part.
+   *  Returns the tempo, in Beats Per Minute, of this part.
    *
    *  @method getBPM
    *  @return {Number}
@@ -238,7 +235,6 @@ define(function (require) {
     // rest onended function
     this.onended = function() {
       this.partStep = 0;
-      // dont start phrases over, right?
     };
     var t = time || 0;
     this.start(t);
@@ -249,7 +245,7 @@ define(function (require) {
    *
    *  @method  noLoop
    */
-  p5.Part.prototype.noLoop = function( ) {
+  p5.Part.prototype.noLoop = function() {
     this.looping = false;
     // rest onended function
     this.onended = function() {
@@ -258,7 +254,7 @@ define(function (require) {
   };
 
   /**
-   *  Stop the part and cue it to step 0.
+   *  Stop the part and cue it to step 0. Playback will resume from the begining of the Part when it is played again.
    *
    *  @method  stop
    *  @param  {Number} [time] seconds from now
@@ -297,7 +293,6 @@ define(function (require) {
       throw 'invalid input. addPhrase accepts name, callback, array or a p5.Phrase';
     }
     this.phrases.push(p);
-
     // reset the length if phrase is longer than part's existing length
     if (p.sequence.length > this.length) {
       this.length = p.sequence.length;
@@ -335,8 +330,7 @@ define(function (require) {
   };
 
   /**
-   *  Get a phrase from this part, based on the name it was
-   *  given when it was created. Now you can modify its array.
+   *  Find all sequences with the specified name, and replace their patterns with the specified array.
    *
    *  @method  replaceSequence
    *  @param  {String} phraseName
@@ -352,12 +346,11 @@ define(function (require) {
   };
 
   p5.Part.prototype.incrementStep = function(time) {
-    if (this.partStep < this.length-1) {
+    if (this.partStep < this.length - 1) {
       this.callback(time);
-      this.partStep +=1;
-    }
-    else {
-      if (!this.looping && this.partStep === this.length-1) {
+      this.partStep += 1;
+    } else {
+      if (!this.looping && this.partStep === this.length - 1) {
         console.log('done');
         // this.callback(time);
         this.onended();
@@ -366,7 +359,7 @@ define(function (require) {
   };
 
   /**
-   *  Fire a callback function at every step.
+   *  Set the function that will be called at every step. This will clear the previous function.
    *
    *  @method onStep
    *  @param  {Function} callback The name of the callback
@@ -401,7 +394,7 @@ define(function (require) {
     for (var i in arguments) {
       if (arguments[i] && this.parts[i]) {
         this.parts[i] = arguments[i];
-        this.parts[i].nextPart = this.parts[i+1];
+        this.parts[i].nextPart = this.parts[i + 1];
         this.parts[i].onended = function() {
           thisScore.resetPart(i);
           playNextPart(thisScore);
