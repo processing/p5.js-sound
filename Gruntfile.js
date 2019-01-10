@@ -44,6 +44,20 @@ module.exports = function(grunt) {
                   }
                 }
               });
+            } else if (path.indexOf('node_modules/startaudiocontext') > -1) {
+              // return '/** StartAudioContext.js by Yotam Mann, MIT License 2017 https://github.com/tambien/StartAudioContext http://opensource.org/licenses/MIT **/\n' +
+              return require('amdclean').clean({
+                code: contents,
+                escodegen: {
+                  comment: false,
+                  format: {
+                    indent: {
+                      style: '  ',
+                      adjustMultiLineComment: true
+                    }
+                  }
+                }
+              });
             } else {
               return require('amdclean').clean({
                 'code':contents,
@@ -63,6 +77,7 @@ module.exports = function(grunt) {
           out: 'lib/p5.sound.js',
           paths: {
             'Tone' : 'node_modules/tone/Tone',
+            'StartAudioContext' : 'node_modules/startaudiocontext/StartAudioContext',
             'automation-timeline': 'node_modules/web-audio-automation-timeline/build/automation-timeline-amd',
             'panner' : 'src/panner',
             'shims': 'src/shims',
