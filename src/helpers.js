@@ -259,8 +259,8 @@ define(function (require) {
     view.setUint16(20, 1, true);
     // stereo (2 channels)
     view.setUint16(22, 2, true);
-    view.setUint32(24, 44100, true);
-    view.setUint32(28, 44100 * 4, true);
+    view.setUint32(24, p5sound.audiocontext.sampleRate, true);
+    view.setUint32(28, p5sound.audiocontext.sampleRate * 4, true);
     view.setUint16(32, 4, true);
     view.setUint16(34, 16, true);
     // data sub-chunk
