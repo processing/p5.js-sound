@@ -45,8 +45,8 @@ define(function () {
    *  @example
    *  <div><code>
    *
-   *  var cnv, soundFile, fft, peakDetect;
-   *  var ellipseWidth = 10;
+   *  let cnv, soundFile, fft, peakDetect;
+   *  let ellipseWidth = 10;
    *
    *  function preload() {
    *    soundFile = loadSound('assets/beat.mp3');
@@ -139,7 +139,7 @@ define(function () {
    *  @param  {p5.FFT} fftObject A p5.FFT object
    */
   p5.PeakDetect.prototype.update = function(fftObject) {
-    var nrg = this.energy = fftObject.getEnergy(this.f1,this.f2)/255;
+    let nrg = this.energy = fftObject.getEnergy(this.f1,this.f2)/255;
     if (nrg > this.cutoff && nrg > this.threshold && nrg-this.penergy > 0) {
 
       // trigger callback
@@ -177,8 +177,8 @@ define(function () {
    *                              a peak is detected.
    *  @example
    *  <div><code>
-   *  var cnv, soundFile, fft, peakDetect;
-   *  var ellipseWidth = 0;
+   *  let cnv, soundFile, fft, peakDetect;
+   *  let ellipseWidth = 0;
    *
    *  function preload() {
    *    soundFile = loadSound('assets/beat.mp3');
@@ -227,7 +227,7 @@ define(function () {
    *  </code></div>
    */
   p5.PeakDetect.prototype.onPeak = function(callback, val) {
-    var self = this;
+    let self = this;
 
     self._onPeak = function() {
       callback(self.energy, val);

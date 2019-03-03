@@ -1,11 +1,11 @@
 'use strict';
 
 define(function (require) {
-  var p5sound = require('master');
+  let p5sound = require('master');
 
-  var Add = require('Tone/signal/Add');
-  var Mult = require('Tone/signal/Multiply');
-  var Scale = require('Tone/signal/Scale');
+  let Add = require('Tone/signal/Add');
+  let Mult = require('Tone/signal/Multiply');
+  let Scale = require('Tone/signal/Scale');
 
   /**
    *  <p>Creates a signal that oscillates between -1.0 and 1.0.
@@ -30,8 +30,8 @@ define(function (require) {
    *                         'sawtooth', 'square'
    *  @example
    *  <div><code>
-   *  var osc;
-   *  var playing = false;
+   *  let osc;
+   *  let playing = false;
    *
    *  function setup() {
    *    backgroundColor = color(255,0,255);
@@ -68,11 +68,11 @@ define(function (require) {
    */
   p5.Oscillator = function(freq, type) {
     if (typeof freq === 'string') {
-      var f = type;
+      let f = type;
       type = freq;
       freq = f;
     } if (typeof type === 'number') {
-      var f = type;
+      let f = type;
       type = freq;
       freq = f;
     }
@@ -118,12 +118,12 @@ define(function (require) {
    */
   p5.Oscillator.prototype.start = function(time, f) {
     if (this.started) {
-      var now = p5sound.audiocontext.currentTime;
+      let now = p5sound.audiocontext.currentTime;
       this.stop(now);
     }
     if (!this.started) {
-      var freq = f || this.f;
-      var type = this.oscillator.type;
+      let freq = f || this.f;
+      let type = this.oscillator.type;
 
       // set old osc free to be garbage collected (memory)
       if (this.oscillator) {
@@ -131,7 +131,7 @@ define(function (require) {
         delete this.oscillator;
       }
 
-      // var detune = this.oscillator.frequency.value;
+      // let detune = this.oscillator.frequency.value;
       this.oscillator = p5sound.audiocontext.createOscillator();
       this.oscillator.frequency.value = Math.abs(freq);
       this.oscillator.type = type;
@@ -142,7 +142,7 @@ define(function (require) {
       this.freqNode = this.oscillator.frequency;
 
       // if other oscillators are already connected to this osc's freq
-      for (var i in this._freqMods) {
+      for (let i in this._freqMods) {
         if (typeof this._freqMods[i].connect !== 'undefined') {
           this._freqMods[i].connect(this.oscillator.frequency);
         }
@@ -162,8 +162,8 @@ define(function (require) {
    */
   p5.Oscillator.prototype.stop = function(time) {
     if (this.started) {
-      var t = time || 0;
-      var now = p5sound.audiocontext.currentTime;
+      let t = time || 0;
+      let now = p5sound.audiocontext.currentTime;
       this.oscillator.stop(t + now);
       this.started = false;
     }
@@ -186,11 +186,11 @@ define(function (require) {
    *                              gain/amplitude/volume)
    */
   p5.Oscillator.prototype.amp = function(vol, rampTime, tFromNow) {
-    var self = this;
+    let self = this;
     if (typeof vol === 'number') {
-      var rampTime = rampTime || 0;
-      var tFromNow = tFromNow || 0;
-      var now = p5sound.audiocontext.currentTime;
+      let rampTime = rampTime || 0;
+      let tFromNow = tFromNow || 0;
+      let now = p5sound.audiocontext.currentTime;
       this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
     }
 
@@ -225,7 +225,7 @@ define(function (require) {
    *                                  this oscillator's frequency
    *  @example
    *  <div><code>
-   *  var osc = new p5.Oscillator(300);
+   *  let osc = new p5.Oscillator(300);
    *  osc.start();
    *  osc.freq(40, 10);
    *  </code></div>
@@ -233,11 +233,11 @@ define(function (require) {
   p5.Oscillator.prototype.freq = function(val, rampTime, tFromNow) {
     if (typeof val === 'number' && !isNaN(val)) {
       this.f = val;
-      var now = p5sound.audiocontext.currentTime;
-      var rampTime = rampTime || 0;
-      var tFromNow = tFromNow || 0;
-      var t = now + tFromNow + rampTime;
-      // var currentFreq = this.oscillator.frequency.value;
+      let now = p5sound.audiocontext.currentTime;
+      let rampTime = rampTime || 0;
+      let tFromNow = tFromNow || 0;
+      let t = now + tFromNow + rampTime;
+      // let currentFreq = this.oscillator.frequency.value;
       // this.oscillator.frequency.cancelScheduledValues(now);
 
       if (rampTime === 0) {
@@ -346,11 +346,11 @@ define(function (require) {
   // get rid of the oscillator
   p5.Oscillator.prototype.dispose = function() {
     // remove reference from soundArray
-    var index = p5sound.soundArray.indexOf(this);
+    let index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
     if (this.oscillator) {
-      var now = p5sound.audiocontext.currentTime;
+      let now = p5sound.audiocontext.currentTime;
       this.stop(now);
       this.disconnect();
       this.panner = null;
@@ -371,8 +371,8 @@ define(function (require) {
    *  @param  {Number} phase float between 0.0 and 1.0
    */
   p5.Oscillator.prototype.phase = function(p) {
-    var delayAmt = p5.prototype.map(p, 0, 1.0, 0, 1/this.f);
-    var now = p5sound.audiocontext.currentTime;
+    let delayAmt = p5.prototype.map(p, 0, 1.0, 0, 1/this.f);
+    let now = p5sound.audiocontext.currentTime;
 
     this.phaseAmount = p;
 
@@ -394,10 +394,10 @@ define(function (require) {
   // ========================== //
 
   // return sigChain(this, scale, thisChain, nextChain, Scale);
-  var sigChain = function(o, mathObj, thisChain, nextChain, type) {
-    var chainSource = o.oscillator;
+  let sigChain = function(o, mathObj, thisChain, nextChain, type) {
+    let chainSource = o.oscillator;
     // if this type of math already exists in the chain, replace it
-    for (var i in o.mathOps) {
+    for (let i in o.mathOps) {
       if (o.mathOps[i] instanceof type) {
         chainSource.disconnect();
         o.mathOps[i].dispose();
@@ -434,9 +434,9 @@ define(function (require) {
    *
    */
   p5.Oscillator.prototype.add = function(num) {
-    var add = new Add(num);
-    var thisChain = this.mathOps.length-1;
-    var nextChain = this.output;
+    let add = new Add(num);
+    let thisChain = this.mathOps.length-1;
+    let nextChain = this.output;
     return sigChain(this, add, thisChain, nextChain, Add);
   };
 
@@ -451,9 +451,9 @@ define(function (require) {
    *                                     with multiplied output
    */
   p5.Oscillator.prototype.mult = function(num) {
-    var mult = new Mult(num);
-    var thisChain = this.mathOps.length-1;
-    var nextChain = this.output;
+    let mult = new Mult(num);
+    let thisChain = this.mathOps.length-1;
+    let nextChain = this.output;
     return sigChain(this, mult, thisChain, nextChain, Mult);
   };
 
@@ -471,7 +471,7 @@ define(function (require) {
    *                                     with scaled output
    */
   p5.Oscillator.prototype.scale = function(inMin, inMax, outMin, outMax) {
-    var mapOutMin, mapOutMax;
+    let mapOutMin, mapOutMax;
     if (arguments.length === 4) {
       mapOutMin = p5.prototype.map(outMin, inMin, inMax, 0, 1) - 0.5;
       mapOutMax = p5.prototype.map(outMax, inMin, inMax, 0, 1) - 0.5;
@@ -480,9 +480,9 @@ define(function (require) {
       mapOutMin = arguments[0];
       mapOutMax = arguments[1];
     }
-    var scale = new Scale(mapOutMin, mapOutMax);
-    var thisChain = this.mathOps.length-1;
-    var nextChain = this.output;
+    let scale = new Scale(mapOutMin, mapOutMax);
+    let thisChain = this.mathOps.length-1;
+    let nextChain = this.output;
     return sigChain(this, scale, thisChain, nextChain, Scale);
 
     // this.output.disconnect();

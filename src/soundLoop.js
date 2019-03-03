@@ -1,8 +1,8 @@
 'use strict';
 
 define(function (require) {
-  var p5sound = require('master');
-  var Clock = require('Tone/core/Clock');
+  let p5sound = require('master');
+  let Clock = require('Tone/core/Clock');
 
   /**
    * SoundLoop
@@ -16,8 +16,8 @@ define(function (require) {
    *
    * @example
    * <div><code>
-   * var click;
-   * var looper1;
+   * let click;
+   * let looper1;
    * 
    * function preload() {
    *   click = loadSound('assets/drum.mp3');
@@ -51,7 +51,7 @@ define(function (require) {
     this._interval = interval || 1;
 
     /**
-     * musicalTimeMode variables
+     * musicalTimeMode letiables
      * modify these only when the interval is specified in musicalTime format as a string
      */
     this._timeSignature = 4;
@@ -64,11 +64,11 @@ define(function (require) {
      * @property {Number} maxIterations
      */
     this.maxIterations = Infinity;
-    var self = this;
+    let self = this;
 
     this.clock = new Clock({
       'callback' : function(time) {
-        var timeFromNow = time - p5sound.audiocontext.currentTime;
+        let timeFromNow = time - p5sound.audiocontext.currentTime;
         /**
          * Do not initiate the callback if timeFromNow is < 0
          * This ususually occurs for a few milliseconds when the page
@@ -89,8 +89,8 @@ define(function (require) {
    * @param  {Number} [timeFromNow] schedule a starting time
    */
   p5.SoundLoop.prototype.start = function(timeFromNow) {
-    var t = timeFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
+    let t = timeFromNow || 0;
+    let now = p5sound.audiocontext.currentTime;
     if (!this.isPlaying) {
       this.clock.start(now + t);
       this.isPlaying = true;
@@ -103,8 +103,8 @@ define(function (require) {
    * @param  {Number} [timeFromNow] schedule a stopping time
    */
   p5.SoundLoop.prototype.stop = function(timeFromNow) {
-    var t = timeFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
+    let t = timeFromNow || 0;
+    let now = p5sound.audiocontext.currentTime;
     if (this.isPlaying) {
       this.clock.stop(now + t);
       this.isPlaying = false;
@@ -116,8 +116,8 @@ define(function (require) {
    * @param  {Number} [timeFromNow] schedule a pausing time
    */
   p5.SoundLoop.prototype.pause  = function(timeFromNow) {
-    var t = timeFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
+    let t = timeFromNow || 0;
+    let now = p5sound.audiocontext.currentTime;
     if (this.isPlaying) {
       this.clock.pause(now + t);
       this.isPlaying = false;
@@ -136,8 +136,8 @@ define(function (require) {
    * @param  {Number} [timeFromNow] Start the loops in sync after timeFromNow seconds
    */
   p5.SoundLoop.prototype.syncedStart = function(otherLoop, timeFromNow) {
-    var t = timeFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
+    let t = timeFromNow || 0;
+    let now = p5sound.audiocontext.currentTime;
 
     if (!otherLoop.isPlaying) {
       otherLoop.clock.start(now + t);
@@ -145,7 +145,7 @@ define(function (require) {
       this.clock.start(now + t);
       this.isPlaying = true;
     } else if (otherLoop.isPlaying) {
-      var time = otherLoop.clock._nextTick - p5sound.audiocontext.currentTime;
+      let time = otherLoop.clock._nextTick - p5sound.audiocontext.currentTime;
       this.clock.start(now + time);
       this.isPlaying = true;
     }
@@ -189,7 +189,7 @@ define(function (require) {
    * @return {Number}       converted value in seconds
    */
   p5.SoundLoop.prototype._convertNotation = function(value) {
-    var type = value.slice(-1);
+    let type = value.slice(-1);
     value = Number(value.slice(0,-1));
     switch (type) {
       case 'm':

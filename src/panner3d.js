@@ -1,8 +1,8 @@
 'use strict'
 
 define(function (require) {
-  var p5sound = require('master');
-  var Effect = require('effect');
+  let p5sound = require('master');
+  let Effect = require('effect');
 
   /**
    * Panner3D is based on the <a title="Web Audio Panner docs"  href=
@@ -92,7 +92,7 @@ define(function (require) {
    * @return {Number}      updated coordinate value
    */
   p5.Panner3D.prototype.positionX = function(xVal, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof xVal === 'number') {
       this.panner.positionX.value = xVal;
       this.panner.positionX.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -103,7 +103,7 @@ define(function (require) {
     return this.panner.positionX.value;
   };
   p5.Panner3D.prototype.positionY = function(yVal, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof yVal === 'number') {
       this.panner.positionY.value = yVal;
       this.panner.positionY.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -114,7 +114,7 @@ define(function (require) {
     return this.panner.positionY.value;
   };
   p5.Panner3D.prototype.positionZ = function(zVal, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof zVal === 'number') {
       this.panner.positionZ.value = zVal;
       this.panner.positionZ.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -159,7 +159,7 @@ define(function (require) {
    * @return {Number}      updated coordinate value
    */
   p5.Panner3D.prototype.orientX = function(xVal, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof xVal === 'number') {
       this.panner.orientationX.value = xVal;
       this.panner.orientationX.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -170,7 +170,7 @@ define(function (require) {
     return this.panner.orientationX.value;
   };
   p5.Panner3D.prototype.orientY = function(yVal, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof yVal === 'number') {
       this.panner.orientationY.value = yVal;
       this.panner.orientationY.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -181,7 +181,7 @@ define(function (require) {
     return this.panner.orientationY.value;
   };
   p5.Panner3D.prototype.orientZ = function(zVal, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof zVal === 'number') {
       this.panner.orientationZ.value = zVal;
       this.panner.orientationZ.cancelScheduledValues(this.ac.currentTime + 0.01 + t);

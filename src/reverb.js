@@ -1,8 +1,8 @@
 'use strict';
 
 define(function (require) {
-  var CustomError = require('errorHandler');
-  var Effect = require('effect');
+  let CustomError = require('errorHandler');
+  let Effect = require('effect');
 
   /**
    *  Reverb adds depth to a sound through a large number of decaying
@@ -23,7 +23,7 @@ define(function (require) {
    *  @constructor
    *  @example
    *  <div><code>
-   *  var soundFile, reverb;
+   *  let soundFile, reverb;
    *  function preload() {
    *    soundFile = loadSound('assets/Damscray_DancingTiger.mp3');
    *  }
@@ -92,7 +92,7 @@ define(function (require) {
    */
   p5.Reverb.prototype.process = function(src, seconds, decayRate, reverse) {
     src.connect(this.input);
-    var rebuild = false;
+    let rebuild = false;
     if (seconds) {
       this._seconds = seconds;
       rebuild = true;
@@ -120,7 +120,7 @@ define(function (require) {
    *  @param  {Boolean} [reverse] Play the reverb backwards or forwards.
    */
   p5.Reverb.prototype.set = function(seconds, decayRate, reverse) {
-    var rebuild = false;
+    let rebuild = false;
     if (seconds) {
       this._seconds = seconds;
       rebuild = true;
@@ -168,13 +168,13 @@ define(function (require) {
    *  @private
    */
   p5.Reverb.prototype._buildImpulse = function() {
-    var rate = this.ac.sampleRate;
-    var length = rate*this._seconds;
-    var decay = this._decay;
-    var impulse = this.ac.createBuffer(2, length, rate);
-    var impulseL = impulse.getChannelData(0);
-    var impulseR = impulse.getChannelData(1);
-    var n, i;
+    let rate = this.ac.sampleRate;
+    let length = rate*this._seconds;
+    let decay = this._decay;
+    let impulse = this.ac.createBuffer(2, length, rate);
+    let impulseL = impulse.getChannelData(0);
+    let impulseR = impulse.getChannelData(1);
+    let n, i;
     for (i = 0; i < length; i++) {
       n = this._reverse ? length - i : i;
       impulseL[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
@@ -219,7 +219,7 @@ define(function (require) {
    *                                     about what went wrong.
    *  @example
    *  <div><code>
-   *  var cVerb, sound;
+   *  let cVerb, sound;
    *  function preload() {
    *    // We have both MP3 and OGG versions of all sound assets
    *    soundFormats('ogg', 'mp3');
@@ -294,7 +294,7 @@ define(function (require) {
    *  @return {p5.Convolver}
    *  @example
    *  <div><code>
-   *  var cVerb, sound;
+   *  let cVerb, sound;
    *  function preload() {
    *    // We have both MP3 and OGG versions of all sound assets
    *    soundFormats('ogg', 'mp3');
@@ -325,8 +325,8 @@ define(function (require) {
     if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined') {
       alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
-    var self = this;
-    var cReverb = new p5.Convolver(path, function(buffer) {
+    let self = this;
+    let cReverb = new p5.Convolver(path, function(buffer) {
       if (typeof callback === 'function') {
         callback(buffer);
       }
@@ -349,12 +349,12 @@ define(function (require) {
    *  @private
    */
   p5.Convolver.prototype._loadBuffer = function(path, callback, errorCallback) {
-    var path = p5.prototype._checkFileFormats(path);
-    var self = this;
-    var errorTrace = new Error().stack;
-    var ac = p5.prototype.getAudioContext();
+    let path = p5.prototype._checkFileFormats(path);
+    let self = this;
+    let errorTrace = new Error().stack;
+    let ac = p5.prototype.getAudioContext();
 
-    var request = new XMLHttpRequest();
+    let request = new XMLHttpRequest();
     request.open('GET', path, true);
     request.responseType = 'arraybuffer';
 
@@ -363,8 +363,8 @@ define(function (require) {
         // on success loading file:
         ac.decodeAudioData(request.response,
           function(buff) {
-            var buffer = {};
-            var chunks = path.split('/');
+            let buffer = {};
+            let chunks = path.split('/');
             buffer.name = chunks[chunks.length - 1];
             buffer.audioBuffer = buff;
             self.impulses.push(buffer);
@@ -375,8 +375,8 @@ define(function (require) {
           },
           // error decoding buffer. "e" is undefined in Chrome 11/22/2015
           function() {
-            var err = new CustomError('decodeAudioData', errorTrace, self.url);
-            var msg = 'AudioContext error at decodeAudioData for ' + self.url;
+            let err = new CustomError('decodeAudioData', errorTrace, self.url);
+            let msg = 'AudioContext error at decodeAudioData for ' + self.url;
             if (errorCallback) {
               err.msg = msg;
               errorCallback(err);
@@ -388,8 +388,8 @@ define(function (require) {
       }
       // if request status != 200, it failed
       else {
-        var err = new CustomError('loadConvolver', errorTrace, self.url);
-        var msg = 'Unable to load ' + self.url +
+        let err = new CustomError('loadConvolver', errorTrace, self.url);
+        let msg = 'Unable to load ' + self.url +
           '. The request status was: ' + request.status + ' (' + request.statusText + ')';
 
         if (errorCallback) {
@@ -403,8 +403,8 @@ define(function (require) {
 
     // if there is another error, aside from 404...
     request.onerror = function() {
-      var err = new CustomError('loadConvolver', errorTrace, self.url);
-      var msg = 'There was no response from the server at ' + self.url + '. Check the url and internet connectivity.';
+      let err = new CustomError('loadConvolver', errorTrace, self.url);
+      let msg = 'There was no response from the server at ' + self.url + '. Check the url and internet connectivity.';
 
       if (errorCallback) {
         err.message = msg;
@@ -426,7 +426,7 @@ define(function (require) {
    *                           output.
    *  @example
    *  <div><code>
-   *  var cVerb, sound;
+   *  let cVerb, sound;
    *  function preload() {
    *    soundFormats('ogg', 'mp3');
    *
@@ -522,7 +522,7 @@ define(function (require) {
       this._setBuffer(this.impulses[id].audioBuffer);
     }
     if (typeof id === 'string') {
-      for (var i = 0; i < this.impulses.length; i++) {
+      for (let i = 0; i < this.impulses.length; i++) {
         if (this.impulses[i].name === id) {
           this._setBuffer(this.impulses[i].audioBuffer);
           break;
@@ -535,7 +535,7 @@ define(function (require) {
     p5.Reverb.prototype.dispose.apply(this);
 
     // remove all the Impulse Response buffers
-    for (var i in this.impulses) {
+    for (let i in this.impulses) {
       if (this.impulses[i]) {
         this.impulses[i] = null;
       }

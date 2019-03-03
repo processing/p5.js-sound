@@ -2,7 +2,7 @@
 
 define(function (require) {
 
-  var p5sound = require('master');
+  let p5sound = require('master');
   require('oscillator');
 
   /**
@@ -22,7 +22,7 @@ define(function (require) {
    *                         defaults to 0)
    *  @example
    *  <div><code>
-   *  var pulse;
+   *  let pulse;
    *  function setup() {
    *    background(0);
    *
@@ -34,7 +34,7 @@ define(function (require) {
    *  }
    *
    *  function draw() {
-   *    var w = map(mouseX, 0, width, 0, 1);
+   *    let w = map(mouseX, 0, width, 0, 1);
    *    w = constrain(w, 0, 1);
    *    pulse.width(w)
    *  }
@@ -59,7 +59,7 @@ define(function (require) {
     this.dcGain.connect(this.output);
     // set delay time based on PWM width
     this.f = freq || 440;
-    var mW = this.w / this.oscillator.frequency.value;
+    let mW = this.w / this.oscillator.frequency.value;
     this.dNode.delayTime.value = mW;
     this.dcGain.gain.value = 1.7*(0.5-this.w);
 
@@ -90,15 +90,15 @@ define(function (require) {
         this.w = w;
         // set delay time based on PWM width
 
-        // var mW = map(this.w, 0, 1.0, 0, 1/this.f);
-        var mW = this.w / this.oscillator.frequency.value;
+        // let mW = map(this.w, 0, 1.0, 0, 1/this.f);
+        let mW = this.w / this.oscillator.frequency.value;
         this.dNode.delayTime.value = mW;
       }
 
       this.dcGain.gain.value = 1.7*(0.5-this.w);
     } else {
       w.connect(this.dNode.delayTime);
-      var sig = new p5.SignalAdd(-0.5);
+      let sig = new p5.SignalAdd(-0.5);
       sig.setInput(w);
       sig = sig.mult(-1);
       sig = sig.mult(1.7);
@@ -107,11 +107,11 @@ define(function (require) {
   };
 
   p5.Pulse.prototype.start = function(f, time) {
-    var now = p5sound.audiocontext.currentTime;
-    var t = time || 0;
+    let now = p5sound.audiocontext.currentTime;
+    let t = time || 0;
     if (!this.started) {
-      var freq = f || this.f;
-      var type = this.oscillator.type;
+      let freq = f || this.f;
+      let type = this.oscillator.type;
       this.oscillator = p5sound.audiocontext.createOscillator();
       this.oscillator.frequency.setValueAtTime(freq, now);
       this.oscillator.type = type;
@@ -143,8 +143,8 @@ define(function (require) {
 
   p5.Pulse.prototype.stop = function(time) {
     if (this.started) {
-      var t = time || 0;
-      var now = p5sound.audiocontext.currentTime;
+      let t = time || 0;
+      let now = p5sound.audiocontext.currentTime;
       this.oscillator.stop(t + now);
       if (this.osc2.oscillator) {
         this.osc2.oscillator.stop(t + now);
@@ -158,10 +158,10 @@ define(function (require) {
   p5.Pulse.prototype.freq = function(val, rampTime, tFromNow) {
     if (typeof val === 'number') {
       this.f = val;
-      var now = p5sound.audiocontext.currentTime;
-      var rampTime = rampTime || 0;
-      var tFromNow = tFromNow || 0;
-      var currentFreq = this.oscillator.frequency.value;
+      let now = p5sound.audiocontext.currentTime;
+      let rampTime = rampTime || 0;
+      let tFromNow = tFromNow || 0;
+      let currentFreq = this.oscillator.frequency.value;
       this.oscillator.frequency.cancelScheduledValues(now);
       this.oscillator.frequency.setValueAtTime(currentFreq, now + tFromNow);
       this.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
@@ -184,12 +184,12 @@ define(function (require) {
 
   // inspiration: http://webaudiodemos.appspot.com/oscilloscope/
   function createDCOffset() {
-    var ac = p5sound.audiocontext;
-    var buffer=ac.createBuffer(1,2048,ac.sampleRate);
-    var data = buffer.getChannelData(0);
-    for (var i=0; i<2048; i++)
+    let ac = p5sound.audiocontext;
+    let buffer=ac.createBuffer(1,2048,ac.sampleRate);
+    let data = buffer.getChannelData(0);
+    for (let i=0; i<2048; i++)
       data[i]=1.0;
-    var bufferSource=ac.createBufferSource();
+    let bufferSource=ac.createBufferSource();
     bufferSource.buffer=buffer;
     bufferSource.loop=true;
     return bufferSource;

@@ -2,8 +2,8 @@
 
 define(function (require) {
 
-  var Effect = require('effect');
-  var EQFilter = require('src/eqFilter');
+  let Effect = require('effect');
+  let EQFilter = require('src/eqFilter');
 
   /**
    * p5.EQ is an audio effect that performs the function of a multiband
@@ -29,11 +29,11 @@ define(function (require) {
    *
    * @example
    * <div><code>
-   * var eq;
-   * var band_names;
-   * var band_index;
+   * let eq;
+   * let band_names;
+   * let band_index;
    * 
-   * var soundFile, play;
+   * let soundFile, play;
    * 
    * function preload() {
    *   soundFormats('mp3', 'ogg');
@@ -68,7 +68,7 @@ define(function (require) {
    * 
    * //If mouse is over canvas, cycle to the next band and kill the frequency
    * function mouseClicked() {
-   *   for (var i = 0; i < eq.bands.length; i++) {
+   *   for (let i = 0; i < eq.bands.length; i++) {
    *     eq.bands[i].gain(0);
    *   }
    *   eq.bands[band_index].gain(-40);
@@ -92,7 +92,7 @@ define(function (require) {
     //p5.EQ can be of size (3) or (8), defaults to 3
     _eqsize = _eqsize === 3 || _eqsize === 8 ? _eqsize : 3;
 
-    var factor;
+    let factor;
     _eqsize === 3 ? factor = Math.pow(2,3) : factor = 2;
 
     /**
@@ -107,8 +107,8 @@ define(function (require) {
     this.bands = [];
 
 
-    var freq, res;
-    for (var i = 0; i < _eqsize; i++) {
+    let freq, res;
+    for (let i = 0; i < _eqsize; i++) {
       if (i === _eqsize - 1) {
         freq = 21000;
         res = .01;
@@ -169,7 +169,7 @@ define(function (require) {
   //   */
   p5.EQ.prototype.set = function() {
     if (arguments.length === this.bands.length * 2) {
-      for (var i = 0; i < arguments.length; i+=2) {
+      for (let i = 0; i < arguments.length; i+=2) {
         this.bands[i/2].freq(arguments[i]);
         this.bands[i/2].gain(arguments[i+1]);
       }

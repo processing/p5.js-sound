@@ -1,7 +1,7 @@
 'use strict';
 
 define(function (require) {
-  var p5sound = require('master');
+  let p5sound = require('master');
 
   /**
    *  A gain node is usefull to set the relative volume of sound.
@@ -13,8 +13,8 @@ define(function (require) {
    *  <div><code>
    *
    * // load two soundfile and crossfade beetween them
-   * var sound1,sound2;
-   * var gain1, gain2, gain3;
+   * let sound1,sound2;
+   * let gain1, gain2, gain3;
    *
    * function preload(){
    *   soundFormats('ogg', 'mp3');
@@ -52,17 +52,17 @@ define(function (require) {
    *   background(180);
    *
    *   // calculate the horizontal distance beetween the mouse and the right of the screen
-   *   var d = dist(mouseX,0,width,0);
+   *   let d = dist(mouseX,0,width,0);
    *
    *   // map the horizontal position of the mouse to values useable for volume control of sound1
-   *   var vol1 = map(mouseX,0,width,0,1);
-   *   var vol2 = 1-vol1; // when sound1 is loud, sound2 is quiet and vice versa
+   *   let vol1 = map(mouseX,0,width,0,1);
+   *   let vol2 = 1-vol1; // when sound1 is loud, sound2 is quiet and vice versa
    *
    *   gain1.amp(vol1,0.5,0);
    *   gain2.amp(vol2,0.5,0);
    *
    *   // map the vertical position of the mouse to values useable for 'master volume control'
-   *   var vol3 = map(mouseY,0,height,0,1);
+   *   let vol3 = map(mouseY,0,height,0,1);
    *   gain3.amp(vol3,0.5,0);
    * }
    *</code></div>
@@ -103,7 +103,7 @@ define(function (require) {
    *  @param  {Object} unit
    */
   p5.Gain.prototype.connect = function(unit) {
-    var u = unit || p5.soundOut.input;
+    let u = unit || p5.soundOut.input;
     this.output.connect(u.input ? u.input : u);
   };
 
@@ -128,10 +128,10 @@ define(function (require) {
    *                                seconds from now
    */
   p5.Gain.prototype.amp = function(vol, rampTime, tFromNow) {
-    var rampTime = rampTime || 0;
-    var tFromNow = tFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
-    var currentVol = this.output.gain.value;
+    let rampTime = rampTime || 0;
+    let tFromNow = tFromNow || 0;
+    let now = p5sound.audiocontext.currentTime;
+    let currentVol = this.output.gain.value;
     this.output.gain.cancelScheduledValues(now);
     this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
     this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
@@ -139,7 +139,7 @@ define(function (require) {
 
   p5.Gain.prototype.dispose = function() {
     // remove reference from soundArray
-    var index = p5sound.soundArray.indexOf(this);
+    let index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
     if (this.output) {
       this.output.disconnect();

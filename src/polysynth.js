@@ -1,9 +1,9 @@
 'use strict';
 define(function (require) {
 
-  var p5sound = require('master');
-  var TimelineSignal = require('Tone/signal/TimelineSignal');
-  var noteToFreq = require('helpers').noteToFreq;
+  let p5sound = require('master');
+  let TimelineSignal = require('Tone/signal/TimelineSignal');
+  let noteToFreq = require('helpers').noteToFreq;
 
   /**
     *  An AudioVoice is used as a single voice for sound synthesis.
@@ -19,10 +19,10 @@ define(function (require) {
     *  @param {Number} [maxVoices] Number of voices, defaults to 8;
     *  @example
     *  <div><code>
-    *  var polySynth;
+    *  let polySynth;
     *
     *  function setup() {
-    *    var cnv = createCanvas(100, 100);
+    *    let cnv = createCanvas(100, 100);
     *    cnv.mousePressed(playSynth);
     *
     *    polySynth = new p5.PolySynth();
@@ -33,13 +33,13 @@ define(function (require) {
     *
     *  function playSynth() {
     *    // note duration (in seconds)
-    *    var dur = 1.5;
+    *    let dur = 1.5;
     *
     *    // time from now (in seconds)
-    *    var time = 0;
+    *    let time = 0;
     *
     *    // velocity (volume, from 0 to 1)
-    *    var vel = 0.1;
+    *    let vel = 0.1;
     *
     *    // notes can overlap with each other
     *    polySynth.play("G2", vel, 0, dur);
@@ -104,7 +104,7 @@ define(function (require) {
    * @method  _allocateVoices
    */
   p5.PolySynth.prototype._allocateVoices = function() {
-    for(var i = 0; i< this.maxVoices; i++) {
+    for(let i = 0; i< this.maxVoices; i++) {
       this.audiovoices.push(new this.AudioVoice());
       this.audiovoices[i].disconnect();
       this.audiovoices[i].connect(this.output);
@@ -121,10 +121,10 @@ define(function (require) {
    *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
    *  @example
    *  <div><code>
-   *  var polySynth;
+   *  let polySynth;
    *
    *  function setup() {
-   *    var cnv = createCanvas(100, 100);
+   *    let cnv = createCanvas(100, 100);
    *    cnv.mousePressed(playSynth);
    *
    *    polySynth = new p5.PolySynth();
@@ -135,13 +135,13 @@ define(function (require) {
    *
    *  function playSynth() {
    *    // note duration (in seconds)
-   *    var dur = 0.1;
+   *    let dur = 0.1;
    *
    *    // time from now (in seconds)
-   *    var time = 0;
+   *    let time = 0;
    *
    *    // velocity (volume, from 0 to 1)
-   *    var vel = 0.1;
+   *    let vel = 0.1;
    *
    *    polySynth.play("G2", vel, 0, dur);
    *    polySynth.play("C3", vel, 0, dur);
@@ -153,7 +153,7 @@ define(function (require) {
    *  </code></div>
    */
   p5.PolySynth.prototype.play = function (note,velocity, secondsFromNow, susTime) {
-    var susTime = susTime || 1;
+    let susTime = susTime || 1;
     this.noteAttack(note, velocity, secondsFromNow);
     this.noteRelease(note, secondsFromNow + susTime);
   };
@@ -183,9 +183,9 @@ define(function (require) {
    **/
 
   p5.PolySynth.prototype.noteADSR = function (note,a,d,s,r,timeFromNow) {
-    var now = p5sound.audiocontext.currentTime;
-    var timeFromNow = timeFromNow || 0;
-    var t = now + timeFromNow
+    let now = p5sound.audiocontext.currentTime;
+    let timeFromNow = timeFromNow || 0;
+    let t = now + timeFromNow
     this.audiovoices[ this.notes[note].getValueAtTime(t) ].setADSR(a,d,s,r);
   };
 
@@ -226,14 +226,14 @@ define(function (require) {
    *  @param  {Number} [secondsFromNow] time from now (in seconds)
    *  @example
    *  <div><code>
-   *  var polySynth = new p5.PolySynth();
-   *  var pitches = ["G", "D", "G", "C"];
-   *  var octaves = [2, 3, 4];
+   *  let polySynth = new p5.PolySynth();
+   *  let pitches = ["G", "D", "G", "C"];
+   *  let octaves = [2, 3, 4];
    *
    *  function mousePressed() {
    *    // play a chord: multiple notes at the same time
-   *    for (var i = 0; i < 4; i++) {
-   *      var note = random(pitches) + random(octaves);
+   *    for (let i = 0; i < 4; i++) {
+   *      let note = random(pitches) + random(octaves);
    *      polySynth.noteAttack(note, 0.1);
    *    }
    *  }
@@ -246,17 +246,17 @@ define(function (require) {
    */
   p5.PolySynth.prototype.noteAttack = function (_note, _velocity, secondsFromNow) {
     //this value goes to the audiovoices which handle their own scheduling
-    var secondsFromNow = ~~secondsFromNow;
+    let secondsFromNow = ~~secondsFromNow;
 
     //this value is used by this._voicesInUse
-    var acTime = p5sound.audiocontext.currentTime + secondsFromNow;
+    let acTime = p5sound.audiocontext.currentTime + secondsFromNow;
 
     //Convert note to frequency if necessary. This is because entries into this.notes
     //should be based on frequency for the sake of consistency.
-    var note = noteToFreq(_note);
-    var velocity = _velocity || 0.1;
+    let note = noteToFreq(_note);
+    let velocity = _velocity || 0.1;
 
-    var currentVoice;
+    let currentVoice;
 
     //Release the note if it is already playing
     if (this.notes[note] && this.notes[note].getValueAtTime(acTime) !== null) {
@@ -272,7 +272,7 @@ define(function (require) {
     else {
       currentVoice = this._oldest;
 
-      var oldestNote = p5.prototype.freqToMidi(this.audiovoices[this._oldest].oscillator.freq().value);
+      let oldestNote = p5.prototype.freqToMidi(this.audiovoices[this._oldest].oscillator.freq().value);
       this.noteRelease(oldestNote);
       this._oldest = ( this._oldest + 1 ) % (this.maxVoices - 1);
     }
@@ -284,7 +284,7 @@ define(function (require) {
 
     //Find the scheduled change in this._voicesInUse that will be previous to this new note
     //Add 1 and schedule this value at time 't', when this note will start playing
-    var previousVal = this._voicesInUse._searchBefore(acTime) === null ? 0 : this._voicesInUse._searchBefore(acTime).value;
+    let previousVal = this._voicesInUse._searchBefore(acTime) === null ? 0 : this._voicesInUse._searchBefore(acTime).value;
     this._voicesInUse.setValueAtTime(previousVal + 1, acTime);
 
     //Then update all scheduled values that follow to increase by 1
@@ -293,7 +293,7 @@ define(function (require) {
     this._newest = currentVoice;
     //The audiovoice handles the actual scheduling of the note
     if (typeof velocity === 'number') {
-      var maxRange = 1 / this._voicesInUse.getValueAtTime(acTime) * 2;
+      let maxRange = 1 / this._voicesInUse.getValueAtTime(acTime) * 2;
       velocity = velocity > maxRange ? maxRange : velocity;
     }
     this.audiovoices[currentVoice].triggerAttack(note, velocity, secondsFromNow);
@@ -315,7 +315,7 @@ define(function (require) {
       return;
     } else{
       this._voicesInUse._searchAfter(time).value += value;
-      var nextTime = this._voicesInUse._searchAfter(time).time;
+      let nextTime = this._voicesInUse._searchAfter(time).time;
       this._updateAfter(nextTime, value);
     }
   };
@@ -332,14 +332,14 @@ define(function (require) {
    *  @param  {Number} [secondsFromNow] time to trigger the release
    *  @example
    *  <div><code>
-   *  var pitches = ["G", "D", "G", "C"];
-   *  var octaves = [2, 3, 4];
-   *  var polySynth = new p5.PolySynth();
+   *  let pitches = ["G", "D", "G", "C"];
+   *  let octaves = [2, 3, 4];
+   *  let polySynth = new p5.PolySynth();
    *
    *  function mousePressed() {
    *    // play a chord: multiple notes at the same time
-   *    for (var i = 0; i < 4; i++) {
-   *      var note = random(pitches) + random(octaves);
+   *    for (let i = 0; i < 4; i++) {
+   *      let note = random(pitches) + random(octaves);
    *      polySynth.noteAttack(note, 0.1);
    *    }
    *  }
@@ -352,9 +352,9 @@ define(function (require) {
    *
    */
   p5.PolySynth.prototype.noteRelease = function (_note,secondsFromNow) {
-    var now =  p5sound.audiocontext.currentTime;
-    var tFromNow = secondsFromNow || 0;
-    var t = now + tFromNow;
+    let now =  p5sound.audiocontext.currentTime;
+    let tFromNow = secondsFromNow || 0;
+    let t = now + tFromNow;
 
     // if a note value is not provided, release all voices
     if (!_note) {
@@ -362,7 +362,7 @@ define(function (require) {
         voice.triggerRelease(tFromNow)
       });
       this._voicesInUse.setValueAtTime(0, t);
-      for (var n in this.notes) {
+      for (let n in this.notes) {
         this.notes[n].dispose();
         delete this.notes[n];
       }
@@ -370,14 +370,14 @@ define(function (require) {
     }
 
     //Make sure note is in frequency inorder to query the this.notes object
-    var note = noteToFreq(_note);
+    let note = noteToFreq(_note);
 
     if (!this.notes[note] || this.notes[note].getValueAtTime(t) === null) {
       console.warn('Cannot release a note that is not already playing');
     } else {
       //Find the scheduled change in this._voicesInUse that will be previous to this new note
       //subtract 1 and schedule this value at time 't', when this note will stop playing
-      var previousVal = Math.max(~~this._voicesInUse.getValueAtTime(t).value, 1);
+      let previousVal = Math.max(~~this._voicesInUse.getValueAtTime(t).value, 1);
       this._voicesInUse.setValueAtTime(previousVal - 1, t);
       //Then update all scheduled values that follow to decrease by 1 but never go below 0
       if (previousVal > 0) {
@@ -400,7 +400,7 @@ define(function (require) {
     *  @param  {Object} unit A p5.sound or Web Audio object
     */
   p5.PolySynth.prototype.connect = function (unit) {
-    var u = unit || p5sound.input;
+    let u = unit || p5sound.input;
     this.output.connect(u.input ? u.input : u);
   };
 

@@ -4,9 +4,9 @@ define(function (require) {
 
   // inspiration: recorder.js, Tone.js & typedarray.org
 
-  var p5sound = require('master');
-  var convertToWav = require('helpers').convertToWav;
-  var ac = p5sound.audiocontext;
+  let p5sound = require('master');
+  let convertToWav = require('helpers').convertToWav;
+  let ac = p5sound.audiocontext;
 
   /**
    *  <p>Record sounds for playback and/or to save as a .wav file.
@@ -21,8 +21,8 @@ define(function (require) {
    *  @constructor
    *  @example
    *  <div><code>
-   *  var mic, recorder, soundFile;
-   *  var state = 0;
+   *  let mic, recorder, soundFile;
+   *  let state = 0;
    *
    *  function setup() {
    *    background(200);
@@ -84,7 +84,7 @@ define(function (require) {
     this.bufferSize = 1024;
     this._channels = 2; // stereo (default)
 
-    this._clear(); // initialize variables
+    this._clear(); // initialize letiables
 
     this._jsNode = ac.createScriptProcessor(this.bufferSize, this._channels, 2);
     this._jsNode.onaudioprocess = this._audioprocess.bind(this);
@@ -199,8 +199,8 @@ define(function (require) {
         this.stop();
       } else {
         // get channel data
-        var left = event.inputBuffer.getChannelData(0);
-        var right = event.inputBuffer.getChannelData(1);
+        let left = event.inputBuffer.getChannelData(0);
+        let right = event.inputBuffer.getChannelData(1);
 
         // clone the samples
         this._leftBuffers.push(new Float32Array(left));
@@ -212,18 +212,18 @@ define(function (require) {
   };
 
   p5.SoundRecorder.prototype._getBuffer = function() {
-    var buffers = [];
+    let buffers = [];
     buffers.push( this._mergeBuffers(this._leftBuffers) );
     buffers.push( this._mergeBuffers(this._rightBuffers) );
     return buffers;
   };
 
   p5.SoundRecorder.prototype._mergeBuffers = function(channelBuffer) {
-    var result = new Float32Array(this.recordedSamples);
-    var offset = 0;
-    var lng = channelBuffer.length;
-    for (var i = 0; i < lng; i++) {
-      var buffer = channelBuffer[i];
+    let result = new Float32Array(this.recordedSamples);
+    let offset = 0;
+    let lng = channelBuffer.length;
+    for (let i = 0; i < lng; i++) {
+      let buffer = channelBuffer[i];
       result.set(buffer, offset);
       offset += buffer.length;
     }
@@ -234,7 +234,7 @@ define(function (require) {
     this._clear();
 
     // remove reference from soundArray
-    var index = p5sound.soundArray.indexOf(this);
+    let index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
     this._callback = function() {};

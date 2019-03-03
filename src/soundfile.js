@@ -2,11 +2,11 @@
 
 define(function (require) {
 
-  var CustomError = require('errorHandler');
-  var p5sound = require('master');
-  var ac = p5sound.audiocontext;
-  var midiToFreq = require('helpers').midiToFreq;
-  var convertToWav = require('helpers').convertToWav;
+  let CustomError = require('errorHandler');
+  let p5sound = require('master');
+  let ac = p5sound.audiocontext;
+  let midiToFreq = require('helpers').midiToFreq;
+  let convertToWav = require('helpers').convertToWav;
 
   /**
    *  <p>SoundFile object with a path to a file.</p>
@@ -61,7 +61,7 @@ define(function (require) {
   p5.SoundFile = function(paths, onload, onerror, whileLoading) {
     if (typeof paths !== 'undefined') {
       if (typeof paths === 'string' || typeof paths[0] === 'string') {
-        var path = p5.prototype._checkFileFormats(paths);
+        let path = p5.prototype._checkFileFormats(paths);
         this.url = path;
       }
       else if(typeof paths === 'object') {
@@ -183,8 +183,8 @@ define(function (require) {
       window.alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
     }
 
-    var self = this;
-    var s = new p5.SoundFile(path, function() {
+    let self = this;
+    let s = new p5.SoundFile(path, function() {
       if(typeof callback === 'function') {
         callback.apply(self, arguments);
       }
@@ -207,11 +207,11 @@ define(function (require) {
    * @param {Function} [errorCallback]   Name of a function to call if there is an error
    */
   p5.SoundFile.prototype.load = function(callback, errorCallback) {
-    var self = this;
-    var errorTrace = new Error().stack;
+    let self = this;
+    let errorTrace = new Error().stack;
 
     if (this.url !== undefined && this.url !== '') {
-      var request = new XMLHttpRequest();
+      let request = new XMLHttpRequest();
       request.addEventListener('progress', function(evt) {
         self._updateProgress(evt);
       }, false);
@@ -235,8 +235,8 @@ define(function (require) {
             // error decoding buffer. "e" is undefined in Chrome 11/22/2015
             function() {
               if (!self.panner) return;
-              var err = new CustomError('decodeAudioData', errorTrace, self.url);
-              var msg = 'AudioContext error at decodeAudioData for ' + self.url;
+              let err = new CustomError('decodeAudioData', errorTrace, self.url);
+              let msg = 'AudioContext error at decodeAudioData for ' + self.url;
               if (errorCallback) {
                 err.msg = msg;
                 errorCallback(err);
@@ -249,8 +249,8 @@ define(function (require) {
         // if request status != 200, it failed
         else {
           if (!self.panner) return;
-          var err = new CustomError('loadSound', errorTrace, self.url);
-          var msg = 'Unable to load ' + self.url + '. The request status was: ' +
+          let err = new CustomError('loadSound', errorTrace, self.url);
+          let msg = 'Unable to load ' + self.url + '. The request status was: ' +
             request.status + ' (' + request.statusText + ')';
 
           if (errorCallback) {
@@ -264,8 +264,8 @@ define(function (require) {
 
       // if there is another error, aside from 404...
       request.onerror = function() {
-        var err = new CustomError('loadSound', errorTrace, self.url);
-        var msg = 'There was no response from the server at ' + self.url + '. Check the url and internet connectivity.';
+        let err = new CustomError('loadSound', errorTrace, self.url);
+        let msg = 'There was no response from the server at ' + self.url + '. Check the url and internet connectivity.';
 
         if (errorCallback) {
           err.message = msg;
@@ -278,7 +278,7 @@ define(function (require) {
       request.send();
     }
     else if (this.file !== undefined) {
-      var reader = new FileReader();
+      let reader = new FileReader();
       reader.onload = function() {
         if (!self.panner) return;
         ac.decodeAudioData(reader.result, function(buff) {
@@ -303,7 +303,7 @@ define(function (require) {
   // TO DO: use this method to create a loading bar that shows progress during file upload/decode.
   p5.SoundFile.prototype._updateProgress = function(evt) {
     if (evt.lengthComputable) {
-      var percentComplete = evt.loaded / evt.total * 0.99;
+      let percentComplete = evt.loaded / evt.total * 0.99;
       this._whileLoading(percentComplete, evt);
       // ...
     } else {
@@ -343,10 +343,10 @@ define(function (require) {
       return;
     }
 
-    var self = this;
-    var now = p5sound.audiocontext.currentTime;
-    var cueStart, cueEnd;
-    var time = startTime || 0;
+    let self = this;
+    let now = p5sound.audiocontext.currentTime;
+    let cueStart, cueEnd;
+    let time = startTime || 0;
     if (time < 0) {
       time = 0;
     }
@@ -415,7 +415,7 @@ define(function (require) {
       this.bufferSourceNode._arrayIndex = this.bufferSourceNodes.length - 1;
 
       // delete this.bufferSourceNode from the sources array when it is done playing:
-      var clearOnEnd = function() {
+      let clearOnEnd = function() {
         this._playing = false;
         this.removeEventListener('ended', clearOnEnd, false);
         // call the onended callback
@@ -466,7 +466,7 @@ define(function (require) {
    *  @param  {String} str 'restart' or 'sustain' or 'untilDone'
    *  @example
    *  <div><code>
-   *  var mySound;
+   *  let mySound;
    *  function preload(){
    *    mySound = loadSound('assets/Damscray_DancingTiger.mp3');
    *  }
@@ -482,12 +482,12 @@ define(function (require) {
    * </code></div>
    */
   p5.SoundFile.prototype.playMode = function(str) {
-    var s = str.toLowerCase();
+    let s = str.toLowerCase();
 
     // if restart, stop all other sounds from playing
     if (s === 'restart' && this.buffer && this.bufferSourceNode) {
-      for (var i = 0; i < this.bufferSourceNodes.length - 1; i++) {
-        var now = p5sound.audiocontext.currentTime;
+      for (let i = 0; i < this.bufferSourceNodes.length - 1; i++) {
+        let now = p5sound.audiocontext.currentTime;
         this.bufferSourceNodes[i].stop(now);
       }
     }
@@ -514,7 +514,7 @@ define(function (require) {
    *                               seconds from now
    *  @example
    *  <div><code>
-   *  var soundFile;
+   *  let soundFile;
    *
    *  function preload() {
    *    soundFormats('ogg', 'mp3');
@@ -542,9 +542,9 @@ define(function (require) {
    *  </div>
    */
   p5.SoundFile.prototype.pause = function(startTime) {
-    var now = p5sound.audiocontext.currentTime;
-    var time = startTime || 0;
-    var pTime = time + now;
+    let now = p5sound.audiocontext.currentTime;
+    let time = startTime || 0;
+    let pTime = time + now;
 
     if (this.isPlaying() && this.buffer && this.bufferSourceNode) {
       this.pauseTime = this.currentTime();
@@ -647,7 +647,7 @@ define(function (require) {
    *                             in seconds from now
    */
   p5.SoundFile.prototype.stop = function(timeFromNow) {
-    var time = timeFromNow || 0;
+    let time = timeFromNow || 0;
 
     if (this.mode === 'sustain' || this.mode === 'untildone') {
       this.stopAll(time);
@@ -656,8 +656,8 @@ define(function (require) {
       this._paused = false;
     }
     else if (this.buffer && this.bufferSourceNode) {
-      var now = p5sound.audiocontext.currentTime;
-      var t = time || 0;
+      let now = p5sound.audiocontext.currentTime;
+      let t = time || 0;
       this.pauseTime = 0;
       this.bufferSourceNode.stop(now + t);
       this._counterNode.stop(now + t);
@@ -671,10 +671,10 @@ define(function (require) {
    *  @private
    */
   p5.SoundFile.prototype.stopAll = function(_time) {
-    var now = p5sound.audiocontext.currentTime;
-    var time = _time || 0;
+    let now = p5sound.audiocontext.currentTime;
+    let time = _time || 0;
     if (this.buffer && this.bufferSourceNode) {
-      for (var i = 0; i < this.bufferSourceNodes.length; i++) {
+      for (let i = 0; i < this.bufferSourceNodes.length; i++) {
         if (typeof this.bufferSourceNodes[i] !== undefined) {
           try {
             this.bufferSourceNodes[i].onended = function() {};
@@ -709,10 +709,10 @@ define(function (require) {
    */
   p5.SoundFile.prototype.setVolume = function(vol, _rampTime, _tFromNow) {
     if (typeof vol === 'number') {
-      var rampTime = _rampTime || 0;
-      var tFromNow = _tFromNow || 0;
-      var now = p5sound.audiocontext.currentTime;
-      var currentVol = this.output.gain.value;
+      let rampTime = _rampTime || 0;
+      let tFromNow = _tFromNow || 0;
+      let now = p5sound.audiocontext.currentTime;
+      let currentVol = this.output.gain.value;
       this.output.gain.cancelScheduledValues(now + tFromNow);
       this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
       this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
@@ -747,8 +747,8 @@ define(function (require) {
    * @example
    * <div><code>
    *
-   *  var ball = {};
-   *  var soundFile;
+   *  let ball = {};
+   *  let soundFile;
    *
    *  function preload() {
    *    soundFormats('ogg', 'mp3');
@@ -764,7 +764,7 @@ define(function (require) {
    *  function mousePressed(){
    *    // map the ball's x location to a panning degree
    *    // between -1.0 (left) and 1.0 (right)
-   *    var panning = map(ball.x, 0., width,-1.0, 1.0);
+   *    let panning = map(ball.x, 0., width,-1.0, 1.0);
    *    soundFile.pan(panning);
    *    soundFile.play();
    *  }
@@ -797,7 +797,7 @@ define(function (require) {
    *                                     Values less than zero play backwards.
    *  @example
    *  <div><code>
-   *  var song;
+   *  let song;
    *
    *  function preload() {
    *    song = loadSound('assets/Damscray_DancingTiger.mp3');
@@ -812,7 +812,7 @@ define(function (require) {
    *
    *    // Set the rate to a range between 0.1 and 4
    *    // Changing the rate also alters the pitch
-   *    var speed = map(mouseY, 0.1, height, 0, 2);
+   *    let speed = map(mouseY, 0.1, height, 0, 2);
    *    speed = constrain(speed, 0.01, 4);
    *    song.rate(speed);
    *
@@ -827,7 +827,7 @@ define(function (require) {
    *
    */
   p5.SoundFile.prototype.rate = function(playbackRate) {
-    var reverse = false;
+    let reverse = false;
     if (typeof playbackRate === 'undefined') {
       return this.playbackRate;
     }
@@ -848,7 +848,7 @@ define(function (require) {
     }
 
     if (this.bufferSourceNode) {
-      var now = p5sound.audiocontext.currentTime;
+      let now = p5sound.audiocontext.currentTime;
       this.bufferSourceNode.playbackRate.cancelScheduledValues(now);
       this.bufferSourceNode.playbackRate.linearRampToValueAtTime(Math.abs(playbackRate), now);
       this._counterNode.playbackRate.cancelScheduledValues(now);
@@ -863,7 +863,7 @@ define(function (require) {
 
   // TO DO: document this
   p5.SoundFile.prototype.setPitch = function(num) {
-    var newPlaybackRate = midiToFreq(num) / midiToFreq(60);
+    let newPlaybackRate = midiToFreq(num) / midiToFreq(60);
     this.rate(newPlaybackRate);
   };
 
@@ -917,8 +917,8 @@ define(function (require) {
       throw 'end time out of range';
     }
 
-    var cTime = cueTime || 0;
-    var dur = duration || undefined;
+    let cTime = cueTime || 0;
+    let dur = duration || undefined;
     if (this.isPlaying()) {
       this.stop(0);
     }
@@ -980,20 +980,20 @@ define(function (require) {
         length = window.width*5;
       }
       if (this.buffer) {
-        var buffer = this.buffer;
-        var sampleSize = buffer.length / length;
-        var sampleStep = ~~(sampleSize / 10) || 1;
-        var channels = buffer.numberOfChannels;
-        var peaks = new Float32Array(Math.round(length));
+        let buffer = this.buffer;
+        let sampleSize = buffer.length / length;
+        let sampleStep = ~~(sampleSize / 10) || 1;
+        let channels = buffer.numberOfChannels;
+        let peaks = new Float32Array(Math.round(length));
 
-        for (var c = 0; c < channels; c++) {
-          var chan = buffer.getChannelData(c);
-          for (var i = 0; i < length; i++) {
-            var start = ~~(i*sampleSize);
-            var end = ~~(start + sampleSize);
-            var max = 0;
-            for (var j = start; j < end; j+= sampleStep) {
-              var value = chan[j];
+        for (let c = 0; c < channels; c++) {
+          let chan = buffer.getChannelData(c);
+          for (let i = 0; i < length; i++) {
+            let start = ~~(i*sampleSize);
+            let end = ~~(start + sampleSize);
+            let max = 0;
+            for (let j = start; j < end; j+= sampleStep) {
+              let value = chan[j];
               if (value > max) {
                 max = value;
               // faster than Math.abs
@@ -1023,7 +1023,7 @@ define(function (require) {
    *  @method  reverseBuffer
    *  @example
    *  <div><code>
-   *  var drum;
+   *  let drum;
    *
    *  function preload() {
    *    drum = loadSound('assets/drum.mp3');
@@ -1039,12 +1039,12 @@ define(function (require) {
    */
   p5.SoundFile.prototype.reverseBuffer = function() {
     if (this.buffer) {
-      var currentPos = this._lastPos / ac.sampleRate;
-      var curVol = this.getVolume();
+      let currentPos = this._lastPos / ac.sampleRate;
+      let curVol = this.getVolume();
       this.setVolume(0, 0.001);
 
       const numChannels = this.buffer.numberOfChannels;
-      for (var i = 0; i < numChannels; i++) {
+      for (let i = 0; i < numChannels; i++) {
         this.buffer.getChannelData(i).reverse();
       }
       // set reversed flag
@@ -1080,15 +1080,15 @@ define(function (require) {
   };
 
   p5.SoundFile.prototype.dispose = function() {
-    var now = p5sound.audiocontext.currentTime;
+    let now = p5sound.audiocontext.currentTime;
 
     // remove reference to soundfile
-    var index = p5sound.soundArray.indexOf(this);
+    let index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
     this.stop(now);
     if (this.buffer && this.bufferSourceNode) {
-      for (var i = 0; i < this.bufferSourceNodes.length - 1; i++) {
+      for (let i = 0; i < this.bufferSourceNodes.length - 1; i++) {
         if (this.bufferSourceNodes[i] !== null) {
           this.bufferSourceNodes[i].disconnect();
           try {
@@ -1167,7 +1167,7 @@ define(function (require) {
    *  @param {Function} callback Callback
    */
   p5.SoundFile.prototype.setPath = function(p, callback) {
-    var path = p5.prototype._checkFileFormats(p);
+    let path = p5.prototype._checkFileFormats(p);
     this.url = path;
     this.load(callback);
   };
@@ -1181,16 +1181,16 @@ define(function (require) {
    *                     a mono source.
    */
   p5.SoundFile.prototype.setBuffer = function(buf) {
-    var numChannels = buf.length;
-    var size = buf[0].length;
-    var newBuffer = ac.createBuffer(numChannels, size, ac.sampleRate);
+    let numChannels = buf.length;
+    let size = buf[0].length;
+    let newBuffer = ac.createBuffer(numChannels, size, ac.sampleRate);
 
     if (!(buf[0] instanceof Float32Array)) {
       buf[0] = new Float32Array(buf[0]);
     }
 
-    for (var channelNum = 0; channelNum < numChannels; channelNum++) {
-      var channel = newBuffer.getChannelData( channelNum );
+    for (let channelNum = 0; channelNum < numChannels; channelNum++) {
+      let channel = newBuffer.getChannelData( channelNum );
       channel.set(buf[channelNum]);
     }
 
@@ -1208,11 +1208,11 @@ define(function (require) {
   // Licensed under the Apache License http://apache.org/licenses/LICENSE-2.0
   ////////////////////////////////////////////////////////////////////////////////////
 
-  var _createCounterBuffer = function(buffer) {
+  let _createCounterBuffer = function(buffer) {
     const len = buffer.length;
     const audioBuf = ac.createBuffer( 1, buffer.length, ac.sampleRate );
     const arrayBuffer = audioBuf.getChannelData(0);
-    for (var index = 0; index < len; index++) {
+    for (let index = 0; index < len; index++) {
       arrayBuffer[index] = index;
     }
     return audioBuf;
@@ -1220,9 +1220,9 @@ define(function (require) {
 
   // initialize counterNode, set its initial buffer and playbackRate
   p5.SoundFile.prototype._initCounterNode = function() {
-    var self = this;
-    var now = ac.currentTime;
-    var cNode = ac.createBufferSource();
+    let self = this;
+    let now = ac.currentTime;
+    let cNode = ac.createBufferSource();
 
     // dispose of scope node if it already exists
     if (self._scopeNode) {
@@ -1241,7 +1241,7 @@ define(function (require) {
     self._scopeNode.connect( p5.soundOut._silentNode );
 
     self._scopeNode.onaudioprocess = function(processEvent) {
-      var inputBuffer = processEvent.inputBuffer.getChannelData( 0 );
+      let inputBuffer = processEvent.inputBuffer.getChannelData( 0 );
 
       self._lastPos = inputBuffer[ inputBuffer.length - 1 ] || 0;
 
@@ -1254,7 +1254,7 @@ define(function (require) {
 
   // initialize sourceNode, set its initial buffer and playbackRate
   p5.SoundFile.prototype._initSourceNode = function() {
-    var bufferSourceNode = ac.createBufferSource();
+    let bufferSourceNode = ac.createBufferSource();
     bufferSourceNode.buffer = this.buffer;
     bufferSourceNode.playbackRate.value = this.playbackRate;
     bufferSourceNode.connect(this.output);
@@ -1279,25 +1279,25 @@ define(function (require) {
    *  @return {Array}                  Array of timestamped peaks
    */
   p5.SoundFile.prototype.processPeaks = function(callback, _initThreshold, _minThreshold, _minPeaks) {
-    var bufLen = this.buffer.length;
-    var sampleRate = this.buffer.sampleRate;
-    var buffer = this.buffer;
-    var allPeaks = [];
+    let bufLen = this.buffer.length;
+    let sampleRate = this.buffer.sampleRate;
+    let buffer = this.buffer;
+    let allPeaks = [];
 
-    var initialThreshold = _initThreshold || 0.9,
+    let initialThreshold = _initThreshold || 0.9,
       threshold = initialThreshold,
       minThreshold = _minThreshold || 0.22,
       minPeaks = _minPeaks || 200;
 
     // Create offline context
-    var offlineContext = new window.OfflineAudioContext(1, bufLen, sampleRate);
+    let offlineContext = new window.OfflineAudioContext(1, bufLen, sampleRate);
 
     // create buffer source
-    var source = offlineContext.createBufferSource();
+    let source = offlineContext.createBufferSource();
     source.buffer = buffer;
 
     // Create filter. TO DO: allow custom setting of filter
-    var filter = offlineContext.createBiquadFilter();
+    let filter = offlineContext.createBiquadFilter();
     filter.type = 'lowpass';
     source.connect(filter);
     filter.connect(offlineContext.destination);
@@ -1309,8 +1309,8 @@ define(function (require) {
     // act on the result
     offlineContext.oncomplete = function(e) {
       if (!self.panner) return;
-      var filteredBuffer = e.renderedBuffer;
-      var bufferData = filteredBuffer.getChannelData(0);
+      let filteredBuffer = e.renderedBuffer;
+      let bufferData = filteredBuffer.getChannelData(0);
 
 
       // step 1:
@@ -1323,13 +1323,13 @@ define(function (require) {
 
       // step 2:
       // find intervals for each peak in the sampleIndex, add tempos array
-      var intervalCounts = countIntervalsBetweenNearbyPeaks(allPeaks);
+      let intervalCounts = countIntervalsBetweenNearbyPeaks(allPeaks);
 
       // step 3: find top tempos
-      var groups = groupNeighborsByTempo(intervalCounts, filteredBuffer.sampleRate);
+      let groups = groupNeighborsByTempo(intervalCounts, filteredBuffer.sampleRate);
 
       // sort top intervals
-      var topTempos = groups.sort(function(intA, intB) {
+      let topTempos = groups.sort(function(intA, intB) {
         return intB.count - intA.count;
 
       }).splice(0,5);
@@ -1338,16 +1338,16 @@ define(function (require) {
       this.tempo = topTempos[0].tempo;
 
       // step 4:
-      // new array of peaks at top tempo within a bpmVariance
-      var bpmVariance = 5;
-      var tempoPeaks = getPeaksAtTopTempo(allPeaks, topTempos[0].tempo, filteredBuffer.sampleRate, bpmVariance);
+      // new array of peaks at top tempo within a bpmletiance
+      let bpmletiance = 5;
+      let tempoPeaks = getPeaksAtTopTempo(allPeaks, topTempos[0].tempo, filteredBuffer.sampleRate, bpmletiance);
 
       callback(tempoPeaks);
     };
   };
 
   // process peaks
-  var Peak = function(amp, i) {
+  let Peak = function(amp, i) {
     this.sampleIndex = i;
     this.amplitude = amp;
     this.tempos = [];
@@ -1357,13 +1357,13 @@ define(function (require) {
   // 1. for processPeaks() Function to identify peaks above a threshold
   // returns an array of peak indexes as frames (samples) of the original soundfile
   function getPeaksAtThreshold(data, threshold) {
-    var peaksObj = {};
-    var length = data.length;
+    let peaksObj = {};
+    let length = data.length;
 
-    for (var i = 0; i < length; i++) {
+    for (let i = 0; i < length; i++) {
       if (data[i] > threshold) {
-        var amp = data[i];
-        var peak = new Peak(amp, i);
+        let amp = data[i];
+        let peak = new Peak(amp, i);
         peaksObj[i] = peak;
         // Skip forward ~ 1/8s to get past this peak.
         i += 6000;
@@ -1375,20 +1375,20 @@ define(function (require) {
 
   // 2. for processPeaks()
   function countIntervalsBetweenNearbyPeaks(peaksObj) {
-    var intervalCounts = [];
-    var peaksArray = Object.keys(peaksObj).sort();
+    let intervalCounts = [];
+    let peaksArray = Object.keys(peaksObj).sort();
 
-    for (var index = 0; index < peaksArray.length; index++) {
+    for (let index = 0; index < peaksArray.length; index++) {
 
       // find intervals in comparison to nearby peaks
-      for (var i = 0; i < 10; i++) {
-        var startPeak = peaksObj[peaksArray[index]];
-        var endPeak = peaksObj[peaksArray[index + i]];
+      for (let i = 0; i < 10; i++) {
+        let startPeak = peaksObj[peaksArray[index]];
+        let endPeak = peaksObj[peaksArray[index + i]];
 
         if (startPeak && endPeak) {
-          var startPos = startPeak.sampleIndex;
-          var endPos = endPeak.sampleIndex;
-          var interval =  endPos - startPos;
+          let startPos = startPeak.sampleIndex;
+          let endPos = endPeak.sampleIndex;
+          let interval =  endPos - startPos;
 
           // add a sample interval to the startPeak in the allPeaks array
           if (interval > 0) {
@@ -1396,7 +1396,7 @@ define(function (require) {
           }
 
           // tally the intervals and return interval counts
-          var foundInterval = intervalCounts.some(function(intervalCount) {
+          let foundInterval = intervalCounts.some(function(intervalCount) {
             if (intervalCount.interval === interval) {
               intervalCount.count++;
               return intervalCount;
@@ -1420,17 +1420,17 @@ define(function (require) {
 
   // 3. for processPeaks --> find tempo
   function groupNeighborsByTempo(intervalCounts, sampleRate) {
-    var tempoCounts = [];
+    let tempoCounts = [];
 
     intervalCounts.forEach(function(intervalCount) {
 
       try {
         // Convert an interval to tempo
-        var theoreticalTempo = Math.abs( 60 / (intervalCount.interval / sampleRate ) );
+        let theoreticalTempo = Math.abs( 60 / (intervalCount.interval / sampleRate ) );
 
         theoreticalTempo = mapTempo(theoreticalTempo);
 
-        var foundTempo = tempoCounts.some(function(tempoCount) {
+        let foundTempo = tempoCounts.some(function(tempoCount) {
           if (tempoCount.tempo === theoreticalTempo)
             return tempoCount.count += intervalCount.count;
         });
@@ -1453,21 +1453,21 @@ define(function (require) {
   }
 
   // 4. for processPeaks - get peaks at top tempo
-  function getPeaksAtTopTempo(peaksObj, tempo, sampleRate, bpmVariance) {
-    var peaksAtTopTempo = [];
-    var peaksArray = Object.keys(peaksObj).sort();
+  function getPeaksAtTopTempo(peaksObj, tempo, sampleRate, bpmletiance) {
+    let peaksAtTopTempo = [];
+    let peaksArray = Object.keys(peaksObj).sort();
 
     // TO DO: filter out peaks that have the tempo and return
-    for (var i = 0; i < peaksArray.length; i++) {
-      var key = peaksArray[i];
-      var peak = peaksObj[key];
+    for (let i = 0; i < peaksArray.length; i++) {
+      let key = peaksArray[i];
+      let peak = peaksObj[key];
 
-      for (var j = 0; j < peak.intervals.length; j++) {
-        var intervalBPM = Math.round(Math.abs( 60 / (peak.intervals[j] / sampleRate) ) );
+      for (let j = 0; j < peak.intervals.length; j++) {
+        let intervalBPM = Math.round(Math.abs( 60 / (peak.intervals[j] / sampleRate) ) );
 
         intervalBPM = mapTempo(intervalBPM);
 
-        if ( Math.abs(intervalBPM - tempo) < bpmVariance ) {
+        if ( Math.abs(intervalBPM - tempo) < bpmletiance ) {
           // convert sampleIndex to seconds
           peaksAtTopTempo.push(peak.sampleIndex/sampleRate);
         }
@@ -1476,7 +1476,7 @@ define(function (require) {
 
     // filter out peaks that are very close to each other
     peaksAtTopTempo = peaksAtTopTempo.filter(function(peakTime, index, arr) {
-      var dif = arr[index + 1] - peakTime;
+      let dif = arr[index + 1] - peakTime;
       if (dif > 0.01) {
         return true;
       }
@@ -1504,7 +1504,7 @@ define(function (require) {
 
   // Cue inspired by JavaScript setTimeout, and the
   // Tone.js Transport Timeline Event, MIT License Yotam Mann 2015 tonejs.org
-  var Cue = function(callback, time, id, val) {
+  let Cue = function(callback, time, id, val) {
     this.callback = callback;
     this.time = time;
     this.id = id;
@@ -1540,7 +1540,7 @@ define(function (require) {
    *                      useful for removeCue(id)
    *  @example
    *  <div><code>
-   *  var mySound;
+   *  let mySound;
    *  function preload() {
    *    mySound = loadSound('assets/beat.mp3');
    *  }
@@ -1581,9 +1581,9 @@ define(function (require) {
    *  </code></div>
    */
   p5.SoundFile.prototype.addCue = function(time, callback, val) {
-    var id = this._cueIDCounter++;
+    let id = this._cueIDCounter++;
 
-    var cue = new Cue(callback, time, id, val);
+    let cue = new Cue(callback, time, id, val);
     this._cues.push(cue);
 
     // if (!this.elt.ontimeupdate) {
@@ -1601,9 +1601,9 @@ define(function (require) {
    *  @param  {Number} id ID of the cue, as returned by addCue
    */
   p5.SoundFile.prototype.removeCue = function(id) {
-    var cueLength = this._cues.length;
-    for (var i = 0; i < cueLength; i++) {
-      var cue = this._cues[i];
+    let cueLength = this._cues.length;
+    for (let i = 0; i < cueLength; i++) {
+      let cue = this._cues[i];
       if (cue.id === id) {
         this._cues.splice(i, 1);
         break;
@@ -1630,13 +1630,13 @@ define(function (require) {
   // private method that checks for cues to be fired if events
   // have been scheduled using addCue(callback, time).
   p5.SoundFile.prototype._onTimeUpdate = function(position) {
-    var playbackTime = position/this.buffer.sampleRate;
-    var cueLength = this._cues.length;
+    let playbackTime = position/this.buffer.sampleRate;
+    let cueLength = this._cues.length;
 
-    for (var i = 0 ; i < cueLength; i++) {
-      var cue = this._cues[i];
-      var callbackTime = cue.time;
-      var val = cue.val;
+    for (let i = 0 ; i < cueLength; i++) {
+      let cue = this._cues[i];
+      let callbackTime = cue.time;
+      let val = cue.val;
 
       if (this._prevTime < callbackTime && callbackTime <= playbackTime) {
 
@@ -1658,8 +1658,8 @@ define(function (require) {
    * @param  {String} [fileName]      name of the resulting .wav file.
    * @example
    *  <div><code>
-   *  var inp, button, mySound;
-   *  var fileName = 'cool';
+   *  let inp, button, mySound;
+   *  let fileName = 'cool';
    *  function preload() {
    *    mySound = loadSound('assets/doorbell.mp3');
    *  }
@@ -1701,11 +1701,11 @@ define(function (require) {
    *
    *  function setup() {
    *    noCanvas();
-   *    var soundBlob = mySound.getBlob();
+   *    let soundBlob = mySound.getBlob();
    *
    *    // Now we can send the blob to a server...
-   *    var serverUrl = 'https://jsonplaceholder.typicode.com/posts';
-   *    var httpRequestOptions = {
+   *    let serverUrl = 'https://jsonplaceholder.typicode.com/posts';
+   *    let httpRequestOptions = {
    *      method: 'POST',
    *      body: new FormData().append('soundBlob', soundBlob),
    *      headers: new Headers({
@@ -1715,15 +1715,15 @@ define(function (require) {
    *    httpDo(serverUrl, httpRequestOptions);
    *
    *    // We can also create an `ObjectURL` pointing to the Blob
-   *    var blobUrl = URL.createObjectURL(soundBlob);
+   *    let blobUrl = URL.createObjectURL(soundBlob);
    *
    *    // The `<Audio>` Element accepts Object URL's
-   *    var htmlAudioElt = createAudio(blobUrl).showControls();
+   *    let htmlAudioElt = createAudio(blobUrl).showControls();
    *
    *    createDiv();
    *
    *    // The ObjectURL exists as long as this tab is open
-   *    var input = createInput(blobUrl);
+   *    let input = createInput(blobUrl);
    *    input.attribute('readonly', true);
    *    input.mouseClicked(function() { input.elt.select() });
    *  }

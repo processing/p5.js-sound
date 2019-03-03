@@ -1,6 +1,6 @@
 'use strict';
 define(function (require) {
-  var p5sound = require('master');
+  let p5sound = require('master');
   /**
    * @for p5
    */
@@ -30,8 +30,8 @@ define(function (require) {
    *  @return {Number}   MIDI note value
    */
   p5.prototype.freqToMidi = function(f) {
-    var mathlog2 = Math.log(f/440) / Math.log(2);
-    var m = Math.round(12*mathlog2)+69;
+    let mathlog2 = Math.log(f/440) / Math.log(2);
+    let m = Math.round(12*mathlog2)+69;
     return m;
   };
 
@@ -46,8 +46,8 @@ define(function (require) {
    *  @return {Number} Frequency value of the given MIDI note
    *  @example
    *  <div><code>
-   *  var notes = [60, 64, 67, 72];
-   *  var i = 0;
+   *  let notes = [60, 64, 67, 72];
+   *  let i = 0;
    *
    *  function setup() {
    *    osc = new p5.Oscillator('Triangle');
@@ -56,7 +56,7 @@ define(function (require) {
    *  }
    *
    *  function draw() {
-   *    var freq = midiToFreq(notes[i]);
+   *    let freq = midiToFreq(notes[i]);
    *    osc.freq(freq);
    *    i++;
    *    if (i >= notes.length){
@@ -65,18 +65,18 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  var midiToFreq = p5.prototype.midiToFreq = function(m) {
+  let midiToFreq = p5.prototype.midiToFreq = function(m) {
     return 440 * Math.pow(2, (m-69)/12.0);
   };
 
   // This method converts ANSI notes specified as a string "C4", "Eb3" to a frequency
-  var noteToFreq = function(note) {
+  let noteToFreq = function(note) {
     if (typeof note !== 'string') {
       return note;
     }
-    var wholeNotes = {A:21, B:23, C:24, D:26, E:28, F:29, G:31};
-    var value = wholeNotes[ note[0].toUpperCase() ];
-    var octave = ~~note.slice(-1);
+    let wholeNotes = {A:21, B:23, C:24, D:26, E:28, F:29, G:31};
+    let value = wholeNotes[ note[0].toUpperCase() ];
+    let octave = ~~note.slice(-1);
     value += 12 * (octave -1);
 
     switch(note[1]) {
@@ -120,7 +120,7 @@ define(function (require) {
     // reset extensions array
     p5sound.extensions = [];
     // add extensions
-    for (var i = 0; i < arguments.length; i++) {
+    for (let i = 0; i < arguments.length; i++) {
       arguments[i] = arguments[i].toLowerCase();
       if (['mp3','wav','ogg', 'm4a', 'aac'].indexOf(arguments[i]) > -1) {
         p5sound.extensions.push(arguments[i]);
@@ -131,7 +131,7 @@ define(function (require) {
   };
 
   p5.prototype.disposeSound = function() {
-    for (var i = 0; i < p5sound.soundArray.length; i++) {
+    for (let i = 0; i < p5sound.soundArray.length; i++) {
       p5sound.soundArray[i].dispose();
     }
   };
@@ -141,30 +141,30 @@ define(function (require) {
   p5.prototype.registerMethod('remove', p5.prototype.disposeSound);
 
   p5.prototype._checkFileFormats = function(paths) {
-    var path;
+    let path;
     // if path is a single string, check to see if extension is provided
     if (typeof paths === 'string') {
       path = paths;
       // see if extension is provided
-      var extTest = path.split('.').pop();
+      let extTest = path.split('.').pop();
       // if an extension is provided...
       if (['mp3','wav','ogg', 'm4a', 'aac'].indexOf(extTest) > -1) {
         if (p5.prototype.isFileSupported(extTest)) {
           path = path;
         }
         else {
-          var pathSplit = path.split('.');
-          var pathCore = pathSplit[pathSplit.length - 1];
-          for (var i = 0; i<p5sound.extensions.length; i++) {
-            var extension = p5sound.extensions[i];
-            var supported = p5.prototype.isFileSupported(extension);
+          let pathSplit = path.split('.');
+          let pathCore = pathSplit[pathSplit.length - 1];
+          for (let i = 0; i<p5sound.extensions.length; i++) {
+            let extension = p5sound.extensions[i];
+            let supported = p5.prototype.isFileSupported(extension);
             if (supported) {
               pathCore = '';
               if (pathSplit.length === 2) {
                 pathCore += pathSplit[0];
               }
-              for (var i = 1; i <= pathSplit.length - 2; i++) {
-                var p = pathSplit[i];
+              for (let i = 1; i <= pathSplit.length - 2; i++) {
+                let p = pathSplit[i];
                 pathCore += '.' + p;
               }
               path = pathCore += '.';
@@ -176,9 +176,9 @@ define(function (require) {
       }
       // if no extension is provided...
       else {
-        for (var i = 0; i<p5sound.extensions.length; i++) {
-          var extension = p5sound.extensions[i];
-          var supported = p5.prototype.isFileSupported(extension);
+        for (let i = 0; i<p5sound.extensions.length; i++) {
+          let extension = p5sound.extensions[i];
+          let supported = p5.prototype.isFileSupported(extension);
           if (supported) {
             path = path + '.' + extension;
             break;
@@ -189,9 +189,9 @@ define(function (require) {
 
     // path can either be a single string, or an array
     else if (typeof paths === 'object') {
-      for (var i = 0; i<paths.length; i++) {
-        var extension = paths[i].split('.').pop();
-        var supported = p5.prototype.isFileSupported(extension);
+      for (let i = 0; i<paths.length; i++) {
+        let extension = paths[i].split('.').pop();
+        let supported = p5.prototype.isFileSupported(extension);
         if (supported) {
           // console.log('.'+extension + ' is ' + supported +
           //  ' supported by your browser.');
@@ -208,7 +208,7 @@ define(function (require) {
    */
   p5.prototype._mathChain = function(o, math, thisChain, nextChain, type) {
     // if this type of math already exists in the chain, replace it
-    for (var i in o.mathOps) {
+    for (let i in o.mathOps) {
       if (o.mathOps[i] instanceof type) {
         o.mathOps[i].dispose();
         thisChain = i;
@@ -230,7 +230,7 @@ define(function (require) {
   // Thank you to Matt Diamond's RecorderJS (MIT License)
   // https://github.com/mattdiamond/Recorderjs
   function convertToWav(audioBuffer) {
-    var leftChannel, rightChannel;
+    let leftChannel, rightChannel;
     leftChannel = audioBuffer.getChannelData(0);
 
     // handle mono files
@@ -240,11 +240,11 @@ define(function (require) {
       rightChannel = leftChannel;
     }
 
-    var interleaved = interleave(leftChannel, rightChannel);
+    let interleaved = interleave(leftChannel, rightChannel);
 
     // create the buffer and view to create the .WAV file
-    var buffer = new window.ArrayBuffer(44 + interleaved.length * 2);
-    var view = new window.DataView(buffer);
+    let buffer = new window.ArrayBuffer(44 + interleaved.length * 2);
+    let view = new window.DataView(buffer);
 
     // write the WAV container,
     // check spec at: https://web.archive.org/web/20171215131933/http://tiny.systems/software/soundProgrammer/WavFormatDocs.pdf
@@ -268,10 +268,10 @@ define(function (require) {
     view.setUint32(40, interleaved.length * 2, true);
 
     // write the PCM samples
-    var lng = interleaved.length;
-    var index = 44;
-    var volume = 1;
-    for (var i = 0; i < lng; i++) {
+    let lng = interleaved.length;
+    let index = 44;
+    let volume = 1;
+    for (let i = 0; i < lng; i++) {
       view.setInt16(index, interleaved[i] * (0x7FFF * volume), true);
       index += 2;
     }
@@ -281,12 +281,12 @@ define(function (require) {
 
   // helper methods to save waves
   function interleave(leftChannel, rightChannel) {
-    var length = leftChannel.length + rightChannel.length;
-    var result = new Float32Array(length);
+    let length = leftChannel.length + rightChannel.length;
+    let result = new Float32Array(length);
 
-    var inputIndex = 0;
+    let inputIndex = 0;
 
-    for (var index = 0; index < length;) {
+    for (let index = 0; index < length;) {
       result[index++] = leftChannel[inputIndex];
       result[index++] = rightChannel[inputIndex];
       inputIndex++;
@@ -295,8 +295,8 @@ define(function (require) {
   }
 
   function writeUTFBytes(view, offset, string) {
-    var lng = string.length;
-    for (var i = 0; i < lng; i++) {
+    let lng = string.length;
+    for (let i = 0; i < lng; i++) {
       view.setUint8(offset + i, string.charCodeAt(i));
     }
   }

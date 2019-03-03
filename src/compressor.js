@@ -1,9 +1,9 @@
 define(function (require) {
 	'use strict';
 
-	var p5sound = require('master');
-	var Effect = require('effect');
-  var CustomError = require('errorHandler');
+	let p5sound = require('master');
+	let Effect = require('effect');
+  let CustomError = require('errorHandler');
 
   /**
    * Compressor is an audio effect class that performs dynamics compression
@@ -106,7 +106,7 @@ define(function (require) {
    * @param {Number} [time]  Assign time value to schedule the change in value
    */
   p5.Compressor.prototype.attack = function (attack, time){
-    var t = time || 0;
+    let t = time || 0;
     if (typeof attack == 'number'){
       this.compressor.attack.value = attack;
       this.compressor.attack.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -128,7 +128,7 @@ define(function (require) {
    * @param {Number} [time]  Assign time value to schedule the change in value
    */
   p5.Compressor.prototype.knee = function (knee, time){
-    var t = time || 0;
+    let t = time || 0;
     if (typeof knee == 'number'){
       this.compressor.knee.value = knee;
       this.compressor.knee.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -149,7 +149,7 @@ define(function (require) {
    * @param {Number} [time]  Assign time value to schedule the change in value
    */
   p5.Compressor.prototype.ratio = function (ratio, time){
-    var t = time || 0;
+    let t = time || 0;
     if (typeof ratio == 'number'){
       this.compressor.ratio.value = ratio;
       this.compressor.ratio.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -170,7 +170,7 @@ define(function (require) {
    * @param {Number} [time]  Assign time value to schedule the change in value
    */
   p5.Compressor.prototype.threshold = function (threshold, time){
-    var t = time || 0;
+    let t = time || 0;
     if (typeof threshold == 'number'){
       this.compressor.threshold.value = threshold;
       this.compressor.threshold.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -192,7 +192,7 @@ define(function (require) {
    * @param {Number} [time]  Assign time value to schedule the change in value
    */
   p5.Compressor.prototype.release = function (release, time){
-    var t = time || 0;
+    let t = time || 0;
     if (typeof release == 'number'){
       this.compressor.release.value = release;
       this.compressor.release.cancelScheduledValues(this.ac.currentTime + 0.01 + t);

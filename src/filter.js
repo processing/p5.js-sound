@@ -1,8 +1,8 @@
 'use strict';
 
 define(function (require) {
-  var p5sound = require('master');
-  var Effect = require('effect');
+  let p5sound = require('master');
+  let Effect = require('effect');
 
   /**
    *  <p>A p5.Filter uses a Web Audio Biquad Filter to filter
@@ -31,7 +31,7 @@ define(function (require) {
    *  @param {String} [type] 'lowpass' (default), 'highpass', 'bandpass'
    *  @example
    *  <div><code>
-   *  var fft, noise, filter;
+   *  let fft, noise, filter;
    *
    *  function setup() {
    *    fill(255, 40, 255);
@@ -52,17 +52,17 @@ define(function (require) {
    *    background(30);
    *
    *    // set the BandPass frequency based on mouseX
-   *    var freq = map(mouseX, 0, width, 20, 10000);
+   *    let freq = map(mouseX, 0, width, 20, 10000);
    *    filter.freq(freq);
    *    // give the filter a narrow band (lower res = wider bandpass)
    *    filter.res(50);
    *
    *    // draw filtered spectrum
-   *    var spectrum = fft.analyze();
+   *    let spectrum = fft.analyze();
    *    noStroke();
-   *    for (var i = 0; i < spectrum.length; i++) {
-   *      var x = map(i, 0, spectrum.length, 0, width);
-   *      var h = -height + map(spectrum[i], 0, 255, height, 0);
+   *    for (let i = 0; i < spectrum.length; i++) {
+   *      let x = map(i, 0, spectrum.length, 0, width);
+   *      let h = -height + map(spectrum[i], 0, 255, height, 0);
    *      rect(x, height, width/spectrum.length, h);
    *    }
    *
@@ -70,7 +70,7 @@ define(function (require) {
    *  }
    *
    *  function isMouseOverCanvas() {
-   *    var mX = mouseX, mY = mouseY;
+   *    let mX = mouseX, mY = mouseY;
    *    if (mX > 0 && mX < width && mY < height && mY > 0) {
    *      noise.amp(0.5, 0.2);
    *    } else {
@@ -157,7 +157,7 @@ define(function (require) {
    *  @return {Number} value  Returns the current frequency value
    */
   p5.Filter.prototype.freq = function(freq, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (freq <= 0) {
       freq = 1;
     }
@@ -182,7 +182,7 @@ define(function (require) {
    *  @return {Number} value Returns the current res value
    */
   p5.Filter.prototype.res = function(res, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof res === 'number') {
       this.biquad.Q.value = res;
       this.biquad.Q.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -204,7 +204,7 @@ define(function (require) {
    * @return {Number} Returns the current or updated gain value
    */
   p5.Filter.prototype.gain = function(gain, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof gain === 'number') {
       this.biquad.gain.value = gain;
       this.biquad.gain.cancelScheduledValues(this.ac.currentTime + 0.01 + t);

@@ -4,13 +4,13 @@ define(function (require) {
 
   // Signal is built with the Tone.js signal by Yotam Mann
   // https://github.com/TONEnoTONE/Tone.js/
-  var Signal = require('Tone/signal/Signal');
-  var Add = require('Tone/signal/Add');
-  var Mult = require('Tone/signal/Multiply');
-  var Scale = require('Tone/signal/Scale');
+  let Signal = require('Tone/signal/Signal');
+  let Add = require('Tone/signal/Add');
+  let Mult = require('Tone/signal/Multiply');
+  let Scale = require('Tone/signal/Scale');
 
-  var Tone = require('Tone/core/Tone');
-  var p5sound = require('master');
+  let Tone = require('Tone/core/Tone');
+  let p5sound = require('master');
   Tone.setContext( p5sound.audiocontext);
 
   /**
@@ -54,7 +54,7 @@ define(function (require) {
    *  </code></div>
    */
   p5.Signal = function(value) {
-    var s = new Signal(value);
+    let s = new Signal(value);
     // p5sound.soundArray.push(s);
     return s; // TODO: is this really a constructor?
   };
@@ -100,7 +100,7 @@ define(function (require) {
    *  @return {p5.Signal} object
    */
   Signal.prototype.add = function(num) {
-    var add = new Add(num);
+    let add = new Add(num);
     // add.setInput(this);
     this.connect(add);
     return add;
@@ -120,7 +120,7 @@ define(function (require) {
    *  @return {p5.Signal} object
    */
   Signal.prototype.mult = function(num) {
-    var mult = new Mult(num);
+    let mult = new Mult(num);
     // mult.setInput(this);
     this.connect(mult);
     return mult;
@@ -144,7 +144,7 @@ define(function (require) {
    *  @return {p5.Signal} object
    */
   Signal.prototype.scale = function(inMin, inMax, outMin, outMax) {
-    var mapOutMin, mapOutMax;
+    let mapOutMin, mapOutMax;
     if (arguments.length === 4) {
       mapOutMin = p5.prototype.map(outMin, inMin, inMax, 0, 1) - 0.5;
       mapOutMax = p5.prototype.map(outMax, inMin, inMax, 0, 1) - 0.5;
@@ -153,7 +153,7 @@ define(function (require) {
       mapOutMin = arguments[0];
       mapOutMax = arguments[1];
     }
-    var scale = new Scale(mapOutMin, mapOutMax);
+    let scale = new Scale(mapOutMin, mapOutMax);
     this.connect(scale);
     return scale;
   };

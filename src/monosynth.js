@@ -1,11 +1,11 @@
 'use strict';
 define(function (require) {
 
-  var p5sound = require('master');
-  var AudioVoice = require('audioVoice');
-  var noteToFreq = require('helpers').noteToFreq;
+  let p5sound = require('master');
+  let AudioVoice = require('audioVoice');
+  let noteToFreq = require('helpers').noteToFreq;
 
-  var DEFAULT_SUSTAIN = 0.15;
+  let DEFAULT_SUSTAIN = 0.15;
 
   /**
     *  A MonoSynth is used as a single voice for sound synthesis.
@@ -17,10 +17,10 @@ define(function (require) {
     *  @constructor
     *  @example
     *  <div><code>
-    *  var monoSynth;
+    *  let monoSynth;
     *
     *  function setup() {
-    *    var cnv = createCanvas(100, 100);
+    *    let cnv = createCanvas(100, 100);
     *    cnv.mousePressed(playSynth);
     *
     *    monoSynth = new p5.MonoSynth();
@@ -31,11 +31,11 @@ define(function (require) {
     *
     *  function playSynth() {
     *    // time from now (in seconds)
-    *    var time = 0;
+    *    let time = 0;
     *    // note duration (in seconds)
-    *    var dur = 0.25;
+    *    let dur = 0.25;
     *    // velocity (volume, from 0 to 1)
-    *    var v = 0.2;
+    *    let v = 0.2;
     *
     *    monoSynth.play("G3", v, time, dur);
     *    monoSynth.play("C4", v, time += dur, dur);
@@ -91,10 +91,10 @@ define(function (require) {
     *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
     *  @example
     *  <div><code>
-    *  var monoSynth;
+    *  let monoSynth;
     *
     *  function setup() {
-    *    var cnv = createCanvas(100, 100);
+    *    let cnv = createCanvas(100, 100);
     *    cnv.mousePressed(playSynth);
     *
     *    monoSynth = new p5.MonoSynth();
@@ -105,11 +105,11 @@ define(function (require) {
     *
     *  function playSynth() {
     *    // time from now (in seconds)
-    *    var time = 0;
+    *    let time = 0;
     *    // note duration (in seconds)
-    *    var dur = 1/6;
+    *    let dur = 1/6;
     *    // note velocity (volume, from 0 to 1)
-    *    var v = random();
+    *    let v = random();
     *
     *    monoSynth.play("Fb3", v, 0, dur);
     *    monoSynth.play("Gb3", v, time += dur, dur);
@@ -140,7 +140,7 @@ define(function (require) {
      *  @method  triggerAttack
      *  @example
      *  <div><code>
-     *  var monoSynth = new p5.MonoSynth();
+     *  let monoSynth = new p5.MonoSynth();
      *
      *  function mousePressed() {
      *    monoSynth.triggerAttack("E3");
@@ -152,9 +152,9 @@ define(function (require) {
      *  </code></div>
      */
   p5.MonoSynth.prototype.triggerAttack = function (note, velocity, secondsFromNow) {
-    var secondsFromNow = ~~secondsFromNow;
-    var freq = noteToFreq(note);
-    var vel = velocity || 0.1;
+    let secondsFromNow = ~~secondsFromNow;
+    let freq = noteToFreq(note);
+    let vel = velocity || 0.1;
     this.oscillator.freq(freq, 0, secondsFromNow);
     this.env.ramp(this.output.gain, secondsFromNow, vel);
   };
@@ -168,7 +168,7 @@ define(function (require) {
      *  @method  triggerRelease
      *  @example
      *  <div><code>
-     *  var monoSynth = new p5.MonoSynth();
+     *  let monoSynth = new p5.MonoSynth();
      *
      *  function mousePressed() {
      *    monoSynth.triggerAttack("E3");
@@ -180,7 +180,7 @@ define(function (require) {
      *  </code></div>
      */
   p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow) {
-    var secondsFromNow = secondsFromNow || 0;
+    let secondsFromNow = secondsFromNow || 0;
     this.env.ramp(this.output.gain, secondsFromNow, 0);
   };
 
@@ -271,7 +271,7 @@ define(function (require) {
    * @return {Number}          new volume value
    */
   p5.MonoSynth.prototype.amp = function(vol, rampTime) {
-    var t = rampTime || 0;
+    let t = rampTime || 0;
     if (typeof vol !== 'undefined') {
       this.oscillator.amp(vol, t);
     }
@@ -286,7 +286,7 @@ define(function (require) {
    */
 
   p5.MonoSynth.prototype.connect = function(unit) {
-    var u = unit || p5sound.input;
+    let u = unit || p5sound.input;
     this.output.connect(u.input ? u.input : u);
   };
 

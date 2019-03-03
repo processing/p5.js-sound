@@ -1,6 +1,6 @@
 'use strict';
 define(function() {
-  var p5sound = require('master');
+  let p5sound = require('master');
 
   /**
    * Base class for monophonic synthesizers. Any extensions of this class
@@ -35,7 +35,7 @@ define(function() {
    * @param {Object} unit 
    */
   p5.AudioVoice.prototype.connect = function(unit) {
-    var u = unit || p5sound.input;
+    let u = unit || p5sound.input;
     this.output.connect(u.input ? u.input : u);
   };
 

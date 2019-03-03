@@ -1,8 +1,8 @@
 'use strict';
 define(function (require) {
 
-  var p5sound = require('master');
-  var CrossFade = require('Tone/component/CrossFade');
+  let p5sound = require('master');
+  let CrossFade = require('Tone/component/CrossFade');
 
   /**
    * Effect is a base class for audio effects in p5. <br>
@@ -67,10 +67,10 @@ define(function (require) {
    *  @param {Number} [tFromNow] schedule this event to happen in tFromNow seconds
    */
   p5.Effect.prototype.amp = function(vol, rampTime, tFromNow){
-    var rampTime = rampTime || 0;
-    var tFromNow = tFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
-    var currentVol = this.output.gain.value;
+    let rampTime = rampTime || 0;
+    let tFromNow = tFromNow || 0;
+    let now = p5sound.audiocontext.currentTime;
+    let currentVol = this.output.gain.value;
     this.output.gain.cancelScheduledValues(now);
     this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow + .001);
     this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
@@ -87,7 +87,7 @@ define(function (require) {
   p5.Effect.prototype.chain = function(){
     if (arguments.length>0){
       this.connect(arguments[0]);
-      for(var i=1;i<arguments.length; i+=1){
+      for(let i=1;i<arguments.length; i+=1){
         arguments[i-1].connect(arguments[i]);
       }
     }
@@ -115,7 +115,7 @@ define(function (require) {
    *	@param {Object} unit 
    */
   p5.Effect.prototype.connect = function (unit) {
-    var u = unit || p5.soundOut.input;
+    let u = unit || p5.soundOut.input;
     this.output.connect(u.input ? u.input : u);
   };
 
@@ -132,7 +132,7 @@ define(function (require) {
 
   p5.Effect.prototype.dispose = function() {
     // remove refernce form soundArray
-    var index = p5sound.soundArray.indexOf(this);
+    let index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
     if (this.input) {

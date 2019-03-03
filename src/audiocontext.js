@@ -2,7 +2,7 @@
 
 define(['StartAudioContext'], function (require, StartAudioContext) {
   // Create the Audio Context
-  var audiocontext = new window.AudioContext();
+  let audiocontext = new window.AudioContext();
 
   /**
    * <p>Returns the Audio Context for this sketch. Useful for users
@@ -32,7 +32,7 @@ define(['StartAudioContext'], function (require, StartAudioContext) {
    *    if (getAudioContext().state !== 'running') {
    *      getAudioContext().resume();
    *    }
-   *    var synth = new p5.MonoSynth();
+   *    let synth = new p5.MonoSynth();
    *    synth.play('A4', 0.5, 0, 0.2);
    *  }
    *
@@ -69,10 +69,10 @@ define(['StartAudioContext'], function (require, StartAudioContext) {
    *  @example
    *  <div><code>
    *  function setup() {
-   *    var myDiv = createDiv('click to start audio');
+   *    let myDiv = createDiv('click to start audio');
    *    myDiv.position(0, 0);
    *
-   *    var mySynth = new p5.MonoSynth();
+   *    let mySynth = new p5.MonoSynth();
    * 
    *    // This won't play until the context has started
    *    mySynth.play('A6');
@@ -85,7 +85,7 @@ define(['StartAudioContext'], function (require, StartAudioContext) {
    *  </code></div>
    */
   p5.prototype.userStartAudio = function(elements, callback) {
-    var elt = elements;
+    let elt = elements;
     if (elements instanceof p5.Element) {
       elt = elements.elt;
     } else if (elements instanceof Array && elements[0] instanceof p5.Element ) {

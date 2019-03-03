@@ -1,9 +1,9 @@
 'use strict';
 
 define(function(require) {
-  var p5sound = require('master');
+  let p5sound = require('master');
 
-  var BPM = 120;
+  let BPM = 120;
 
   /**
    *  Set the global tempo, in beats per minute, for all
@@ -15,7 +15,7 @@ define(function(require) {
    */
   p5.prototype.setBPM = function(bpm, rampTime) {
     BPM = bpm;
-    for (var i in p5sound.parts) {
+    for (let i in p5sound.parts) {
       if (p5sound.parts[i]) {
         p5sound.parts[i].setBPM(bpm, rampTime);
       }
@@ -53,9 +53,9 @@ define(function(require) {
    *                            at each step of the phrase.
    *  @example
    *  <div><code>
-   *  var mySound, myPhrase, myPart;
-   *  var pattern = [1,0,0,2,0,2,0,0];
-   *  var msg = 'click to play';
+   *  let mySound, myPhrase, myPart;
+   *  let pattern = [1,0,0,2,0,2,0,0];
+   *  let msg = 'click to play';
    *
    *  function preload() {
    *    mySound = loadSound('assets/beatbox.mp3');
@@ -120,10 +120,10 @@ define(function(require) {
    *  @param {Number} [tatums] Divisions of a beat, e.g. use 1/4, or 0.25 for a quater note (default is 1/16, a sixteenth note)
    *  @example
    *  <div><code>
-   *  var box, drum, myPart;
-   *  var boxPat = [1,0,0,2,0,2,0,0];
-   *  var drumPat = [0,1,1,0,2,0,1,0];
-   *  var msg = 'click to play';
+   *  let box, drum, myPart;
+   *  let boxPat = [1,0,0,2,0,2,0,0];
+   *  let drumPat = [0,1,1,0,2,0,1,0];
+   *  let msg = 'click to play';
    *
    *  function preload() {
    *    box = loadSound('assets/beatbox.mp3');
@@ -136,8 +136,8 @@ define(function(require) {
    *    textAlign(CENTER);
    *    masterVolume(0.1);
    *
-   *    var boxPhrase = new p5.Phrase('box', playBox, boxPat);
-   *    var drumPhrase = new p5.Phrase('drum', playDrum, drumPat);
+   *    let boxPhrase = new p5.Phrase('box', playBox, boxPat);
+   *    let drumPhrase = new p5.Phrase('drum', playDrum, drumPat);
    *    myPart = new p5.Part();
    *    myPart.addPhrase(boxPhrase);
    *    myPart.addPhrase(drumPhrase);
@@ -217,7 +217,7 @@ define(function(require) {
     if (!this.isPlaying) {
       this.isPlaying = true;
       this.metro.resetSync(this);
-      var t = time || 0;
+      let t = time || 0;
       this.metro.start(t);
     }
   };
@@ -236,7 +236,7 @@ define(function(require) {
     this.onended = function() {
       this.partStep = 0;
     };
-    var t = time || 0;
+    let t = time || 0;
     this.start(t);
   };
 
@@ -273,7 +273,7 @@ define(function(require) {
    */
   p5.Part.prototype.pause = function(time) {
     this.isPlaying = false;
-    var t = time || 0;
+    let t = time || 0;
     this.metro.stop(t);
   };
 
@@ -284,7 +284,7 @@ define(function(require) {
    *  @param {p5.Phrase}   phrase   reference to a p5.Phrase
    */
   p5.Part.prototype.addPhrase = function(name, callback, array) {
-    var p;
+    let p;
     if (arguments.length === 3) {
       p = new p5.Phrase(name, callback, array);
     } else if (arguments[0] instanceof p5.Phrase) {
@@ -307,7 +307,7 @@ define(function(require) {
    *  @param  {String} phraseName
    */
   p5.Part.prototype.removePhrase = function(name) {
-    for (var i in this.phrases) {
+    for (let i in this.phrases) {
       if (this.phrases[i].name === name) {
         this.phrases.splice(i, 1);
       }
@@ -322,7 +322,7 @@ define(function(require) {
    *  @param  {String} phraseName
    */
   p5.Part.prototype.getPhrase = function(name) {
-    for (var i in this.phrases) {
+    for (let i in this.phrases) {
       if (this.phrases[i].name === name) {
         return this.phrases[i];
       }
@@ -338,7 +338,7 @@ define(function(require) {
    *                            at each step of the phrase.
    */
   p5.Part.prototype.replaceSequence = function(name, array) {
-    for (var i in this.phrases) {
+    for (let i in this.phrases) {
       if (this.phrases[i].name === name) {
         this.phrases[i].sequence = array;
       }
@@ -390,8 +390,8 @@ define(function(require) {
     this.parts = [];
     this.currentPart = 0;
 
-    var thisScore = this;
-    for (var i in arguments) {
+    let thisScore = this;
+    for (let i in arguments) {
       if (arguments[i] && this.parts[i]) {
         this.parts[i] = arguments[i];
         this.parts[i].nextPart = this.parts[i + 1];
@@ -469,7 +469,7 @@ define(function(require) {
   };
 
   p5.Score.prototype.resetParts = function() {
-    var self = this;
+    let self = this;
     this.parts.forEach(function(part) {
       self.resetParts[part];
     });
@@ -478,7 +478,7 @@ define(function(require) {
   p5.Score.prototype.resetPart = function(i) {
     this.parts[i].stop();
     this.parts[i].partStep = 0;
-    for (var p in this.parts[i].phrases) {
+    for (let p in this.parts[i].phrases) {
       if (this.parts[i]) {
         this.parts[i].phrases[p].phraseStep = 0;
       }
@@ -493,7 +493,7 @@ define(function(require) {
    *  @param {Number} rampTime Seconds from now
    */
   p5.Score.prototype.setBPM = function(bpm, rampTime) {
-    for (var i in this.parts) {
+    for (let i in this.parts) {
       if (this.parts[i]) {
         this.parts[i].setBPM(bpm, rampTime);
       }

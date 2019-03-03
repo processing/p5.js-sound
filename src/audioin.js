@@ -1,7 +1,7 @@
 'use strict';
 
 define(function (require) {
-  var p5sound = require('master');
+  let p5sound = require('master');
 
   // an array of input sources
   p5sound.inputSources = [];
@@ -29,7 +29,7 @@ define(function (require) {
    *                                    currently allow microphone access.
    *  @example
    *  <div><code>
-   *  var mic;
+   *  let mic;
    *  function setup(){
    *    mic = new p5.AudioIn()
    *    mic.start();
@@ -109,15 +109,15 @@ define(function (require) {
    *                                    getUserMedia.
    */
   p5.AudioIn.prototype.start = function(successCallback, errorCallback) {
-    var self = this;
+    let self = this;
 
     if (this.stream) {
       this.stop();
     }
 
     // set the audio source
-    var audioSource = p5sound.inputSources[self.currentSource];
-    var constraints = {
+    let audioSource = p5sound.inputSources[self.currentSource];
+    let constraints = {
       audio: {
         sampleRate: p5sound.audiocontext.sampleRate,
         echoCancellation: false
@@ -233,8 +233,8 @@ define(function (require) {
    */
   p5.AudioIn.prototype.amp = function(vol, t) {
     if (t) {
-      var rampTime = t || 0;
-      var currentVol = this.output.gain.value;
+      let rampTime = t || 0;
+      let currentVol = this.output.gain.value;
       this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
       this.output.gain.setValueAtTime(currentVol, p5sound.audiocontext.currentTime);
       this.output.gain.linearRampToValueAtTime(vol, rampTime + p5sound.audiocontext.currentTime);
@@ -260,7 +260,7 @@ define(function (require) {
    *                            to the enumerateDevices() method
    * @example
    *  <div><code>
-   *  var audiograb;
+   *  let audiograb;
    *
    *  function setup(){
    *    //new audioIn
@@ -327,7 +327,7 @@ define(function (require) {
   // private method
   p5.AudioIn.prototype.dispose = function() {
     // remove reference from soundArray
-    var index = p5sound.soundArray.indexOf(this);
+    let index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
     this.stop();

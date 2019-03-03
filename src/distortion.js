@@ -2,18 +2,18 @@
 
 define(function (require) {
 
-  var Effect = require('effect');
+  let Effect = require('effect');
 
   /*
    * Adapted from [Kevin Ennis on StackOverflow](http://stackoverflow.com/questions/22312841/waveshaper-node-in-webaudio-how-to-emulate-distortion)
    */
   function makeDistortionCurve(amount) {
-    var k = typeof amount === 'number' ? amount : 50;
-    var numSamples = 44100;
-    var curve = new Float32Array(numSamples);
-    var deg = Math.PI / 180;
-    var i = 0;
-    var x;
+    let k = typeof amount === 'number' ? amount : 50;
+    let numSamples = 44100;
+    let curve = new Float32Array(numSamples);
+    let deg = Math.PI / 180;
+    let i = 0;
+    let x;
     for ( ; i < numSamples; ++i ) {
       x = i * 2 / numSamples - 1;
       curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
@@ -52,7 +52,7 @@ define(function (require) {
       throw new Error('oversample must be a String');
     }
 
-    var curveAmount = p5.prototype.map(amount, 0.0, 1.0, 0, 2000);
+    let curveAmount = p5.prototype.map(amount, 0.0, 1.0, 0, 2000);
 
     /**
      *  The p5.Distortion is built with a
@@ -98,7 +98,7 @@ define(function (require) {
    */
   p5.Distortion.prototype.set = function(amount, oversample) {
     if (amount) {
-      var curveAmount = p5.prototype.map(amount, 0.0, 1.0, 0, 2000);
+      let curveAmount = p5.prototype.map(amount, 0.0, 1.0, 0, 2000);
       this.amount = curveAmount;
       this.waveShaperNode.curve = makeDistortionCurve(curveAmount);
     }

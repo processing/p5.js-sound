@@ -1,7 +1,7 @@
 'use strict';
 
 define(function(require) {
-  var p5sound = require('master');
+  let p5sound = require('master');
 
   /**
    *  <p>FFT (Fast Fourier Transform) is an analysis algorithm that
@@ -46,7 +46,7 @@ define(function(require) {
    *  }
    *
    *  function setup(){
-   *    var cnv = createCanvas(100,100);
+   *    let cnv = createCanvas(100,100);
    *    cnv.mouseClicked(togglePlay);
    *    fft = new p5.FFT();
    *    sound.amp(0.2);
@@ -55,23 +55,23 @@ define(function(require) {
    *  function draw(){
    *    background(0);
    *
-   *    var spectrum = fft.analyze();
+   *    let spectrum = fft.analyze();
    *    noStroke();
    *    fill(0,255,0); // spectrum is green
-   *    for (var i = 0; i< spectrum.length; i++){
-   *      var x = map(i, 0, spectrum.length, 0, width);
-   *      var h = -height + map(spectrum[i], 0, 255, height, 0);
+   *    for (let i = 0; i< spectrum.length; i++){
+   *      let x = map(i, 0, spectrum.length, 0, width);
+   *      let h = -height + map(spectrum[i], 0, 255, height, 0);
    *      rect(x, height, width / spectrum.length, h )
    *    }
    *
-   *    var waveform = fft.waveform();
+   *    let waveform = fft.waveform();
    *    noFill();
    *    beginShape();
    *    stroke(255,0,0); // waveform is red
    *    strokeWeight(1);
-   *    for (var i = 0; i< waveform.length; i++){
-   *      var x = map(i, 0, waveform.length, 0, width);
-   *      var y = map( waveform[i], -1, 1, 0, height);
+   *    for (let i = 0; i< waveform.length; i++){
+   *      let x = map(i, 0, waveform.length, 0, width);
+   *      let y = map( waveform[i], -1, 1, 0, height);
    *      vertex(x,y);
    *    }
    *    endShape();
@@ -173,9 +173,9 @@ define(function(require) {
    *
    */
   p5.FFT.prototype.waveform = function() {
-    var bins, mode, normalArray;
+    let bins, mode, normalArray;
 
-    for (var i = 0; i < arguments.length; i++) {
+    for (let i = 0; i < arguments.length; i++) {
       if (typeof arguments[i] === 'number') {
         bins = arguments[i];
         this.analyser.fftSize = bins * 2;
@@ -193,9 +193,9 @@ define(function(require) {
     } else {
       timeToInt(this, this.timeDomain);
       this.analyser.getByteTimeDomainData(this.timeDomain);
-      var normalArray = new Array();
-      for (var j = 0; j < this.timeDomain.length; j++) {
-        var scaled = p5.prototype.map(this.timeDomain[j], 0, 255, -1, 1);
+      let normalArray = new Array();
+      for (let j = 0; j < this.timeDomain.length; j++) {
+        let scaled = p5.prototype.map(this.timeDomain[j], 0, 255, -1, 1);
         normalArray.push(scaled);
       }
       return normalArray;
@@ -224,8 +224,8 @@ define(function(require) {
    *                              possible is 255.
    *  @example
    *  <div><code>
-   *  var osc;
-   *  var fft;
+   *  let osc;
+   *  let fft;
    *
    *  function setup(){
    *    createCanvas(100,100);
@@ -238,16 +238,16 @@ define(function(require) {
    *  function draw(){
    *    background(0);
    *
-   *    var freq = map(mouseX, 0, 800, 20, 15000);
+   *    let freq = map(mouseX, 0, 800, 20, 15000);
    *    freq = constrain(freq, 1, 20000);
    *    osc.freq(freq);
    *
-   *    var spectrum = fft.analyze();
+   *    let spectrum = fft.analyze();
    *    noStroke();
    *    fill(0,255,0); // spectrum is green
-   *    for (var i = 0; i< spectrum.length; i++){
-   *      var x = map(i, 0, spectrum.length, 0, width);
-   *      var h = -height + map(spectrum[i], 0, 255, height, 0);
+   *    for (let i = 0; i< spectrum.length; i++){
+   *      let x = map(i, 0, spectrum.length, 0, width);
+   *      let h = -height + map(spectrum[i], 0, 255, height, 0);
    *      rect(x, height, width / spectrum.length, h );
    *    }
    *
@@ -259,7 +259,7 @@ define(function(require) {
    *
    *  // only play sound when mouse is over canvas
    *  function isMouseOverCanvas() {
-   *    var mX = mouseX, mY = mouseY;
+   *    let mX = mouseX, mY = mouseY;
    *    if (mX > 0 && mX < width && mY < height && mY > 0) {
    *      osc.amp(0.5, 0.2);
    *    } else {
@@ -271,9 +271,9 @@ define(function(require) {
    *
    */
   p5.FFT.prototype.analyze = function() {
-    var mode;
+    let mode;
 
-    for (var i = 0; i < arguments.length; i++) {
+    for (let i = 0; i < arguments.length; i++) {
       if (typeof arguments[i] === 'number') {
         this.bins = arguments[i];
         this.analyser.fftSize = this.bins * 2;
@@ -290,7 +290,7 @@ define(function(require) {
     } else {
       freqToInt(this, this.freqDomain);
       this.analyser.getByteFrequencyData(this.freqDomain);
-      var normalArray = Array.apply([], this.freqDomain);
+      let normalArray = Array.apply([], this.freqDomain);
       normalArray.length === this.analyser.fftSize;
       normalArray.constructor === Array;
       return normalArray;
@@ -326,7 +326,7 @@ define(function(require) {
    *
    */
   p5.FFT.prototype.getEnergy = function(frequency1, frequency2) {
-    var nyquist = p5sound.audiocontext.sampleRate / 2;
+    let nyquist = p5sound.audiocontext.sampleRate / 2;
 
     if (frequency1 === 'bass') {
       frequency1 = this.bass[0];
@@ -349,28 +349,28 @@ define(function(require) {
       throw 'invalid input for getEnergy()';
     } else if (!frequency2) {
       // if only one parameter:
-      var index = Math.round(frequency1 / nyquist * this.freqDomain.length);
+      let index = Math.round(frequency1 / nyquist * this.freqDomain.length);
       return this.freqDomain[index];
     } else if (frequency1 && frequency2) {
       // if two parameters:
       // if second is higher than first
       if (frequency1 > frequency2) {
-        var swap = frequency2;
+        let swap = frequency2;
         frequency2 = frequency1;
         frequency1 = swap;
       }
-      var lowIndex = Math.round(frequency1 / nyquist * this.freqDomain.length);
-      var highIndex = Math.round(frequency2 / nyquist * this.freqDomain.length);
+      let lowIndex = Math.round(frequency1 / nyquist * this.freqDomain.length);
+      let highIndex = Math.round(frequency2 / nyquist * this.freqDomain.length);
 
-      var total = 0;
-      var numFrequencies = 0;
+      let total = 0;
+      let numFrequencies = 0;
       // add up all of the values for the frequencies
-      for (var i = lowIndex; i <= highIndex; i++) {
+      for (let i = lowIndex; i <= highIndex; i++) {
         total += this.freqDomain[i];
         numFrequencies += 1;
       }
       // divide by total number of frequencies
-      var toReturn = total / numFrequencies;
+      let toReturn = total / numFrequencies;
       return toReturn;
     } else {
       throw 'invalid input for getEnergy()';
@@ -380,7 +380,7 @@ define(function(require) {
   // compatability with v.012, changed to getEnergy in v.0121. Will be deprecated...
   p5.FFT.prototype.getFreq = function(freq1, freq2) {
     console.log('getFreq() is deprecated. Please use getEnergy() instead.');
-    var x = this.getEnergy(freq1, freq2);
+    let x = this.getEnergy(freq1, freq2);
     return x;
   };
 
@@ -411,30 +411,30 @@ define(function(require) {
    *
    *function draw(){
    *
-   *  var centroidplot = 0.0;
-   *  var spectralCentroid = 0;
+   *  let centroidplot = 0.0;
+   *  let spectralCentroid = 0;
    *
    *
    *  background(0);
    *  stroke(0,255,0);
-   *  var spectrum = fft.analyze();
+   *  let spectrum = fft.analyze();
    *  fill(0,255,0); // spectrum is green
    *
    *  //draw the spectrum
-   *  for (var i = 0; i< spectrum.length; i++){
-   *    var x = map(log(i), 0, log(spectrum.length), 0, width);
-   *    var h = map(spectrum[i], 0, 255, 0, height);
-   *    var rectangle_width = (log(i+1)-log(i))*(width/log(spectrum.length));
+   *  for (let i = 0; i< spectrum.length; i++){
+   *    let x = map(log(i), 0, log(spectrum.length), 0, width);
+   *    let h = map(spectrum[i], 0, 255, 0, height);
+   *    let rectangle_width = (log(i+1)-log(i))*(width/log(spectrum.length));
    *    rect(x, height, rectangle_width, -h )
    *  }
 
-   *  var nyquist = 22050;
+   *  let nyquist = 22050;
    *
    *  // get the centroid
    *  spectralCentroid = fft.getCentroid();
    *
    *  // the mean_freq_index calculation is for the display.
-   *  var mean_freq_index = spectralCentroid/(nyquist/spectrum.length);
+   *  let mean_freq_index = spectralCentroid/(nyquist/spectrum.length);
    *
    *  centroidplot = map(log(mean_freq_index), 0, log(spectrum.length), 0, width);
    *
@@ -450,22 +450,22 @@ define(function(require) {
    * </code></div>
    */
   p5.FFT.prototype.getCentroid = function() {
-    var nyquist = p5sound.audiocontext.sampleRate / 2;
-    var cumulative_sum = 0;
-    var centroid_normalization = 0;
+    let nyquist = p5sound.audiocontext.sampleRate / 2;
+    let cumulative_sum = 0;
+    let centroid_normalization = 0;
 
-    for (var i = 0; i < this.freqDomain.length; i++) {
+    for (let i = 0; i < this.freqDomain.length; i++) {
       cumulative_sum += i * this.freqDomain[i];
       centroid_normalization += this.freqDomain[i];
     }
 
-    var mean_freq_index = 0;
+    let mean_freq_index = 0;
 
     if (centroid_normalization !== 0) {
       mean_freq_index = cumulative_sum / centroid_normalization;
     }
 
-    var spec_centroid_freq =
+    let spec_centroid_freq =
       mean_freq_index * (nyquist / this.freqDomain.length);
     return spec_centroid_freq;
   };
@@ -486,7 +486,7 @@ define(function(require) {
 
   p5.FFT.prototype.dispose = function() {
     // remove reference from soundArray
-    var index = p5sound.soundArray.indexOf(this);
+    let index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
     if (this.analyser) {
@@ -507,18 +507,18 @@ define(function(require) {
    *  @return {Array}   linearAverages   Array of average amplitude values for each group
    */
   p5.FFT.prototype.linAverages = function(N) {
-    var N = N || 16; // This prevents undefined, null or 0 values of N
+    let N = N || 16; // This prevents undefined, null or 0 values of N
 
-    var spectrum = this.freqDomain;
-    var spectrumLength = spectrum.length;
-    var spectrumStep = Math.floor(spectrumLength / N);
+    let spectrum = this.freqDomain;
+    let spectrumLength = spectrum.length;
+    let spectrumStep = Math.floor(spectrumLength / N);
 
-    var linearAverages = new Array(N);
+    let linearAverages = new Array(N);
     // Keep a second index for the current average group and place the values accordingly
     // with only one loop in the spectrum data
-    var groupIndex = 0;
+    let groupIndex = 0;
 
-    for (var specIndex = 0; specIndex < spectrumLength; specIndex++) {
+    for (let specIndex = 0; specIndex < spectrumLength; specIndex++) {
       linearAverages[groupIndex] =
         linearAverages[groupIndex] !== undefined
           ? (linearAverages[groupIndex] + spectrum[specIndex]) / 2
@@ -546,17 +546,17 @@ define(function(require) {
    *  @return {Array}   logAverages    Array of average amplitude values for each group
    */
   p5.FFT.prototype.logAverages = function(octaveBands) {
-    var nyquist = p5sound.audiocontext.sampleRate / 2;
-    var spectrum = this.freqDomain;
-    var spectrumLength = spectrum.length;
+    let nyquist = p5sound.audiocontext.sampleRate / 2;
+    let spectrum = this.freqDomain;
+    let spectrumLength = spectrum.length;
 
-    var logAverages = new Array(octaveBands.length);
+    let logAverages = new Array(octaveBands.length);
     // Keep a second index for the current average group and place the values accordingly
     // With only one loop in the spectrum data
-    var octaveIndex = 0;
+    let octaveIndex = 0;
 
-    for (var specIndex = 0; specIndex < spectrumLength; specIndex++) {
-      var specIndexFrequency = Math.round(
+    for (let specIndex = 0; specIndex < spectrumLength; specIndex++) {
+      let specIndexFrequency = Math.round(
         specIndex * nyquist / this.freqDomain.length
       );
 
@@ -588,20 +588,20 @@ define(function(require) {
    *  @return {Array}   octaveBands   Array of octave band objects with their bounds
    */
   p5.FFT.prototype.getOctaveBands = function(N, fCtr0) {
-    var N = N || 3; // Default to 1/3 Octave Bands
-    var fCtr0 = fCtr0 || 15.625; // Minimum central frequency, defaults to 15.625Hz
+    let N = N || 3; // Default to 1/3 Octave Bands
+    let fCtr0 = fCtr0 || 15.625; // Minimum central frequency, defaults to 15.625Hz
 
-    var octaveBands = [];
-    var lastFrequencyBand = {
+    let octaveBands = [];
+    let lastFrequencyBand = {
       lo: fCtr0 / Math.pow(2, 1 / (2 * N)),
       ctr: fCtr0,
       hi: fCtr0 * Math.pow(2, 1 / (2 * N))
     };
     octaveBands.push(lastFrequencyBand);
 
-    var nyquist = p5sound.audiocontext.sampleRate / 2;
+    let nyquist = p5sound.audiocontext.sampleRate / 2;
     while (lastFrequencyBand.hi < nyquist) {
-      var newFrequencyBand = {};
+      let newFrequencyBand = {};
       newFrequencyBand.lo = lastFrequencyBand.hi;
       newFrequencyBand.ctr = lastFrequencyBand.ctr * Math.pow(2, 1 / N);
       newFrequencyBand.hi = newFrequencyBand.ctr * Math.pow(2, 1 / (2 * N));
@@ -614,22 +614,22 @@ define(function(require) {
   };
 
   // helper methods to convert type from float (dB) to int (0-255)
-  var freqToFloat = function(fft) {
+  let freqToFloat = function(fft) {
     if (fft.freqDomain instanceof Float32Array === false) {
       fft.freqDomain = new Float32Array(fft.analyser.frequencyBinCount);
     }
   };
-  var freqToInt = function(fft) {
+  let freqToInt = function(fft) {
     if (fft.freqDomain instanceof Uint8Array === false) {
       fft.freqDomain = new Uint8Array(fft.analyser.frequencyBinCount);
     }
   };
-  var timeToFloat = function(fft) {
+  let timeToFloat = function(fft) {
     if (fft.timeDomain instanceof Float32Array === false) {
       fft.timeDomain = new Float32Array(fft.analyser.frequencyBinCount);
     }
   };
-  var timeToInt = function(fft) {
+  let timeToInt = function(fft) {
     if (fft.timeDomain instanceof Uint8Array === false) {
       fft.timeDomain = new Uint8Array(fft.analyser.frequencyBinCount);
     }

@@ -5,8 +5,8 @@ define(function () {
   /**
    * Master contains AudioContext and the master sound output.
    */
-  var Master = function() {
-    var audiocontext = p5.prototype.getAudioContext();
+  let Master = function() {
+    let audiocontext = p5.prototype.getAudioContext();
     this.input = audiocontext.createGain();
     this.output = audiocontext.createGain();
 
@@ -45,7 +45,7 @@ define(function () {
   };
 
   // create a single instance of the p5Sound / master output for use within this sketch
-  var p5sound = new Master();
+  let p5sound = new Master();
 
   /**
    * Returns a number representing the master amplitude (volume) for sound
@@ -87,10 +87,10 @@ define(function () {
    */
   p5.prototype.masterVolume = function(vol, rampTime, tFromNow) {
     if (typeof vol === 'number') {
-      var rampTime = rampTime || 0;
-      var tFromNow = tFromNow || 0;
-      var now = p5sound.audiocontext.currentTime;
-      var currentVol = p5sound.output.gain.value;
+      let rampTime = rampTime || 0;
+      let tFromNow = tFromNow || 0;
+      let now = p5sound.audiocontext.currentTime;
+      let currentVol = p5sound.output.gain.value;
       p5sound.output.gain.cancelScheduledValues(now + tFromNow);
       p5sound.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
       p5sound.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);

@@ -42,21 +42,21 @@ define(function () {
 
       AudioContext.prototype.internal_createGain = AudioContext.prototype.createGain;
       AudioContext.prototype.createGain = function() {
-        var node = this.internal_createGain();
+        let node = this.internal_createGain();
         fixSetTarget(node.gain);
         return node;
       };
 
       AudioContext.prototype.internal_createDelay = AudioContext.prototype.createDelay;
       AudioContext.prototype.createDelay = function(maxDelayTime) {
-        var node = maxDelayTime ? this.internal_createDelay(maxDelayTime) : this.internal_createDelay();
+        let node = maxDelayTime ? this.internal_createDelay(maxDelayTime) : this.internal_createDelay();
         fixSetTarget(node.delayTime);
         return node;
       };
 
       AudioContext.prototype.internal_createBufferSource = AudioContext.prototype.createBufferSource;
       AudioContext.prototype.createBufferSource = function() {
-        var node = this.internal_createBufferSource();
+        let node = this.internal_createBufferSource();
         if (!node.start) {
           node.start = function ( when, offset, duration ) {
             if ( offset || duration )
@@ -89,7 +89,7 @@ define(function () {
 
       AudioContext.prototype.internal_createDynamicsCompressor = AudioContext.prototype.createDynamicsCompressor;
       AudioContext.prototype.createDynamicsCompressor = function() {
-        var node = this.internal_createDynamicsCompressor();
+        let node = this.internal_createDynamicsCompressor();
         fixSetTarget(node.threshold);
         fixSetTarget(node.knee);
         fixSetTarget(node.ratio);
@@ -101,7 +101,7 @@ define(function () {
 
       AudioContext.prototype.internal_createBiquadFilter = AudioContext.prototype.createBiquadFilter;
       AudioContext.prototype.createBiquadFilter = function() {
-        var node = this.internal_createBiquadFilter();
+        let node = this.internal_createBiquadFilter();
         fixSetTarget(node.frequency);
         fixSetTarget(node.detune);
         fixSetTarget(node.Q);
@@ -112,7 +112,7 @@ define(function () {
       if (typeof AudioContext.prototype.createOscillator !== 'function') {
         AudioContext.prototype.internal_createOscillator = AudioContext.prototype.createOscillator;
         AudioContext.prototype.createOscillator = function() {
-          var node = this.internal_createOscillator();
+          let node = this.internal_createOscillator();
           if (!node.start) {
             node.start = function ( when ) {
               this.noteOn( when || 0 );
@@ -159,26 +159,26 @@ define(function () {
 
   /**
    * Determine which filetypes are supported (inspired by buzz.js)
-   * The audio element (el) will only be used to test browser support for various audio formats
+   * The audio element (el) will only be used to test browser support for letious audio formats
    */
-  var el = document.createElement('audio');
+  let el = document.createElement('audio');
 
   p5.prototype.isSupported = function() {
     return !!el.canPlayType;
   };
-  var isOGGSupported = function() {
+  let isOGGSupported = function() {
     return !!el.canPlayType && el.canPlayType('audio/ogg; codecs="vorbis"');
   };
-  var isMP3Supported = function() {
+  let isMP3Supported = function() {
     return !!el.canPlayType && el.canPlayType('audio/mpeg;');
   };
-  var isWAVSupported = function() {
+  let isWAVSupported = function() {
     return !!el.canPlayType && el.canPlayType('audio/wav; codecs="1"');
   };
-  var isAACSupported = function() {
+  let isAACSupported = function() {
     return !!el.canPlayType && (el.canPlayType('audio/x-m4a;') || el.canPlayType('audio/aac;'));
   };
-  var isAIFSupported = function() {
+  let isAIFSupported = function() {
     return !!el.canPlayType && el.canPlayType('audio/x-aiff;');
   };
   p5.prototype.isFileSupported = function(extension) {

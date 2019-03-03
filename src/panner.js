@@ -2,8 +2,8 @@
 
 define(function (require) {
 
-  var p5sound = require('master');
-  var ac = p5sound.audiocontext;
+  let p5sound = require('master');
+  let ac = p5sound.audiocontext;
 
   // Stereo panner
   // if there is a stereo panner node use it
@@ -15,8 +15,8 @@ define(function (require) {
     };
 
     p5.Panner.prototype.pan = function(val, tFromNow) {
-      var time = tFromNow || 0;
-      var t = ac.currentTime + time;
+      let time = tFromNow || 0;
+      let t = ac.currentTime + time;
 
       this.stereoPanner.pan.linearRampToValueAtTime(val, t);
     };
@@ -71,11 +71,11 @@ define(function (require) {
 
     // -1 is left, +1 is right
     p5.Panner.prototype.pan = function(val, tFromNow) {
-      var time = tFromNow || 0;
-      var t = ac.currentTime + time;
-      var v = (val + 1) / 2;
-      var rightVal = Math.cos(v*Math.PI/2);
-      var leftVal = Math.sin(v * Math.PI/2);
+      let time = tFromNow || 0;
+      let t = ac.currentTime + time;
+      let v = (val + 1) / 2;
+      let rightVal = Math.cos(v*Math.PI/2);
+      let leftVal = Math.sin(v * Math.PI/2);
       this.left.gain.linearRampToValueAtTime(leftVal, t);
       this.right.gain.linearRampToValueAtTime(rightVal, t);
     };

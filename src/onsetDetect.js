@@ -41,7 +41,7 @@ define(function () {
           callback(this.energy);
         }
 
-        var self = this;
+        let self = this;
         setTimeout(function () {
           self.isDetected = false;
         },this.sensitivity);

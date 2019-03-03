@@ -1,8 +1,8 @@
 'use strict'
 
 define(function (require) {
-  var p5sound = require('master');
-  var Effect = require('effect');
+  let p5sound = require('master');
+  let Effect = require('effect');
 
 //  /**
 //   * listener is a class that can construct both a Spatial Panner
@@ -62,7 +62,7 @@ define(function (require) {
 //   * @return {Number}      [updated coordinate value]
 //   */
   p5.Listener3D.prototype.positionX = function(xVal, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof xVal === 'number') {
       this.listener.positionX.value = xVal;
       this.listener.positionX.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -73,7 +73,7 @@ define(function (require) {
     return this.listener.positionX.value;
   };
   p5.Listener3D.prototype.positionY = function(yVal, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof yVal === 'number') {
       this.listener.positionY.value = yVal;
       this.listener.positionY.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -84,7 +84,7 @@ define(function (require) {
     return this.listener.positionY.value;
   };
   p5.Listener3D.prototype.positionZ = function(zVal, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof zVal === 'number') {
       this.listener.positionZ.value = zVal;
       this.listener.positionZ.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -155,7 +155,7 @@ define(function (require) {
 //   * @return {Number}      [updated coordinate value]
 //   */
   p5.Listener3D.prototype.forwardX = function(xVal, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof xVal === 'number') {
       this.listener.forwardX.value = xVal;
       this.listener.forwardX.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -166,7 +166,7 @@ define(function (require) {
     return this.listener.forwardX.value;
   };
   p5.Listener3D.prototype.forwardY = function(yVal, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof yVal === 'number') {
       this.listener.forwardY.value = yVal;
       this.listener.forwardY.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -177,7 +177,7 @@ define(function (require) {
     return this.listener.forwardY.value;
   };
   p5.Listener3D.prototype.forwardZ = function(zVal, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof zVal === 'number') {
       this.listener.forwardZ.value = zVal;
       this.listener.forwardZ.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -188,7 +188,7 @@ define(function (require) {
     return this.listener.forwardZ.value;
   };
   p5.Listener3D.prototype.upX = function(xVal, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof xVal === 'number') {
       this.listener.upX.value = xVal;
       this.listener.upX.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -199,7 +199,7 @@ define(function (require) {
     return this.listener.upX.value;
   };
   p5.Listener3D.prototype.upY = function(yVal, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof yVal === 'number') {
       this.listener.upY.value = yVal;
       this.listener.upY.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
@@ -210,7 +210,7 @@ define(function (require) {
     return this.listener.upY.value;
   };
   p5.Listener3D.prototype.upZ = function(zVal, time) {
-    var t = time || 0;
+    let t = time || 0;
     if (typeof zVal === 'number') {
       this.listener.upZ.value = zVal;
       this.listener.upZ.cancelScheduledValues(this.ac.currentTime + 0.01 + t);

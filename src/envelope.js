@@ -2,13 +2,13 @@
 
 define(function (require) {
 
-  var p5sound = require('master');
-  var Add = require('Tone/signal/Add');
-  var Mult = require('Tone/signal/Multiply');
-  var Scale = require('Tone/signal/Scale');
-  var TimelineSignal = require('Tone/signal/TimelineSignal');
+  let p5sound = require('master');
+  let Add = require('Tone/signal/Add');
+  let Mult = require('Tone/signal/Multiply');
+  let Scale = require('Tone/signal/Scale');
+  let TimelineSignal = require('Tone/signal/TimelineSignal');
 
-  var Tone = require('Tone/core/Tone');
+  let Tone = require('Tone/core/Tone');
   Tone.setContext( p5sound.audiocontext);
 
   /**
@@ -30,18 +30,18 @@ define(function (require) {
    *  @constructor
    *  @example
    *  <div><code>
-   *  var attackLevel = 1.0;
-   *  var releaseLevel = 0;
+   *  let attackLevel = 1.0;
+   *  let releaseLevel = 0;
    *
-   *  var attackTime = 0.001;
-   *  var decayTime = 0.2;
-   *  var susPercent = 0.2;
-   *  var releaseTime = 0.5;
+   *  let attackTime = 0.001;
+   *  let decayTime = 0.2;
+   *  let susPercent = 0.2;
+   *  let releaseTime = 0.5;
    *
-   *  var env, triOsc;
+   *  let env, triOsc;
    *
    *  function setup() {
-   *    var cnv = createCanvas(100, 100);
+   *    let cnv = createCanvas(100, 100);
    *
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
@@ -131,8 +131,8 @@ define(function (require) {
   // this init function just smooths the starting value to zero and gives a start point for the timeline
   // - it was necessary to remove glitches at the beginning.
   p5.Envelope.prototype._init = function () {
-    var now = p5sound.audiocontext.currentTime;
-    var t = now;
+    let now = p5sound.audiocontext.currentTime;
+    let t = now;
     this.control.setTargetAtTime(0.00001, t, .001);
     //also, compute the correct time constants
     this._setRampAD(this.aTime, this.dTime);
@@ -153,16 +153,16 @@ define(function (require) {
    *  @param {Number} releaseLevel  Amplitude
    *  @example
    *  <div><code>
-   *  var t1 = 0.1; // attack time in seconds
-   *  var l1 = 0.7; // attack level 0.0 to 1.0
-   *  var t2 = 0.3; // decay time in seconds
-   *  var l2 = 0.1; // decay level  0.0 to 1.0
-   *  var t3 = 0.2; // sustain time in seconds
-   *  var l3 = 0.5; // sustain level  0.0 to 1.0
+   *  let t1 = 0.1; // attack time in seconds
+   *  let l1 = 0.7; // attack level 0.0 to 1.0
+   *  let t2 = 0.3; // decay time in seconds
+   *  let l2 = 0.1; // decay level  0.0 to 1.0
+   *  let t3 = 0.2; // sustain time in seconds
+   *  let l3 = 0.5; // sustain level  0.0 to 1.0
    *  // release level defaults to zero
    *
-   *  var env;
-   *  var triOsc;
+   *  let env;
+   *  let triOsc;
    *
    *  function setup() {
    *    background(0);
@@ -221,18 +221,18 @@ define(function (require) {
    *  @param {Number} [releaseTime]   Time in seconds from now (defaults to 0)
    *  @example
    *  <div><code>
-   *  var attackLevel = 1.0;
-   *  var releaseLevel = 0;
+   *  let attackLevel = 1.0;
+   *  let releaseLevel = 0;
    *
-   *  var attackTime = 0.001;
-   *  var decayTime = 0.2;
-   *  var susPercent = 0.2;
-   *  var releaseTime = 0.5;
+   *  let attackTime = 0.001;
+   *  let decayTime = 0.2;
+   *  let susPercent = 0.2;
+   *  let releaseTime = 0.5;
    *
-   *  var env, triOsc;
+   *  let env, triOsc;
    *
    *  function setup() {
-   *    var cnv = createCanvas(100, 100);
+   *    let cnv = createCanvas(100, 100);
    *
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
@@ -276,18 +276,18 @@ define(function (require) {
    *  @param {Number} rLevel release level (defaults to 0)
    *  @example
    *  <div><code>
-   *  var attackLevel = 1.0;
-   *  var releaseLevel = 0;
+   *  let attackLevel = 1.0;
+   *  let releaseLevel = 0;
    *
-   *  var attackTime = 0.001;
-   *  var decayTime = 0.2;
-   *  var susPercent = 0.2;
-   *  var releaseTime = 0.5;
+   *  let attackTime = 0.001;
+   *  let decayTime = 0.2;
+   *  let susPercent = 0.2;
+   *  let releaseTime = 0.5;
    *
-   *  var env, triOsc;
+   *  let env, triOsc;
    *
    *  function setup() {
-   *    var cnv = createCanvas(100, 100);
+   *    let cnv = createCanvas(100, 100);
    *
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
@@ -338,7 +338,7 @@ define(function (require) {
     this._rampAttackTime = this.checkExpInput(t1);
     this._rampDecayTime = this.checkExpInput(t2);
 
-    var TCDenominator = 1.0;
+    let TCDenominator = 1.0;
     /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
     TCDenominator = Math.log(1.0 / this.checkExpInput(1.0 - this._rampHighPercentage));
     this._rampAttackTC = t1 / this.checkExpInput(TCDenominator);
@@ -351,7 +351,7 @@ define(function (require) {
     //set the percentages that the simple exponential ramps go to
     this._rampHighPercentage = this.checkExpInput(p1);
     this._rampLowPercentage = this.checkExpInput(p2);
-    var TCDenominator = 1.0;
+    let TCDenominator = 1.0;
     //now re-compute the time constants based on those percentages
     /// Aatish Bhatia's calculation for time constant for rise(to adjust 1/1-e calculation to any percentage)
     TCDenominator = Math.log(1.0 / this.checkExpInput(1.0 - this._rampHighPercentage));
@@ -372,7 +372,7 @@ define(function (require) {
    *                                Web Audio Param.
    */
   p5.Envelope.prototype.setInput = function() {
-    for (var i = 0; i<arguments.length; i++) {
+    for (let i = 0; i<arguments.length; i++) {
       this.connect(arguments[i]);
     }
   };
@@ -413,18 +413,18 @@ define(function (require) {
    *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
    *  @example
    *  <div><code>
-   *  var attackLevel = 1.0;
-   *  var releaseLevel = 0;
+   *  let attackLevel = 1.0;
+   *  let releaseLevel = 0;
    *
-   *  var attackTime = 0.001;
-   *  var decayTime = 0.2;
-   *  var susPercent = 0.2;
-   *  var releaseTime = 0.5;
+   *  let attackTime = 0.001;
+   *  let decayTime = 0.2;
+   *  let susPercent = 0.2;
+   *  let releaseTime = 0.5;
    *
-   *  var env, triOsc;
+   *  let env, triOsc;
    *
    *  function setup() {
-   *    var cnv = createCanvas(100, 100);
+   *    let cnv = createCanvas(100, 100);
    *
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
@@ -449,8 +449,8 @@ define(function (require) {
    *  </code></div>
    */
   p5.Envelope.prototype.play = function(unit, secondsFromNow, susTime) {
-    var tFromNow = secondsFromNow || 0;
-    var susTime = susTime || 0;
+    let tFromNow = secondsFromNow || 0;
+    let susTime = susTime || 0;
 
     if (unit) {
       if (this.connection !== unit) {
@@ -478,18 +478,18 @@ define(function (require) {
    *  @example
    *  <div><code>
    *
-   *  var attackLevel = 1.0;
-   *  var releaseLevel = 0;
+   *  let attackLevel = 1.0;
+   *  let releaseLevel = 0;
    *
-   *  var attackTime = 0.001;
-   *  var decayTime = 0.3;
-   *  var susPercent = 0.4;
-   *  var releaseTime = 0.5;
+   *  let attackTime = 0.001;
+   *  let decayTime = 0.3;
+   *  let susPercent = 0.4;
+   *  let releaseTime = 0.5;
    *
-   *  var env, triOsc;
+   *  let env, triOsc;
    *
    *  function setup() {
-   *    var cnv = createCanvas(100, 100);
+   *    let cnv = createCanvas(100, 100);
    *    background(200);
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
@@ -523,9 +523,9 @@ define(function (require) {
    *  </code></div>
    */
   p5.Envelope.prototype.triggerAttack = function(unit, secondsFromNow) {
-    var now =  p5sound.audiocontext.currentTime;
-    var tFromNow = secondsFromNow || 0;
-    var t = now + tFromNow;
+    let now =  p5sound.audiocontext.currentTime;
+    let tFromNow = secondsFromNow || 0;
+    let t = now + tFromNow;
     this.lastAttack = t;
     this.wasTriggered = true;
 
@@ -536,7 +536,7 @@ define(function (require) {
     }
 
     // get and set value (with linear ramp) to anchor automation
-    var valToSet = this.control.getValueAtTime(t);
+    let valToSet = this.control.getValueAtTime(t);
 
     if (this.isExponential === true)
     {
@@ -599,18 +599,18 @@ define(function (require) {
    *  @example
    *  <div><code>
    *
-   *  var attackLevel = 1.0;
-   *  var releaseLevel = 0;
+   *  let attackLevel = 1.0;
+   *  let releaseLevel = 0;
    *
-   *  var attackTime = 0.001;
-   *  var decayTime = 0.3;
-   *  var susPercent = 0.4;
-   *  var releaseTime = 0.5;
+   *  let attackTime = 0.001;
+   *  let decayTime = 0.3;
+   *  let susPercent = 0.4;
+   *  let releaseTime = 0.5;
    *
-   *  var env, triOsc;
+   *  let env, triOsc;
    *
    *  function setup() {
-   *    var cnv = createCanvas(100, 100);
+   *    let cnv = createCanvas(100, 100);
    *    background(200);
    *    textAlign(CENTER);
    *    text('click to play', width/2, height/2);
@@ -657,9 +657,9 @@ define(function (require) {
       return;
     }
 
-    var now =  p5sound.audiocontext.currentTime;
-    var tFromNow = secondsFromNow || 0;
-    var t = now + tFromNow;
+    let now =  p5sound.audiocontext.currentTime;
+    let tFromNow = secondsFromNow || 0;
+    let t = now + tFromNow;
 
     if (unit) {
       if (this.connection !== unit) {
@@ -668,7 +668,7 @@ define(function (require) {
     }
 
     // get and set value (with linear or exponential ramp) to anchor automation
-    var valToSet = this.control.getValueAtTime(t);
+    let valToSet = this.control.getValueAtTime(t);
     if (this.isExponential === true)
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(valToSet), t);
@@ -714,12 +714,12 @@ define(function (require) {
    *  @param  {Number} [v2]           Second target value (optional)
    *  @example
    *  <div><code>
-   *  var env, osc, amp, cnv;
+   *  let env, osc, amp, cnv;
    *
-   *  var attackTime = 0.001;
-   *  var decayTime = 0.2;
-   *  var attackLevel = 1;
-   *  var decayLevel = 0;
+   *  let attackTime = 0.001;
+   *  let decayTime = 0.2;
+   *  let attackLevel = 1;
+   *  let decayLevel = 0;
    *
    *  function setup() {
    *    cnv = createCanvas(100, 100);
@@ -745,7 +745,7 @@ define(function (require) {
    *  function draw() {
    *    background(20,20,20);
    *    text('click me', 10, 20);
-   *    var h = map(amp.getLevel(), 0, 0.4, 0, height);;
+   *    let h = map(amp.getLevel(), 0, 0.4, 0, height);;
    *
    *    rect(0, height, width, -h);
    *  }
@@ -753,11 +753,11 @@ define(function (require) {
    */
   p5.Envelope.prototype.ramp = function(unit, secondsFromNow, v1, v2) {
 
-    var now =  p5sound.audiocontext.currentTime;
-    var tFromNow = secondsFromNow || 0;
-    var t = now + tFromNow;
-    var destination1 = this.checkExpInput(v1);
-    var destination2 = typeof v2 !== 'undefined' ? this.checkExpInput(v2) : undefined;
+    let now =  p5sound.audiocontext.currentTime;
+    let tFromNow = secondsFromNow || 0;
+    let t = now + tFromNow;
+    let destination1 = this.checkExpInput(v1);
+    let destination2 = typeof v2 !== 'undefined' ? this.checkExpInput(v2) : undefined;
 
     // connect env to unit if not already connected
     if (unit) {
@@ -767,7 +767,7 @@ define(function (require) {
     }
 
     //get current value
-    var currentVal = this.checkExpInput(this.control.getValueAtTime(t));
+    let currentVal = this.checkExpInput(this.control.getValueAtTime(t));
     // this.control.cancelScheduledValues(t);
 
     //if it's going up
@@ -842,9 +842,9 @@ define(function (require) {
    *                                     with scaled output
    */
   p5.Envelope.prototype.add = function(num) {
-    var add = new Add(num);
-    var thisChain = this.mathOps.length;
-    var nextChain = this.output;
+    let add = new Add(num);
+    let thisChain = this.mathOps.length;
+    let nextChain = this.output;
     return p5.prototype._mathChain(this, add, thisChain, nextChain, Add);
   };
 
@@ -859,9 +859,9 @@ define(function (require) {
    *                                     with scaled output
    */
   p5.Envelope.prototype.mult = function(num) {
-    var mult = new Mult(num);
-    var thisChain = this.mathOps.length;
-    var nextChain = this.output;
+    let mult = new Mult(num);
+    let thisChain = this.mathOps.length;
+    let nextChain = this.output;
     return p5.prototype._mathChain(this, mult, thisChain, nextChain, Mult);
   };
 
@@ -879,9 +879,9 @@ define(function (require) {
    *                                     with scaled output
    */
   p5.Envelope.prototype.scale = function(inMin, inMax, outMin, outMax) {
-    var scale = new Scale(inMin, inMax, outMin, outMax);
-    var thisChain = this.mathOps.length;
-    var nextChain = this.output;
+    let scale = new Scale(inMin, inMax, outMin, outMax);
+    let thisChain = this.mathOps.length;
+    let nextChain = this.output;
     return p5.prototype._mathChain(this, scale, thisChain, nextChain, Scale);
   };
 
@@ -889,7 +889,7 @@ define(function (require) {
   // get rid of the oscillator
   p5.Envelope.prototype.dispose = function() {
     // remove reference from soundArray
-    var index = p5sound.soundArray.indexOf(this);
+    let index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
     this.disconnect();
@@ -897,7 +897,7 @@ define(function (require) {
       this.control.dispose();
       this.control = null;
     }
-    for (var i = 1; i < this.mathOps.length; i++) {
+    for (let i = 1; i < this.mathOps.length; i++) {
       this.mathOps[i].dispose();
     }
   };

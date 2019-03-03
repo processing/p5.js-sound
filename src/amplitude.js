@@ -1,7 +1,7 @@
 'use strict';
 
 define(function (require) {
-  var p5sound = require('master');
+  let p5sound = require('master');
 
   /**
    *  Amplitude measures volume between 0.0 and 1.0.
@@ -15,7 +15,7 @@ define(function (require) {
    *                             amplitude readings (defaults to 0)
    *  @example
    *  <div><code>
-   *  var sound, amplitude, cnv;
+   *  let sound, amplitude, cnv;
    *
    *  function preload(){
    *    sound = loadSound('assets/beat.mp3');
@@ -36,8 +36,8 @@ define(function (require) {
    *  function draw() {
    *    background(0);
    *    fill(255);
-   *    var level = amplitude.getLevel();
-   *    var size = map(level, 0, 1, 0, 200);
+   *    let level = amplitude.getLevel();
+   *    let size = map(level, 0, 1, 0, 200);
    *    ellipse(width/2, height/2, size, size);
    *  }
    *
@@ -112,8 +112,8 @@ define(function (require) {
    *  function draw() {
    *    background(0);
    *    fill(255);
-   *    var level = amplitude.getLevel();
-   *    var size = map(level, 0, 1, 0, 200);
+   *    let level = amplitude.getLevel();
+   *    let size = map(level, 0, 1, 0, 200);
    *    ellipse(width/2, height/2, size, size);
    *  }
    *  function mouseClicked(){
@@ -174,15 +174,15 @@ define(function (require) {
   // TO DO make this stereo / dependent on # of audio channels
   p5.Amplitude.prototype._audioProcess = function(event) {
 
-    for (var channel = 0; channel < event.inputBuffer.numberOfChannels; channel++) {
-      var inputBuffer = event.inputBuffer.getChannelData(channel);
-      var bufLength = inputBuffer.length;
+    for (let channel = 0; channel < event.inputBuffer.numberOfChannels; channel++) {
+      let inputBuffer = event.inputBuffer.getChannelData(channel);
+      let bufLength = inputBuffer.length;
 
-      var total = 0;
-      var sum = 0;
-      var x;
+      let total = 0;
+      let sum = 0;
+      let x;
 
-      for (var i = 0; i < bufLength; i++) {
+      for (let i = 0; i < bufLength; i++) {
         x = inputBuffer[i];
         if (this.normalize) {
           total += Math.max(Math.min(x/this.volMax, 1), -1);
@@ -193,10 +193,10 @@ define(function (require) {
           sum += x * x;
         }
       }
-      var average = total/ bufLength;
+      let average = total/ bufLength;
 
       // ... then take the square root of the sum.
-      var rms = Math.sqrt(sum / bufLength);
+      let rms = Math.sqrt(sum / bufLength);
 
       this.stereoVol[channel] = Math.max(rms, this.stereoVol[channel] * this.smoothing);
       this.stereoAvg[channel] = Math.max(average, this.stereoVol[channel] * this.smoothing);
@@ -204,8 +204,8 @@ define(function (require) {
     }
 
     // add volume from all channels together
-    var self = this;
-    var volSum = this.stereoVol.reduce(function(previousValue, currentValue, index) {
+    let self = this;
+    let volSum = this.stereoVol.reduce(function(previousValue, currentValue, index) {
       self.stereoVolNorm[index - 1] = Math.max(Math.min(self.stereoVol[index - 1]/self.volMax, 1), 0);
       self.stereoVolNorm[index] = Math.max(Math.min(self.stereoVol[index]/self.volMax, 1), 0);
 
@@ -240,8 +240,8 @@ define(function (require) {
    *  function draw() {
    *    background(0);
    *    fill(255);
-   *    var level = amplitude.getLevel();
-   *    var size = map(level, 0, 1, 0, 200);
+   *    let level = amplitude.getLevel();
+   *    let size = map(level, 0, 1, 0, 200);
    *    ellipse(width/2, height/2, size, size);
    *  }
    *  function mouseClicked(){
@@ -304,7 +304,7 @@ define(function (require) {
 
   p5.Amplitude.prototype.dispose = function() {
     // remove reference from soundArray
-    var index = p5sound.soundArray.indexOf(this);
+    let index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
     if (this.input) {

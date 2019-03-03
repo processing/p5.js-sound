@@ -1,8 +1,8 @@
 'use strict';
 
 define(function (require) {
-  var Filter = require('filter');
-  var Effect = require('effect');
+  let Filter = require('filter');
+  let Effect = require('effect');
 
   /**
    *  Delay is an echo effect. It processes an existing sound source,
@@ -24,7 +24,7 @@ define(function (require) {
    *  @constructor
    *  @example
    *  <div><code>
-   *  var noise, env, delay;
+   *  let noise, env, delay;
    *
    *  function setup() {
    *    background(0);
@@ -135,8 +135,8 @@ define(function (require) {
    *                               delay.
    */
   p5.Delay.prototype.process = function(src, _delayTime, _feedback, _filter) {
-    var feedback = _feedback || 0;
-    var delayTime = _delayTime || 0;
+    let feedback = _feedback || 0;
+    let delayTime = _delayTime || 0;
     if (feedback >= 1.0) {
       throw new Error('Feedback value will force a positive feedback loop.');
     }
