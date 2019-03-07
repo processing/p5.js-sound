@@ -142,8 +142,14 @@ module.exports = function(grunt) {
               });
            }
           },
-          optimize: 'uglify2',
-          out: 'lib/p5.sound.min.js',
+          optimize: 'none',
+          out: function(text, sourceMapText) {
+
+            var UglifyJS = require('uglify-es'),
+                uglified = UglifyJS.minify(text);
+
+            grunt.file.write('lib/p5.sound.min.js', uglified.code);
+          },
           paths: '<%= requirejs.unmin.options.paths %>',
           useStrict: true,
           wrap: {

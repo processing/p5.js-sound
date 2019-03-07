@@ -16,7 +16,8 @@
     "grunt-contrib-watch": "~0.5.3",
     "grunt-eslint": "^20.0.0",
     "grunt-mocha": "^1.0.4",
-    "grunt-open": "^0.2.3"
+    "grunt-open": "^0.2.3",
+    "uglify-es": "^3.3.9"
   },
   "dependencies": {
     "startaudiocontext": "^1.2.1",
