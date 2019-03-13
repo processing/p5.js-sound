@@ -1,12 +1,13 @@
 'use strict';
 
+const audiocontext = require('audiocontext');
+
 define(function () {
 
   /**
    * Master contains AudioContext and the master sound output.
    */
   var Master = function() {
-    var audiocontext = p5.prototype.getAudioContext();
     this.input = audiocontext.createGain();
     this.output = audiocontext.createGain();
 
