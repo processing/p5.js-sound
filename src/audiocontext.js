@@ -1,8 +1,10 @@
 'use strict';
 
-define(['StartAudioContext'], function (require, StartAudioContext) {
+define(['StartAudioContext', 'Tone/core/Context', 'Tone/core/Tone'], function (require, StartAudioContext, Context, Tone) {
   // Create the Audio Context
-  var audiocontext = new window.AudioContext();
+  const audiocontext = new window.AudioContext();
+  Tone.context.dispose();
+  Tone.setContext(audiocontext);
 
   /**
    * <p>Returns the Audio Context for this sketch. Useful for users

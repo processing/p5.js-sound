@@ -8,9 +8,6 @@ define(function (require) {
   var Scale = require('Tone/signal/Scale');
   var TimelineSignal = require('Tone/signal/TimelineSignal');
 
-  var Tone = require('Tone/core/Tone');
-  Tone.setContext( p5sound.audiocontext);
-
   /**
    *  <p>Envelopes are pre-defined amplitude distribution over time.
    *  Typically, envelopes are used to control the output volume

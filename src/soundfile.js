@@ -138,6 +138,9 @@ define(function (require) {
     } else {
       this._whileLoading = function() {};
     }
+
+    this._onAudioProcess = _onAudioProcess.bind(this);
+    this._clearOnEnd = _clearOnEnd.bind(this);
   };
 
   // register preload handling of loadSound
@@ -414,25 +417,7 @@ define(function (require) {
       this.bufferSourceNodes.push(this.bufferSourceNode);
       this.bufferSourceNode._arrayIndex = this.bufferSourceNodes.length - 1;
 
-      // delete this.bufferSourceNode from the sources array when it is done playing:
-      var clearOnEnd = function() {
-        this._playing = false;
-        this.removeEventListener('ended', clearOnEnd, false);
-        // call the onended callback
-        self._onended(self);
-
-        self.bufferSourceNodes.forEach(function(n, i) {
-          if (n._playing === false) {
-            self.bufferSourceNodes.splice(i);
-          }
-        });
-
-        if (self.bufferSourceNodes.length === 0) {
-          self._playing = false;
-        }
-      };
-
-      this.bufferSourceNode.onended = clearOnEnd;
+      this.bufferSourceNode.addEventListener('ended', this._clearOnEnd);
     }
     // If soundFile hasn't loaded the buffer yet, throw an error
     else {
@@ -674,11 +659,11 @@ define(function (require) {
     var now = p5sound.audiocontext.currentTime;
     var time = _time || 0;
     if (this.buffer && this.bufferSourceNode) {
-      for (var i = 0; i < this.bufferSourceNodes.length; i++) {
-        if (typeof this.bufferSourceNodes[i] !== undefined) {
+      for (var i in this.bufferSourceNodes) {
+        const bufferSourceNode = this.bufferSourceNodes[i];
+        if (!!bufferSourceNode) {
           try {
-            this.bufferSourceNodes[i].onended = function() {};
-            this.bufferSourceNodes[i].stop(now + time);
+            bufferSourceNode.stop(now + time);
           } catch(e) {
             // this was throwing errors only on Safari
           }
@@ -1227,7 +1212,7 @@ define(function (require) {
     // dispose of scope node if it already exists
     if (self._scopeNode) {
       self._scopeNode.disconnect();
-      delete self._scopeNode.onaudioprocess;
+      self._scopeNode.removeEventListener('audioprocess', self._onAudioProcess);
       delete self._scopeNode;
     }
     self._scopeNode = ac.createScriptProcessor( 256, 1, 1 );
@@ -1240,14 +1225,7 @@ define(function (require) {
     cNode.connect( self._scopeNode );
     self._scopeNode.connect( p5.soundOut._silentNode );
 
-    self._scopeNode.onaudioprocess = function(processEvent) {
-      var inputBuffer = processEvent.inputBuffer.getChannelData( 0 );
-
-      self._lastPos = inputBuffer[ inputBuffer.length - 1 ] || 0;
-
-      // do any callbacks that have been scheduled
-      self._onTimeUpdate(self._lastPos);
-    };
+    self._scopeNode.addEventListener('audioprocess', self._onAudioProcess);
 
     return cNode;
   };
@@ -1735,4 +1713,36 @@ define(function (require) {
     return new Blob([dataView], { type: 'audio/wav' });
   };
 
+  // event handler to keep track of current position
+  function _onAudioProcess(processEvent) {
+    var inputBuffer = processEvent.inputBuffer.getChannelData(0);
+
+    this._lastPos = inputBuffer[inputBuffer.length - 1] || 0;
+
+    // do any callbacks that have been scheduled
+    this._onTimeUpdate(self._lastPos);
+  }
+
+  // event handler to remove references to the bufferSourceNode when it is done playing
+  function _clearOnEnd(e) {
+    const thisBufferSourceNode = e.target;
+    const soundFile = this;
+
+    // delete this.bufferSourceNode from the sources array when it is done playing:
+    thisBufferSourceNode._playing = false;
+    thisBufferSourceNode.removeEventListener('ended', soundFile._clearOnEnd);
+
+    // call the onended callback
+    soundFile._onended(soundFile);
+
+    soundFile.bufferSourceNodes.forEach(function (n, i) {
+      if (n._playing === false) {
+        soundFile.bufferSourceNodes.splice(i);
+      }
+    });
+
+    if (soundFile.bufferSourceNodes.length === 0) {
+      soundFile._playing = false;
+    }
+  }
 });

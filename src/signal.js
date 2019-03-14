@@ -9,10 +9,6 @@ define(function (require) {
   var Mult = require('Tone/signal/Multiply');
   var Scale = require('Tone/signal/Scale');
 
-  var Tone = require('Tone/core/Tone');
-  var p5sound = require('master');
-  Tone.setContext( p5sound.audiocontext);
-
   /**
    *  <p>p5.Signal is a constant audio-rate signal used by p5.Oscillator
    *  and p5.Envelope for modulation math.</p>

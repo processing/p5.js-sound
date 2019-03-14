@@ -4,7 +4,7 @@
     "type": "git",
     "url": "https://github.com/processing/p5.js-sound.git"
   },
-  "version": "0.3.10",
+  "version": "0.3.11",
   "license": "MIT",
   "devDependencies": {
     "almond": "~0.2.7",
