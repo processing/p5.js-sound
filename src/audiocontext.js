@@ -75,7 +75,7 @@ define(['StartAudioContext', 'Tone/core/Context', 'Tone/core/Tone'], function (r
    *    myDiv.position(0, 0);
    *
    *    var mySynth = new p5.MonoSynth();
-   * 
+   *
    *    // This won't play until the context has started
    *    mySynth.play('A6');
    *
