@@ -1,9 +1,7 @@
 'use strict';
 
-const audiocontext = require('audiocontext');
 
-define(function () {
-
+define(['audiocontext'], function (require, audiocontext) {
   /**
    * Master contains AudioContext and the master sound output.
    */
