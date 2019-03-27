@@ -291,8 +291,7 @@ define(function(require) {
       freqToInt(this, this.freqDomain);
       this.analyser.getByteFrequencyData(this.freqDomain);
       var normalArray = Array.apply([], this.freqDomain);
-      normalArray.length === this.analyser.fftSize;
-      normalArray.constructor === Array;
+      
       return normalArray;
     }
   };
