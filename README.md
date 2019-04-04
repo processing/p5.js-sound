@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/processing/p5.js-sound.svg?branch=master)](https://travis-ci.com/processing/p5.js-sound) 
 
 ![](https://cloud.githubusercontent.com/assets/504124/19908328/2cd874ea-a059-11e6-847c-e5da5e957a2f.jpg)
 
