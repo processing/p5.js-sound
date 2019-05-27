@@ -1,5 +1,6 @@
-define(['chai'],
-  function(chai) {
+'use strict';
+
+define(['chai'], function(chai) {
 
   var expect = chai.expect;
 

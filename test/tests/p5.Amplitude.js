@@ -1,6 +1,6 @@
-define(['chai'],
-  function(chai) {
+'use strict';
 
+define(['chai'], function(chai) {
   var expect = chai.expect;
 
   describe('p5.Amplitude', function() {
@@ -8,11 +8,11 @@ define(['chai'],
 
     var sf, amp;
 
-    it('can be created', function(){
+    it('can be created', function() {
       amp = new p5.Amplitude();
     });
 
-    after(function(done){
+    after(function(done) {
       expect( amp.getLevel() ).to.not.equal(1.0);
       osc.dispose();
       sf.dispose();
@@ -37,7 +37,7 @@ define(['chai'],
     });
 
     it('gets normalized osc level', function(done) {
-      setTimeout(function(cleanup) {
+      setTimeout(function() {
         oAmp.toggleNormalize(true);
         // console.log( 'normalized: ' + oAmp.getLevel() );
         expect( oAmp.getLevel() ).to.be.closeTo(1.0, 0.4);
@@ -46,9 +46,9 @@ define(['chai'],
     });
 
 
-    it('loop a SoundFile with params, disconnected from master, setInput()', function(done){
+    it('loop a SoundFile with params, disconnected from master, setInput()', function(done) {
       p5.prototype.soundFormats('ogg', 'mp3');
-      sf = p5.prototype.loadSound('./testAudio/drum', function(){
+      sf = p5.prototype.loadSound('./testAudio/drum', function() {
         sf.disconnect();
         sf.loop(1,1,0.0, 0.05);
         sf.connect(amp);
