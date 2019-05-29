@@ -2,7 +2,8 @@ require.config({
   baseUrl:'./',
   paths : {
     'lib' : '../lib',
-    'chai' : './testDeps/chai'
+    'chai' : './testDeps/chai',
+    'sinon': './testDeps/sinon'
   }
 });
 
