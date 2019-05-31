@@ -6,8 +6,8 @@ module.exports = function(grunt) {
     // Configure style consistency
     eslint: {
       source: {
-        options: {configFile: './src/.eslintrc'},
-        src: ['src/**/*.js']
+        options: {configFile: './.eslintrc'},
+        src: ['src/**/*.js', 'test/tests/**/*.js']
       }
     },
     watch: {

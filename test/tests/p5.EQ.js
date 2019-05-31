@@ -1,5 +1,6 @@
-define(['chai'],
-  function(chai) {
+'use strict';
+
+define(['chai'], function(chai) {
 
   var expect = chai.expect;
 
@@ -32,7 +33,7 @@ define(['chai'],
     });
 
     it('a band can be toggled on and off', function() {
-      var eq = new p5.EQ(8);  
+      var eq = new p5.EQ(8);
       expect(eq.bands[2].biquad.type).to.equal('peaking');
       eq.bands[2].toggle();
       expect(eq.bands[2].biquad.type).to.equal('allpass');
@@ -57,12 +58,12 @@ define(['chai'],
 
     it('a bands type can be changed', function() {
       var eq = new p5.EQ();
-      expect(eq.bands[2]._untoggledType=='peaking');
+      expect(eq.bands[2]._untoggledType).to.equal('peaking');
       eq.bands[2].setType('highshelf');
-      expect(eq.bands[2]._untoggledType=='highshelf');
+      expect(eq.bands[2]._untoggledType).to.equal('highshelf');
     });
 
-    it('drywet value can be changed', function(){
+    it('drywet value can be changed', function() {
       var eq = new p5.EQ();
       expect(eq.drywet(0.5)).to.equal(0.5);
     });

@@ -1,10 +1,11 @@
-define(['chai'],
-  function(chai) {
+'use strict';
+
+define(['chai'], function(chai) {
 
   var expect = chai.expect;
 
   describe('p5.AudioIn', function() {
-    it('can be created and disposed', function(){
+    it('can be created and disposed', function() {
       var mic = new p5.AudioIn();
       mic.dispose();
     });
@@ -29,7 +30,7 @@ define(['chai'],
       var mic = new p5.AudioIn();
       expect(mic.currentSource).to.be.null;
 
-      return mic.getSources().then(function(sources) {
+      return mic.getSources().then(function() {
         mic.setSource(0);
         expect(mic.currentSource).to.equal(0);
         done();

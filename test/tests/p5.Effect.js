@@ -1,5 +1,6 @@
-define(['chai'],
-  function(chai) {
+'use strict';
+
+define(['chai'], function(chai) {
 
   var expect = chai.expect;
 
@@ -14,12 +15,12 @@ define(['chai'],
       expect(effect.output).to.equal(undefined);
     });
 
-    it('drywet value can be changed', function(){
+    it('drywet value can be changed', function() {
       var effect = new p5.Effect();
       expect(effect.drywet(0.5)).to.equal(0.5);
     });
 
-    it('drywet value can be used as getter and setter', function(){
+    it('drywet value can be used as getter and setter', function() {
       var effect = new p5.Effect();
       expect(effect.drywet(0.5)).to.equal(0.5);
       expect(effect.drywet()).to.equal(0.5);

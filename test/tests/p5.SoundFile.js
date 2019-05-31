@@ -1,27 +1,27 @@
-define(['chai'],
-  function(chai) {
+'use strict';
 
+define(['chai'], function(chai) {
   var expect = chai.expect;
 
-  describe("p5.SoundFile", function() {
+  describe('p5.SoundFile', function() {
     this.timeout(1000);
 
     var sf;
     var a = new p5.Amplitude();
 
-    after(function(done){
+    after(function(done) {
       sf.dispose();
       done();
     });
 
-    it('loads a file with soundFormats', function(done){
+    it('loads a file with soundFormats', function(done) {
       p5.prototype.soundFormats('ogg', 'mp3');
-      sf = p5.prototype.loadSound('./testAudio/drum', function(){
+      sf = p5.prototype.loadSound('./testAudio/drum', function() {
         done();
       });
     });
 
-    it('can be created and disposed', function(){
+    it('can be created and disposed', function() {
       var p = new p5.SoundFile('./testAudio/drum', function() {
         p.dispose();
       });
@@ -65,7 +65,7 @@ define(['chai'],
 
       setTimeout(function() {
         expect( sf.currentTime() ).not.equal(0.0);
-      }, 100)
+      }, 100);
     });
 
     it('can getLevel', function(done) {
@@ -73,29 +73,29 @@ define(['chai'],
       setTimeout(function() {
         expect(sf.getLevel()).not.equal(0.0);
         done();
-      }, 100)
+      }, 100);
     });
 
     var peaks, firstPeak;
-    it('can get peaks', function(){
+    it('can get peaks', function() {
       peaks = sf.getPeaks(sf.buffer.length);
       expect(peaks.length).to.equal(sf.buffer.length);
       firstPeak = peaks[0];
     });
 
-    it('can reverse buffer with playbackRate', function(){
+    it('can reverse buffer with playbackRate', function() {
       sf.rate(-1);
       var reversePeaks = sf.getPeaks(sf.buffer.length);
       expect(reversePeaks[reversePeaks.length - 1]).to.equal(firstPeak);
     });
 
-    it('can revert buffer to normal with positive playbackRate', function(){
+    it('can revert buffer to normal with positive playbackRate', function() {
       sf.rate(1);
       var revertPeaks = sf.getPeaks(sf.buffer.length);
       expect(revertPeaks[0]).to.equal(firstPeak);
     });
 
-    it('can handle multiple restarts', function(){
+    it('can handle multiple restarts', function() {
       expect( sf.isPlaying() ).to.equal(true);
       sf.play();
       sf.play();
@@ -114,14 +114,14 @@ define(['chai'],
       }, 50);
     });
 
-    it('can set volume', function(done){
+    it('can set volume', function(done) {
       sf.stop();
       sf.play();
       sf.setVolume(0);
       setTimeout(function() {
         expect( a.getLevel() ).to.be.closeTo(0.0, 0.3);
         done();
-      }, 100)
+      }, 100);
     });
 
   });

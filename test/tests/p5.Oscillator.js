@@ -1,5 +1,6 @@
-define(['chai'],
-  function(chai) {
+'use strict';
+
+define(['chai'], function(chai) {
 
   var expect = chai.expect;
 
@@ -18,7 +19,7 @@ define(['chai'],
       o.dispose();
     });
 
-    it('starts and stops', function(done){
+    it('starts and stops', function(done) {
       expect(osc.started).to.equal(false);
       osc.start();
       expect(osc.started).to.equal(true);
@@ -28,7 +29,7 @@ define(['chai'],
       }, 100);
     });
 
-    it('can be scheduled to stop', function(done){
+    it('can be scheduled to stop', function(done) {
       osc.stop();
       expect(osc.started).to.equal(false);
       osc.start();
@@ -85,8 +86,6 @@ define(['chai'],
         done();
       }, 55);
     });
-
-
 
   });
 });
