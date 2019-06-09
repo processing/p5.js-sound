@@ -1,9 +1,14 @@
 'use strict';
 
-define(['StartAudioContext', 'Tone/core/Context', 'Tone/core/Tone'], function (require, StartAudioContext, Context, Tone) {
+define(function (require) {
+  const StartAudioContext = require('StartAudioContext');
+
   // Create the Audio Context
   const audiocontext = new window.AudioContext();
+  const Tone = require('Tone/core/Tone').default;
+  const Context = require('Tone/core/Context').default;
   Tone.context.dispose();
+  Tone.Context = Context;
   Tone.setContext(audiocontext);
 
   /**
@@ -40,7 +45,7 @@ define(['StartAudioContext', 'Tone/core/Context', 'Tone/core/Tone'], function (r
    *
    * </div></code>
    */
-  p5.prototype.getAudioContext = function() {
+  p5.prototype.getAudioContext = function () {
     return audiocontext;
   };
 
@@ -86,12 +91,12 @@ define(['StartAudioContext', 'Tone/core/Context', 'Tone/core/Tone'], function (r
    *  }
    *  </code></div>
    */
-  p5.prototype.userStartAudio = function(elements, callback) {
+  p5.prototype.userStartAudio = function (elements, callback) {
     var elt = elements;
     if (elements instanceof p5.Element) {
       elt = elements.elt;
-    } else if (elements instanceof Array && elements[0] instanceof p5.Element ) {
-      elt = elements.map(function(e) { return e.elt});
+    } else if (elements instanceof Array && elements[0] instanceof p5.Element) {
+      elt = elements.map(function (e) { return e.elt });
     }
     return StartAudioContext(audiocontext, elt, callback);
   };

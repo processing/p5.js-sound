@@ -1,8 +1,7 @@
 'use strict';
 define(function (require) {
-
+  const TickSignal = require('Tone/signal/TickSignal').default;
   var p5sound = require('master');
-  var TimelineSignal = require('Tone/signal/TimelineSignal');
   var noteToFreq = require('helpers').noteToFreq;
 
   /**
@@ -84,11 +83,11 @@ define(function (require) {
 
     /**
      * This value must only change as a note is attacked or released. Due to delay
-     * and sustain times, Tone.TimelineSignal is required to schedule the change in value.
+     * and sustain times, Tone.TickSignal is required to schedule the change in value.
 	 * @private
-     * @property {Tone.TimelineSignal} _voicesInUse
+     * @property {Tone.TickSignal} _voicesInUse
      */
-    this._voicesInUse = new TimelineSignal(0);
+    this._voicesInUse = new TickSignal(0);
 
     this.output = p5sound.audiocontext.createGain();
     this.connect();
@@ -279,7 +278,7 @@ define(function (require) {
 
     //Overrite the entry in the notes object. A note (frequency value)
     //corresponds to the index of the audiovoice that is playing it
-    this.notes[note] = new TimelineSignal();
+    this.notes[note] = new TickSignal();
     this.notes[note].setValueAtTime(currentVoice, acTime);
 
     //Find the scheduled change in this._voicesInUse that will be previous to this new note

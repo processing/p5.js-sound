@@ -1,5 +1,6 @@
+'use strict';
+
 define(function (require) {
-	'use strict';
 
 	var p5sound = require('master');
 	var Effect = require('effect');

@@ -1,7 +1,7 @@
 'use strict';
 
 define(function (require) {
-  var p5sound = require('master');
+  const p5sound = require('master');
 
   // an array of input sources
   p5sound.inputSources = [];

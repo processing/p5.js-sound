@@ -1,8 +1,7 @@
 'use strict';
 
 define(function (require) {
-  var p5sound = require('master');
-
+  const p5sound = require('master');
   /**
    *  Amplitude measures volume between 0.0 and 1.0.
    *  Listens to all p5sound by default, or use setInput()

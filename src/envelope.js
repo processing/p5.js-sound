@@ -2,11 +2,11 @@
 
 define(function (require) {
 
-  var p5sound = require('master');
-  var Add = require('Tone/signal/Add');
-  var Mult = require('Tone/signal/Multiply');
-  var Scale = require('Tone/signal/Scale');
-  var TimelineSignal = require('Tone/signal/TimelineSignal');
+  const Add = require('Tone/signal/Add').default;
+  const Mult = require('Tone/signal/Multiply').default;
+  const Scale = require('Tone/signal/Scale').default;
+  const TickSignal = require('Tone/signal/TickSignal').default;
+  const p5sound = require('master');
 
   /**
    *  <p>Envelopes are pre-defined amplitude distribution over time.
@@ -99,7 +99,7 @@ define(function (require) {
 
     this.output = p5sound.audiocontext.createGain();
 
-    this.control = new TimelineSignal();
+    this.control = new TickSignal();
 
     this._init(); // this makes sure the envelope starts at zero
 

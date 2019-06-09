@@ -1,8 +1,8 @@
 'use strict';
 
 define(function (require) {
-  var p5sound = require('master');
-  var Clock = require('Tone/core/Clock');
+  const Clock = require('Tone/core/Clock').default;
+  const audiocontext = require('audiocontext');
 
   /**
    * SoundLoop
@@ -68,7 +68,7 @@ define(function (require) {
 
     this.clock = new Clock({
       'callback' : function(time) {
-        var timeFromNow = time - p5sound.audiocontext.currentTime;
+        var timeFromNow = time - audiocontext.currentTime;
         /**
          * Do not initiate the callback if timeFromNow is < 0
          * This ususually occurs for a few milliseconds when the page
@@ -90,7 +90,7 @@ define(function (require) {
    */
   p5.SoundLoop.prototype.start = function(timeFromNow) {
     var t = timeFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
+    var now = audiocontext.currentTime;
     if (!this.isPlaying) {
       this.clock.start(now + t);
       this.isPlaying = true;
@@ -104,7 +104,7 @@ define(function (require) {
    */
   p5.SoundLoop.prototype.stop = function(timeFromNow) {
     var t = timeFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
+    var now = audiocontext.currentTime;
     if (this.isPlaying) {
       this.clock.stop(now + t);
       this.isPlaying = false;
@@ -117,7 +117,7 @@ define(function (require) {
    */
   p5.SoundLoop.prototype.pause  = function(timeFromNow) {
     var t = timeFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
+    var now = audiocontext.currentTime;
     if (this.isPlaying) {
       this.clock.pause(now + t);
       this.isPlaying = false;
@@ -137,7 +137,7 @@ define(function (require) {
    */
   p5.SoundLoop.prototype.syncedStart = function(otherLoop, timeFromNow) {
     var t = timeFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
+    var now = audiocontext.currentTime;
 
     if (!otherLoop.isPlaying) {
       otherLoop.clock.start(now + t);
@@ -145,7 +145,7 @@ define(function (require) {
       this.clock.start(now + t);
       this.isPlaying = true;
     } else if (otherLoop.isPlaying) {
-      var time = otherLoop.clock._nextTick - p5sound.audiocontext.currentTime;
+      var time = otherLoop.clock._nextTick - audiocontext.currentTime;
       this.clock.start(now + time);
       this.isPlaying = true;
     }

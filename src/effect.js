@@ -1,9 +1,7 @@
 'use strict';
 define(function (require) {
-
-  var p5sound = require('master');
-  var CrossFade = require('Tone/component/CrossFade');
-
+  const CrossFade = require('Tone/component/CrossFade').default;
+  const p5sound = require('master');
   /**
    * Effect is a base class for audio effects in p5. <br>
    * This module handles the nodes and methods that are 

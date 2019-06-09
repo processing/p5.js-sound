@@ -5,6 +5,7 @@
  */
 
 define(function () {
+  const Tone = require('Tone/core/Tone').default;
 
   /* AudioContext Monkeypatch
      Copyright 2013 Chris Wilson
@@ -201,4 +202,59 @@ define(function () {
         return false;
     }
   };
+
+  // see https://github.com/Tonejs/Tone.js/issues/434
+  // Tone 13.7+ removes this shim
+  // via https://github.com/Tonejs/Tone.js/commit/2ca9d89424dfb73eac2e73bed144ef3a07f448a4#diff-55b9b13651a86c2eb1c39effbfb70f41L550
+  var nativeConnect = AudioNode.prototype.connect;
+  var nativeDisconnect = AudioNode.prototype.disconnect;
+
+  //replace the old connect method
+  function toneConnect(B, outNum, inNum) {
+    if (B.input) {
+      inNum = Tone.defaultArg(inNum, 0);
+      if (Tone.isArray(B.input)) {
+        return this.connect(B.input[inNum]);
+      } else {
+        return this.connect(B.input, outNum, inNum);
+      }
+    } else {
+      try {
+        if (B instanceof AudioNode) {
+          nativeConnect.call(this, B, outNum, inNum);
+          return B;
+        } else {
+          nativeConnect.call(this, B, outNum);
+          return B;
+        }
+      } catch (e) {
+        throw new Error("error connecting to node: " + B + "\n" + e);
+      }
+    }
+  }
+
+  //replace the old disconnect method	
+  function toneDisconnect(B, outNum, inNum) {
+    if (B && B.input && Tone.isArray(B.input)) {
+      inNum = Tone.defaultArg(inNum, 0);
+      this.disconnect(B.input[inNum], outNum, 0);
+    } else if (B && B.input) {
+      this.disconnect(B.input, outNum, inNum);
+    } else {
+      try {
+        if (B instanceof AudioParam) {
+          nativeDisconnect.call(this, B, outNum);
+        } else {
+          nativeDisconnect.apply(this, arguments);
+        }
+      } catch (e) {
+        throw new Error("error disconnecting node: " + B + "\n" + e);
+      }
+    }
+  }
+
+  if (window.AudioNode.prototype.connect !== toneConnect) {
+    window.AudioNode.prototype.connect = toneConnect;
+    window.AudioNode.prototype.disconnect = toneDisconnect;
+  }
 });

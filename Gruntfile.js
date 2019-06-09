@@ -1,3 +1,9 @@
+const browserify = require('browserify');
+const babelify = require('babelify');
+const path = require('path');
+const derequire = require('derequire');
+const deamdify = require('deamdify');
+
 module.exports = function(grunt) {
 
   grunt.initConfig({
@@ -14,7 +20,7 @@ module.exports = function(grunt) {
       // p5 dist
       main: {
         files: ['src/**/*.js'],
-        tasks: ['requirejs'],
+        tasks: ['browserify:dev'],
         options: {
           livereload: {
             port: 35728
@@ -175,7 +181,10 @@ module.exports = function(grunt) {
           hostname: '*'
         }
       }
-    }
+    },
+    browserify: {
+      tasks: ['browserify']
+    },
   });
 
 
@@ -184,10 +193,70 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-open');
-
   grunt.registerTask('lint', ['eslint:source']);
   grunt.registerTask('default', ['requirejs']);
-  grunt.registerTask('dev', ['connect','requirejs', 'watch']);
+  grunt.registerTask('dev', ['connect', 'dev', 'watch']);
+  grunt.registerTask('browserify-dev', ['connect', 'browserify:dev', 'watch']);
   grunt.registerTask('serve', 'connect:server:keepalive');
   grunt.registerTask('run-tests', ['serve', 'open']);
+
+  grunt.registerTask(
+    'browserify',
+    'compile source code',
+    function (param) {
+      const bannerTemplate = '/*! p5.sound.js es6 v<%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n' + grunt.file.read('./fragments/before.frag');
+      const banner = grunt.template.process(bannerTemplate);
+
+      // Reading and writing files is asynchronous
+      const done = this.async();
+
+      const browserified = browserify('src/app.js', {
+        debug: param === 'dev', // sourcemaps
+        standalone: 'p5.sound',
+        paths: ['./node_modules/tone/', './src/'],
+      });
+
+      const bundle = browserified
+        .transform(deamdify)
+        .transform(babelify, {
+          global: true,
+          presets: ['@babel/preset-env']
+        })
+        .bundle()
+
+      const isMin = param === 'min';
+      const filename = isMin ? 'p5.sound.pre-min.js' : 'p5.sound.js';
+
+      // This file will not exist until it has been built
+      const libFilePath = path.resolve('lib/' + filename);
+
+      // Start the generated output with the banner comment,
+      let code = banner + '\n';
+
+      // Then read the bundle into memory so we can run it through derequire
+      bundle
+        .on('data', function (data) {
+          code += data;
+        })
+        .on('end', function () {
+          // "code" is complete: create the distributable UMD build by running
+          // the bundle through derequire, then write the bundle to disk.
+          // (Derequire changes the bundle's internal "require" function to
+          // something that will not interfere with this module being used
+          // within a separate browserify bundle.)
+
+          code += grunt.file.read('./fragments/after.frag');
+          grunt.file.write(libFilePath, derequire(code));
+
+          // Print a success message
+          grunt.log.writeln(
+            '>>'.green + ' Bundle ' + ('lib/' + filename).cyan + ' created.'
+          );
+
+          // Complete the task
+          done();
+        });
+    }
+  );
+
 };

@@ -1,11 +1,9 @@
 'use strict';
 
-define(function (require) {
-  var p5sound = require('master');
+define(['audiocontext', 'Tone/core/Clock'], function (require, audiocontext, Clock) {
 
   // requires the Tone.js library's Clock (MIT license, Yotam Mann)
   // https://github.com/TONEnoTONE/Tone.js/
-  var Clock = require('Tone/core/Clock');
 
   p5.Metro = function() {
     this.clock = new Clock({
@@ -23,7 +21,7 @@ define(function (require) {
 
   p5.Metro.prototype.ontick = function(tickTime) {
     var elapsedTime = tickTime - this.prevTick;
-    var secondsFromNow = tickTime - p5sound.audiocontext.currentTime;
+    var secondsFromNow = tickTime - audiocontext.currentTime;
     if (elapsedTime - this.tatumTime <= -0.02) {
       return;
     } else {
@@ -51,7 +49,7 @@ define(function (require) {
 
   p5.Metro.prototype.setBPM = function(bpm, rampTime) {
     var beatTime =  60 / (bpm*this.tatums);
-    var now = p5sound.audiocontext.currentTime;
+    var now = audiocontext.currentTime;
     this.tatumTime = beatTime;
 
     var rampTime = rampTime || 0;
@@ -81,14 +79,14 @@ define(function (require) {
 
   p5.Metro.prototype.start = function(timeFromNow) {
     var t = timeFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
+    var now = audiocontext.currentTime;
     this.clock.start(now + t);
     this.setBPM(this.bpm);
   };
 
   p5.Metro.prototype.stop = function(timeFromNow) {
     var t = timeFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
+    var now = audiocontext.currentTime;
     this.clock.stop(now + t);
   };
 

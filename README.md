@@ -28,7 +28,7 @@ Interactive documentation at [p5js.org/reference/#/libraries/p5.sound](http://p5
 
 
 ### Dependencies
-p5.sound is built with a few modules (Clock, TimelineSignal, and signal math components) from [Tone.js](https://github.com/tonejs/Tone.js), an interactive music framework developed by Yotam Mann.
+p5.sound is built with a few modules (Clock, TickSignal, and signal math components) from [Tone.js](https://github.com/tonejs/Tone.js), an interactive music framework developed by Yotam Mann.
 
 ### References and Inspiration
 - [Yotam Mann & TONE.js](https://github.com/tonejs/Tone.js)

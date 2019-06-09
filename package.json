@@ -7,8 +7,14 @@
   "version": "0.3.11",
   "license": "MIT",
   "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
     "almond": "~0.2.7",
     "amdclean": "~2.0",
+    "babelify": "^10.0.0",
+    "browserify": "^16.2.3",
+    "deamdify": "^0.3.0",
+    "derequire": "^2.0.6",
     "grunt": "~0.4.5",
     "grunt-cli": "^0.1.13",
     "grunt-contrib-connect": "^1.0.2",
@@ -19,8 +25,10 @@
     "grunt-open": "^0.2.3"
   },
   "dependencies": {
+    "global": "^4.3.2",
+    "npm": "^6.9.0",
     "startaudiocontext": "^1.2.1",
-    "tone": "0.10.0"
+    "tone": "13.7.0"
   },
   "scripts": {
     "build": "grunt",

@@ -4,10 +4,10 @@ define(function (require) {
 
   // Signal is built with the Tone.js signal by Yotam Mann
   // https://github.com/TONEnoTONE/Tone.js/
-  var Signal = require('Tone/signal/Signal');
-  var Add = require('Tone/signal/Add');
-  var Mult = require('Tone/signal/Multiply');
-  var Scale = require('Tone/signal/Scale');
+  var Signal = require('Tone/signal/Signal').default;
+  var Add = require('Tone/signal/Add').default;
+  var Mult = require('Tone/signal/Multiply').default;
+  var Scale = require('Tone/signal/Scale').default;
 
   /**
    *  <p>p5.Signal is a constant audio-rate signal used by p5.Oscillator
@@ -158,5 +158,3 @@ define(function (require) {
   Scale.prototype.scale =   Signal.prototype.scale;
 
 });
-
-
