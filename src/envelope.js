@@ -139,6 +139,7 @@ define(function (require) {
    *  Reset the envelope with a series of time/value pairs.
    *
    *  @method  set
+   *  @for p5.Envelope
    *  @param {Number} attackTime     Time (in seconds) before level
    *                                 reaches attackLevel
    *  @param {Number} attackLevel    Typically an amplitude between
@@ -203,6 +204,7 @@ define(function (require) {
    *  </a>.
    *
    *  @method  setADSR
+   *  @for p5.Envelope
    *  @param {Number} attackTime    Time (in seconds before envelope
    *                                reaches Attack Level
    *  @param {Number} [decayTime]    Time (in seconds) before envelope
@@ -269,6 +271,7 @@ define(function (require) {
    *  Set max (attackLevel) and min (releaseLevel) of envelope.
    *
    *  @method  setRange
+   *  @for p5.Envelope
    *  @param {Number} aLevel attack level (defaults to 1)
    *  @param {Number} rLevel release level (defaults to 0)
    *  @example
@@ -365,6 +368,7 @@ define(function (require) {
    *  control all of them.
    *
    *  @method  setInput
+   *  @for p5.Envelope
    *  @param  {Object} [...inputs]         A p5.sound object or
    *                                Web Audio Param.
    */
@@ -380,6 +384,7 @@ define(function (require) {
    *  and frequency logarithmically.
    *
    *  @method  setExp
+   *  @for p5.Envelope
    *  @param {Boolean} isExp true is exponential, false is linear
    */
   p5.Envelope.prototype.setExp = function(isExp) {
@@ -404,6 +409,7 @@ define(function (require) {
    *  Web Audio Audio Param.</a>
    *
    *  @method  play
+   *  @for p5.Envelope
    *  @param  {Object} unit         A p5.sound object or
    *                                Web Audio Param.
    *  @param  {Number} [startTime]  time from now (in seconds) at which to play
@@ -470,6 +476,7 @@ define(function (require) {
    *  Web Audio Param</a>.
    *
    *  @method  triggerAttack
+   *  @for p5.Envelope
    *  @param  {Object} unit p5.sound Object or Web Audio Param
    *  @param  {Number} secondsFromNow time from now (in seconds)
    *  @example
@@ -564,7 +571,7 @@ define(function (require) {
       valToSet = this.control.getValueAtTime(t);
       this.control.cancelScheduledValues(t);
       this.control.linearRampToValueAtTime(valToSet, t);
-     
+
     }
 
     // decay to decay level (if using ADSR, then decay level == sustain level)
@@ -591,6 +598,7 @@ define(function (require) {
    *  release level and release time.
    *
    *  @method  triggerRelease
+   *  @for p5.Envelope
    *  @param  {Object} unit p5.sound Object or Web Audio Param
    *  @param  {Number} secondsFromNow time to trigger the release
    *  @example
@@ -705,6 +713,7 @@ define(function (require) {
    *  while a decrease uses decayTime.
    *
    *  @method  ramp
+   *  @for p5.Envelope
    *  @param  {Object} unit           p5.sound Object or Web Audio Param
    *  @param  {Number} secondsFromNow When to trigger the ramp
    *  @param  {Number} v              Target value
@@ -834,6 +843,7 @@ define(function (require) {
    *  again will override the initial add() with new values.
    *
    *  @method  add
+   *  @for p5.Envelope
    *  @param {Number} number Constant number to add
    *  @return {p5.Envelope} Envelope Returns this envelope
    *                                     with scaled output
@@ -851,6 +861,7 @@ define(function (require) {
    *  again will override the initial mult() with new values.
    *
    *  @method  mult
+   *  @for p5.Envelope
    *  @param {Number} number Constant number to multiply
    *  @return {p5.Envelope} Envelope Returns this envelope
    *                                     with scaled output
@@ -868,6 +879,7 @@ define(function (require) {
    *  again will override the initial scale() with new values.
    *
    *  @method  scale
+   *  @for p5.Envelope
    *  @param  {Number} inMin  input range minumum
    *  @param  {Number} inMax  input range maximum
    *  @param  {Number} outMin input range minumum

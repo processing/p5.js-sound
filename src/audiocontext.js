@@ -67,7 +67,8 @@ define(['StartAudioContext', 'Tone/core/Context', 'Tone/core/Tone'], function (S
    *  @param  {Function} [callback] Callback to invoke when the AudioContext has started
    *  @return {Promise}            Returns a Promise which is resolved when
    *                                       the AudioContext state is 'running'
-   * @method userStartAudio
+   *  @method userStartAudio
+   *  @for p5
    *  @example
    *  <div><code>
    *  function setup() {

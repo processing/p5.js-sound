@@ -101,6 +101,7 @@ define(function (require) {
    *  the browser won't provide mic access.
    *
    *  @method start
+   *  @for p5.AudioIn
    *  @param {Function} [successCallback] Name of a function to call on
    *                                    success.
    *  @param {Function} [errorCallback] Name of a function to call if
@@ -151,6 +152,7 @@ define(function (require) {
    *  If re-starting, the user may be prompted for permission access.
    *
    *  @method stop
+   *  @for p5.AudioIn
    */
   p5.AudioIn.prototype.stop = function() {
     if (this.stream) {
@@ -170,6 +172,7 @@ define(function (require) {
    *  connect to the master output (i.e. your speakers).<br/>
    *
    *  @method  connect
+   *  @for p5.AudioIn
    *  @param  {Object} [unit] An object that accepts audio input,
    *                          such as an FFT
    */
@@ -196,6 +199,7 @@ define(function (require) {
    *  signal to your speakers.<br/>
    *
    *  @method  disconnect
+   *  @for p5.AudioIn
    */
   p5.AudioIn.prototype.disconnect = function() {
     if (this.output) {
@@ -213,6 +217,7 @@ define(function (require) {
    *  .start() before using .getLevel().</em><br/>
    *
    *  @method  getLevel
+   *  @for p5.AudioIn
    *  @param  {Number} [smoothing] Smoothing is 0.0 by default.
    *                               Smooths values based on previous values.
    *  @return {Number}           Volume level (between 0.0 and 1.0)
@@ -228,6 +233,7 @@ define(function (require) {
    *  Set amplitude (volume) of a mic input between 0 and 1.0. <br/>
    *
    *  @method  amp
+   *  @for p5.AudioIn
    *  @param  {Number} vol between 0 and 1.0
    *  @param {Number} [time] ramp time (optional)
    */
@@ -251,6 +257,7 @@ define(function (require) {
    *  > and it returns a Promise.
    *
    * @method  getSources
+   * @for p5.AudioIn
    * @param  {Function} [successCallback] This callback function handles the sources when they
    *                                      have been enumerated. The callback function
    *                                      receives the deviceList array as its only argument
@@ -307,6 +314,7 @@ define(function (require) {
    *  >navigator.mediaDevices.enumerateDevices()</a>.<br/>
    *
    *  @method setSource
+   *  @for p5.AudioIn
    *  @param {number} num position of input source in the array
    */
   p5.AudioIn.prototype.setSource = function(num) {

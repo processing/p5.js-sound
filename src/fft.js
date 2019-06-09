@@ -141,6 +141,7 @@ define(function(require) {
    *  provided, FFT will analyze all sound in the sketch.
    *
    *  @method  setInput
+   *  @for p5.FFT
    *  @param {Object} [source] p5.sound object (or web audio API source node)
    */
   p5.FFT.prototype.setInput = function(source) {
@@ -163,6 +164,7 @@ define(function(require) {
    *  of a sound.
    *
    *  @method waveform
+   *  @for p5.FFT
    *  @param {Number} [bins]    Must be a power of two between
    *                            16 and 1024. Defaults to 1024.
    *  @param {String} [precision] If any value is provided, will return results
@@ -212,6 +214,7 @@ define(function(require) {
    *  <code>getEnergy()</code>.
    *
    *  @method analyze
+   *  @for p5.FFT
    *  @param {Number} [bins]    Must be a power of two between
    *                             16 and 1024. Defaults to 1024.
    *  @param {Number} [scale]    If "dB," returns decibel
@@ -312,6 +315,7 @@ define(function(require) {
    *  range of frequencies.</em></p>
    *
    *  @method  getEnergy
+   *  @for p5.FFT
    *  @param  {Number|String} frequency1   Will return a value representing
    *                                energy at this frequency. Alternately,
    *                                the strings "bass", "lowMid" "mid",
@@ -393,6 +397,7 @@ define(function(require) {
    *  the results determine the spectral centroid.</em></p>
    *
    *  @method  getCentroid
+   *  @for p5.FFT
    *  @return {Number}   Spectral Centroid Frequency   Frequency of the spectral centroid in Hz.
    *
    *
@@ -503,6 +508,7 @@ define(function(require) {
    *  the results to group them into a smaller set of averages.</em></p>
    *
    *  @method  linAverages
+   *  @for p5.FFT
    *  @param  {Number}  N                Number of returned frequency groups
    *  @return {Array}   linearAverages   Array of average amplitude values for each group
    */
@@ -542,6 +548,7 @@ define(function(require) {
    *  the results to group them into a smaller set of averages.</em></p>
    *
    *  @method  logAverages
+   *  @for p5.FFT
    *  @param  {Array}   octaveBands    Array of Octave Bands objects for grouping
    *  @return {Array}   logAverages    Array of average amplitude values for each group
    */
@@ -583,6 +590,7 @@ define(function(require) {
    *  and produce less frequency groups.
    *
    *  @method   getOctaveBands
+   *  @for p5.FFT
    *  @param  {Number}  N             Specifies the 1/N type of generated octave bands
    *  @param  {Number}  fCtr0         Minimum central frequency for the lowest band
    *  @return {Array}   octaveBands   Array of octave band objects with their bounds

@@ -150,6 +150,7 @@ define(function (require) {
   //   * ex. eq.set(freq0, gain0, freq1, gain1, freq2, gain2);
   //   *
   //   * @method  set
+  //   * @for p5.EQ
   //   * @param {Number} [freq0] Frequency value for band with index 0
   //   * @param {Number} [gain0] Gain value for band with index 0
   //   * @param {Number} [freq1] Frequency value for band with index 1
@@ -185,6 +186,7 @@ define(function (require) {
    * the raw biquad filter. This method returns an abstracted p5.Filter,
    * which can be added to p5.EQ.bands, in order to create new EQ bands.
    * @private
+   * @for p5.EQ
    * @method  _newBand
    * @param  {Number} freq
    * @param  {Number} res

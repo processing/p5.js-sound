@@ -20,9 +20,9 @@ define(function (require) {
    *  The <code>.res()</code> method controls either width of the
    *  bandpass, or resonance of the low/highpass cutoff frequency.
    *
-   *  This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.  
-   *  Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>, 
-   *  <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and 
+   *  This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.
+   *  Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>,
+   *  <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and
    *  <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
    *
    *  @class p5.Filter
@@ -200,7 +200,7 @@ define(function (require) {
    * p5.Filter.gain() controls the gain parameter of a Biquad Filter node.
    *
    * @method gain
-   * @param  {Number} gain 
+   * @param  {Number} gain
    * @return {Number} Returns the current or updated gain value
    */
   p5.Filter.prototype.gain = function(gain, time) {
@@ -224,7 +224,7 @@ define(function (require) {
    */
   p5.Filter.prototype.toggle = function() {
     this._on = !this._on;
-    
+
     if (this._on === true) {
       this.biquad.type = this._untoggledType;
     } else if (this._on === false) {
@@ -257,50 +257,50 @@ define(function (require) {
     }
   };
 
-  /**
-   *  Constructor: <code>new p5.LowPass()</code> Filter.
-   *  This is the same as creating a p5.Filter and then calling
-   *  its method <code>setType('lowpass')</code>.
-   *  See p5.Filter for methods.
-   *
-   *  @class p5.LowPass
-   *  @constructor
-   *  @extends p5.Filter
-   */
-  p5.LowPass = function() {
-    p5.Filter.call(this, 'lowpass');
-  };
-  p5.LowPass.prototype = Object.create(p5.Filter.prototype);
+  // /**
+  //  *  Constructor: <code>new p5.LowPass()</code> Filter.
+  //  *  This is the same as creating a p5.Filter and then calling
+  //  *  its method <code>setType('lowpass')</code>.
+  //  *  See p5.Filter for methods.
+  //  *
+  //  *  @class p5.LowPass
+  //  *  @constructor
+  //  *  @extends p5.Filter
+  //  */
+  // p5.LowPass = function() {
+  //   p5.Filter.call(this, 'lowpass');
+  // };
+  // p5.LowPass.prototype = Object.create(p5.Filter.prototype);
 
-  /**
-   *  Constructor: <code>new p5.HighPass()</code> Filter.
-   *  This is the same as creating a p5.Filter and then calling
-   *  its method <code>setType('highpass')</code>.
-   *  See p5.Filter for methods.
-   *
-   *  @class p5.HighPass
-   *  @constructor
-   *  @extends p5.Filter
-   */
-  p5.HighPass = function() {
-    p5.Filter.call(this, 'highpass');
-  };
-  p5.HighPass.prototype = Object.create(p5.Filter.prototype);
+  // /**
+  //  *  Constructor: <code>new p5.HighPass()</code> Filter.
+  //  *  This is the same as creating a p5.Filter and then calling
+  //  *  its method <code>setType('highpass')</code>.
+  //  *  See p5.Filter for methods.
+  //  *
+  //  *  @class p5.HighPass
+  //  *  @constructor
+  //  *  @extends p5.Filter
+  //  */
+  // p5.HighPass = function() {
+  //   p5.Filter.call(this, 'highpass');
+  // };
+  // p5.HighPass.prototype = Object.create(p5.Filter.prototype);
 
-  /**
-   *  Constructor: <code>new p5.BandPass()</code> Filter.
-   *  This is the same as creating a p5.Filter and then calling
-   *  its method <code>setType('bandpass')</code>.
-   *  See p5.Filter for methods.
-   *
-   *  @class p5.BandPass
-   *  @constructor
-   *  @extends p5.Filter
-   */
-  p5.BandPass = function() {
-    p5.Filter.call(this, 'bandpass');
-  };
-  p5.BandPass.prototype = Object.create(p5.Filter.prototype);
+  // /**
+  //  *  Constructor: <code>new p5.BandPass()</code> Filter.
+  //  *  This is the same as creating a p5.Filter and then calling
+  //  *  its method <code>setType('bandpass')</code>.
+  //  *  See p5.Filter for methods.
+  //  *
+  //  *  @class p5.BandPass
+  //  *  @constructor
+  //  *  @extends p5.Filter
+  //  */
+  // p5.BandPass = function() {
+  //   p5.Filter.call(this, 'bandpass');
+  // };
+  // p5.BandPass.prototype = Object.create(p5.Filter.prototype);
 
   return p5.Filter;
 });

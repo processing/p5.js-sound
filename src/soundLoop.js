@@ -18,15 +18,15 @@ define(function (require) {
    * <div><code>
    * var click;
    * var looper1;
-   * 
+   *
    * function preload() {
    *   click = loadSound('assets/drum.mp3');
    * }
-   * 
+   *
    * function setup() {
    *   //the looper's callback is passed the timeFromNow
-   *   //this value should be used as a reference point from 
-   *   //which to schedule sounds 
+   *   //this value should be used as a reference point from
+   *   //which to schedule sounds
    *   looper1 = new p5.SoundLoop(function(timeFromNow){
    *     click.play(timeFromNow);
    *     background(255 * (looper1.iterations % 2));
@@ -86,6 +86,7 @@ define(function (require) {
   /**
    * Start the loop
    * @method  start
+   * @for p5.SoundLoop
    * @param  {Number} [timeFromNow] schedule a starting time
    */
   p5.SoundLoop.prototype.start = function(timeFromNow) {
@@ -100,6 +101,7 @@ define(function (require) {
   /**
    * Stop the loop
    * @method  stop
+   * @for p5.SoundLoop
    * @param  {Number} [timeFromNow] schedule a stopping time
    */
   p5.SoundLoop.prototype.stop = function(timeFromNow) {
@@ -113,6 +115,7 @@ define(function (require) {
   /**
    * Pause the loop
    * @method pause
+   * @for p5.SoundLoop
    * @param  {Number} [timeFromNow] schedule a pausing time
    */
   p5.SoundLoop.prototype.pause  = function(timeFromNow) {
@@ -130,9 +133,10 @@ define(function (require) {
    * or to start a loop in synchronization with a loop that is already playing
    * This method will schedule the implicit loop in sync with the explicit master loop
    * i.e. loopToStart.syncedStart(loopToSyncWith)
-   * 
+   *
    * @method  syncedStart
-   * @param  {Object} otherLoop   a p5.SoundLoop to sync with 
+   * @for p5.SoundLoop
+   * @param  {Object} otherLoop   a p5.SoundLoop to sync with
    * @param  {Number} [timeFromNow] Start the loops in sync after timeFromNow seconds
    */
   p5.SoundLoop.prototype.syncedStart = function(otherLoop, timeFromNow) {
@@ -155,6 +159,7 @@ define(function (require) {
   /**
    * Updates frequency value, reflected in next callback
    * @private
+   * @for p5.SoundLoop
    * @method  _update
    */
   p5.SoundLoop.prototype._update = function() {
@@ -164,6 +169,7 @@ define(function (require) {
   /**
    * Calculate the frequency of the clock's callback based on bpm, interval, and timesignature
    * @private
+   * @for p5.SoundLoop
    * @method  _calcFreq
    * @return {Number} new clock frequency value
    */
@@ -184,6 +190,7 @@ define(function (require) {
    * Convert notation from musical time format to seconds
    * Uses <a href = "https://github.com/Tonejs/Tone.js/wiki/Time">Tone.Time</a> convention
    * @private
+   * @for p5.SoundLoop
    * @method _convertNotation
    * @param  {String} value value to be converted
    * @return {Number}       converted value in seconds
@@ -205,13 +212,18 @@ define(function (require) {
   /**
    * Helper conversion methods of measure and note
    * @private
+   * @for p5.SoundLoop
    * @method  _measure
-   * @private
-   * @method  _note
    */
   p5.SoundLoop.prototype._measure = function(value) {
     return value * this._timeSignature;
   };
+
+  /**
+   * @private
+   * @method  _note
+   * @for p5.SoundLoop
+   */
   p5.SoundLoop.prototype._note = function(value) {
     return this._timeSignature / value ;
   };
@@ -222,6 +234,7 @@ define(function (require) {
    * frequency, that will be reflected after the next callback
    * beats per minute (defaults to 60)
    * @property {Number} bpm
+   * @for p5.SoundLoop
    */
   Object.defineProperty(p5.SoundLoop.prototype, 'bpm', {
     get : function() {
@@ -242,6 +255,7 @@ define(function (require) {
   /**
    * number of quarter notes in a measure (defaults to 4)
    * @property {Number} timeSignature
+   * @for p5.SoundLoop
    */
   Object.defineProperty(p5.SoundLoop.prototype, 'timeSignature', {
     get : function() {
@@ -262,6 +276,7 @@ define(function (require) {
   /**
    * length of the loops interval
    * @property {Number|String} interval
+   * @for p5.SoundLoop
    */
   Object.defineProperty(p5.SoundLoop.prototype, 'interval', {
     get : function() {
@@ -277,6 +292,7 @@ define(function (require) {
   /**
    * how many times the callback has been called so far
    * @property {Number} iterations
+   * @for p5.SoundLoop
    * @readonly
    */
   Object.defineProperty(p5.SoundLoop.prototype, 'iterations', {

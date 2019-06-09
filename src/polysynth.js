@@ -101,6 +101,7 @@ define(function (require) {
   /**
    * Construct the appropriate number of audiovoices
    * @private
+   * @for p5.PolySynth
    * @method  _allocateVoices
    */
   p5.PolySynth.prototype._allocateVoices = function() {
@@ -115,6 +116,7 @@ define(function (require) {
    *  Play a note by triggering noteAttack and noteRelease with sustain time
    *
    *  @method  play
+   *  @for p5.PolySynth
    *  @param  {Number} [note] midi note to play (ranging from 0 to 127 - 60 being a middle C)
    *  @param  {Number} [velocity] velocity of the note to play (ranging from 0 to 1)
    *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
@@ -166,6 +168,7 @@ define(function (require) {
    *  in order to prevent the modified envelope from being used on other notes.
    *
    *  @method  noteADSR
+   *  @for p5.PolySynth
    *  @param {Number} [note]        Midi note on which ADSR should be set.
    *  @param {Number} [attackTime]  Time (in seconds before envelope
    *                                reaches Attack Level
@@ -195,6 +198,7 @@ define(function (require) {
    * monosynth so that all notes are played with this envelope.
    *
    *  @method  setADSR
+   *  @for p5.PolySynth
    *  @param {Number} [attackTime]  Time (in seconds before envelope
    *                                reaches Attack Level
    *  @param {Number} [decayTime]   Time (in seconds) before envelope
@@ -221,6 +225,7 @@ define(function (require) {
    *  hold the sustain level until you let go.
    *
    *  @method  noteAttack
+   *  @for p5.PolySynth
    *  @param  {Number} [note]           midi note on which attack should be triggered.
    *  @param  {Number} [velocity]       velocity of the note to play (ranging from 0 to 1)/
    *  @param  {Number} [secondsFromNow] time from now (in seconds)
@@ -306,6 +311,7 @@ define(function (require) {
    * scheduledValues after release
    *
    * @private
+   * @for p5.PolySynth
    * @param  {[type]} time  [description]
    * @param  {[type]} value [description]
    * @return {[type]}       [description]
@@ -327,6 +333,7 @@ define(function (require) {
    *  release level and release time.
    *
    *  @method  noteRelease
+   *  @for p5.PolySynth
    *  @param  {Number} [note]           midi note on which attack should be triggered.
    *                                    If no value is provided, all notes will be released.
    *  @param  {Number} [secondsFromNow] time to trigger the release
@@ -397,6 +404,7 @@ define(function (require) {
     *  Connect to a p5.sound / Web Audio object.
     *
     *  @method  connect
+    *  @for p5.PolySynth
     *  @param  {Object} unit A p5.sound or Web Audio object
     */
   p5.PolySynth.prototype.connect = function (unit) {
@@ -408,6 +416,7 @@ define(function (require) {
   *  Disconnect all outputs
   *
   *  @method  disconnect
+  *  @for p5.PolySynth
   */
   p5.PolySynth.prototype.disconnect = function() {
     if (this.output) {
@@ -419,6 +428,7 @@ define(function (require) {
     *  Get rid of the MonoSynth and free up its resources / memory.
     *
     *  @method  dispose
+    *  @for p5.PolySynth
     */
   p5.PolySynth.prototype.dispose = function() {
     this.audiovoices.forEach(function(voice) {

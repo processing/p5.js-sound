@@ -113,6 +113,7 @@ define(function (require) {
    *  oscillator starts.
    *
    *  @method  start
+   *  @for p5.Oscillator
    *  @param  {Number} [time] startTime in seconds from now.
    *  @param  {Number} [frequency] frequency in Hz.
    */
@@ -158,6 +159,7 @@ define(function (require) {
    *  oscillator stops.
    *
    *  @method  stop
+   *  @for p5.Oscillator
    *  @param  {Number} secondsFromNow Time, in seconds from now.
    */
   p5.Oscillator.prototype.stop = function(time) {
@@ -174,6 +176,7 @@ define(function (require) {
    *  such as an oscillator to modulate amplitude with an audio signal.
    *
    *  @method  amp
+   *  @for p5.Oscillator
    *  @param  {Number|Object} vol between 0 and 1.0
    *                              or a modulating signal/oscillator
    *  @param {Number} [rampTime] create a fade that lasts rampTime
@@ -214,6 +217,7 @@ define(function (require) {
    *  such as an oscillator to modulate the frequency with an audio signal.
    *
    *  @method  freq
+   *  @for p5.Oscillator
    *  @param  {Number|Object} Frequency Frequency in Hz
    *                                        or modulating signal/oscillator
    *  @param  {Number} [rampTime] Ramp time (in seconds)
@@ -278,6 +282,7 @@ define(function (require) {
    *  Set type to 'sine', 'triangle', 'sawtooth' or 'square'.
    *
    *  @method  setType
+   *  @for p5.Oscillator
    *  @param {String} type 'sine', 'triangle', 'sawtooth' or 'square'.
    */
   p5.Oscillator.prototype.setType = function(type) {
@@ -292,6 +297,7 @@ define(function (require) {
    *  Connect to a p5.sound / Web Audio object.
    *
    *  @method  connect
+   *  @for p5.Oscillator
    *  @param  {Object} unit A p5.sound or Web Audio object
    */
   p5.Oscillator.prototype.connect = function(unit) {
@@ -312,6 +318,7 @@ define(function (require) {
    *  Disconnect all outputs
    *
    *  @method  disconnect
+   *  @for p5.Oscillator
    */
   p5.Oscillator.prototype.disconnect = function() {
     if (this.output) {
@@ -330,6 +337,7 @@ define(function (require) {
    *  Pan between Left (-1) and Right (1)
    *
    *  @method  pan
+   *  @for p5.Oscillator
    *  @param  {Number} panning Number between -1 and 1
    *  @param  {Number} timeFromNow schedule this event to happen
    *                                seconds from now
@@ -368,6 +376,7 @@ define(function (require) {
    *  based on the oscillator's current frequency.
    *
    *  @method  phase
+   *  @for p5.Oscillator
    *  @param  {Number} phase float between 0.0 and 1.0
    */
   p5.Oscillator.prototype.phase = function(p) {
@@ -428,6 +437,7 @@ define(function (require) {
    *  will override the initial add() with a new value.
    *
    *  @method  add
+   *  @for p5.Oscillator
    *  @param {Number} number Constant number to add
    *  @return {p5.Oscillator} Oscillator Returns this oscillator
    *                                     with scaled output
@@ -446,6 +456,7 @@ define(function (require) {
    *  again will override the initial mult() with a new value.
    *
    *  @method  mult
+   *  @for p5.Oscillator
    *  @param {Number} number Constant number to multiply
    *  @return {p5.Oscillator} Oscillator Returns this oscillator
    *                                     with multiplied output
@@ -463,6 +474,7 @@ define(function (require) {
    *  again will override the initial scale() with new values.
    *
    *  @method  scale
+   *  @for p5.Oscillator
    *  @param  {Number} inMin  input range minumum
    *  @param  {Number} inMax  input range maximum
    *  @param  {Number} outMin input range minumum
