@@ -1,6 +1,6 @@
 'use strict';
 
-define(['StartAudioContext', 'Tone/core/Context', 'Tone/core/Tone'], function (require, StartAudioContext, Context, Tone) {
+define(['StartAudioContext', 'Tone/core/Context', 'Tone/core/Tone'], function (StartAudioContext, Context, Tone) {
   // Create the Audio Context
   const audiocontext = new window.AudioContext();
   Tone.context.dispose();
