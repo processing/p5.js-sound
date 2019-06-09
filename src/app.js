@@ -25,10 +25,10 @@ define(function (require) {
   require('reverb');
   require('metro');
   require('looper');
-  require('soundloop');
+  require('soundLoop');
   require('compressor');
   require('soundRecorder');
-  require('peakdetect');
+  require('peakDetect');
   require('gain');
   require('monosynth');
   require('polysynth');

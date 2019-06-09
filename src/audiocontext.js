@@ -2,7 +2,7 @@
 
 global.TONE_SILENCE_VERSION_LOGGING = true;
 
-define(['StartAudioContext', 'Tone/core/Context', 'Tone/core/Tone'], function (StartAudioContext, Context, Tone) {
+define(['startaudiocontext', 'Tone/core/Context', 'Tone/core/Tone'], function (StartAudioContext, Context, Tone) {
   // Create the Audio Context
   const audiocontext = new window.AudioContext();
 
