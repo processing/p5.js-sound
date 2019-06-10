@@ -82,6 +82,7 @@ define(function (require) {
    *  Connect a source to the reverb, and assign reverb parameters.
    *
    *  @method  process
+   *  @for p5.Reverb
    *  @param  {Object} src     p5.sound / Web Audio object with a sound
    *                           output.
    *  @param  {Number} [seconds] Duration of the reverb, in seconds.
@@ -113,6 +114,7 @@ define(function (require) {
    *  assigning a new input.
    *
    *  @method  set
+   *  @for p5.Reverb
    *  @param  {Number} [seconds] Duration of the reverb, in seconds.
    *                           Min: 0, Max: 10. Defaults to 3.
    *  @param  {Number} [decayRate] Percentage of decay with each echo.
@@ -141,6 +143,7 @@ define(function (require) {
    *  Set the output level of the reverb effect.
    *
    *  @method  amp
+   *  @for p5.Reverb
    *  @param  {Number} volume amplitude between 0 and 1.0
    *  @param  {Number} [rampTime] create a fade that lasts rampTime
    *  @param  {Number} [timeFromNow] schedule this event to happen
@@ -150,12 +153,14 @@ define(function (require) {
    *  Send output to a p5.sound or web audio object
    *
    *  @method  connect
+   *  @for p5.Reverb
    *  @param  {Object} unit
    */
   /**
    *  Disconnect all output.
    *
    *  @method disconnect
+   *  @for p5.Reverb
    */
 
   /**
@@ -284,6 +289,7 @@ define(function (require) {
    *  that will be used to generate an impulse response.
    *
    *  @method  createConvolver
+   *  @for p5
    *  @param  {String}   path     path to a sound file
    *  @param  {Function} [callback] function to call if loading is successful.
    *                                The object will be passed in as the argument
@@ -422,6 +428,7 @@ define(function (require) {
    *  Connect a source to the reverb, and assign reverb parameters.
    *
    *  @method  process
+   *  @for p5.Convolver
    *  @param  {Object} src     p5.sound / Web Audio object with a sound
    *                           output.
    *  @example
@@ -457,6 +464,7 @@ define(function (require) {
    *  with the <code>toggleImpulse(id)</code> method.
    *
    *  @property {Array} impulses
+   *  @for p5.Convolver
    */
   p5.Convolver.prototype.impulses = [];
 
@@ -467,6 +475,7 @@ define(function (require) {
    *  method.
    *
    *  @method  addImpulse
+   *  @for p5.Convolver
    *  @param  {String}   path     path to a sound file
    *  @param  {Function} callback function (optional)
    *  @param  {Function} errorCallback function (optional)
@@ -485,6 +494,7 @@ define(function (require) {
    *  array is created with this impulse as the only item.
    *
    *  @method  resetImpulse
+   *  @for p5.Convolver
    *  @param  {String}   path     path to a sound file
    *  @param  {Function} callback function (optional)
    *  @param  {Function} errorCallback function (optional)
@@ -513,6 +523,7 @@ define(function (require) {
    *  with the original filename.
    *
    *  @method toggleImpulse
+   *  @for p5.Convolver
    *  @param {String|Number} id Identify the impulse by its original filename
    *                            (String), or by its position in the
    *                            <code>.impulses</code> Array (Number).

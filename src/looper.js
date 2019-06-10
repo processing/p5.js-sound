@@ -10,6 +10,7 @@ define(function(require) {
    *  p5.Parts. This method will impact all active p5.Parts.
    *
    *  @method setBPM
+   *  @for p5
    *  @param {Number} BPM      Beats Per Minute
    *  @param {Number} rampTime Seconds from now
    */
@@ -188,6 +189,7 @@ define(function(require) {
    *  Set the tempo of this part, in Beats Per Minute.
    *
    *  @method  setBPM
+   *  @for p5.Part
    *  @param {Number} BPM      Beats Per Minute
    *  @param {Number} [rampTime] Seconds from now
    */
@@ -199,6 +201,7 @@ define(function(require) {
    *  Returns the tempo, in Beats Per Minute, of this part.
    *
    *  @method getBPM
+   *  @for p5.Part
    *  @return {Number}
    */
   p5.Part.prototype.getBPM = function() {
@@ -211,6 +214,7 @@ define(function(require) {
    *  determined by setBPM.
    *
    *  @method  start
+   *  @for p5.Part
    *  @param  {Number} [time] seconds from now
    */
   p5.Part.prototype.start = function(time) {
@@ -228,6 +232,7 @@ define(function(require) {
    *  determined by setBPM.
    *
    *  @method  loop
+   *  @for p5.Part
    *  @param  {Number} [time] seconds from now
    */
   p5.Part.prototype.loop = function(time) {
@@ -244,6 +249,7 @@ define(function(require) {
    *  Tell the part to stop looping.
    *
    *  @method  noLoop
+   *  @for p5.Part
    */
   p5.Part.prototype.noLoop = function() {
     this.looping = false;
@@ -257,6 +263,7 @@ define(function(require) {
    *  Stop the part and cue it to step 0. Playback will resume from the begining of the Part when it is played again.
    *
    *  @method  stop
+   *  @for p5.Part
    *  @param  {Number} [time] seconds from now
    */
   p5.Part.prototype.stop = function(time) {
@@ -269,6 +276,7 @@ define(function(require) {
    *  from the current step.
    *
    *  @method  pause
+   *  @for p5.Part
    *  @param  {Number} time seconds from now
    */
   p5.Part.prototype.pause = function(time) {
@@ -281,6 +289,7 @@ define(function(require) {
    *  Add a p5.Phrase to this Part.
    *
    *  @method  addPhrase
+   *  @for p5.Part
    *  @param {p5.Phrase}   phrase   reference to a p5.Phrase
    */
   p5.Part.prototype.addPhrase = function(name, callback, array) {
@@ -304,6 +313,7 @@ define(function(require) {
    *  given when it was created.
    *
    *  @method  removePhrase
+   *  @for p5.Part
    *  @param  {String} phraseName
    */
   p5.Part.prototype.removePhrase = function(name) {
@@ -319,6 +329,7 @@ define(function(require) {
    *  given when it was created. Now you can modify its array.
    *
    *  @method  getPhrase
+   *  @for p5.Part
    *  @param  {String} phraseName
    */
   p5.Part.prototype.getPhrase = function(name) {
@@ -333,6 +344,7 @@ define(function(require) {
    *  Find all sequences with the specified name, and replace their patterns with the specified array.
    *
    *  @method  replaceSequence
+   *  @for p5.Part
    *  @param  {String} phraseName
    *  @param  {Array} sequence  Array of values to pass into the callback
    *                            at each step of the phrase.
@@ -362,6 +374,7 @@ define(function(require) {
    *  Set the function that will be called at every step. This will clear the previous function.
    *
    *  @method onStep
+   *  @for p5.Part
    *  @param  {Function} callback The name of the callback
    *                              you want to fire
    *                              on every beat/tatum.
@@ -421,6 +434,7 @@ define(function(require) {
    *  Start playback of the score.
    *
    *  @method  start
+   *  @for p5.Score
    */
   p5.Score.prototype.start = function() {
     this.parts[this.currentPart].start();
@@ -431,6 +445,7 @@ define(function(require) {
    *  Stop playback of the score.
    *
    *  @method  stop
+   *  @for p5.Score
    */
   p5.Score.prototype.stop = function() {
     this.parts[this.currentPart].stop();
@@ -442,6 +457,7 @@ define(function(require) {
    *  Pause playback of the score.
    *
    *  @method  pause
+   *  @for p5.Score
    */
   p5.Score.prototype.pause = function() {
     this.parts[this.currentPart].stop();
@@ -451,6 +467,7 @@ define(function(require) {
    *  Loop playback of the score.
    *
    *  @method  loop
+   *  @for p5.Score
    */
   p5.Score.prototype.loop = function() {
     this.looping = true;
@@ -463,6 +480,7 @@ define(function(require) {
    *  after the current round of playback completes.
    *
    *  @method  noLoop
+   *  @for p5.Score
    */
   p5.Score.prototype.noLoop = function() {
     this.looping = false;
@@ -489,6 +507,7 @@ define(function(require) {
    *  Set the tempo for all parts in the score
    *
    *  @method setBPM
+   *  @for p5.Score
    *  @param {Number} BPM      Beats Per Minute
    *  @param {Number} rampTime Seconds from now
    */

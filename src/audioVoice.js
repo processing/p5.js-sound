@@ -4,7 +4,7 @@ define(function() {
 
   /**
    * Base class for monophonic synthesizers. Any extensions of this class
-   * should follow the API and implement the methods below in order to 
+   * should follow the API and implement the methods below in order to
    * remain compatible with p5.PolySynth();
    *
    * @class p5.AudioVoice
@@ -32,7 +32,8 @@ define(function() {
   /**
    * Connect to p5 objects or Web Audio Nodes
    * @method  connect
-   * @param {Object} unit 
+   * @for p5.AudioVoice
+   * @param {Object} unit
    */
   p5.AudioVoice.prototype.connect = function(unit) {
     var u = unit || p5sound.input;
@@ -42,6 +43,7 @@ define(function() {
   /**
    * Disconnect from soundOut
    * @method  disconnect
+   * @for p5.AudioVoice
    */
   p5.AudioVoice.prototype.disconnect = function() {
     this.output.disconnect();

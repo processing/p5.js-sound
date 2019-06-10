@@ -25,12 +25,12 @@ define(function (require) {
    * A Distortion effect created with a Waveshaper Node,
    * with an approach adapted from
    * [Kevin Ennis](http://stackoverflow.com/questions/22312841/waveshaper-node-in-webaudio-how-to-emulate-distortion)
-   * 
-   * This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.  
-   * Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>, 
-   * <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and 
+   *
+   * This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.
+   * Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>,
+   * <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and
    * <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
-   * 
+   *
    * @class p5.Distortion
    * @extends p5.Effect
    * @constructor
@@ -79,6 +79,7 @@ define(function (require) {
    * Process a sound source, optionally specify amount and oversample values.
    *
    * @method process
+   * @for p5.Distortion
    * @param {Number} [amount=0.25] Unbounded distortion amount.
    *                                Normal values range from 0-1.
    * @param {String} [oversample='none'] 'none', '2x', or '4x'.
@@ -92,6 +93,7 @@ define(function (require) {
    * Set the amount and oversample of the waveshaper distortion.
    *
    * @method set
+   * @for p5.Distortion
    * @param {Number} [amount=0.25] Unbounded distortion amount.
    *                                Normal values range from 0-1.
    * @param {String} [oversample='none'] 'none', '2x', or '4x'.
@@ -111,6 +113,7 @@ define(function (require) {
    *  Return the distortion amount, typically between 0-1.
    *
    *  @method  getAmount
+   *  @for p5.Distortion
    *  @return {Number} Unbounded distortion amount.
    *                   Normal values range from 0-1.
    */
@@ -122,7 +125,7 @@ define(function (require) {
    *  Return the oversampling.
    *
    *  @method getOversample
-   *
+   *  @for p5.Distortion
    *  @return {String} Oversample can either be 'none', '2x', or '4x'.
    */
   p5.Distortion.prototype.getOversample = function() {

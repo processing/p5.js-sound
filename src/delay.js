@@ -15,9 +15,9 @@ define(function (require) {
    *  original source.
    *
    *
-   *  This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.  
-   *  Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>, 
-   *  <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and 
+   *  This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.
+   *  Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>,
+   *  <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and
    *  <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
    *  @class p5.Delay
    *  @extends p5.Effect
@@ -123,6 +123,7 @@ define(function (require) {
    *  of delay parameters.
    *
    *  @method  process
+   *  @for p5.Delay
    *  @param  {Object} Signal  An object that outputs audio
    *  @param  {Number} [delayTime] Time (in seconds) of the delay/echo.
    *                               Some browsers limit delayTime to
@@ -161,6 +162,7 @@ define(function (require) {
    *  a floating point number between 0.0 and 1.0.
    *
    *  @method  delayTime
+   *  @for p5.Delay
    *  @param {Number} delayTime Time (in seconds) of the delay
    */
   p5.Delay.prototype.delayTime = function(t) {
@@ -186,6 +188,7 @@ define(function (require) {
    *  creating an infinite feedback loop. The default value is 0.5
    *
    *  @method  feedback
+   *  @for p5.Delay
    *  @param {Number|Object} feedback 0.0 to 1.0, or an object such as an
    *                                  Oscillator that can be used to
    *                                  modulate this param
@@ -215,6 +218,7 @@ define(function (require) {
    *  will cut off any frequencies higher than the filter frequency.
    *
    *  @method  filter
+   *  @for p5.Delay
    *  @param {Number|Object} cutoffFreq  A lowpass filter will cut off any
    *                              frequencies higher than the filter frequency.
    *  @param {Number|Object} res  Resonance of the filter frequency
@@ -235,6 +239,7 @@ define(function (require) {
    *  Any other parameter will revert to the default delay setting.
    *
    *  @method  setType
+   *  @for p5.Delay
    *  @param {String|Number} type 'pingPong' (1) or 'default' (0)
    */
   p5.Delay.prototype.setType = function(t) {
@@ -267,6 +272,7 @@ define(function (require) {
    *  Set the output level of the delay effect.
    *
    *  @method  amp
+   *  @for p5.Delay
    *  @param  {Number} volume amplitude between 0 and 1.0
    *  @param {Number} [rampTime] create a fade that lasts rampTime
    *  @param {Number} [timeFromNow] schedule this event to happen
@@ -276,12 +282,14 @@ define(function (require) {
    *  Send output to a p5.sound or web audio object
    *
    *  @method  connect
+   *  @for p5.Delay
    *  @param  {Object} unit
    */
   /**
    *  Disconnect all output.
    *
    *  @method disconnect
+   *  @for p5.Delay
    */
 
   p5.Delay.prototype.dispose = function() {

@@ -1,28 +1,27 @@
 'use strict';
 
 define(function (require) {
-  var p5sound = require('master');
   var Effect = require('effect');
 
   /**
    *  <p>A p5.Filter uses a Web Audio Biquad Filter to filter
    *  the frequency response of an input source. Subclasses
    *  include:</p>
-   *  * <a href="/reference/#/p5.LowPass"><code>p5.LowPass</code></a>:
+   *  <a href="/reference/#/p5.LowPass"><code>p5.LowPass</code></a>:
    *  Allows frequencies below the cutoff frequency to pass through,
    *  and attenuates frequencies above the cutoff.<br/>
-   *  * <a href="/reference/#/p5.HighPass"><code>p5.HighPass</code></a>:
+   *  <a href="/reference/#/p5.HighPass"><code>p5.HighPass</code></a>:
    *  The opposite of a lowpass filter. <br/>
-   *  * <a href="/reference/#/p5.BandPass"><code>p5.BandPass</code></a>:
+   *  <a href="/reference/#/p5.BandPass"><code>p5.BandPass</code></a>:
    *  Allows a range of frequencies to pass through and attenuates
    *  the frequencies below and above this frequency range.<br/>
    *
    *  The <code>.res()</code> method controls either width of the
    *  bandpass, or resonance of the low/highpass cutoff frequency.
    *
-   *  This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.  
-   *  Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>, 
-   *  <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and 
+   *  This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.
+   *  Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>,
+   *  <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and
    *  <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
    *
    *  @class p5.Filter
@@ -79,8 +78,6 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-
-  //constructor with inheritance
   p5.Filter = function (type) {
 
     Effect.call(this);
@@ -200,7 +197,7 @@ define(function (require) {
    * p5.Filter.gain() controls the gain parameter of a Biquad Filter node.
    *
    * @method gain
-   * @param  {Number} gain 
+   * @param  {Number} gain
    * @return {Number} Returns the current or updated gain value
    */
   p5.Filter.prototype.gain = function(gain, time) {
@@ -224,7 +221,7 @@ define(function (require) {
    */
   p5.Filter.prototype.toggle = function() {
     this._on = !this._on;
-    
+
     if (this._on === true) {
       this.biquad.type = this._untoggledType;
     } else if (this._on === false) {
@@ -232,7 +229,7 @@ define(function (require) {
     }
 
     return this._on;
-  }
+  };
 
   /**
    *  Set the type of a p5.Filter. Possible types include:

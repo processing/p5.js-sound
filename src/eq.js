@@ -3,7 +3,7 @@
 define(function (require) {
 
   var Effect = require('effect');
-  var EQFilter = require('src/eqFilter');
+  var EQFilter = require('eqFilter');
 
   /**
    * p5.EQ is an audio effect that performs the function of a multiband
@@ -32,40 +32,40 @@ define(function (require) {
    * var eq;
    * var band_names;
    * var band_index;
-   * 
+   *
    * var soundFile, play;
-   * 
+   *
    * function preload() {
    *   soundFormats('mp3', 'ogg');
    *   soundFile = loadSound('assets/beat');
    * }
-   * 
+   *
    * function setup() {
    *   eq = new p5.EQ(3);
    *   soundFile.disconnect();
    *   eq.process(soundFile);
-   * 
+   *
    *   band_names = ['lows','mids','highs'];
    *   band_index = 0;
    *   play = false;
    *   textAlign(CENTER);
    * }
-   * 
+   *
    * function draw() {
    *   background(30);
    *   noStroke();
    *   fill(255);
    *   text('click to kill',50,25);
-   * 
+   *
    *   fill(255, 40, 255);
    *   textSize(26);
    *   text(band_names[band_index],50,55);
-   * 
+   *
    *   fill(255);
    *   textSize(9);
    *   text('space = play/pause',50,80);
    * }
-   * 
+   *
    * //If mouse is over canvas, cycle to the next band and kill the frequency
    * function mouseClicked() {
    *   for (var i = 0; i < eq.bands.length; i++) {
@@ -76,7 +76,7 @@ define(function (require) {
    *     band_index === 2 ? band_index = 0 : band_index++;
    *   }
    * }
-   * 
+   *
    * //use space bar to trigger play / pause
    * function keyPressed() {
    *   if (key===' ') {
@@ -97,7 +97,7 @@ define(function (require) {
 
     /**
       *  The p5.EQ is built with abstracted p5.Filter objects.
-      *  To modify any bands, use methods of the <a 
+      *  To modify any bands, use methods of the <a
       *  href="/reference/#/p5.Filter" title="p5.Filter reference">
       *  p5.Filter</a> API, especially `gain` and `freq`.
       *  Bands are stored in an array, with indices 0 - 3, or 0 - 7
@@ -128,10 +128,10 @@ define(function (require) {
       if (i>0) {
         this.bands[i-1].connect(this.bands[i].biquad);
       } else {
-        this.input.connect(this.bands[i].biquad);        
+        this.input.connect(this.bands[i].biquad);
       }
     }
-    this.bands[_eqsize-1].connect(this.output);    
+    this.bands[_eqsize-1].connect(this.output);
   };
   p5.EQ.prototype = Object.create(Effect.prototype);
 
@@ -150,6 +150,7 @@ define(function (require) {
   //   * ex. eq.set(freq0, gain0, freq1, gain1, freq2, gain2);
   //   *
   //   * @method  set
+  //   * @for p5.EQ
   //   * @param {Number} [freq0] Frequency value for band with index 0
   //   * @param {Number} [gain0] Gain value for band with index 0
   //   * @param {Number} [freq1] Frequency value for band with index 1
@@ -185,6 +186,7 @@ define(function (require) {
    * the raw biquad filter. This method returns an abstracted p5.Filter,
    * which can be added to p5.EQ.bands, in order to create new EQ bands.
    * @private
+   * @for p5.EQ
    * @method  _newBand
    * @param  {Number} freq
    * @param  {Number} res

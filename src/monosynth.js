@@ -81,6 +81,7 @@ define(function (require) {
     *  the calling of .triggerAttack and .triggerRelease.
     *
     *  @method play
+    *  @for p5.MonoSynth
     *  @param {String | Number} note the note you want to play, specified as a
     *                                 frequency in Hertz (Number) or as a midi
     *                                 value in Note/Octave format ("C4", "Eb3"...etc")
@@ -138,6 +139,7 @@ define(function (require) {
      *  @param  {Number} [velocity] velocity of the note to play (ranging from 0 to 1)
      *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
      *  @method  triggerAttack
+     *  @for p5.MonoSynth
      *  @example
      *  <div><code>
      *  var monoSynth = new p5.MonoSynth();
@@ -166,6 +168,7 @@ define(function (require) {
      *
      *  @param  {Number} secondsFromNow time to trigger the release
      *  @method  triggerRelease
+     *  @for p5.MonoSynth
      *  @example
      *  <div><code>
      *  var monoSynth = new p5.MonoSynth();
@@ -191,6 +194,7 @@ define(function (require) {
      *  </a>.
      *
      *  @method  setADSR
+     *  @for p5.MonoSynth
      *  @param {Number} attackTime    Time (in seconds before envelope
      *                                reaches Attack Level
      *  @param {Number} [decayTime]    Time (in seconds) before envelope
@@ -213,15 +217,19 @@ define(function (require) {
   /**
    * Getters and Setters
    * @property {Number} attack
+   * @for p5.MonoSynth
    */
   /**
    * @property {Number} decay
+   * @for p5.MonoSynth
    */
   /**
    * @property {Number} sustain
+   * @for p5.MonoSynth
    */
   /**
    * @property {Number} release
+   * @for p5.MonoSynth
    */
   Object.defineProperties(p5.MonoSynth.prototype, {
     'attack': {
@@ -266,6 +274,7 @@ define(function (require) {
   /**
    * MonoSynth amp
    * @method  amp
+   * @for p5.MonoSynth
    * @param  {Number} vol      desired volume
    * @param  {Number} [rampTime] Time to reach new volume
    * @return {Number}          new volume value
@@ -282,6 +291,7 @@ define(function (require) {
    *  Connect to a p5.sound / Web Audio object.
    *
    *  @method  connect
+   *  @for p5.MonoSynth
    *  @param  {Object} unit A p5.sound or Web Audio object
    */
 
@@ -294,6 +304,7 @@ define(function (require) {
    *  Disconnect all outputs
    *
    *  @method  disconnect
+   *  @for p5.MonoSynth
    */
   p5.MonoSynth.prototype.disconnect = function() {
     if (this.output) {
@@ -306,6 +317,7 @@ define(function (require) {
    *  Get rid of the MonoSynth and free up its resources / memory.
    *
    *  @method  dispose
+   *  @for p5.MonoSynth
    */
   p5.MonoSynth.prototype.dispose = function() {
     AudioVoice.prototype.dispose.apply(this);

@@ -53,6 +53,7 @@ define(function (require) {
    * Connect an audio sorce
    *
    * @method  process
+   * @for p5.Panner3D
    * @param  {Object} src Input source
    */
   p5.Panner3D.prototype.process = function(src) {
@@ -61,6 +62,7 @@ define(function (require) {
   /**
    * Set the X,Y,Z position of the Panner
    * @method set
+   * @for p5.Panner3D
    * @param  {Number} xVal
    * @param  {Number} yVal
    * @param  {Number} zVal
@@ -79,16 +81,19 @@ define(function (require) {
   /**
    * Getter and setter methods for position coordinates
    * @method positionX
+   * @for p5.Panner3D
    * @return {Number}      updated coordinate value
    */
   /**
    * Getter and setter methods for position coordinates
    * @method positionY
+   * @for p5.Panner3D
    * @return {Number}      updated coordinate value
    */
   /**
    * Getter and setter methods for position coordinates
    * @method positionZ
+   * @for p5.Panner3D
    * @return {Number}      updated coordinate value
    */
   p5.Panner3D.prototype.positionX = function(xVal, time) {
@@ -128,6 +133,7 @@ define(function (require) {
   /**
    * Set the X,Y,Z position of the Panner
    * @method  orient
+   * @for p5.Panner3D
    * @param  {Number} xVal
    * @param  {Number} yVal
    * @param  {Number} zVal
@@ -146,16 +152,19 @@ define(function (require) {
   /**
    * Getter and setter methods for orient coordinates
    * @method orientX
+   * @for p5.Panner3D
    * @return {Number}      updated coordinate value
    */
   /**
    * Getter and setter methods for orient coordinates
    * @method orientY
+   * @for p5.Panner3D
    * @return {Number}      updated coordinate value
    */
   /**
    * Getter and setter methods for orient coordinates
    * @method orientZ
+   * @for p5.Panner3D
    * @return {Number}      updated coordinate value
    */
   p5.Panner3D.prototype.orientX = function(xVal, time) {
@@ -195,6 +204,7 @@ define(function (require) {
   /**
    * Set the rolloff factor and max distance
    * @method  setFalloff
+   * @for p5.Panner3D
    * @param {Number} [maxDistance]
    * @param {Number} [rolloffFactor]
    */
@@ -205,6 +215,7 @@ define(function (require) {
   /**
    * Maxium distance between the source and the listener
    * @method  maxDist
+   * @for p5.Panner3D
    * @param  {Number} maxDistance
    * @return {Number} updated value
    */
@@ -218,6 +229,7 @@ define(function (require) {
   /**
    * How quickly the volume is reduced as the source moves away from the listener
    * @method  rollof
+   * @for p5.Panner3D
    * @param  {Number} rolloffFactor
    * @return {Number} updated value
    */

@@ -1,9 +1,10 @@
 'use strict';
 
 
-define(['audiocontext'], function (require, audiocontext) {
+define(['audiocontext'], function (audiocontext) {
   /**
    * Master contains AudioContext and the master sound output.
+   * @for p5
    */
   var Master = function() {
     this.input = audiocontext.createGain();

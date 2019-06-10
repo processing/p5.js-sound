@@ -59,6 +59,7 @@ define(function (require) {
    *  Fade to value, for smooth transitions
    *
    *  @method  fade
+   *  @for p5.Signal
    *  @param  {Number} value          Value to set this signal
    *  @param  {Number} [secondsFromNow] Length of fade, in seconds from now
    */
@@ -73,6 +74,7 @@ define(function (require) {
    *  p5.Signal so that its amplitude values can be scaled.
    *
    *  @method setInput
+   *  @for p5.Signal
    *  @param {Object} input
    */
   Signal.prototype.setInput = function(_input) {
@@ -92,6 +94,7 @@ define(function (require) {
    *  instead it returns a new p5.SignalAdd.
    *
    *  @method  add
+   *  @for p5.Signal
    *  @param {Number} number
    *  @return {p5.Signal} object
    */
@@ -112,6 +115,7 @@ define(function (require) {
    *  instead it returns a new p5.SignalMult.
    *
    *  @method  mult
+   *  @for p5.Signal
    *  @param {Number} number to multiply
    *  @return {p5.Signal} object
    */
@@ -132,6 +136,7 @@ define(function (require) {
    *  instead it returns a new p5.SignalScale.
    *
    *  @method  scale
+   *  @for p5.Signal
    *  @param {Number} number to multiply
    *  @param  {Number} inMin  input range minumum
    *  @param  {Number} inMax  input range maximum

@@ -87,6 +87,7 @@ define(function (require) {
    *  Connect a source to the gain node.
    *
    *  @method  setInput
+   *  @for p5.Gain
    *  @param  {Object} src     p5.sound / Web Audio object with a sound
    *                           output.
    */
@@ -100,6 +101,7 @@ define(function (require) {
    *  Send output to a p5.sound or web audio object
    *
    *  @method  connect
+   *  @for p5.Gain
    *  @param  {Object} unit
    */
   p5.Gain.prototype.connect = function(unit) {
@@ -111,6 +113,7 @@ define(function (require) {
    *  Disconnect all output.
    *
    *  @method disconnect
+   *  @for p5.Gain
    */
   p5.Gain.prototype.disconnect = function() {
     if (this.output) {
@@ -122,6 +125,7 @@ define(function (require) {
    *  Set the output level of the gain node.
    *
    *  @method  amp
+   *  @for p5.Gain
    *  @param  {Number} volume amplitude between 0 and 1.0
    *  @param  {Number} [rampTime] create a fade that lasts rampTime
    *  @param  {Number} [timeFromNow] schedule this event to happen

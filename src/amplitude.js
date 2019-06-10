@@ -92,6 +92,7 @@ define(function (require) {
    *  Optionally, you can pass in a specific source (i.e. a soundfile).
    *
    *  @method setInput
+   *  @for p5.Amplitude
    *  @param {soundObject|undefined} [snd] set the sound source
    *                                       (optional, defaults to
    *                                       master output)
@@ -226,6 +227,7 @@ define(function (require) {
    *  For continuous readings, run in the draw loop.
    *
    *  @method getLevel
+   *  @for p5.Amplitude
    *  @param {Number} [channel] Optionally return only channel 0 (left) or 1 (right)
    *  @return {Number}       Amplitude as a number between 0.0 and 1.0
    *  @example
@@ -276,6 +278,7 @@ define(function (require) {
    * (true or false). Normalizing is off by default.
    *
    * @method toggleNormalize
+   * @for p5.Amplitude
    * @param {boolean} [boolean] set normalize to true (1) or false (0)
    */
   p5.Amplitude.prototype.toggleNormalize = function(bool) {
@@ -292,6 +295,7 @@ define(function (require) {
    *  frame. Off by default.
    *
    *  @method smooth
+   *  @for p5.Amplitude
    *  @param {Number} set smoothing from 0.0 <= 1
    */
   p5.Amplitude.prototype.smooth = function(s) {

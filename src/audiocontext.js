@@ -1,8 +1,12 @@
 'use strict';
 
-define(['StartAudioContext', 'Tone/core/Context', 'Tone/core/Tone'], function (require, StartAudioContext, Context, Tone) {
+global.TONE_SILENCE_VERSION_LOGGING = true;
+
+define(['startaudiocontext', 'Tone/core/Context', 'Tone/core/Tone'], function (StartAudioContext, Context, Tone) {
   // Create the Audio Context
   const audiocontext = new window.AudioContext();
+
+  // Tone and p5.sound share the same audio context
   Tone.context.dispose();
   Tone.setContext(audiocontext);
 
@@ -67,7 +71,8 @@ define(['StartAudioContext', 'Tone/core/Context', 'Tone/core/Tone'], function (r
    *  @param  {Function} [callback] Callback to invoke when the AudioContext has started
    *  @return {Promise}            Returns a Promise which is resolved when
    *                                       the AudioContext state is 'running'
-   * @method userStartAudio
+   *  @method userStartAudio
+   *  @for p5
    *  @example
    *  <div><code>
    *  function setup() {

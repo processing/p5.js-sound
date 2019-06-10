@@ -156,6 +156,7 @@ define(function (require) {
    *  local server</a> is recommended when loading external files.
    *
    *  @method loadSound
+   *  @for p5
    *  @param  {String|Array}   path     Path to the sound file, or an array with
    *                                    paths to soundfiles in multiple formats
    *                                    i.e. ['sound.ogg', 'sound.mp3'].
@@ -206,6 +207,7 @@ define(function (require) {
    * as an optional parameter.
    *
    * @private
+   * @for p5.SoundFile
    * @param {Function} [successCallback]   Name of a function to call once file loads
    * @param {Function} [errorCallback]   Name of a function to call if there is an error
    */
@@ -319,6 +321,7 @@ define(function (require) {
    *  Returns true if the sound file finished loading successfully.
    *
    *  @method  isLoaded
+   *  @for p5.SoundFile
    *  @return {Boolean}
    */
   p5.SoundFile.prototype.isLoaded = function() {
@@ -333,6 +336,7 @@ define(function (require) {
    * Play the p5.SoundFile
    *
    * @method play
+   * @for p5.SoundFile
    * @param {Number} [startTime]            (optional) schedule playback to start (in seconds from now).
    * @param {Number} [rate]             (optional) playback rate
    * @param {Number} [amp]              (optional) amplitude (volume)
@@ -448,6 +452,7 @@ define(function (require) {
    *  not already playing. Sustain is the default mode.
    *
    *  @method  playMode
+   *  @for p5.SoundFile
    *  @param  {String} str 'restart' or 'sustain' or 'untilDone'
    *  @example
    *  <div><code>
@@ -495,6 +500,7 @@ define(function (require) {
    *  it will continue to loop after it is unpaused with .play().
    *
    *  @method pause
+   *  @for p5.SoundFile
    *  @param {Number} [startTime] (optional) schedule event to occur
    *                               seconds from now
    *  @example
@@ -550,6 +556,7 @@ define(function (require) {
    * playback rate, playback volume, loopStart, loopEnd.
    *
    * @method loop
+   * @for p5.SoundFile
    * @param {Number} [startTime] (optional) schedule event to occur
    *                             seconds from now
    * @param {Number} [rate]        (optional) playback rate
@@ -568,6 +575,7 @@ define(function (require) {
    * reaches the end of the current playback.
    *
    * @method setLoop
+   * @for p5.SoundFile
    * @param {Boolean} Boolean   set looping to true or false
    */
   p5.SoundFile.prototype.setLoop = function(bool) {
@@ -590,6 +598,7 @@ define(function (require) {
    * Returns 'true' if a p5.SoundFile is currently looping and playing, 'false' if not.
    *
    * @method isLooping
+   * @for p5.SoundFile
    * @return {Boolean}
    */
   p5.SoundFile.prototype.isLooping = function() {
@@ -607,6 +616,7 @@ define(function (require) {
    *  paused or stopped).
    *
    *  @method isPlaying
+   *  @for p5.SoundFile
    *  @return {Boolean}
    */
   p5.SoundFile.prototype.isPlaying = function() {
@@ -618,6 +628,7 @@ define(function (require) {
    *  playing or stopped).
    *
    *  @method  isPaused
+   *  @for p5.SoundFile
    *  @return {Boolean}
    */
   p5.SoundFile.prototype.isPaused = function() {
@@ -628,6 +639,7 @@ define(function (require) {
    * Stop soundfile playback.
    *
    * @method stop
+   * @for p5.SoundFile
    * @param {Number} [startTime] (optional) schedule event to occur
    *                             in seconds from now
    */
@@ -686,6 +698,7 @@ define(function (require) {
    *  oscillator to modulate the amplitude with an audio signal.
    *
    *  @method  setVolume
+   *  @for p5.SoundFile
    *  @param {Number|Object} volume  Volume (amplitude) between 0.0
    *                                     and 1.0 or modulating signal/oscillator
    *  @param {Number} [rampTime]  Fade for t seconds
@@ -726,6 +739,7 @@ define(function (require) {
    * Default is 0.0 (center).
    *
    * @method pan
+   * @for p5.SoundFile
    * @param {Number} [panValue]     Set the stereo panner
    * @param {Number} [timeFromNow]  schedule this event to happen
    *                                 seconds from now
@@ -764,6 +778,7 @@ define(function (require) {
    * Returns the current stereo pan position (-1.0 to 1.0)
    *
    * @method getPan
+   * @for p5.SoundFile
    * @return {Number} Returns the stereo pan setting of the Oscillator
    *                          as a number between -1.0 (left) and 1.0 (right).
    *                          0.0 is center and default.
@@ -777,6 +792,7 @@ define(function (require) {
    *  Values less than zero will reverse the audio buffer.
    *
    *  @method rate
+   *  @for p5.SoundFile
    *  @param {Number} [playbackRate]     Set the playback rate. 1.0 is normal,
    *                                     .5 is half-speed, 2.0 is twice as fast.
    *                                     Values less than zero play backwards.
@@ -860,6 +876,7 @@ define(function (require) {
    * Returns the duration of a sound file in seconds.
    *
    * @method duration
+   * @for p5.SoundFile
    * @return {Number} The duration of the soundFile in seconds.
    */
   p5.SoundFile.prototype.duration = function() {
@@ -877,6 +894,7 @@ define(function (require) {
    * has been called, currentTime will count backwards.
    *
    * @method currentTime
+   * @for p5.SoundFile
    * @return {Number}   currentTime of the soundFile in seconds.
    */
   p5.SoundFile.prototype.currentTime = function() {
@@ -891,6 +909,7 @@ define(function (require) {
    * entire duration from start to finish.
    *
    * @method jump
+   * @for p5.SoundFile
    * @param {Number} cueTime    cueTime of the soundFile in seconds.
    * @param {Number} duration    duration in seconds.
    */
@@ -915,6 +934,7 @@ define(function (require) {
     * For example, Mono = 1, Stereo = 2.
     *
     * @method channels
+    * @for p5.SoundFile
     * @return {Number} [channels]
     */
   p5.SoundFile.prototype.channels = function() {
@@ -925,6 +945,7 @@ define(function (require) {
     * Return the sample rate of the sound file.
     *
     * @method sampleRate
+    * @for p5.SoundFile
     * @return {Number} [sampleRate]
     */
   p5.SoundFile.prototype.sampleRate = function() {
@@ -936,6 +957,7 @@ define(function (require) {
     * Equal to sampleRate * duration.
     *
     * @method frames
+    * @for p5.SoundFile
     * @return {Number} [sampleCount]
     */
   p5.SoundFile.prototype.frames = function() {
@@ -952,6 +974,7 @@ define(function (require) {
    * Inspired by Wavesurfer.js.
    *
    * @method  getPeaks
+   * @for p5.SoundFile
    * @params {Number} [length] length is the size of the returned array.
    *                          Larger length results in more precision.
    *                          Defaults to 5*width of the browser window.
@@ -1006,6 +1029,7 @@ define(function (require) {
    *  Playback must be handled separately (see example).
    *
    *  @method  reverseBuffer
+   *  @for p5.SoundFile
    *  @example
    *  <div><code>
    *  var drum;
@@ -1052,6 +1076,7 @@ define(function (require) {
    *  stop is called.
    *
    *  @method  onended
+   *  @for p5.SoundFile
    *  @param  {Function} callback function to call when the
    *                              soundfile has ended.
    */
@@ -1111,6 +1136,7 @@ define(function (require) {
    * output when they are created.
    *
    * @method connect
+   * @for p5.SoundFile
    * @param {Object} [object] Audio object that accepts an input
    */
   p5.SoundFile.prototype.connect = function(unit) {
@@ -1130,6 +1156,7 @@ define(function (require) {
    * Disconnects the output of this p5sound object.
    *
    * @method disconnect
+   * @for p5.SoundFile
    */
   p5.SoundFile.prototype.disconnect = function() {
     if (this.panner) {
@@ -1148,6 +1175,7 @@ define(function (require) {
    *  new path (URL).
    *
    *  @method  setPath
+   *  @for p5.SoundFile
    *  @param {String}   path     path to audio file
    *  @param {Function} callback Callback
    */
@@ -1161,6 +1189,7 @@ define(function (require) {
    *  Replace the current Audio Buffer with a new Buffer.
    *
    *  @method setBuffer
+   *  @for p5.SoundFile
    *  @param {Array} buf Array of Float32 Array(s). 2 Float32 Arrays
    *                     will create a stereo source. 1 will create
    *                     a mono source.
@@ -1250,6 +1279,7 @@ define(function (require) {
    *  it decreases the threshold and re-runs the analysis until either minPeaks or minThreshold are reached.
    *
    *  @method  processPeaks
+   *  @for p5.SoundFile
    *  @param  {Function} callback       a function to call once this data is returned
    *  @param  {Number}   [initThreshold] initial threshold defaults to 0.9
    *  @param  {Number}   [minThreshold]   minimum threshold defaults to 0.22
@@ -1501,6 +1531,7 @@ define(function (require) {
    *
    *
    *  @method  addCue
+   *  @for p5.SoundFile
    *  @param {Number}   time     Time in seconds, relative to this media
    *                             element's playback. For example, to trigger
    *                             an event every time playback reaches two
@@ -1576,6 +1607,7 @@ define(function (require) {
    *  addCue method.
    *
    *  @method removeCue
+   *  @for p5.SoundFile
    *  @param  {Number} id ID of the cue, as returned by addCue
    */
   p5.SoundFile.prototype.removeCue = function(id) {
@@ -1631,8 +1663,9 @@ define(function (require) {
    * Save a p5.SoundFile as a .wav file. The browser will prompt the user
    * to download the file to their device. To upload a file to a server, see
    * <a href="/docs/reference/#/p5.SoundFile/getBlob">getBlob</a>
-   * 
+   *
    * @method save
+   * @for p5.SoundFile
    * @param  {String} [fileName]      name of the resulting .wav file.
    * @example
    *  <div><code>
@@ -1666,9 +1699,10 @@ define(function (require) {
    * use the `httpDo` options object to send a POST request with some
    * specific options: we encode the request as `multipart/form-data`,
    * and attach the blob as one of the form values using `FormData`.
-   * 
+   *
    *
    * @method getBlob
+   * @for p5.SoundFile
    * @returns {Blob} A file-like data object
    * @example
    *  <div><code>

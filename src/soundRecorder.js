@@ -110,6 +110,7 @@ define(function (require) {
    *  all audible p5.sound from your sketch.
    *
    *  @method  setInput
+   *  @for p5.SoundRecorder
    *  @param {Object} [unit] p5.sound object or a web audio unit
    *                         that outputs sound
    */
@@ -136,6 +137,7 @@ define(function (require) {
    *  transfered to the p5.SoundFile.
    *
    *  @method  record
+   *  @for p5.SoundRecorder
    *  @param  {p5.SoundFile}   soundFile    p5.SoundFile
    *  @param  {Number}   [duration] Time (in seconds)
    *  @param  {Function} [callback] The name of a function that will be
@@ -169,6 +171,7 @@ define(function (require) {
    *  was provided on record, that function will be called.
    *
    *  @method  stop
+   *  @for p5.SoundRecorder
    */
   p5.SoundRecorder.prototype.stop = function() {
     this.recording = false;
@@ -187,6 +190,7 @@ define(function (require) {
    *  internal method called on audio process
    *
    *  @private
+   *  @for p5.SoundRecorder
    *  @param   {AudioProcessorEvent} event
    */
   p5.SoundRecorder.prototype._audioprocess = function(event) {
