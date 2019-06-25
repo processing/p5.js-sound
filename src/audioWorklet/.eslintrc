@@ -1,0 +1,9 @@
+{
+    "globals": {
+        "sampleRate": true,
+        "preval": true
+    },
+    "parserOptions": {
+        "sourceType": "module"
+    }
+}

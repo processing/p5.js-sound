@@ -12,6 +12,7 @@
     "almond": "~0.2.7",
     "amdclean": "~2.0",
     "babel-loader": "^8.0.6",
+    "babel-plugin-preval": "^3.0.1",
     "grunt": "~0.4.5",
     "grunt-cli": "^0.1.13",
     "grunt-contrib-connect": "^1.0.2",
@@ -19,11 +20,13 @@
     "grunt-mocha": "^1.0.4",
     "grunt-open": "^0.2.3",
     "grunt-webpack": "^3.1.3",
+    "raw-loader": "^3.0.0",
     "uglify-loader": "^3.0.0",
     "uglifyjs-webpack-plugin": "^2.1.3",
     "webpack": "^4.33.0"
   },
   "dependencies": {
+    "audioworklet-polyfill": "^1.1.2",
     "startaudiocontext": "^1.2.1",
     "tone": "0.10.0"
   },
