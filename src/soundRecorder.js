@@ -6,6 +6,7 @@ define(function (require) {
 
   var p5sound = require('master');
   var convertToWav = require('helpers').convertToWav;
+  var processorNames = require('./audioWorklet/processorNames');
   var ac = p5sound.audiocontext;
 
   /**
@@ -79,15 +80,23 @@ define(function (require) {
     this.input = ac.createGain();
     this.output = ac.createGain();
 
-    this.recording = false;
+    this._inputChannels = 2;
+    this._outputChannels = 2; // stereo output, even if input is mono
 
-    this.bufferSize = 1024;
-    this._channels = 2; // stereo (default)
+    this._workletNode = new AudioWorkletNode(ac, processorNames.recorderProcessor, {
+      outputChannelCount: [this._outputChannels],
+      processorOptions: { numInputChannels: this._inputChannels }
+    });
 
-    this._clear(); // initialize variables
-
-    this._jsNode = ac.createScriptProcessor(this.bufferSize, this._channels, 2);
-    this._jsNode.onaudioprocess = this._audioprocess.bind(this);
+    this._workletNode.port.onmessage = function(event) {
+      if (event.data.name === 'buffers') {
+        const buffers = [
+          new Float32Array(event.data.leftBuffer),
+          new Float32Array(event.data.rightBuffer)
+        ];
+        this._callback(buffers);
+      }
+    }.bind(this);
 
     /**
      *  callback invoked when the recording is over
@@ -97,7 +106,7 @@ define(function (require) {
     this._callback = function() {};
 
     // connections
-    this._jsNode.connect(p5.soundOut._silentNode);
+    this._workletNode.connect(p5.soundOut._silentNode);
     this.setInput();
 
     // add this p5.SoundFile to the soundArray
@@ -118,7 +127,7 @@ define(function (require) {
     this.input.disconnect();
     this.input = null;
     this.input = ac.createGain();
-    this.input.connect(this._jsNode);
+    this.input.connect(this._workletNode);
     this.input.connect(this.output);
     if (unit) {
       unit.connect(this.input);
@@ -144,22 +153,17 @@ define(function (require) {
    *                                called once the recording completes
    */
   p5.SoundRecorder.prototype.record = function(sFile, duration, callback) {
-    this.recording = true;
-    if (duration) {
-      this.sampleLimit = Math.round(duration * ac.sampleRate);
-    }
+    this._workletNode.port.postMessage({ name: 'start', duration: duration });
 
     if (sFile && callback) {
-      this._callback = function() {
-        this.buffer = this._getBuffer();
-        sFile.setBuffer(this.buffer);
+      this._callback = function(buffer) {
+        sFile.setBuffer(buffer);
         callback();
       };
     }
     else if (sFile) {
-      this._callback = function() {
-        this.buffer = this._getBuffer();
-        sFile.setBuffer(this.buffer);
+      this._callback = function(buffer) {
+        sFile.setBuffer(buffer);
       };
     }
   };
@@ -174,69 +178,10 @@ define(function (require) {
    *  @for p5.SoundRecorder
    */
   p5.SoundRecorder.prototype.stop = function() {
-    this.recording = false;
-    this._callback();
-    this._clear();
-  };
-
-  p5.SoundRecorder.prototype._clear = function() {
-    this._leftBuffers = [];
-    this._rightBuffers = [];
-    this.recordedSamples = 0;
-    this.sampleLimit = null;
-  };
-
-  /**
-   *  internal method called on audio process
-   *
-   *  @private
-   *  @for p5.SoundRecorder
-   *  @param   {AudioProcessorEvent} event
-   */
-  p5.SoundRecorder.prototype._audioprocess = function(event) {
-    if (this.recording === false) {
-      return;
-    } else if (this.recording === true) {
-
-      // if we are past the duration, then stop... else:
-      if (this.sampleLimit && this.recordedSamples >= this.sampleLimit) {
-        this.stop();
-      } else {
-        // get channel data
-        var left = event.inputBuffer.getChannelData(0);
-        var right = event.inputBuffer.getChannelData(1);
-
-        // clone the samples
-        this._leftBuffers.push(new Float32Array(left));
-        this._rightBuffers.push(new Float32Array(right));
-
-        this.recordedSamples += this.bufferSize;
-      }
-    }
-  };
-
-  p5.SoundRecorder.prototype._getBuffer = function() {
-    var buffers = [];
-    buffers.push( this._mergeBuffers(this._leftBuffers) );
-    buffers.push( this._mergeBuffers(this._rightBuffers) );
-    return buffers;
-  };
-
-  p5.SoundRecorder.prototype._mergeBuffers = function(channelBuffer) {
-    var result = new Float32Array(this.recordedSamples);
-    var offset = 0;
-    var lng = channelBuffer.length;
-    for (var i = 0; i < lng; i++) {
-      var buffer = channelBuffer[i];
-      result.set(buffer, offset);
-      offset += buffer.length;
-    }
-    return result;
+    this._workletNode.port.postMessage({ name: 'stop' });
   };
 
   p5.SoundRecorder.prototype.dispose = function() {
-    this._clear();
-
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
@@ -246,7 +191,7 @@ define(function (require) {
       this.input.disconnect();
     }
     this.input = null;
-    this._jsNode = null;
+    this._workletNode = null;
   };
 
 
@@ -266,5 +211,4 @@ define(function (require) {
     const dataView = convertToWav(soundFile.buffer);
     p5.prototype.writeFile([dataView], fileName, 'wav');
   };
-
 });

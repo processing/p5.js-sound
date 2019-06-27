@@ -33,7 +33,7 @@
     "eol-last": ["error", "always"],
     "guard-for-in": 2,
     "indent": ["error", 2, { "SwitchCase": 1 }],
-    "max-len": [1, 120, 2, {ignoreComments: true}],
+    "max-len": [1, 120, 2, { "ignoreComments": true }],
     "new-cap": 2,
     "no-caller": 2,
     "no-cond-assign": [

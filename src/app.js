@@ -2,11 +2,13 @@
 
 define(function (require) {
 
+  require('audioworklet-polyfill');
   require('shims');
   require('audiocontext');
   var p5SOUND = require('master');
   require('helpers');
   require('errorHandler');
+  require('audioWorklet');
   require('panner');
   require('soundfile');
   require('amplitude');

@@ -90,7 +90,7 @@ define(function (require) {
         break;
     }
     return midiToFreq(value);
-  }
+  };
 
   /**
    *  List the SoundFile formats that you will include. LoadSound

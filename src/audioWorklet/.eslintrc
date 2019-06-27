@@ -1,0 +1,11 @@
+{
+    "globals": {
+        "currentFrame": true,
+        "currentTime": true,
+        "sampleRate": true,
+        "preval": true
+    },
+    "parserOptions": {
+        "sourceType": "module"
+    }
+}
