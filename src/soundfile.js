@@ -7,6 +7,7 @@ define(function (require) {
   var ac = p5sound.audiocontext;
   var midiToFreq = require('helpers').midiToFreq;
   var convertToWav = require('helpers').convertToWav;
+  var processorNames = require('./audioWorklet/processorNames');
 
   /**
    *  <p>SoundFile object with a path to a file.</p>
@@ -94,7 +95,7 @@ define(function (require) {
     //  position of the most recently played sample
     this._lastPos = 0;
     this._counterNode = null;
-    this._scopeNode = null;
+    this._workletNode = null;
 
     // array of sources so that they can all be stopped!
     this.bufferSourceNodes = [];
@@ -1238,23 +1239,28 @@ define(function (require) {
     var now = ac.currentTime;
     var cNode = ac.createBufferSource();
 
-    // dispose of scope node if it already exists
-    if (self._scopeNode) {
-      self._scopeNode.disconnect();
-      self._scopeNode.removeEventListener('audioprocess', self._onAudioProcess);
-      delete self._scopeNode;
+    // dispose of worklet node if it already exists
+    if (self._workletNode) {
+      self._workletNode.disconnect();
+      delete self._workletNode;
     }
-    self._scopeNode = ac.createScriptProcessor( 256, 1, 1 );
+    self._workletNode = new AudioWorkletNode(ac, processorNames.soundFileProcessor);
+    self._workletNode.port.onmessage = function(event) {
+      if (event.data.name === 'position') {
+        this._lastPos = event.data.position;
+
+        // do any callbacks that have been scheduled
+        this._onTimeUpdate(self._lastPos);
+      }
+    }.bind(self);
 
     // create counter buffer of the same length as self.buffer
     cNode.buffer = _createCounterBuffer( self.buffer );
 
     cNode.playbackRate.setValueAtTime(self.playbackRate, now);
 
-    cNode.connect( self._scopeNode );
-    self._scopeNode.connect( p5.soundOut._silentNode );
-
-    self._scopeNode.addEventListener('audioprocess', self._onAudioProcess);
+    cNode.connect(self._workletNode);
+    self._workletNode.connect(p5.soundOut._silentNode);
 
     return cNode;
   };

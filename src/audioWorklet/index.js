@@ -1,6 +1,7 @@
 const p5sound = require('master');
 const moduleSources = [
-  require('raw-loader!./recorderProcessor').default
+  require('raw-loader!./recorderProcessor').default,
+  require('raw-loader!./soundFileProcessor').default
 ];
 const ac = p5sound.audiocontext;
 
