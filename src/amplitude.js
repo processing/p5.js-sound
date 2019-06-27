@@ -2,6 +2,7 @@
 
 define(function (require) {
   var p5sound = require('master');
+  var processorNames = require('./audioWorklet/processorNames');
 
   /**
    *  Amplitude measures volume between 0.0 and 1.0.
@@ -50,38 +51,42 @@ define(function (require) {
 
     // set audio context
     this.audiocontext = p5sound.audiocontext;
-    this.processor = this.audiocontext.createScriptProcessor(this.bufferSize, 2, 1);
+    this._workletNode = new AudioWorkletNode(this.audiocontext, processorNames.amplitudeProcessor, {
+      outputChannelCount: [1],
+      parameterData: { smoothing: smoothing || 0 },
+      processorOptions: { normalize: false }
+    });
+
+    this._workletNode.port.onmessage = function(event) {
+      if (event.data.name === 'amplitude') {
+        this.volume = event.data.volume;
+        this.volNorm = event.data.volNorm;
+        this.stereoVol = event.data.stereoVol;
+        this.stereoVolNorm = event.data.stereoVolNorm;
+      }
+    }.bind(this);
 
     // for connections
-    this.input = this.processor;
+    this.input = this._workletNode;
 
     this.output = this.audiocontext.createGain();
-    // smoothing defaults to 0
-    this.smoothing = smoothing || 0;
-
 
     // the variables to return
     this.volume = 0;
-    this.average = 0;
-
+    this.volNorm = 0;
     this.stereoVol = [0, 0];
-    this.stereoAvg = [0, 0];
     this.stereoVolNorm = [0, 0];
 
-    this.volMax = 0.001;
     this.normalize = false;
 
-    this.processor.onaudioprocess = this._audioProcess.bind(this);
-
-
-    this.processor.connect(this.output);
+    this._workletNode.connect(this.output);
     this.output.gain.value = 0;
 
     // this may only be necessary because of a Chrome bug
     this.output.connect(this.audiocontext.destination);
 
     // connect to p5sound master output by default, unless set by input()
-    p5sound.meter.connect(this.processor);
+    p5sound.meter.connect(this._workletNode);
 
     // add this p5.SoundFile to the soundArray
     p5sound.soundArray.push(this);
@@ -128,29 +133,29 @@ define(function (require) {
     p5sound.meter.disconnect();
 
     if (smoothing) {
-      this.smoothing = smoothing;
+      this._workletNode.parameters.get('smoothing').value = smoothing;
     }
 
     // connect to the master out of p5s instance if no snd is provided
     if (source == null) {
       console.log('Amplitude input source is not ready! Connecting to master output instead');
-      p5sound.meter.connect(this.processor);
+      p5sound.meter.connect(this._workletNode);
     }
 
     // if it is a p5.Signal
     else if (source instanceof p5.Signal) {
-      source.output.connect(this.processor);
+      source.output.connect(this._workletNode);
     }
     // connect to the sound if it is available
     else if (source) {
-      source.connect(this.processor);
-      this.processor.disconnect();
-      this.processor.connect(this.output);
+      source.connect(this._workletNode);
+      this._workletNode.disconnect();
+      this._workletNode.connect(this.output);
     }
 
     // otherwise, connect to the master out of p5s instance (default)
     else {
-      p5sound.meter.connect(this.processor);
+      p5sound.meter.connect(this._workletNode);
     }
   };
 
@@ -170,56 +175,6 @@ define(function (require) {
     if (this.output) {
       this.output.disconnect();
     }
-  };
-
-  // TO DO make this stereo / dependent on # of audio channels
-  p5.Amplitude.prototype._audioProcess = function(event) {
-
-    for (var channel = 0; channel < event.inputBuffer.numberOfChannels; channel++) {
-      var inputBuffer = event.inputBuffer.getChannelData(channel);
-      var bufLength = inputBuffer.length;
-
-      var total = 0;
-      var sum = 0;
-      var x;
-
-      for (var i = 0; i < bufLength; i++) {
-        x = inputBuffer[i];
-        if (this.normalize) {
-          total += Math.max(Math.min(x/this.volMax, 1), -1);
-          sum += Math.max(Math.min(x/this.volMax, 1), -1) * Math.max(Math.min(x/this.volMax, 1), -1);
-        }
-        else {
-          total += x;
-          sum += x * x;
-        }
-      }
-      var average = total/ bufLength;
-
-      // ... then take the square root of the sum.
-      var rms = Math.sqrt(sum / bufLength);
-
-      this.stereoVol[channel] = Math.max(rms, this.stereoVol[channel] * this.smoothing);
-      this.stereoAvg[channel] = Math.max(average, this.stereoVol[channel] * this.smoothing);
-      this.volMax = Math.max(this.stereoVol[channel], this.volMax);
-    }
-
-    // add volume from all channels together
-    var self = this;
-    var volSum = this.stereoVol.reduce(function(previousValue, currentValue, index) {
-      self.stereoVolNorm[index - 1] = Math.max(Math.min(self.stereoVol[index - 1]/self.volMax, 1), 0);
-      self.stereoVolNorm[index] = Math.max(Math.min(self.stereoVol[index]/self.volMax, 1), 0);
-
-      return previousValue + currentValue;
-    });
-
-    // volume is average of channels
-    this.volume = volSum / this.stereoVol.length;
-
-    // normalized value
-    this.volNorm = Math.max(Math.min(this.volume/this.volMax, 1), 0);
-
-
   };
 
   /**
@@ -288,6 +243,7 @@ define(function (require) {
     else {
       this.normalize = !this.normalize;
     }
+    this._workletNode.port.postMessage({ name: 'toggleNormalize', normalize: this.normalize });
   };
 
   /**
@@ -300,7 +256,7 @@ define(function (require) {
    */
   p5.Amplitude.prototype.smooth = function(s) {
     if (s >= 0 && s < 1) {
-      this.smoothing = s;
+      this._workletNode.parameters.get('smoothing').value = s;
     } else {
       console.log('Error: smoothing must be between 0 and 1');
     }
@@ -320,7 +276,8 @@ define(function (require) {
       delete this.output;
     }
 
-    delete this.processor;
+    this._workletNode.disconnect();
+    delete this._workletNode;
   };
 
 });
