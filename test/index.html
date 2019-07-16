@@ -2,17 +2,20 @@
 <head>
 	<meta charset="utf-8">
 	<title>TESTS</title>
-  <script src="../lib/p5.js"></script>
-  <script src="../lib/p5.sound.js"></script>
-
+	<script src="../lib/p5.js"></script>
+	<script src="../lib/p5.sound.js"></script>
+	<script>
+		window.setup = function setup() {};
+		new p5();
+	</script>
 	<script src="./testDeps/mocha.js"></script>
 	<script data-main="test.js" src="./testDeps/require.js"></script>
-
-
 	<link rel="stylesheet" href="./testDeps/mocha.css" />
 </head>
 <body>
 	<div id="mocha"></div>
-	<script>mocha.setup('bdd')</script>
+	<script>
+		mocha.setup('bdd')
+	</script>
 </body>
 </html>
