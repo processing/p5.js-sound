@@ -85,7 +85,10 @@ define(function (require) {
 
     this._workletNode = new AudioWorkletNode(ac, processorNames.recorderProcessor, {
       outputChannelCount: [this._outputChannels],
-      processorOptions: { numInputChannels: this._inputChannels }
+      processorOptions: {
+        numInputChannels: this._inputChannels,
+        bufferSize: 1024
+      }
     });
 
     this._workletNode.port.onmessage = function(event) {
