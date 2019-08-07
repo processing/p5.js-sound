@@ -53,9 +53,13 @@ define(function (require) {
     this.audiocontext = p5sound.audiocontext;
     this._workletNode = new AudioWorkletNode(this.audiocontext, processorNames.amplitudeProcessor, {
       outputChannelCount: [1],
+
+      parameterData: { smoothing: smoothing || 0 },
       processorOptions: {
         normalize: false,
-        smoothing: smoothing || 0
+        smoothing: smoothing || 0,
+        numInputChannels: 2,
+        bufferSize: this.bufferSize
       }
     });
 

@@ -1,13 +1,21 @@
-// import processor name via preval.require so that it's available as a value at compile time
+// import dependencies via preval.require so that they're available as values at compile time
 const processorNames = preval.require('./processorNames');
+const RingBuffer = preval.require('./ringBuffer').default;
 
 class AmplitudeProcessor extends AudioWorkletProcessor {
   constructor(options) {
     super();
 
     const processorOptions = options.processorOptions || {};
-    this.smoothing = processorOptions.smoothing || 0;
+    this.numOutputChannels = options.outputChannelCount || 1;
+    this.numInputChannels = processorOptions.numInputChannels || 2;
     this.normalize = processorOptions.normalize || false;
+    this.smoothing = processorOptions.smoothing || 0;
+    this.bufferSize = processorOptions.bufferSize || 2048;
+
+    this.inputRingBuffer = new RingBuffer(this.bufferSize, this.numInputChannels);
+    this.outputRingBuffer = new RingBuffer(this.bufferSize, this.numOutputChannels);
+    this.inputRingBufferArraySequence = new Array(this.numInputChannels).fill(null).map(() => new Float32Array(this.bufferSize));
 
     this.stereoVol = [0, 0];
     this.stereoVolNorm = [0, 0];
@@ -30,52 +38,60 @@ class AmplitudeProcessor extends AudioWorkletProcessor {
     const output = outputs[0];
     const smoothing = this.smoothing;
 
-    for (let channel = 0; channel < input.length; ++channel) {
-      const inputBuffer = input[channel];
-      const bufLength = inputBuffer.length;
+    this.inputRingBuffer.push(input);
 
-      let sum = 0;
-      for (var i = 0; i < bufLength; i++) {
-        const x = inputBuffer[i];
-        if (this.normalize) {
-          sum += Math.max(Math.min(x / this.volMax, 1), -1) * Math.max(Math.min(x / this.volMax, 1), -1);
-        } else {
-          sum += x * x;
+    if (this.inputRingBuffer.framesAvailable >= this.bufferSize) {
+      this.inputRingBuffer.pull(this.inputRingBufferArraySequence);
+
+      for (let channel = 0; channel < this.numInputChannels; ++channel) {
+        const inputBuffer = this.inputRingBufferArraySequence[channel];
+        const bufLength = inputBuffer.length;
+
+        let sum = 0;
+        for (var i = 0; i < bufLength; i++) {
+          const x = inputBuffer[i];
+          if (this.normalize) {
+            sum += Math.max(Math.min(x / this.volMax, 1), -1) * Math.max(Math.min(x / this.volMax, 1), -1);
+          } else {
+            sum += x * x;
+          }
         }
+
+        // ... then take the square root of the sum.
+        const rms = Math.sqrt(sum / bufLength);
+
+        this.stereoVol[channel] = Math.max(rms, this.stereoVol[channel] * smoothing);
+        this.volMax = Math.max(this.stereoVol[channel], this.volMax);
       }
 
-      // ... then take the square root of the sum.
-      const rms = Math.sqrt(sum / bufLength);
+      // calculate stero normalized volume and add volume from all channels together
+      let volSum = 0;
+      for (let index = 0; index < this.stereoVol.length; index++) {
+        this.stereoVolNorm[index] = Math.max(Math.min(this.stereoVol[index] / this.volMax, 1), 0);
+        volSum += this.stereoVol[index];
+      }
 
-      this.stereoVol[channel] = Math.max(rms, this.stereoVol[channel] * smoothing);
-      this.volMax = Math.max(this.stereoVol[channel], this.volMax);
+      // volume is average of channels
+      const volume = volSum / this.stereoVol.length;
+
+      // normalized value
+      const volNorm = Math.max(Math.min(volume / this.volMax, 1), 0);
+
+      this.port.postMessage({
+        name: 'amplitude',
+        volume: volume,
+        volNorm: volNorm,
+        stereoVol: this.stereoVol,
+        stereoVolNorm: this.stereoVolNorm
+      });
+
+      // pass input through to output
+      this.outputRingBuffer.push(this.inputRingBufferArraySequence);
     }
 
-    // calculate stero normalized volume and add volume from all channels together
-    let volSum = 0;
-    for (let index = 0; index < this.stereoVol.length; index++) {
-      this.stereoVolNorm[index] = Math.max(Math.min(this.stereoVol[index] / this.volMax, 1), 0);
-      volSum += this.stereoVol[index];
-    }
-
-    // volume is average of channels
-    const volume = volSum / this.stereoVol.length;
-
-    // normalized value
-    const volNorm = Math.max(Math.min(volume / this.volMax, 1), 0);
-
-    this.port.postMessage({
-      name: 'amplitude',
-      volume: volume,
-      volNorm: volNorm,
-      stereoVol: this.stereoVol,
-      stereoVolNorm: this.stereoVolNorm
-    });
-
-    // pass input through to output
-    for (let channel = 0; channel < output.length; ++channel) {
-      output[channel].set(input[channel]);
-    }
+    // pull 128 frames out of the ring buffer
+    // if the ring buffer does not have enough frames, the output will be silent
+    this.outputRingBuffer.pull(output);
 
     return true;
   }
