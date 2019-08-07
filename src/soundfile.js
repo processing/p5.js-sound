@@ -1243,7 +1243,9 @@ define(function (require) {
       self._workletNode.disconnect();
       delete self._workletNode;
     }
-    self._workletNode = new AudioWorkletNode(ac, processorNames.soundFileProcessor);
+    self._workletNode = new AudioWorkletNode(ac, processorNames.soundFileProcessor, {
+      processorOptions: { bufferSize: 256 }
+    });
     self._workletNode.port.onmessage = event => {
       if (event.data.name === 'position') {
         // event.data.position should only be 0 when paused
