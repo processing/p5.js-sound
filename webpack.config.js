@@ -2,6 +2,23 @@ const webpack = require('webpack');
 const path = require('path');
 const fs = require('fs');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const WebpackAutoInject = require('webpack-auto-inject-version');
+
+const autoInjectVersionConfig = {
+  SILENT: true,
+  SHORT: 'p5.sound',
+  components: {
+    AutoIncreaseVersion: false,
+    InjectAsComment: true,
+    InjectByTag: false
+  },
+  componentsOptions: {
+    InjectAsComment: {
+      tag: 'Version: {version} - {date}',
+      dateFormat: 'yyyy-mm-dd',
+    },
+  }
+};
 
 module.exports = {
   context: __dirname + '/src',
@@ -15,7 +32,6 @@ module.exports = {
   },
   mode: 'production',
   devtool: 'source-map',
-  // devtool: production ? false : "eval",
   plugins: [
     new webpack.NormalModuleReplacementPlugin(/Tone(\.*)/, function(resource) {
       resource.request = path.join(__dirname, './node_modules/tone/', resource.request);
@@ -23,12 +39,13 @@ module.exports = {
     new webpack.BannerPlugin({
       banner: fs.readFileSync('./fragments/before.frag').toString(),
       raw: true,
-    })
+    }),
+    new WebpackAutoInject(autoInjectVersionConfig)
   ],
   module: {
     rules: [
       {
-        test: /Tone(\.*)/,
+        test: /node_modules(\.*)/,
         use: {
           loader: 'uglify-loader'
         }
@@ -46,6 +63,21 @@ module.exports = {
     minimize: true,
     minimizer: [
       new UglifyJsPlugin({
+        extractComments: {
+          condition:  function(astNode, comment) {
+            if (/@/i.test(comment.value)) {
+              return true;
+            }
+
+            return false;
+          },
+          filename(file) {
+            return 'docs/p5.sound.comments.js';
+          },
+          banner(docFile) {
+            return `License information can be found in ${docFile}`;
+          },
+        },
         include: [/\.min\.js$/],
         cache: true,
         parallel: true,
