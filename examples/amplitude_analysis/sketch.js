@@ -2,8 +2,6 @@
  * DEMO:  Use p5.Amplitude (volume) to change the size of an ellipse
  */
 
-var size;
-
 var soundFile;
 var amplitude;
 
@@ -47,8 +45,8 @@ function draw() {
   text('volume: ' + volume, 20, 20);
 
   // Change size based on volume. First, map to useful values.
-  size = map(volume, 0, 1.0, 25, 400);
-  ellipse(width/2, height/2, size, size);
+  var diameter = map(volume, 0, 1.0, 25, 400);
+  ellipse(width/2, height/2, diameter, diameter);
 
   // instruction text
   description = 'Spacebar: pause/unpause the loop. <br>Press "N" to toggle Normalize. Normalized is '+amplitude.normalize;
