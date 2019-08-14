@@ -1105,7 +1105,7 @@ define(function (require) {
           try {
             this.bufferSourceNodes[i].stop(now);
           } catch(e) {
-            console.warning('no buffer source node to dispose');
+            console.warn('no buffer source node to dispose');
           }
           this.bufferSourceNodes[i] = null;
         }
