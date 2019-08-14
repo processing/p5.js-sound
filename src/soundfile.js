@@ -140,7 +140,6 @@ define(function (require) {
       this._whileLoading = function() {};
     }
 
-    this._onAudioProcess = _onAudioProcess.bind(this);
     this._clearOnEnd = _clearOnEnd.bind(this);
   };
 
@@ -351,7 +350,6 @@ define(function (require) {
       return;
     }
 
-    var self = this;
     var now = p5sound.audiocontext.currentTime;
     var cueStart, cueEnd;
     var time = startTime || 0;
@@ -440,6 +438,8 @@ define(function (require) {
       this._counterNode.loopStart = cueStart;
       this._counterNode.loopEnd = cueEnd;
     }
+
+    this._workletNode.port.postMessage({ name: 'play' });
   };
 
 
@@ -539,6 +539,8 @@ define(function (require) {
     var pTime = time + now;
 
     if (this.isPlaying() && this.buffer && this.bufferSourceNode) {
+      this._workletNode.port.postMessage({ name: 'pause' });
+
       this.pauseTime = this.currentTime();
       this.bufferSourceNode.stop(pTime);
       this._counterNode.stop(pTime);
@@ -1752,16 +1754,6 @@ define(function (require) {
     const dataView = convertToWav(this.buffer);
     return new Blob([dataView], { type: 'audio/wav' });
   };
-
-  // event handler to keep track of current position
-  function _onAudioProcess(processEvent) {
-    var inputBuffer = processEvent.inputBuffer.getChannelData(0);
-
-    this._lastPos = inputBuffer[inputBuffer.length - 1] || 0;
-
-    // do any callbacks that have been scheduled
-    this._onTimeUpdate(self._lastPos);
-  }
 
   // event handler to remove references to the bufferSourceNode when it is done playing
   function _clearOnEnd(e) {
