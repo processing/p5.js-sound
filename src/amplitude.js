@@ -53,8 +53,10 @@ define(function (require) {
     this.audiocontext = p5sound.audiocontext;
     this._workletNode = new AudioWorkletNode(this.audiocontext, processorNames.amplitudeProcessor, {
       outputChannelCount: [1],
-      parameterData: { smoothing: smoothing || 0 },
-      processorOptions: { normalize: false }
+      processorOptions: {
+        normalize: false,
+        smoothing: smoothing || 0
+      }
     });
 
     this._workletNode.port.onmessage = function(event) {
@@ -256,7 +258,7 @@ define(function (require) {
    */
   p5.Amplitude.prototype.smooth = function(s) {
     if (s >= 0 && s < 1) {
-      this._workletNode.parameters.get('smoothing').value = s;
+      this._workletNode.port.postMessage({ name: 'smoothing', smoothing: s });
     } else {
       console.log('Error: smoothing must be between 0 and 1');
     }

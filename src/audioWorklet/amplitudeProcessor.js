@@ -2,22 +2,11 @@
 const processorNames = preval.require('./processorNames');
 
 class AmplitudeProcessor extends AudioWorkletProcessor {
-  static get parameterDescriptors() {
-    return [
-      {
-        name: 'smoothing',
-        defaultValue: 0,
-        minValue: 0,
-        maxValue: 1,
-        automationRate: 'k-rate'
-      }
-    ];
-  }
-
   constructor(options) {
     super();
 
     const processorOptions = options.processorOptions || {};
+    this.smoothing = processorOptions.smoothing || 0;
     this.normalize = processorOptions.normalize || false;
 
     this.stereoVol = [0, 0];
@@ -29,15 +18,17 @@ class AmplitudeProcessor extends AudioWorkletProcessor {
       const data = event.data;
       if (data.name === 'toggleNormalize') {
         this.normalize = data.normalize;
+      } else if (data.name === 'smoothing') {
+        this.smoothing = Math.max(0, Math.min(1, data.smoothing));
       }
     };
   }
 
   // TO DO make this stereo / dependent on # of audio channels
-  process(inputs, outputs, parameters) {
+  process(inputs, outputs) {
     const input = inputs[0];
     const output = outputs[0];
-    const smoothing = parameters.smoothing;
+    const smoothing = this.smoothing;
 
     for (let channel = 0; channel < input.length; ++channel) {
       const inputBuffer = input[channel];
