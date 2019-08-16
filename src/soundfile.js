@@ -369,7 +369,6 @@ define(function (require) {
 
     // TO DO: if already playing, create array of buffers for easy stop()
     if (this.buffer) {
-
       // reset the pause time (if it was paused)
       this._pauseTime = 0;
 
@@ -439,7 +438,6 @@ define(function (require) {
       this._counterNode.loopEnd = cueEnd;
     }
 
-    this._workletNode.port.postMessage({ name: 'play' });
   };
 
 
@@ -539,13 +537,12 @@ define(function (require) {
     var pTime = time + now;
 
     if (this.isPlaying() && this.buffer && this.bufferSourceNode) {
-      this._workletNode.port.postMessage({ name: 'pause' });
+      this._paused = true;
+      this._playing = false;
 
       this.pauseTime = this.currentTime();
       this.bufferSourceNode.stop(pTime);
       this._counterNode.stop(pTime);
-      this._paused = true;
-      this._playing = false;
 
       this._pauseTime = this.currentTime();
       // TO DO: make sure play() still starts from orig start position
@@ -1247,14 +1244,18 @@ define(function (require) {
       delete self._workletNode;
     }
     self._workletNode = new AudioWorkletNode(ac, processorNames.soundFileProcessor);
-    self._workletNode.port.onmessage = function(event) {
+    self._workletNode.port.onmessage = event => {
       if (event.data.name === 'position') {
+        // event.data.position should only be 0 when paused
+        if (event.data.position === 0) {
+          return;
+        }
         this._lastPos = event.data.position;
 
         // do any callbacks that have been scheduled
         this._onTimeUpdate(self._lastPos);
       }
-    }.bind(self);
+    };
 
     // create counter buffer of the same length as self.buffer
     cNode.buffer = _createCounterBuffer( self.buffer );
