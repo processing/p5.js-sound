@@ -72,6 +72,17 @@ define(function (require) {
       }
     }.bind(this);
 
+    // if the AudioWorkletNode is actually a ScriptProcessorNode created via polyfill,
+    // make sure that our chosen buffer size isn't smaller than the buffer size automatically
+    // selected by the polyfill
+    // reference: https://github.com/GoogleChromeLabs/audioworklet-polyfill/issues/13#issuecomment-425014930
+    if (this._workletNode instanceof ScriptProcessorNode) {
+      this._workletNode.port.postMessage({
+        name: 'bufferSize',
+        bufferSize: Math.max(this.bufferSize, this._workletNode.bufferSize)
+      });
+    }
+
     // for connections
     this.input = this._workletNode;
 

@@ -7,7 +7,18 @@ class SoundFileProcessor extends AudioWorkletProcessor {
     super();
 
     const processorOptions = options.processorOptions || {};
-    this.bufferSize = processorOptions.bufferSize || 256;
+    this.setBufferSize(processorOptions.bufferSize || 256);
+
+    this.port.onmessage = (event) => {
+      const data = event.data;
+      if (data.name === 'bufferSize') {
+        this.setBufferSize(data.bufferSize);
+      }
+    };
+  }
+
+  setBufferSize(bufferSize) {
+    this.bufferSize = bufferSize;
     this.inputRingBuffer = new RingBuffer(this.bufferSize, 1);
     this.inputRingBufferArraySequence = [new Float32Array(this.bufferSize)];
   }

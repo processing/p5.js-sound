@@ -1238,13 +1238,15 @@ define(function (require) {
     var now = ac.currentTime;
     var cNode = ac.createBufferSource();
 
+    const workletBufferSize = 256;
+
     // dispose of worklet node if it already exists
     if (self._workletNode) {
       self._workletNode.disconnect();
       delete self._workletNode;
     }
     self._workletNode = new AudioWorkletNode(ac, processorNames.soundFileProcessor, {
-      processorOptions: { bufferSize: 256 }
+      processorOptions: { bufferSize: workletBufferSize }
     });
     self._workletNode.port.onmessage = event => {
       if (event.data.name === 'position') {
@@ -1258,6 +1260,17 @@ define(function (require) {
         this._onTimeUpdate(self._lastPos);
       }
     };
+
+    // if the AudioWorkletNode is actually a ScriptProcessorNode created via polyfill,
+    // make sure that our chosen buffer size isn't smaller than the buffer size automatically
+    // selected by the polyfill
+    // reference: https://github.com/GoogleChromeLabs/audioworklet-polyfill/issues/13#issuecomment-425014930
+    if (self._workletNode instanceof ScriptProcessorNode) {
+      self._workletNode.port.postMessage({
+        name: 'bufferSize',
+        bufferSize: Math.max(workletBufferSize, self._workletNode.bufferSize)
+      });
+    }
 
     // create counter buffer of the same length as self.buffer
     cNode.buffer = _createCounterBuffer( self.buffer );
