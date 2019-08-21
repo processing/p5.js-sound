@@ -140,7 +140,6 @@ define(function (require) {
       this._whileLoading = function() {};
     }
 
-    this._onAudioProcess = _onAudioProcess.bind(this);
     this._clearOnEnd = _clearOnEnd.bind(this);
   };
 
@@ -351,7 +350,6 @@ define(function (require) {
       return;
     }
 
-    var self = this;
     var now = p5sound.audiocontext.currentTime;
     var cueStart, cueEnd;
     var time = startTime || 0;
@@ -371,7 +369,6 @@ define(function (require) {
 
     // TO DO: if already playing, create array of buffers for easy stop()
     if (this.buffer) {
-
       // reset the pause time (if it was paused)
       this._pauseTime = 0;
 
@@ -440,6 +437,7 @@ define(function (require) {
       this._counterNode.loopStart = cueStart;
       this._counterNode.loopEnd = cueEnd;
     }
+
   };
 
 
@@ -539,11 +537,12 @@ define(function (require) {
     var pTime = time + now;
 
     if (this.isPlaying() && this.buffer && this.bufferSourceNode) {
+      this._paused = true;
+      this._playing = false;
+
       this.pauseTime = this.currentTime();
       this.bufferSourceNode.stop(pTime);
       this._counterNode.stop(pTime);
-      this._paused = true;
-      this._playing = false;
 
       this._pauseTime = this.currentTime();
       // TO DO: make sure play() still starts from orig start position
@@ -1245,14 +1244,18 @@ define(function (require) {
       delete self._workletNode;
     }
     self._workletNode = new AudioWorkletNode(ac, processorNames.soundFileProcessor);
-    self._workletNode.port.onmessage = function(event) {
+    self._workletNode.port.onmessage = event => {
       if (event.data.name === 'position') {
+        // event.data.position should only be 0 when paused
+        if (event.data.position === 0) {
+          return;
+        }
         this._lastPos = event.data.position;
 
         // do any callbacks that have been scheduled
         this._onTimeUpdate(self._lastPos);
       }
-    }.bind(self);
+    };
 
     // create counter buffer of the same length as self.buffer
     cNode.buffer = _createCounterBuffer( self.buffer );
@@ -1752,16 +1755,6 @@ define(function (require) {
     const dataView = convertToWav(this.buffer);
     return new Blob([dataView], { type: 'audio/wav' });
   };
-
-  // event handler to keep track of current position
-  function _onAudioProcess(processEvent) {
-    var inputBuffer = processEvent.inputBuffer.getChannelData(0);
-
-    this._lastPos = inputBuffer[inputBuffer.length - 1] || 0;
-
-    // do any callbacks that have been scheduled
-    this._onTimeUpdate(self._lastPos);
-  }
 
   // event handler to remove references to the bufferSourceNode when it is done playing
   function _clearOnEnd(e) {
