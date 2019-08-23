@@ -1,8 +1,9 @@
 'use strict';
 
 define(function (require) {
-  var p5sound = require('master');
-  var processorNames = require('./audioWorklet/processorNames');
+  const p5sound = require('master');
+  const { safeBufferSize } = require('helpers');
+  const processorNames = require('./audioWorklet/processorNames');
 
   /**
    *  Amplitude measures volume between 0.0 and 1.0.
@@ -47,7 +48,7 @@ define(function (require) {
   p5.Amplitude = function(smoothing) {
 
     // Set to 2048 for now. In future iterations, this should be inherited or parsed from p5sound's default
-    this.bufferSize = 2048;
+    this.bufferSize = safeBufferSize(2048);
 
     // set audio context
     this.audiocontext = p5sound.audiocontext;
@@ -71,17 +72,6 @@ define(function (require) {
         this.stereoVolNorm = event.data.stereoVolNorm;
       }
     }.bind(this);
-
-    // if the AudioWorkletNode is actually a ScriptProcessorNode created via polyfill,
-    // make sure that our chosen buffer size isn't smaller than the buffer size automatically
-    // selected by the polyfill
-    // reference: https://github.com/GoogleChromeLabs/audioworklet-polyfill/issues/13#issuecomment-425014930
-    if (this._workletNode instanceof ScriptProcessorNode) {
-      this._workletNode.port.postMessage({
-        name: 'bufferSize',
-        bufferSize: Math.max(this.bufferSize, this._workletNode.bufferSize)
-      });
-    }
 
     // for connections
     this.input = this._workletNode;

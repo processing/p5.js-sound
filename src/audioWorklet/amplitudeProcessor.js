@@ -12,7 +12,10 @@ class AmplitudeProcessor extends AudioWorkletProcessor {
     this.normalize = processorOptions.normalize || false;
     this.smoothing = processorOptions.smoothing || 0;
 
-    this.setBufferSize(processorOptions.bufferSize || 2048);
+    this.bufferSize = processorOptions.bufferSize || 2048;
+    this.inputRingBuffer = new RingBuffer(this.bufferSize, this.numInputChannels);
+    this.outputRingBuffer = new RingBuffer(this.bufferSize, this.numOutputChannels);
+    this.inputRingBufferArraySequence = new Array(this.numInputChannels).fill(null).map(() => new Float32Array(this.bufferSize));
 
     this.stereoVol = [0, 0];
     this.stereoVolNorm = [0, 0];
@@ -25,17 +28,8 @@ class AmplitudeProcessor extends AudioWorkletProcessor {
         this.normalize = data.normalize;
       } else if (data.name === 'smoothing') {
         this.smoothing = Math.max(0, Math.min(1, data.smoothing));
-      } else if (data.name === 'bufferSize') {
-        this.setBufferSize(data.bufferSize);
       }
     };
-  }
-
-  setBufferSize(bufferSize) {
-    this.bufferSize = bufferSize;
-    this.inputRingBuffer = new RingBuffer(this.bufferSize, this.numInputChannels);
-    this.outputRingBuffer = new RingBuffer(this.bufferSize, this.numOutputChannels);
-    this.inputRingBufferArraySequence = new Array(this.numInputChannels).fill(null).map(() => new Float32Array(this.bufferSize));
   }
 
   // TO DO make this stereo / dependent on # of audio channels

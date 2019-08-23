@@ -20,15 +20,8 @@ class RecorderProcessor extends AudioWorkletProcessor {
         this.record(data.duration);
       } else if (data.name === 'stop') {
         this.stop();
-      } else if (data.name === 'bufferSize') {
-        this.setBufferSize(data.bufferSize);
       }
     };
-  }
-
-  setBufferSize(bufferSize) {
-    this.bufferSize = bufferSize;
-    this.clear();
   }
 
   process(inputs) {

@@ -4,10 +4,10 @@ define(function (require) {
 
   // inspiration: recorder.js, Tone.js & typedarray.org
 
-  var p5sound = require('master');
-  var convertToWav = require('helpers').convertToWav;
-  var processorNames = require('./audioWorklet/processorNames');
-  var ac = p5sound.audiocontext;
+  const p5sound = require('master');
+  const { convertToWav, safeBufferSize } = require('helpers');
+  const processorNames = require('./audioWorklet/processorNames');
+  const ac = p5sound.audiocontext;
 
   /**
    *  <p>Record sounds for playback and/or to save as a .wav file.
@@ -83,7 +83,7 @@ define(function (require) {
     this._inputChannels = 2;
     this._outputChannels = 2; // stereo output, even if input is mono
 
-    const workletBufferSize = 1024;
+    const workletBufferSize = safeBufferSize(1024);
 
     this._workletNode = new AudioWorkletNode(ac, processorNames.recorderProcessor, {
       outputChannelCount: [this._outputChannels],
@@ -102,17 +102,6 @@ define(function (require) {
         this._callback(buffers);
       }
     }.bind(this);
-
-    // if the AudioWorkletNode is actually a ScriptProcessorNode created via polyfill,
-    // make sure that our chosen buffer size isn't smaller than the buffer size automatically
-    // selected by the polyfill
-    // reference: https://github.com/GoogleChromeLabs/audioworklet-polyfill/issues/13#issuecomment-425014930
-    if (this._workletNode instanceof ScriptProcessorNode) {
-      this._workletNode.port.postMessage({
-        name: 'bufferSize',
-        bufferSize: Math.max(workletBufferSize, this._workletNode.bufferSize)
-      });
-    }
 
     /**
      *  callback invoked when the recording is over

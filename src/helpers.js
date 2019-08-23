@@ -1,6 +1,7 @@
 'use strict';
 define(function (require) {
   var p5sound = require('master');
+  var processorNames = require('./audioWorklet/processorNames');
   /**
    * @for p5
    */
@@ -301,10 +302,28 @@ define(function (require) {
     }
   }
 
+  function safeBufferSize(idealBufferSize) {
+    let bufferSize = idealBufferSize;
+
+    // if the AudioWorkletNode is actually a ScriptProcessorNode created via polyfill,
+    // make sure that our chosen buffer size isn't smaller than the buffer size automatically
+    // selected by the polyfill
+    // reference: https://github.com/GoogleChromeLabs/audioworklet-polyfill/issues/13#issuecomment-425014930
+    let tempAudioWorkletNode = new AudioWorkletNode(p5sound.audiocontext, processorNames.soundFileProcessor);
+    if (tempAudioWorkletNode instanceof ScriptProcessorNode) {
+      bufferSize = tempAudioWorkletNode.bufferSize;
+    }
+    tempAudioWorkletNode.disconnect();
+    tempAudioWorkletNode = null;
+
+    return bufferSize;
+  }
+
   return {
     convertToWav: convertToWav,
     midiToFreq: midiToFreq,
-    noteToFreq: noteToFreq
+    noteToFreq: noteToFreq,
+    safeBufferSize: safeBufferSize
   };
 
 });

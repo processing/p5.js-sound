@@ -2,11 +2,10 @@
 
 define(function (require) {
 
-  var CustomError = require('errorHandler');
-  var p5sound = require('master');
-  var ac = p5sound.audiocontext;
-  var midiToFreq = require('helpers').midiToFreq;
-  var convertToWav = require('helpers').convertToWav;
+  const CustomError = require('errorHandler');
+  const p5sound = require('master');
+  const ac = p5sound.audiocontext;
+  const { midiToFreq, convertToWav, safeBufferSize } = require('helpers');
   var processorNames = require('./audioWorklet/processorNames');
 
   /**
@@ -1238,7 +1237,7 @@ define(function (require) {
     var now = ac.currentTime;
     var cNode = ac.createBufferSource();
 
-    const workletBufferSize = 256;
+    const workletBufferSize = safeBufferSize(256);
 
     // dispose of worklet node if it already exists
     if (self._workletNode) {
@@ -1260,17 +1259,6 @@ define(function (require) {
         this._onTimeUpdate(self._lastPos);
       }
     };
-
-    // if the AudioWorkletNode is actually a ScriptProcessorNode created via polyfill,
-    // make sure that our chosen buffer size isn't smaller than the buffer size automatically
-    // selected by the polyfill
-    // reference: https://github.com/GoogleChromeLabs/audioworklet-polyfill/issues/13#issuecomment-425014930
-    if (self._workletNode instanceof ScriptProcessorNode) {
-      self._workletNode.port.postMessage({
-        name: 'bufferSize',
-        bufferSize: Math.max(workletBufferSize, self._workletNode.bufferSize)
-      });
-    }
 
     // create counter buffer of the same length as self.buffer
     cNode.buffer = _createCounterBuffer( self.buffer );
