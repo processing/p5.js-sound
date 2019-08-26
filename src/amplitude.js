@@ -1,8 +1,9 @@
 'use strict';
 
 define(function (require) {
-  var p5sound = require('master');
-  var processorNames = require('./audioWorklet/processorNames');
+  const p5sound = require('master');
+  const { safeBufferSize } = require('helpers');
+  const processorNames = require('./audioWorklet/processorNames');
 
   /**
    *  Amplitude measures volume between 0.0 and 1.0.
@@ -47,15 +48,19 @@ define(function (require) {
   p5.Amplitude = function(smoothing) {
 
     // Set to 2048 for now. In future iterations, this should be inherited or parsed from p5sound's default
-    this.bufferSize = 2048;
+    this.bufferSize = safeBufferSize(2048);
 
     // set audio context
     this.audiocontext = p5sound.audiocontext;
     this._workletNode = new AudioWorkletNode(this.audiocontext, processorNames.amplitudeProcessor, {
       outputChannelCount: [1],
+
+      parameterData: { smoothing: smoothing || 0 },
       processorOptions: {
         normalize: false,
-        smoothing: smoothing || 0
+        smoothing: smoothing || 0,
+        numInputChannels: 2,
+        bufferSize: this.bufferSize
       }
     });
 

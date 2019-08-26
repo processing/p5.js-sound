@@ -2,11 +2,10 @@
 
 define(function (require) {
 
-  var CustomError = require('errorHandler');
-  var p5sound = require('master');
-  var ac = p5sound.audiocontext;
-  var midiToFreq = require('helpers').midiToFreq;
-  var convertToWav = require('helpers').convertToWav;
+  const CustomError = require('errorHandler');
+  const p5sound = require('master');
+  const ac = p5sound.audiocontext;
+  const { midiToFreq, convertToWav, safeBufferSize } = require('helpers');
   var processorNames = require('./audioWorklet/processorNames');
 
   /**
@@ -1238,12 +1237,16 @@ define(function (require) {
     var now = ac.currentTime;
     var cNode = ac.createBufferSource();
 
+    const workletBufferSize = safeBufferSize(256);
+
     // dispose of worklet node if it already exists
     if (self._workletNode) {
       self._workletNode.disconnect();
       delete self._workletNode;
     }
-    self._workletNode = new AudioWorkletNode(ac, processorNames.soundFileProcessor);
+    self._workletNode = new AudioWorkletNode(ac, processorNames.soundFileProcessor, {
+      processorOptions: { bufferSize: workletBufferSize }
+    });
     self._workletNode.port.onmessage = event => {
       if (event.data.name === 'position') {
         // event.data.position should only be 0 when paused

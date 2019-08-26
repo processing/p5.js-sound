@@ -1,12 +1,15 @@
-// import processor name via preval.require so that it's available as a value at compile time
+// import dependencies via preval.require so that they're available as values at compile time
 const processorNames = preval.require('./processorNames');
+const RingBuffer = preval.require('./ringBuffer').default;
 
 class RecorderProcessor extends AudioWorkletProcessor {
   constructor(options) {
     super();
 
     const processorOptions = options.processorOptions || {};
+    this.numOutputChannels = options.outputChannelCount || 2;
     this.numInputChannels = processorOptions.numInputChannels || 2;
+    this.bufferSize = processorOptions.bufferSize || 1024;
     this.recording = false;
 
     this.clear();
@@ -21,7 +24,7 @@ class RecorderProcessor extends AudioWorkletProcessor {
     };
   }
 
-  process(inputs, outputs) {
+  process(inputs) {
     if (!this.recording) {
       return true;
     } else if (this.sampleLimit && this.recordedSamples >= this.sampleLimit) {
@@ -30,22 +33,26 @@ class RecorderProcessor extends AudioWorkletProcessor {
     }
 
     const input = inputs[0];
-    const output = outputs[0];
 
-    for (let channel = 0; channel < output.length; ++channel) {
-      const inputChannel = input[channel];
-      if (channel === 0) {
-        this.leftBuffers.push(inputChannel);
-        if (this.numInputChannels === 1) {
-          this.rightBuffers.push(inputChannel);
+    this.inputRingBuffer.push(input);
+
+    if (this.inputRingBuffer.framesAvailable >= this.bufferSize) {
+      this.inputRingBuffer.pull(this.inputRingBufferArraySequence);
+
+      for (let channel = 0; channel < this.numOutputChannels; ++channel) {
+        const inputChannelCopy = this.inputRingBufferArraySequence[channel].slice();
+        if (channel === 0) {
+          this.leftBuffers.push(inputChannelCopy);
+          if (this.numInputChannels === 1) {
+            this.rightBuffers.push(inputChannelCopy);
+          }
+        } else if (channel === 1 && this.numInputChannels > 1) {
+          this.rightBuffers.push(inputChannelCopy);
         }
-      } else if (channel === 1 && this.numInputChannels > 1) {
-        this.rightBuffers.push(inputChannel);
       }
+
+      this.recordedSamples += this.bufferSize;
     }
-
-    this.recordedSamples += output[0].length;
-
     return true;
   }
 
@@ -87,6 +94,8 @@ class RecorderProcessor extends AudioWorkletProcessor {
   clear() {
     this.leftBuffers = [];
     this.rightBuffers = [];
+    this.inputRingBuffer = new RingBuffer(this.bufferSize, this.numInputChannels);
+    this.inputRingBufferArraySequence = new Array(this.numInputChannels).fill(null).map(() => new Float32Array(this.bufferSize));
     this.recordedSamples = 0;
     this.sampleLimit = null;
   }

@@ -4,10 +4,10 @@ define(function (require) {
 
   // inspiration: recorder.js, Tone.js & typedarray.org
 
-  var p5sound = require('master');
-  var convertToWav = require('helpers').convertToWav;
-  var processorNames = require('./audioWorklet/processorNames');
-  var ac = p5sound.audiocontext;
+  const p5sound = require('master');
+  const { convertToWav, safeBufferSize } = require('helpers');
+  const processorNames = require('./audioWorklet/processorNames');
+  const ac = p5sound.audiocontext;
 
   /**
    *  <p>Record sounds for playback and/or to save as a .wav file.
@@ -83,9 +83,14 @@ define(function (require) {
     this._inputChannels = 2;
     this._outputChannels = 2; // stereo output, even if input is mono
 
+    const workletBufferSize = safeBufferSize(1024);
+
     this._workletNode = new AudioWorkletNode(ac, processorNames.recorderProcessor, {
       outputChannelCount: [this._outputChannels],
-      processorOptions: { numInputChannels: this._inputChannels }
+      processorOptions: {
+        numInputChannels: this._inputChannels,
+        bufferSize: workletBufferSize
+      }
     });
 
     this._workletNode.port.onmessage = function(event) {
