@@ -16,6 +16,7 @@ const autoInjectVersionConfig = {
     InjectAsComment: {
       tag: 'Version: {version} - {date}',
       dateFormat: 'yyyy-mm-dd',
+      multiLineCommentType: true,
     },
   }
 };
@@ -32,6 +33,9 @@ module.exports = {
   },
   mode: 'production',
   devtool: 'source-map',
+  optimization: {
+    runtimeChunk: true,
+  },
   plugins: [
     new webpack.NormalModuleReplacementPlugin(/Tone(\.*)/, function(resource) {
       resource.request = path.join(__dirname, './node_modules/tone/', resource.request);
@@ -63,21 +67,6 @@ module.exports = {
     minimize: true,
     minimizer: [
       new UglifyJsPlugin({
-        extractComments: {
-          condition:  function(astNode, comment) {
-            if (/@/i.test(comment.value)) {
-              return true;
-            }
-
-            return false;
-          },
-          filename(file) {
-            return 'docs/p5.sound.comments.js';
-          },
-          banner(docFile) {
-            return `License information can be found in ${docFile}`;
-          },
-        },
         include: [/\.min\.js$/],
         cache: true,
         parallel: true,
