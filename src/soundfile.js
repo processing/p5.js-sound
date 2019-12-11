@@ -1773,7 +1773,7 @@ define(function (require) {
 
     soundFile.bufferSourceNodes.forEach(function (n, i) {
       if (n._playing === false) {
-        soundFile.bufferSourceNodes.splice(i);
+        soundFile.bufferSourceNodes.splice(i, 1);
       }
     });
 
