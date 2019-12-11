@@ -1771,9 +1771,13 @@ define(function (require) {
     // call the onended callback
     soundFile._onended(soundFile);
 
-    soundFile.bufferSourceNodes.forEach(function (n, i) {
+    // delete bufferSourceNode(s) in soundFile.bufferSourceNodes
+    // iterate in reverse order because the index changes by splice
+    soundFile.bufferSourceNodes.map((_, i) => i).reverse().forEach(function (i) {
+      const n = soundFile.bufferSourceNodes[i];
+
       if (n._playing === false) {
-        soundFile.bufferSourceNodes.splice(i);
+        soundFile.bufferSourceNodes.splice(i, 1);
       }
     });
 
