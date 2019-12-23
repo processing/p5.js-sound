@@ -66,21 +66,23 @@ define(['startaudiocontext', 'Tone/core/Context', 'Tone/core/Tone'], function (S
     if (elt) {
       return StartAudioContext(audiocontext, elt, callback);
     } else if (firstP5Context && firstP5Context._userNode) {
-      // fallback to the first p5 context we found
+      // create an initSound button on the first p5 context we found
       createInitSoundButton(firstP5Context);
-      removeInitSoundButtonOnAudioContextStart(INIT_AUDIO_ID);
       return StartAudioContext(audiocontext, firstP5Context._userNode, callback);
     } else {
-      // Unknown element, fallback to the body
+      // Unknown element — fallback to the page body
       return StartAudioContext(audiocontext, 'body', callback);
     }
   };
 
   p5.prototype.registerMethod('init', function() {
+    // if no element is specified,
+    // we will add the 🔊 button to the first p5 sketch we find.
     if (!firstP5Context) {
       firstP5Context = this;
     }
 
+    // set timeout to allow for `p5.initSound()` to be called first
     setTimeout(() => {
       if (!shouldInitSound) { return; }
 
@@ -164,7 +166,9 @@ define(['startaudiocontext', 'Tone/core/Context', 'Tone/core/Tone'], function (S
 
   function createInitSoundButton(p5Context) {
     if (document.getElementById(INIT_AUDIO_ID) === null) {
-      const sndString = document.characterSet === 'UTF-8' ? '🔊' : 'Sound';
+      const sndString = document.characterSet === 'UTF-8'
+        ? '🔊'
+        : 'Sound';
       const initSoundButton = document.createElement('button');
       initSoundButton.setAttribute('id', INIT_AUDIO_ID);
       initSoundButton.innerText = `Init ${sndString}`;
