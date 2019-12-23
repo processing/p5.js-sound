@@ -2,7 +2,7 @@
 
 global.TONE_SILENCE_VERSION_LOGGING = true;
 
-const INIT_AUDIO_ID = 'p5_loading';
+const INIT_AUDIO_ID = 'p5_init_sound';
 let shouldInitSound = false;
 let firstP5Context = null;
 
@@ -62,15 +62,16 @@ define(['startaudiocontext', 'Tone/core/Context', 'Tone/core/Tone'], function (S
       elt = elements.map(function(e) { return e.elt; });
     }
 
+    // user defined an element
     if (elt) {
-      console.log('A -- user defined element');
       return StartAudioContext(audiocontext, elt, callback);
     } else if (firstP5Context && firstP5Context._userNode) {
-      console.log('B -- FIRST CONTEXT');
+      // fallback to the first p5 context we found
       createInitSoundButton(firstP5Context);
+      removeInitSoundButtonOnAudioContextStart(INIT_AUDIO_ID);
       return StartAudioContext(audiocontext, firstP5Context._userNode, callback);
     } else {
-      console.log('C -- Unknown element, fallback to the body');
+      // Unknown element, fallback to the body
       return StartAudioContext(audiocontext, 'body', callback);
     }
   };
@@ -161,19 +162,29 @@ define(['startaudiocontext', 'Tone/core/Context', 'Tone/core/Tone'], function (S
    */
   p5.initSound = userStartAudio;
 
+  function createInitSoundButton(p5Context) {
+    if (document.getElementById(INIT_AUDIO_ID) === null) {
+      const sndString = document.characterSet === 'UTF-8' ? '🔊' : 'Sound';
+      const initSoundButton = document.createElement('button');
+      initSoundButton.setAttribute('id', INIT_AUDIO_ID);
+      initSoundButton.innerText = `Init ${sndString}`;
+      initSoundButton.style.position = 'absolute';
+      initSoundButton.style.zIndex = '2';
+      initSoundButton.style.width = '100px';
+      initSoundButton.style.height = '100px';
+      initSoundButton.style.top = '0';
+      const node = p5Context._userNode || document.body;
+      node.appendChild(initSoundButton);
+
+      removeInitSoundButtonOnAudioContextStart(initSoundButton);
+    }
+  }
+
+  function removeInitSoundButtonOnAudioContextStart(child) {
+    audiocontext.resume().then(() => {
+      child.remove();
+    });
+  }
+
   return audiocontext;
 });
-
-function createInitSoundButton(p5Context) {
-  if (document.getElementById(INIT_AUDIO_ID) === null) {
-    const sndString = document.characterSet === 'UTF-8' ? '🔊' : 'Sound';
-    const initSoundButton = document.createElement('button');
-    initSoundButton.setAttribute('id', INIT_AUDIO_ID);
-    initSoundButton.innerText = `Init ${sndString}`;
-    initSoundButton.style.position = 'absolute';
-    initSoundButton.style.zIndex = '2';
-    initSoundButton.style.width = '120px';
-    const node = p5Context._userNode || document.body;
-    node.appendChild(initSoundButton);
-  }
-}
