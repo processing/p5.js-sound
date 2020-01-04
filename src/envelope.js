@@ -27,36 +27,28 @@ define(function (require) {
    *  @constructor
    *  @example
    *  <div><code>
-   *  var attackLevel = 1.0;
-   *  var releaseLevel = 0;
+   *  let t1 = 0.1; // attack time in seconds
+   *  let l1 = 0.7; // attack level 0.0 to 1.0
+   *  let t2 = 0.3; // decay time in seconds
+   *  let l2 = 0.1; // decay level  0.0 to 1.0
    *
-   *  var attackTime = 0.001;
-   *  var decayTime = 0.2;
-   *  var susPercent = 0.2;
-   *  var releaseTime = 0.5;
-   *
-   *  var env, triOsc;
+   *  let env;
+   *  let triOsc;
    *
    *  function setup() {
-   *    var cnv = createCanvas(100, 100);
+   *    let cnv = createCanvas(100, 100);
+   *    background(220);
+   *    text('tap to play', 20, 20);
+   *    cnv.mousePressed(playSound);
    *
-   *    textAlign(CENTER);
-   *    text('click to play', width/2, height/2);
-   *
-   *    env = new p5.Envelope();
-   *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
-   *    env.setRange(attackLevel, releaseLevel);
-   *
+   *    env = new p5.Envelope(t1, l1, t2, l2);
    *    triOsc = new p5.Oscillator('triangle');
-   *    triOsc.amp(env);
-   *    triOsc.start();
-   *    triOsc.freq(220);
-   *
-   *    cnv.mousePressed(playEnv);
    *  }
    *
-   *  function playEnv()  {
-   *    env.play();
+   *  function playSound() {
+   *    // starting the oscillator ensures that audio is enabled.
+   *    triOsc.start();
+   *    env.play(triOsc);
    *  }
    *  </code></div>
    */
@@ -151,36 +143,36 @@ define(function (require) {
    *  @param {Number} releaseLevel  Amplitude
    *  @example
    *  <div><code>
-   *  var t1 = 0.1; // attack time in seconds
-   *  var l1 = 0.7; // attack level 0.0 to 1.0
-   *  var t2 = 0.3; // decay time in seconds
-   *  var l2 = 0.1; // decay level  0.0 to 1.0
-   *  var t3 = 0.2; // sustain time in seconds
-   *  var l3 = 0.5; // sustain level  0.0 to 1.0
-   *  // release level defaults to zero
+   *  let attackTime;
+   *  let l1 = 0.7; // attack level 0.0 to 1.0
+   *  let t2 = 0.3; // decay time in seconds
+   *  let l2 = 0.1; // decay level  0.0 to 1.0
+   *  let l3 = 0.2; // release time in seconds
    *
-   *  var env;
-   *  var triOsc;
+   *  let env, triOsc;
    *
    *  function setup() {
-   *    background(0);
-   *    noStroke();
-   *    fill(255);
-   *    textAlign(CENTER);
-   *    text('click to play', width/2, height/2);
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playSound);
    *
-   *    env = new p5.Envelope(t1, l1, t2, l2, t3, l3);
+   *    env = new p5.Envelope();
    *    triOsc = new p5.Oscillator('triangle');
-   *    triOsc.amp(env); // give the env control of the triOsc's amp
-   *    triOsc.start();
+   *  }
+   *
+   *  function draw() {
+   *    background(220);
+   *    text('tap here to play', 5, 20);
+   *
+   *    attackTime = map(mouseX, 0, width, 0.0, 1.0);
+   *    text('attack time: ' + attackTime, 5, height - 20);
    *  }
    *
    *  // mouseClick triggers envelope if over canvas
-   *  function mouseClicked() {
-   *    // is mouse over canvas?
-   *    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-   *      env.play(triOsc);
-   *    }
+   *  function playSound() {
+   *    env.set(attackTime, l1, t2, l2, l3);
+   *
+   *    triOsc.start();
+   *    env.play(triOsc);
    *  }
    *  </code></div>
    *
@@ -220,35 +212,36 @@ define(function (require) {
    *  @param {Number} [releaseTime]   Time in seconds from now (defaults to 0)
    *  @example
    *  <div><code>
-   *  var attackLevel = 1.0;
-   *  var releaseLevel = 0;
+   *  let attackLevel = 1.0;
+   *  let releaseLevel = 0;
    *
-   *  var attackTime = 0.001;
-   *  var decayTime = 0.2;
-   *  var susPercent = 0.2;
-   *  var releaseTime = 0.5;
+   *  let attackTime = 0.001;
+   *  let decayTime = 0.2;
+   *  let susPercent = 0.2;
+   *  let releaseTime = 0.5;
    *
-   *  var env, triOsc;
+   *  let env, triOsc;
    *
    *  function setup() {
-   *    var cnv = createCanvas(100, 100);
-   *
-   *    textAlign(CENTER);
-   *    text('click to play', width/2, height/2);
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playEnv);
    *
    *    env = new p5.Envelope();
-   *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
-   *    env.setRange(attackLevel, releaseLevel);
-   *
    *    triOsc = new p5.Oscillator('triangle');
    *    triOsc.amp(env);
-   *    triOsc.start();
    *    triOsc.freq(220);
-   *
-   *    cnv.mousePressed(playEnv);
    *  }
    *
-   *  function playEnv()  {
+   *  function draw() {
+   *    background(220);
+   *    text('tap here to play', 5, 20);
+   *    attackTime = map(mouseX, 0, width, 0, 1.0);
+   *    text('attack time: ' + attackTime, 5, height - 40);
+   *  }
+   *
+   *  function playEnv() {
+   *    triOsc.start();
+   *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
    *    env.play();
    *  }
    *  </code></div>
@@ -276,35 +269,36 @@ define(function (require) {
    *  @param {Number} rLevel release level (defaults to 0)
    *  @example
    *  <div><code>
-   *  var attackLevel = 1.0;
-   *  var releaseLevel = 0;
+   *  let attackLevel = 1.0;
+   *  let releaseLevel = 0;
    *
-   *  var attackTime = 0.001;
-   *  var decayTime = 0.2;
-   *  var susPercent = 0.2;
-   *  var releaseTime = 0.5;
+   *  let attackTime = 0.001;
+   *  let decayTime = 0.2;
+   *  let susPercent = 0.2;
+   *  let releaseTime = 0.5;
    *
-   *  var env, triOsc;
+   *  let env, triOsc;
    *
    *  function setup() {
-   *    var cnv = createCanvas(100, 100);
-   *
-   *    textAlign(CENTER);
-   *    text('click to play', width/2, height/2);
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playEnv);
    *
    *    env = new p5.Envelope();
-   *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
-   *    env.setRange(attackLevel, releaseLevel);
-   *
    *    triOsc = new p5.Oscillator('triangle');
    *    triOsc.amp(env);
-   *    triOsc.start();
    *    triOsc.freq(220);
-   *
-   *    cnv.mousePressed(playEnv);
    *  }
    *
-   *  function playEnv()  {
+   *  function draw() {
+   *    background(220);
+   *    text('tap here to play', 5, 20);
+   *    attackLevel = map(mouseY, height, 0, 0, 1.0);
+   *    text('attack level: ' + attackLevel, 5, height - 20);
+   *  }
+   *
+   *  function playEnv() {
+   *    triOsc.start();
+   *    env.setRange(attackLevel, releaseLevel);
    *    env.play();
    *  }
    *  </code></div>
@@ -401,12 +395,12 @@ define(function (require) {
   };
 
   /**
-   *  Play tells the envelope to start acting on a given input.
+   *  <p>Play tells the envelope to start acting on a given input.
    *  If the input is a p5.sound object (i.e. AudioIn, Oscillator,
    *  SoundFile), then Envelope will control its output volume.
    *  Envelopes can also be used to control any <a href="
    *  http://docs.webplatform.org/wiki/apis/webaudio/AudioParam">
-   *  Web Audio Audio Param.</a>
+   *  Web Audio Audio Param.</a></p>
    *
    *  @method  play
    *  @for p5.Envelope
@@ -416,38 +410,43 @@ define(function (require) {
    *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
    *  @example
    *  <div><code>
-   *  var attackLevel = 1.0;
-   *  var releaseLevel = 0;
+   *  let attackLevel = 1.0;
+   *  let releaseLevel = 0;
    *
-   *  var attackTime = 0.001;
-   *  var decayTime = 0.2;
-   *  var susPercent = 0.2;
-   *  var releaseTime = 0.5;
+   *  let attackTime = 0.001;
+   *  let decayTime = 0.2;
+   *  let susPercent = 0.2;
+   *  let releaseTime = 0.5;
    *
-   *  var env, triOsc;
+   *  let env, triOsc;
    *
    *  function setup() {
-   *    var cnv = createCanvas(100, 100);
-   *
-   *    textAlign(CENTER);
-   *    text('click to play', width/2, height/2);
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playEnv);
    *
    *    env = new p5.Envelope();
-   *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
-   *    env.setRange(attackLevel, releaseLevel);
-   *
    *    triOsc = new p5.Oscillator('triangle');
    *    triOsc.amp(env);
-   *    triOsc.start();
    *    triOsc.freq(220);
-   *
-   *    cnv.mousePressed(playEnv);
+   *    triOsc.start();
    *  }
    *
-   *  function playEnv()  {
-   *    // trigger env on triOsc, 0 seconds from now
-   *    // After decay, sustain for 0.2 seconds before release
-   *    env.play(triOsc, 0, 0.2);
+   *  function draw() {
+   *    background(220);
+   *    text('tap here to play', 5, 20);
+   *    attackTime = map(mouseX, 0, width, 0, 1.0);
+   *    attackLevel = map(mouseY, height, 0, 0, 1.0);
+   *    text('attack time: ' + attackTime, 5, height - 40);
+   *    text('attack level: ' + attackLevel, 5, height - 20);
+   *  }
+   *
+   *  function playEnv() {
+   *    // ensure that audio is enabled
+   *    userStartAudio();
+   *
+   *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
+   *    env.setRange(attackLevel, releaseLevel);
+   *    env.play();
    *  }
    *  </code></div>
    */
@@ -481,48 +480,43 @@ define(function (require) {
    *  @param  {Number} secondsFromNow time from now (in seconds)
    *  @example
    *  <div><code>
-   *
-   *  var attackLevel = 1.0;
-   *  var releaseLevel = 0;
-   *
-   *  var attackTime = 0.001;
-   *  var decayTime = 0.3;
-   *  var susPercent = 0.4;
-   *  var releaseTime = 0.5;
-   *
-   *  var env, triOsc;
+   *  let attackTime = 0.001;
+   *  let decayTime = 0.2;
+   *  let susPercent = 0.3;
+   *  let releaseTime = 0.4;
+   *  let env, triOsc;
    *
    *  function setup() {
-   *    var cnv = createCanvas(100, 100);
-   *    background(200);
+   *    let cnv = createCanvas(100, 100);
+   *    background(220);
    *    textAlign(CENTER);
-   *    text('click to play', width/2, height/2);
+   *    textSize(10);
+   *    text('tap to triggerAttack', width/2, height/2);
    *
    *    env = new p5.Envelope();
    *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
-   *    env.setRange(attackLevel, releaseLevel);
-   *
+   *    env.setRange(1.0, 0.0);
    *    triOsc = new p5.Oscillator('triangle');
-   *    triOsc.amp(env);
-   *    triOsc.start();
    *    triOsc.freq(220);
    *
    *    cnv.mousePressed(envAttack);
    *  }
    *
    *  function envAttack()  {
-   *    console.log('trigger attack');
-   *    env.triggerAttack();
+   *    background(0, 255, 255);
+   *    text('release to release', width/2, height/2);
    *
-   *    background(0,255,0);
-   *    text('attack!', width/2, height/2);
+   *    // ensures audio is enabled. See also: `userStartAudio`
+   *    triOsc.start();
+   *
+   *    env.triggerAttack(triOsc);
    *  }
    *
    *  function mouseReleased() {
-   *    env.triggerRelease();
+   *    background(220);
+   *    text('tap to triggerAttack', width/2, height/2);
    *
-   *    background(200);
-   *    text('click to play', width/2, height/2);
+   *    env.triggerRelease(triOsc);
    *  }
    *  </code></div>
    */
@@ -603,48 +597,43 @@ define(function (require) {
    *  @param  {Number} secondsFromNow time to trigger the release
    *  @example
    *  <div><code>
-   *
-   *  var attackLevel = 1.0;
-   *  var releaseLevel = 0;
-   *
-   *  var attackTime = 0.001;
-   *  var decayTime = 0.3;
-   *  var susPercent = 0.4;
-   *  var releaseTime = 0.5;
-   *
-   *  var env, triOsc;
+   *  let attackTime = 0.001;
+   *  let decayTime = 0.2;
+   *  let susPercent = 0.3;
+   *  let releaseTime = 0.4;
+   *  let env, triOsc;
    *
    *  function setup() {
-   *    var cnv = createCanvas(100, 100);
-   *    background(200);
+   *    let cnv = createCanvas(100, 100);
+   *    background(220);
    *    textAlign(CENTER);
-   *    text('click to play', width/2, height/2);
+   *    textSize(10);
+   *    text('tap to triggerAttack', width/2, height/2);
    *
    *    env = new p5.Envelope();
    *    env.setADSR(attackTime, decayTime, susPercent, releaseTime);
-   *    env.setRange(attackLevel, releaseLevel);
-   *
+   *    env.setRange(1.0, 0.0);
    *    triOsc = new p5.Oscillator('triangle');
-   *    triOsc.amp(env);
-   *    triOsc.start();
    *    triOsc.freq(220);
    *
    *    cnv.mousePressed(envAttack);
    *  }
    *
    *  function envAttack()  {
-   *    console.log('trigger attack');
-   *    env.triggerAttack();
+   *    background(0, 255, 255);
+   *    text('release to release', width/2, height/2);
    *
-   *    background(0,255,0);
-   *    text('attack!', width/2, height/2);
+   *    // ensures audio is enabled. See also: `userStartAudio`
+   *    triOsc.start();
+   *
+   *    env.triggerAttack(triOsc);
    *  }
    *
    *  function mouseReleased() {
-   *    env.triggerRelease();
+   *    background(220);
+   *    text('tap to triggerAttack', width/2, height/2);
    *
-   *    background(200);
-   *    text('click to play', width/2, height/2);
+   *    env.triggerRelease(triOsc);
    *  }
    *  </code></div>
    */
@@ -674,6 +663,7 @@ define(function (require) {
 
     // get and set value (with linear or exponential ramp) to anchor automation
     var valToSet = this.control.getValueAtTime(t);
+
     if (this.isExponential === true)
     {
       this.control.exponentialRampToValueAtTime(this.checkExpInput(valToSet), t);
@@ -720,39 +710,38 @@ define(function (require) {
    *  @param  {Number} [v2]           Second target value (optional)
    *  @example
    *  <div><code>
-   *  var env, osc, amp, cnv;
+   *  let env, osc, amp;
    *
-   *  var attackTime = 0.001;
-   *  var decayTime = 0.2;
-   *  var attackLevel = 1;
-   *  var decayLevel = 0;
+   *  let attackTime = 0.001;
+   *  let decayTime = 0.2;
+   *  let attackLevel = 1;
+   *  let decayLevel = 0;
    *
    *  function setup() {
-   *    cnv = createCanvas(100, 100);
+   *    let cnv = createCanvas(100, 100);
    *    fill(0,255,0);
    *    noStroke();
    *
    *    env = new p5.Envelope();
    *    env.setADSR(attackTime, decayTime);
-   *
    *    osc = new p5.Oscillator();
    *    osc.amp(env);
-   *    osc.start();
-   *
    *    amp = new p5.Amplitude();
    *
    *    cnv.mousePressed(triggerRamp);
    *  }
    *
    *  function triggerRamp() {
+   *    // ensures audio is enabled. See also: `userStartAudio`
+   *    osc.start();
+   *
    *    env.ramp(osc, 0, attackLevel, decayLevel);
    *  }
    *
    *  function draw() {
-   *    background(20,20,20);
-   *    text('click me', 10, 20);
-   *    var h = map(amp.getLevel(), 0, 0.4, 0, height);;
-   *
+   *    background(20);
+   *    text('tap to play', 10, 20);
+   *    let h = map(amp.getLevel(), 0, 0.4, 0, height);;
    *    rect(0, height, width, -h);
    *  }
    *  </code></div>

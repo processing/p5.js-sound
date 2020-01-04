@@ -17,23 +17,23 @@ define(function (require) {
    *                             amplitude readings (defaults to 0)
    *  @example
    *  <div><code>
-   *  var sound, amplitude, cnv;
+   *  let sound, amplitude;
    *
    *  function preload(){
    *    sound = loadSound('assets/beat.mp3');
    *  }
    *  function setup() {
-   *    cnv = createCanvas(100,100);
-   *    amplitude = new p5.Amplitude();
-   *
+   *    let cnv = createCanvas(100,100);
    *    cnv.mouseClicked(toggleSound);
+   *    amplitude = new p5.Amplitude();
    *  }
    *
    *  function draw() {
-   *    background(0);
-   *    fill(255);
-   *    var level = amplitude.getLevel();
-   *    var size = map(level, 0, 1, 0, 200);
+   *    background(220);
+   *    text('tap to play', 20, 20);
+   *
+   *    let level = amplitude.getLevel();
+   *    let size = map(level, 0, 1, 0, 200);
    *    ellipse(width/2, height/2, size, size);
    *  }
    *
@@ -121,19 +121,16 @@ define(function (require) {
    *  function setup(){
    *    cnv = createCanvas(100, 100);
    *    cnv.mouseClicked(toggleSound);
-   *    textAlign(CENTER);
    *
    *    amplitude = new p5.Amplitude();
    *    amplitude.setInput(sound2);
    *  }
    *
    *  function draw() {
-   *    background(0);
-   *    fill(255);
-   *    text('tap to play', width/2, 20);
+   *    text('tap to play', 20, 20);
    *
-   *    var level = amplitude.getLevel();
-   *    var size = map(level, 0, 1, 0, 200);
+   *    let level = amplitude.getLevel();
+   *    let size = map(level, 0, 1, 0, 200);
    *    ellipse(width/2, height/2, size, size);
    *  }
    *
@@ -212,19 +209,18 @@ define(function (require) {
    *  }
    *
    *  function setup() {
-   *    cnv = createCanvas(100, 100);
+   *    let cnv = createCanvas(100, 100);
    *    cnv.mouseClicked(toggleSound);
    *    amplitude = new p5.Amplitude();
    *  }
    *
    *  function draw() {
-   *    background(0);
-   *    fill(255);
+   *    background(220, 150);
    *    textAlign(CENTER);
    *    text('tap to play', width/2, 20);
    *
-   *    var level = amplitude.getLevel();
-   *    var size = map(level, 0, 1, 0, 200);
+   *    let level = amplitude.getLevel();
+   *    let size = map(level, 0, 1, 0, 200);
    *    ellipse(width/2, height/2, size, size);
    *  }
    *

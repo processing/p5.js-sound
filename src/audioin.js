@@ -29,21 +29,24 @@ define(function (require) {
    *                                    currently allow microphone access.
    *  @example
    *  <div><code>
-   *  var mic;
-   *  function setup(){
-   *    cnv = createCanvas(100, 100);
+   *  let mic;
+   *
+   *   function setup(){
+   *    let cnv = createCanvas(100, 100);
    *    cnv.mousePressed(userStartAudio);
    *    textAlign(CENTER);
    *    mic = new p5.AudioIn();
    *    mic.start();
    *  }
+   *
    *  function draw(){
    *    background(0);
    *    fill(255);
    *    text('tap to start', width/2, 20);
    *
    *    micLevel = mic.getLevel();
-   *    ellipse(width/2, constrain(height-micLevel*height*5, 0, height), 10, 10);
+   *    let y = height - micLevel * height;
+   *    ellipse(width/2, y, 10, 10);
    *  }
    *  </code></div>
    */
@@ -273,18 +276,21 @@ define(function (require) {
    *                            to the enumerateDevices() method
    * @example
    *  <div><code>
-   *  var audiograb;
+   *  let audioIn;
    *
    *  function setup(){
-   *    //new audioIn
-   *    audioGrab = new p5.AudioIn();
+   *    text('getting sources...', 0, 20);
+   *    audioIn = new p5.AudioIn();
+   *    audioIn.getSources(gotSources);
+   *  }
    *
-   *    audioGrab.getSources(function(deviceList) {
-   *      //print out the array of available sources
-   *      console.log(deviceList);
+   *  function gotSources(deviceList) {
+   *    if (deviceList.length > 0) {
    *      //set the source to the first item in the deviceList array
-   *      audioGrab.setSource(0);
-   *    });
+   *      audioIn.setSource(0);
+   *      let currentSource = deviceList[audioIn.currentSource];
+   *      text('set source to: ' + currentSource.deviceId, 5, 20, width);
+   *    }
    *  }
    *  </code></div>
    */
@@ -322,6 +328,25 @@ define(function (require) {
    *  @method setSource
    *  @for p5.AudioIn
    *  @param {number} num position of input source in the array
+   *  @example
+   *  <div><code>
+   *  let audioIn;
+   *
+   *  function setup(){
+   *    text('getting sources...', 0, 20);
+   *    audioIn = new p5.AudioIn();
+   *    audioIn.getSources(gotSources);
+   *  }
+   *
+   *  function gotSources(deviceList) {
+   *    if (deviceList.length > 0) {
+   *      //set the source to the first item in the deviceList array
+   *      audioIn.setSource(0);
+   *      let currentSource = deviceList[audioIn.currentSource];
+   *      text('set source to: ' + currentSource.deviceId, 5, 20, width);
+   *    }
+   *  }
+   *  </code></div>
    */
   p5.AudioIn.prototype.setSource = function(num) {
     if (p5sound.inputSources.length > 0 && num < p5sound.inputSources.length) {

@@ -9,7 +9,7 @@ define(function (require) {
    *  and outputs a delayed version of that sound. The p5.Delay can
    *  produce different effects depending on the delayTime, feedback,
    *  filter, and type. In the example below, a feedback of 0.5 (the
-   *  defaul value) will produce a looping delay that decreases in
+   *  default value) will produce a looping delay that decreases in
    *  volume by 50% each repeat. A filter will cut out the high
    *  frequencies so that the delay does not sound as piercing as the
    *  original source.
@@ -24,38 +24,34 @@ define(function (require) {
    *  @constructor
    *  @example
    *  <div><code>
-   *  var noise, env, delay;
+   *  let osc;
    *
    *  function setup() {
-   *    background(0);
-   *    noStroke();
-   *    fill(255);
+   *    let cnv = createCanvas(100, 100);
+   *    background(220);
    *    textAlign(CENTER);
-   *    text('click to play', width/2, height/2);
+   *    text('tap to play', width/2, height/2);
    *
-   *    noise = new p5.Noise('brown');
-   *    noise.amp(0);
-   *    noise.start();
-   *
+   *    osc = new p5.Oscillator('square');
+   *    osc.amp(0.5);
    *    delay = new p5.Delay();
    *
    *    // delay.process() accepts 4 parameters:
-   *    // source, delayTime, feedback, filter frequency
-   *    // play with these numbers!!
-   *    delay.process(noise, .12, .7, 2300);
+   *    // source, delayTime (in seconds), feedback, filter frequency
+   *    delay.process(osc, 0.12, .7, 2300);
    *
-   *    // play the noise with an envelope,
-   *    // a series of fades ( time / value pairs )
-   *    env = new p5.Envelope(.01, 0.2, .2, .1);
+   *    cnv.mousePressed(oscStart);
+   *    cnv.mouseReleased(oscStop);
    *  }
    *
-   *  // mouseClick triggers envelope
-   *  function mouseClicked() {
-   *    // is mouse over canvas?
-   *    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-   *      env.play(noise);
-   *    }
+   *  function oscStart() {
+   *    osc.start();
    *  }
+   *
+   *  function oscStop() {
+   *    osc.stop();
+   *  }
+   *
    *  </code></div>
    */
   p5.Delay = function() {
