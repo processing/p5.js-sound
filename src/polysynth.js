@@ -19,35 +19,33 @@ define(function (require) {
     *  @param {Number} [maxVoices] Number of voices, defaults to 8;
     *  @example
     *  <div><code>
-    *  var polySynth;
+    *  let polySynth;
     *
     *  function setup() {
-    *    var cnv = createCanvas(100, 100);
+    *    let cnv = createCanvas(100, 100);
     *    cnv.mousePressed(playSynth);
+    *    background(220);
+    *    text('click to play', 20, 20);
     *
     *    polySynth = new p5.PolySynth();
-    *
-    *    textAlign(CENTER);
-    *    text('click to play', width/2, height/2);
     *  }
     *
     *  function playSynth() {
+    *    userStartAudio();
+    *
     *    // note duration (in seconds)
-    *    var dur = 1.5;
+    *    let dur = 1.5;
     *
     *    // time from now (in seconds)
-    *    var time = 0;
+    *    let time = 0;
     *
     *    // velocity (volume, from 0 to 1)
-    *    var vel = 0.1;
+    *    let vel = 0.1;
     *
     *    // notes can overlap with each other
-    *    polySynth.play("G2", vel, 0, dur);
-    *    polySynth.play("C3", vel, time += 1/3, dur);
-    *    polySynth.play("G3", vel, time += 1/3, dur);
-    *
-    *    background(random(255), random(255), 255);
-    *    text('click to play', width/2, height/2);
+    *    polySynth.play('G2', vel, 0, dur);
+    *    polySynth.play('C3', vel, time += 1/3, dur);
+    *    polySynth.play('G3', vel, time += 1/3, dur);
     *  }
     *  </code></div>
     **/
@@ -123,34 +121,33 @@ define(function (require) {
    *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
    *  @example
    *  <div><code>
-   *  var polySynth;
+   *  let polySynth;
    *
    *  function setup() {
-   *    var cnv = createCanvas(100, 100);
+   *    let cnv = createCanvas(100, 100);
    *    cnv.mousePressed(playSynth);
+   *    background(220);
+   *    text('click to play', 20, 20);
    *
    *    polySynth = new p5.PolySynth();
-   *
-   *    textAlign(CENTER);
-   *    text('click to play', width/2, height/2);
    *  }
    *
    *  function playSynth() {
+   *    userStartAudio();
+   *
    *    // note duration (in seconds)
-   *    var dur = 0.1;
+   *    let dur = 1.5;
    *
    *    // time from now (in seconds)
-   *    var time = 0;
+   *    let time = 0;
    *
    *    // velocity (volume, from 0 to 1)
-   *    var vel = 0.1;
+   *    let vel = 0.1;
    *
-   *    polySynth.play("G2", vel, 0, dur);
-   *    polySynth.play("C3", vel, 0, dur);
-   *    polySynth.play("G3", vel, 0, dur);
-   *
-   *    background(random(255), random(255), 255);
-   *    text('click to play', width/2, height/2);
+   *    // notes can overlap with each other
+   *    polySynth.play('G2', vel, 0, dur);
+   *    polySynth.play('C3', vel, time += 1/3, dur);
+   *    polySynth.play('G3', vel, time += 1/3, dur);
    *  }
    *  </code></div>
    */
@@ -231,14 +228,23 @@ define(function (require) {
    *  @param  {Number} [secondsFromNow] time from now (in seconds)
    *  @example
    *  <div><code>
-   *  var polySynth = new p5.PolySynth();
-   *  var pitches = ["G", "D", "G", "C"];
-   *  var octaves = [2, 3, 4];
+   *  let polySynth = new p5.PolySynth();
+   *  let pitches = ['G', 'D', 'G', 'C'];
+   *  let octaves = [2, 3, 4];
    *
-   *  function mousePressed() {
+   *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playChord);
+   *    background(220);
+   *    text('tap to play', 20, 20);
+   *  }
+   *
+   *  function playChord() {
+   *    userStartAudio();
+   *
    *    // play a chord: multiple notes at the same time
-   *    for (var i = 0; i < 4; i++) {
-   *      var note = random(pitches) + random(octaves);
+   *    for (let i = 0; i < 4; i++) {
+   *      let note = random(pitches) + random(octaves);
    *      polySynth.noteAttack(note, 0.1);
    *    }
    *  }
@@ -339,14 +345,23 @@ define(function (require) {
    *  @param  {Number} [secondsFromNow] time to trigger the release
    *  @example
    *  <div><code>
-   *  var pitches = ["G", "D", "G", "C"];
-   *  var octaves = [2, 3, 4];
-   *  var polySynth = new p5.PolySynth();
+   *  let polySynth = new p5.PolySynth();
+   *  let pitches = ['G', 'D', 'G', 'C'];
+   *  let octaves = [2, 3, 4];
    *
-   *  function mousePressed() {
+   *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playChord);
+   *    background(220);
+   *    text('tap to play', 20, 20);
+   *  }
+   *
+   *  function playChord() {
+   *    userStartAudio();
+   *
    *    // play a chord: multiple notes at the same time
-   *    for (var i = 0; i < 4; i++) {
-   *      var note = random(pitches) + random(octaves);
+   *    for (let i = 0; i < 4; i++) {
+   *      let note = random(pitches) + random(octaves);
    *      polySynth.noteAttack(note, 0.1);
    *    }
    *  }

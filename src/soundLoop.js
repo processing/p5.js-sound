@@ -11,31 +11,46 @@ define(function (require) {
    * @constructor
    *
    * @param {Function} callback this function will be called on each iteration of theloop
-   * @param {Number|String} [interval] amount of time or beats for each iteration of the loop
-   *                                       defaults to 1
+   * @param {Number|String} [interval] amount of time (if a number) or beats (if a string, following <a href = "https://github.com/Tonejs/Tone.js/wiki/Time">Tone.Time</a> convention) for each iteration of the loop. Defaults to 1 second.
    *
    * @example
    * <div><code>
-   * var click;
-   * var looper1;
+   *  let synth, soundLoop;
+   *  let notePattern = [60, 62, 64, 67, 69, 72];
    *
-   * function preload() {
-   *   click = loadSound('assets/drum.mp3');
+   *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(canvasPressed);
+   *    colorMode(HSB);
+   *    background(0, 0, 86);
+   *    text('tap to start/stop', 10, 20);
+   *
+   *    //the looper's callback is passed the timeFromNow
+   *    //this value should be used as a reference point from
+   *    //which to schedule sounds
+   *    let intervalInSeconds = 0.2;
+   *    soundLoop = new p5.SoundLoop(onSoundLoop, intervalInSeconds);
+   *
+   *    synth = new p5.MonoSynth();
    * }
    *
-   * function setup() {
-   *   //the looper's callback is passed the timeFromNow
-   *   //this value should be used as a reference point from
-   *   //which to schedule sounds
-   *   looper1 = new p5.SoundLoop(function(timeFromNow){
-   *     click.play(timeFromNow);
-   *     background(255 * (looper1.iterations % 2));
-   *     }, 2);
+   * function canvasPressed() {
+   *   // ensure audio is enabled
+   *   userStartAudio();
    *
-   *   //stop after 10 iteratios;
-   *   looper1.maxIterations = 10;
-   *   //start the loop
-   *   looper1.start();
+   *   if (soundLoop.isPlaying) {
+   *     soundLoop.stop();
+   *   } else {
+   *     // start the loop
+   *     soundLoop.start();
+   *   }
+   * }
+   *
+   * function onSoundLoop(timeFromNow) {
+   *   let noteIndex = (soundLoop.iterations - 1) % notePattern.length;
+   *   let note = midiToFreq(notePattern[noteIndex]);
+   *   synth.play(note, 0.5, timeFromNow);
+   *   background(noteIndex * 360 / notePattern.length, 50, 100);
    * }
    * </code></div>
    */
@@ -43,7 +58,7 @@ define(function (require) {
     this.callback = callback;
     /**
      * musicalTimeMode uses <a href = "https://github.com/Tonejs/Tone.js/wiki/Time">Tone.Time</a> convention
-	 * true if string, false if number
+     * true if string, false if number
      * @property {Boolean} musicalTimeMode
      */
     this.musicalTimeMode = typeof this._interval === 'number' ? false : true;

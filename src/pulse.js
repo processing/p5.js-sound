@@ -22,21 +22,30 @@ define(function (require) {
    *                         defaults to 0)
    *  @example
    *  <div><code>
-   *  var pulse;
+   *  let pulse;
    *  function setup() {
-   *    background(0);
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(startPulse);
+   *    background(220);
    *
-   *    // Create and start the pulse wave oscillator
    *    pulse = new p5.Pulse();
    *    pulse.amp(0.5);
    *    pulse.freq(220);
-   *    pulse.start();
    *  }
-   *
+   *  function startPulse() {
+   *    pulse.start();
+   *    pulse.amp(0.5, 0.02);
+   *  }
+   *  function mouseReleased() {
+   *    pulse.amp(0, 0.2);
+   *  }
    *  function draw() {
-   *    var w = map(mouseX, 0, width, 0, 1);
+   *    background(220);
+   *    text('tap to play', 5, 20, width - 20);
+   *    let w = map(mouseX, 0, width, 0, 1);
    *    w = constrain(w, 0, 1);
-   *    pulse.width(w)
+   *    pulse.width(w);
+   *    text('pulse width: ' + w, 5, height - 20);
    *  }
    *  </code></div>
    */

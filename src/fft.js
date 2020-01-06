@@ -46,40 +46,38 @@ define(function(require) {
    *  }
    *
    *  function setup(){
-   *    var cnv = createCanvas(100,100);
+   *    let cnv = createCanvas(100,100);
    *    cnv.mouseClicked(togglePlay);
    *    fft = new p5.FFT();
    *    sound.amp(0.2);
    *  }
    *
    *  function draw(){
-   *    background(0);
+   *    background(220);
    *
-   *    var spectrum = fft.analyze();
+   *    let spectrum = fft.analyze();
    *    noStroke();
-   *    fill(0,255,0); // spectrum is green
-   *    for (var i = 0; i< spectrum.length; i++){
-   *      var x = map(i, 0, spectrum.length, 0, width);
-   *      var h = -height + map(spectrum[i], 0, 255, height, 0);
+   *    fill(255, 0, 255);
+   *    for (let i = 0; i< spectrum.length; i++){
+   *      let x = map(i, 0, spectrum.length, 0, width);
+   *      let h = -height + map(spectrum[i], 0, 255, height, 0);
    *      rect(x, height, width / spectrum.length, h )
    *    }
    *
-   *    var waveform = fft.waveform();
+   *    let waveform = fft.waveform();
    *    noFill();
    *    beginShape();
-   *    stroke(255,0,0); // waveform is red
-   *    strokeWeight(1);
-   *    for (var i = 0; i< waveform.length; i++){
-   *      var x = map(i, 0, waveform.length, 0, width);
-   *      var y = map( waveform[i], -1, 1, 0, height);
+   *    stroke(20);
+   *    for (let i = 0; i < waveform.length; i++){
+   *      let x = map(i, 0, waveform.length, 0, width);
+   *      let y = map( waveform[i], -1, 1, 0, height);
    *      vertex(x,y);
    *    }
    *    endShape();
    *
-   *    text('click to play/pause', 4, 10);
+   *    text('tap to play', 20, 20);
    *  }
    *
-   *  // fade sound if mouse is over canvas
    *  function togglePlay() {
    *    if (sound.isPlaying()) {
    *      sound.pause();
@@ -227,47 +225,47 @@ define(function(require) {
    *                              possible is 255.
    *  @example
    *  <div><code>
-   *  var osc;
-   *  var fft;
+   *  let osc, fft;
    *
    *  function setup(){
-   *    createCanvas(100,100);
+   *    let cnv = createCanvas(100,100);
+   *    cnv.mousePressed(startSound);
    *    osc = new p5.Oscillator();
    *    osc.amp(0);
-   *    osc.start();
    *    fft = new p5.FFT();
    *  }
    *
    *  function draw(){
-   *    background(0);
+   *    background(220);
    *
-   *    var freq = map(mouseX, 0, 800, 20, 15000);
+   *    let freq = map(mouseX, 0, windowWidth, 20, 10000);
    *    freq = constrain(freq, 1, 20000);
    *    osc.freq(freq);
    *
-   *    var spectrum = fft.analyze();
+   *    let spectrum = fft.analyze();
    *    noStroke();
-   *    fill(0,255,0); // spectrum is green
-   *    for (var i = 0; i< spectrum.length; i++){
-   *      var x = map(i, 0, spectrum.length, 0, width);
-   *      var h = -height + map(spectrum[i], 0, 255, height, 0);
+   *    fill(255, 0, 255);
+   *    for (let i = 0; i< spectrum.length; i++){
+   *      let x = map(i, 0, spectrum.length, 0, width);
+   *      let h = -height + map(spectrum[i], 0, 255, height, 0);
    *      rect(x, height, width / spectrum.length, h );
    *    }
    *
    *    stroke(255);
-   *    text('Freq: ' + round(freq)+'Hz', 10, 10);
-   *
-   *    isMouseOverCanvas();
+   *    if (!osc.started) {
+   *      text('tap here and drag to change frequency', 10, 20, width - 20);
+   *    } else {
+   *      text(round(freq)+'Hz', 10, 20);
+   *    }
    *  }
    *
-   *  // only play sound when mouse is over canvas
-   *  function isMouseOverCanvas() {
-   *    var mX = mouseX, mY = mouseY;
-   *    if (mX > 0 && mX < width && mY < height && mY > 0) {
-   *      osc.amp(0.5, 0.2);
-   *    } else {
-   *      osc.amp(0, 0.2);
-   *    }
+   *  function startSound() {
+   *    osc.start();
+   *    osc.amp(0.5, 0.2);
+   *  }
+   *
+   *  function mouseReleased() {
+   *    osc.amp(0, 0.2);
    *  }
    *  </code></div>
    *
@@ -294,7 +292,7 @@ define(function(require) {
       freqToInt(this, this.freqDomain);
       this.analyser.getByteFrequencyData(this.freqDomain);
       var normalArray = Array.apply([], this.freqDomain);
-      
+
       return normalArray;
     }
   };
@@ -402,54 +400,53 @@ define(function(require) {
    *
    * @example
    *  <div><code>
-   *
-   *
-   *function setup(){
+   * function setup(){
    *  cnv = createCanvas(100,100);
+   *  cnv.mousePressed(userStartAudio);
    *  sound = new p5.AudioIn();
    *  sound.start();
    *  fft = new p5.FFT();
    *  sound.connect(fft);
    *}
    *
-   *
-   *function draw(){
-   *
-   *  var centroidplot = 0.0;
-   *  var spectralCentroid = 0;
-   *
+   *function draw() {
+   *  if (getAudioContext().state !== 'running') {
+   *    background(220);
+   *    text('tap here and enable mic to begin', 10, 20, width - 20);
+   *    return;
+   *  }
+   *  let centroidplot = 0.0;
+   *  let spectralCentroid = 0;
    *
    *  background(0);
    *  stroke(0,255,0);
-   *  var spectrum = fft.analyze();
+   *  let spectrum = fft.analyze();
    *  fill(0,255,0); // spectrum is green
    *
    *  //draw the spectrum
-   *  for (var i = 0; i< spectrum.length; i++){
-   *    var x = map(log(i), 0, log(spectrum.length), 0, width);
-   *    var h = map(spectrum[i], 0, 255, 0, height);
-   *    var rectangle_width = (log(i+1)-log(i))*(width/log(spectrum.length));
+   *  for (let i = 0; i < spectrum.length; i++){
+   *    let x = map(log(i), 0, log(spectrum.length), 0, width);
+   *    let h = map(spectrum[i], 0, 255, 0, height);
+   *    let rectangle_width = (log(i+1)-log(i))*(width/log(spectrum.length));
    *    rect(x, height, rectangle_width, -h )
    *  }
-
-   *  var nyquist = 22050;
+   *  let nyquist = 22050;
    *
    *  // get the centroid
    *  spectralCentroid = fft.getCentroid();
    *
    *  // the mean_freq_index calculation is for the display.
-   *  var mean_freq_index = spectralCentroid/(nyquist/spectrum.length);
+   *  let mean_freq_index = spectralCentroid/(nyquist/spectrum.length);
    *
    *  centroidplot = map(log(mean_freq_index), 0, log(spectrum.length), 0, width);
-   *
    *
    *  stroke(255,0,0); // the line showing where the centroid is will be red
    *
    *  rect(centroidplot, 0, width / spectrum.length, height)
    *  noStroke();
    *  fill(255,255,255);  // text is white
-   *  text("centroid: ", 10, 20);
-   *  text(round(spectralCentroid)+" Hz", 10, 40);
+   *  text('centroid: ', 10, 20);
+   *  text(round(spectralCentroid)+' Hz', 10, 40);
    *}
    * </code></div>
    */

@@ -17,31 +17,30 @@ define(function (require) {
     *  @constructor
     *  @example
     *  <div><code>
-    *  var monoSynth;
+    *  let monoSynth;
     *
     *  function setup() {
-    *    var cnv = createCanvas(100, 100);
+    *    let cnv = createCanvas(100, 100);
     *    cnv.mousePressed(playSynth);
+    *    background(220);
+    *    textAlign(CENTER);
+    *    text('tap to play', width/2, height/2);
     *
     *    monoSynth = new p5.MonoSynth();
-    *
-    *    textAlign(CENTER);
-    *    text('click to play', width/2, height/2);
     *  }
     *
     *  function playSynth() {
+    *    userStartAudio();
+    *
+    *    let note = random(['Fb4', 'G4']);
+    *    // note velocity (volume, from 0 to 1)
+    *    let velocity = random();
     *    // time from now (in seconds)
-    *    var time = 0;
+    *    let time = 0;
     *    // note duration (in seconds)
-    *    var dur = 0.25;
-    *    // velocity (volume, from 0 to 1)
-    *    var v = 0.2;
+    *    let dur = 1/6;
     *
-    *    monoSynth.play("G3", v, time, dur);
-    *    monoSynth.play("C4", v, time += dur, dur);
-    *
-    *    background(random(255), random(255), 255);
-    *    text('click to play', width/2, height/2);
+    *    monoSynth.play(note, velocity, time, dur);
     *  }
     *  </code></div>
     **/
@@ -89,34 +88,33 @@ define(function (require) {
     *                                 Tone</a>. Defaults to 440 hz.
     *  @param  {Number} [velocity] velocity of the note to play (ranging from 0 to 1)
     *  @param  {Number} [secondsFromNow]  time from now (in seconds) at which to play
-    *  @param  {Number} [sustainTime] time to sustain before releasing the envelope
+    *  @param  {Number} [sustainTime] time to sustain before releasing the envelope. Defaults to 0.15 seconds.
     *  @example
     *  <div><code>
-    *  var monoSynth;
+    *  let monoSynth;
     *
     *  function setup() {
-    *    var cnv = createCanvas(100, 100);
+    *    let cnv = createCanvas(100, 100);
     *    cnv.mousePressed(playSynth);
+    *    background(220);
+    *    textAlign(CENTER);
+    *    text('tap to play', width/2, height/2);
     *
     *    monoSynth = new p5.MonoSynth();
-    *
-    *    textAlign(CENTER);
-    *    text('click to play', width/2, height/2);
     *  }
     *
     *  function playSynth() {
-    *    // time from now (in seconds)
-    *    var time = 0;
-    *    // note duration (in seconds)
-    *    var dur = 1/6;
+    *    userStartAudio();
+    *
+    *    let note = random(['Fb4', 'G4']);
     *    // note velocity (volume, from 0 to 1)
-    *    var v = random();
+    *    let velocity = random();
+    *    // time from now (in seconds)
+    *    let time = 0;
+    *    // note duration (in seconds)
+    *    let dur = 1/6;
     *
-    *    monoSynth.play("Fb3", v, 0, dur);
-    *    monoSynth.play("Gb3", v, time += dur, dur);
-    *
-    *    background(random(255), random(255), 255);
-    *    text('click to play', width/2, height/2);
+    *    monoSynth.play(note, velocity, time, dur);
     *  }
     *  </code></div>
     *
@@ -142,9 +140,19 @@ define(function (require) {
      *  @for p5.MonoSynth
      *  @example
      *  <div><code>
-     *  var monoSynth = new p5.MonoSynth();
+     *  let monoSynth;
      *
-     *  function mousePressed() {
+     *  function setup() {
+     *    let cnv = createCanvas(100, 100);
+     *    cnv.mousePressed(triggerAttack);
+     *    background(220);
+     *    text('tap here for attack, let go to release', 5, 20, width - 20);
+     *    monoSynth = new p5.MonoSynth();
+     *  }
+     *
+     *  function triggerAttack() {
+     *    userStartAudio();
+     *
      *    monoSynth.triggerAttack("E3");
      *  }
      *
@@ -171,9 +179,19 @@ define(function (require) {
      *  @for p5.MonoSynth
      *  @example
      *  <div><code>
-     *  var monoSynth = new p5.MonoSynth();
+     *  let monoSynth;
      *
-     *  function mousePressed() {
+     *  function setup() {
+     *    let cnv = createCanvas(100, 100);
+     *    cnv.mousePressed(triggerAttack);
+     *    background(220);
+     *    text('tap here for attack, let go to release', 5, 20, width - 20);
+     *    monoSynth = new p5.MonoSynth();
+     *  }
+     *
+     *  function triggerAttack() {
+     *    userStartAudio();
+     *
      *    monoSynth.triggerAttack("E3");
      *  }
      *

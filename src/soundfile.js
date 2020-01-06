@@ -45,17 +45,24 @@ define(function (require) {
    *
    *  @example
    *  <div><code>
-   *
+   *  let mySound;
    *  function preload() {
    *    soundFormats('mp3', 'ogg');
-   *    mySound = loadSound('assets/doorbell.mp3');
+   *    mySound = loadSound('assets/doorbell');
    *  }
    *
    *  function setup() {
-   *    mySound.setVolume(0.1);
-   *    mySound.play();
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(canvasPressed);
+   *    background(220);
+   *    text('tap here to play', 10, 20);
    *  }
    *
+   *  function canvasPressed() {
+   *    // playing a sound file on a user gesture
+   *    // is equivalent to `userStartAudio()`
+   *    mySound.play();
+   *  }
    * </code></div>
    */
   p5.SoundFile = function(paths, onload, onerror, whileLoading) {
@@ -170,12 +177,22 @@ define(function (require) {
    *  @return {SoundFile}            Returns a p5.SoundFile
    *  @example
    *  <div><code>
+   *  let mySound;
    *  function preload() {
-   *   mySound = loadSound('assets/doorbell.mp3');
+   *    soundFormats('mp3', 'ogg');
+   *    mySound = loadSound('assets/doorbell');
    *  }
    *
    *  function setup() {
-   *    mySound.setVolume(0.1);
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(canvasPressed);
+   *    background(220);
+   *    text('tap here to play', 10, 20);
+   *  }
+   *
+   *  function canvasPressed() {
+   *    // playing a sound file on a user gesture
+   *    // is equivalent to `userStartAudio()`
    *    mySound.play();
    *  }
    *  </code></div>
@@ -454,16 +471,27 @@ define(function (require) {
    *  @param  {String} str 'restart' or 'sustain' or 'untilDone'
    *  @example
    *  <div><code>
-   *  var mySound;
+   *  let mySound;
    *  function preload(){
    *    mySound = loadSound('assets/Damscray_DancingTiger.mp3');
    *  }
-   *  function mouseClicked() {
-   *    mySound.playMode('sustain');
-   *    mySound.play();
+   *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(canvasPressed);
+   *    noFill();
+   *    rect(0, height/2, width - 1, height/2 - 1);
+   *    rect(0, 0, width - 1, height/2);
+   *    textAlign(CENTER, CENTER);
+   *    fill(20);
+   *    text('restart', width/2, 1 * height/4);
+   *    text('sustain', width/2, 3 * height/4);
    *  }
-   *  function keyPressed() {
-   *    mySound.playMode('restart');
+   *  function canvasPressed() {
+   *    if (mouseX < height/2) {
+   *      mySound.playMode('restart');
+   *    } else {
+   *      mySound.playMode('sustain');
+   *    }
    *    mySound.play();
    *  }
    *
@@ -503,29 +531,24 @@ define(function (require) {
    *                               seconds from now
    *  @example
    *  <div><code>
-   *  var soundFile;
-   *
+   *  let soundFile;
    *  function preload() {
    *    soundFormats('ogg', 'mp3');
    *    soundFile = loadSound('assets/Damscray_-_Dancing_Tiger_02.mp3');
    *  }
    *  function setup() {
-   *    background(0, 255, 0);
-   *    soundFile.setVolume(0.1);
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(canvasPressed);
+   *    background(220);
+   *    text('tap to play, release to pause', 10, 20, width - 20);
+   *  }
+   *  function canvasPressed() {
    *    soundFile.loop();
+   *    background(0, 200, 50);
    *  }
-   *  function keyTyped() {
-   *    if (key == 'p') {
-   *      soundFile.pause();
-   *      background(255, 0, 0);
-   *    }
-   *  }
-   *
-   *  function keyReleased() {
-   *    if (key == 'p') {
-   *      soundFile.play();
-   *      background(0, 255, 0);
-   *    }
+   *  function mouseReleased() {
+   *    soundFile.pause();
+   *    background(220);
    *  }
    *  </code>
    *  </div>
@@ -562,6 +585,31 @@ define(function (require) {
    * @param {Number} [amp]         (optional) playback volume
    * @param {Number} [cueLoopStart] (optional) startTime in seconds
    * @param {Number} [duration]  (optional) loop duration in seconds
+   * @example
+   *  <div><code>
+   *  let soundFile;
+   *  let loopStart = 0.5;
+   *  let loopDuration = 0.2;
+   *  function preload() {
+   *    soundFormats('ogg', 'mp3');
+   *    soundFile = loadSound('assets/Damscray_-_Dancing_Tiger_02.mp3');
+   *  }
+   *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(canvasPressed);
+   *    background(220);
+   *    text('tap to play, release to pause', 10, 20, width - 20);
+   *  }
+   *  function canvasPressed() {
+   *    soundFile.loop();
+   *    background(0, 200, 50);
+   *  }
+   *  function mouseReleased() {
+   *    soundFile.pause();
+   *    background(220);
+   *  }
+   *  </code>
+   *  </div>
    */
   p5.SoundFile.prototype.loop = function(startTime, rate, amp, loopStart, duration) {
     this._looping = true;
@@ -744,9 +792,8 @@ define(function (require) {
    *                                 seconds from now
    * @example
    * <div><code>
-   *
-   *  var ball = {};
-   *  var soundFile;
+   *  let ballX = 0;
+   *  let soundFile;
    *
    *  function preload() {
    *    soundFormats('ogg', 'mp3');
@@ -754,15 +801,17 @@ define(function (require) {
    *  }
    *
    *  function draw() {
-   *    background(0);
-   *    ball.x = constrain(mouseX, 0, width);
-   *    ellipse(ball.x, height/2, 20, 20)
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(canvasPressed);
+   *    background(220);
+   *    ballX = constrain(mouseX, 0, width);
+   *    ellipse(ballX, height/2, 20, 20);
    *  }
    *
-   *  function mousePressed(){
+   *  function canvasPressed(){
    *    // map the ball's x location to a panning degree
    *    // between -1.0 (left) and 1.0 (right)
-   *    var panning = map(ball.x, 0., width,-1.0, 1.0);
+   *    let panning = map(ballX, 0., width,-1.0, 1.0);
    *    soundFile.pan(panning);
    *    soundFile.play();
    *  }
@@ -797,29 +846,33 @@ define(function (require) {
    *                                     Values less than zero play backwards.
    *  @example
    *  <div><code>
-   *  var song;
+   *  let mySound;
    *
    *  function preload() {
-   *    song = loadSound('assets/Damscray_DancingTiger.mp3');
+   *    mySound = loadSound('assets/Damscray_DancingTiger.mp3');
    *  }
    *
    *  function setup() {
-   *    song.loop();
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(canvasPressed);
    *  }
-   *
+   *  function canvasPressed() {
+   *    mySound.loop();
+   *  }
+   *  function mouseReleased() {
+   *    mySound.pause();
+   *  }
    *  function draw() {
-   *    background(200);
+   *    background(220);
    *
    *    // Set the rate to a range between 0.1 and 4
    *    // Changing the rate also alters the pitch
-   *    var speed = map(mouseY, 0.1, height, 0, 2);
-   *    speed = constrain(speed, 0.01, 4);
-   *    song.rate(speed);
+   *    let playbackRate = map(mouseY, 0.1, height, 2, 0);
+   *    playbackRate = constrain(playbackRate, 0.01, 4);
+   *    mySound.rate(playbackRate);
    *
-   *    // Draw a circle to show what is going on
-   *    stroke(0);
-   *    fill(51, 100);
-   *    ellipse(mouseX, 100, 48, 48);
+   *    line(0, mouseY, width, mouseY);
+   *    text('rate: ' + round(playbackRate * 100) + '%', 10, 20);
    *  }
    *
    * </code>
@@ -1031,17 +1084,23 @@ define(function (require) {
    *  @for p5.SoundFile
    *  @example
    *  <div><code>
-   *  var drum;
-   *
+   *  let drum;
    *  function preload() {
    *    drum = loadSound('assets/drum.mp3');
    *  }
    *
    *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(canvasPressed);
+   *    background(220);
+   *    text('tap to play', 20, 20);
+   *  }
+   *
+   *  function canvasPressed() {
+   *    drum.stop();
    *    drum.reverseBuffer();
    *    drum.play();
    *  }
-   *
    * </code>
    * </div>
    */
@@ -1561,43 +1620,32 @@ define(function (require) {
    *                      useful for removeCue(id)
    *  @example
    *  <div><code>
-   *  var mySound;
+   *  let mySound;
    *  function preload() {
-   *    mySound = loadSound('assets/beat.mp3');
+   *    mySound = loadSound('assets/Damscray_DancingTiger.mp3');
    *  }
    *
    *  function setup() {
-   *    background(0);
-   *    noStroke();
-   *    fill(255);
-   *    textAlign(CENTER);
-   *    text('click to play', width/2, height/2);
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(canvasPressed);
+   *    background(220);
+   *    text('tap to play', 10, 20);
    *
    *    // schedule calls to changeText
-   *    mySound.addCue(0.50, changeText, "hello" );
-   *    mySound.addCue(1.00, changeText, "p5" );
-   *    mySound.addCue(1.50, changeText, "what" );
-   *    mySound.addCue(2.00, changeText, "do" );
-   *    mySound.addCue(2.50, changeText, "you" );
-   *    mySound.addCue(3.00, changeText, "want" );
-   *    mySound.addCue(4.00, changeText, "to" );
-   *    mySound.addCue(5.00, changeText, "make" );
-   *    mySound.addCue(6.00, changeText, "?" );
+   *    mySound.addCue(0, changeText, "hello" );
+   *    mySound.addCue(0.5, changeText, "hello," );
+   *    mySound.addCue(1, changeText, "hello, p5!");
+   *    mySound.addCue(1.5, changeText, "hello, p5!!");
+   *    mySound.addCue(2, changeText, "hello, p5!!!!!");
    *  }
    *
    *  function changeText(val) {
-   *    background(0);
-   *    text(val, width/2, height/2);
+   *    background(220);
+   *    text(val, 10, 20);
    *  }
    *
-   *  function mouseClicked() {
-   *    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-   *      if (mySound.isPlaying() ) {
-   *        mySound.stop();
-   *      } else {
-   *        mySound.play();
-   *      }
-   *    }
+   *  function canvasPressed() {
+   *    mySound.play();
    *  }
    *  </code></div>
    */
@@ -1681,25 +1729,24 @@ define(function (require) {
    * @param  {String} [fileName]      name of the resulting .wav file.
    * @example
    *  <div><code>
-   *  var inp, button, mySound;
-   *  var fileName = 'cool';
+   *  let mySound;
    *  function preload() {
    *    mySound = loadSound('assets/doorbell.mp3');
    *  }
    *  function setup() {
-   *    btn = createButton('click to save file');
-   *    btn.position(0, 0);
-   *    btn.mouseClicked(handleMouseClick);
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(canvasPressed);
+   *    background(220);
+   *    text('tap to download', 10, 20);
    *  }
    *
-   *  function handleMouseClick() {
-   *    mySound.save(fileName);
+   *  function canvasPressed() {
+   *    mySound.save('my cool filename');
    *  }
    * </code></div>
    */
   p5.SoundFile.prototype.save = function(fileName) {
-    const dataView = convertToWav(this.buffer);
-    p5.prototype.saveSound([dataView], fileName, 'wav');
+    p5.prototype.saveSound(this, fileName, 'wav');
   };
 
   /**
@@ -1718,18 +1765,17 @@ define(function (require) {
    * @returns {Blob} A file-like data object
    * @example
    *  <div><code>
-   *
    *  function preload() {
    *    mySound = loadSound('assets/doorbell.mp3');
    *  }
    *
    *  function setup() {
    *    noCanvas();
-   *    var soundBlob = mySound.getBlob();
+   *    let soundBlob = mySound.getBlob();
    *
    *    // Now we can send the blob to a server...
-   *    var serverUrl = 'https://jsonplaceholder.typicode.com/posts';
-   *    var httpRequestOptions = {
+   *    let serverUrl = 'https://jsonplaceholder.typicode.com/posts';
+   *    let httpRequestOptions = {
    *      method: 'POST',
    *      body: new FormData().append('soundBlob', soundBlob),
    *      headers: new Headers({
@@ -1739,15 +1785,15 @@ define(function (require) {
    *    httpDo(serverUrl, httpRequestOptions);
    *
    *    // We can also create an `ObjectURL` pointing to the Blob
-   *    var blobUrl = URL.createObjectURL(soundBlob);
+   *    let blobUrl = URL.createObjectURL(soundBlob);
    *
    *    // The `<Audio>` Element accepts Object URL's
-   *    var htmlAudioElt = createAudio(blobUrl).showControls();
+   *    createAudio(blobUrl).showControls();
    *
    *    createDiv();
    *
    *    // The ObjectURL exists as long as this tab is open
-   *    var input = createInput(blobUrl);
+   *    let input = createInput(blobUrl);
    *    input.attribute('readonly', true);
    *    input.mouseClicked(function() { input.elt.select() });
    *  }

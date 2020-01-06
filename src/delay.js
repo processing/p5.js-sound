@@ -41,17 +41,15 @@ define(function (require) {
    *    delay.process(osc, 0.12, .7, 2300);
    *
    *    cnv.mousePressed(oscStart);
-   *    cnv.mouseReleased(oscStop);
    *  }
    *
    *  function oscStart() {
    *    osc.start();
    *  }
    *
-   *  function oscStop() {
+   *  function mouseReleased() {
    *    osc.stop();
    *  }
-   *
    *  </code></div>
    */
   p5.Delay = function() {
