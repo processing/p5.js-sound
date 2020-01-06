@@ -30,39 +30,42 @@ define(function (require) {
    *                         'sawtooth', 'square'
    *  @example
    *  <div><code>
-   *  var osc;
-   *  var playing = false;
+   *  let osc, playing, freq, amp;
    *
    *  function setup() {
-   *    backgroundColor = color(255,0,255);
-   *    textAlign(CENTER);
-   *
-   *    osc = new p5.Oscillator();
-   *    osc.setType('sine');
-   *    osc.freq(240);
-   *    osc.amp(0);
-   *    osc.start();
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playOscillator);
+   *    osc = new p5.Oscillator('sine');
    *  }
    *
    *  function draw() {
-   *    background(backgroundColor)
-   *    text('click to play', width/2, height/2);
+   *    background(220)
+   *    freq = constrain(map(mouseX, 0, width, 100, 500), 100, 500);
+   *    amp = constrain(map(mouseY, height, 0, 0, 1), 0, 1);
+   *
+   *    text('tap to play', 20, 20);
+   *    text('freq: ' + freq, 20, 40);
+   *    text('amp: ' + amp, 20, 60);
+   *
+   *    if (playing) {
+   *      // smooth the transitions by 0.1 seconds
+   *      osc.freq(freq, 0.1);
+   *      osc.amp(amp, 0.1);
+   *    }
    *  }
    *
-   *  function mouseClicked() {
-   *    if (mouseX > 0 && mouseX < width && mouseY < height && mouseY > 0) {
-   *      if (!playing) {
-   *        // ramp amplitude to 0.5 over 0.05 seconds
-   *        osc.amp(0.5, 0.05);
-   *        playing = true;
-   *        backgroundColor = color(0,255,255);
-   *      } else {
-   *        // ramp amplitude to 0 over 0.5 seconds
-   *        osc.amp(0, 0.5);
-   *        playing = false;
-   *        backgroundColor = color(255,0,255);
-   *      }
-   *    }
+   *  function playOscillator() {
+   *    // starting an oscillator on a user gesture will enable audio
+   *    // in browsers that have a strict autoplay policy.
+   *    // See also: userStartAudio();
+   *    osc.start();
+   *    playing = true;
+   *  }
+   *
+   *  function mouseReleased() {
+   *    // ramp amplitude to 0 over 0.5 seconds
+   *    osc.amp(0, 0.5);
+   *    playing = false;
    *  }
    *  </code> </div>
    */
@@ -108,9 +111,11 @@ define(function (require) {
   };
 
   /**
-   *  Start an oscillator. Accepts an optional parameter to
-   *  determine how long (in seconds from now) until the
-   *  oscillator starts.
+   *  Start an oscillator.
+   *
+   *  Starting an oscillator on a user gesture will enable audio in browsers
+   *  that have a strict autoplay policy, including Chrome and most mobile
+   *  devices. See also: `userStartAudio()`.
    *
    *  @method  start
    *  @for p5.Oscillator
@@ -229,9 +234,25 @@ define(function (require) {
    *                                  this oscillator's frequency
    *  @example
    *  <div><code>
-   *  var osc = new p5.Oscillator(300);
-   *  osc.start();
-   *  osc.freq(40, 10);
+   *  let osc;
+   *
+   *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playOscillator);
+   *    osc = new p5.Oscillator(300);
+   *    background(220);
+   *    text('tap to play', 20, 20);
+   *  }
+   *
+   *  function playOscillator() {
+   *    osc.start();
+   *    osc.amp(0.5);
+   *    // start at 700Hz
+   *    osc.freq(700);
+   *    // ramp to 60Hz over 0.7 seconds
+   *    osc.freq(60, 0.7);
+   *    osc.amp(0, 0.1, 0.7);
+   *  }
    *  </code></div>
    */
   p5.Oscillator.prototype.freq = function(val, rampTime, tFromNow) {

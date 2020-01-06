@@ -29,11 +29,9 @@ define(function (require) {
    *
    * @example
    * <div><code>
-   * var eq;
-   * var band_names;
-   * var band_index;
-   *
-   * var soundFile, play;
+   * let eq, soundFile
+   * let eqBandIndex = 0;
+   * let eqBandNames = ['lows', 'mids', 'highs'];
    *
    * function preload() {
    *   soundFormats('mp3', 'ogg');
@@ -41,48 +39,47 @@ define(function (require) {
    * }
    *
    * function setup() {
-   *   eq = new p5.EQ(3);
+   *   let cnv = createCanvas(100, 100);
+   *   cnv.mousePressed(toggleSound);
+   *
+   *   eq = new p5.EQ(eqBandNames.length);
    *   soundFile.disconnect();
    *   eq.process(soundFile);
-   *
-   *   band_names = ['lows','mids','highs'];
-   *   band_index = 0;
-   *   play = false;
-   *   textAlign(CENTER);
    * }
    *
    * function draw() {
    *   background(30);
    *   noStroke();
    *   fill(255);
-   *   text('click to kill',50,25);
+   *   textAlign(CENTER);
+   *   text('filtering ', 50, 25);
    *
    *   fill(255, 40, 255);
    *   textSize(26);
-   *   text(band_names[band_index],50,55);
+   *   text(eqBandNames[eqBandIndex], 50, 55);
    *
    *   fill(255);
    *   textSize(9);
-   *   text('space = play/pause',50,80);
+   *
+   *   if (!soundFile.isPlaying()) {
+   *     text('tap to play', 50, 80);
+   *   } else {
+   *     text('tap to filter next band', 50, 80)
+   *   }
    * }
    *
-   * //If mouse is over canvas, cycle to the next band and kill the frequency
-   * function mouseClicked() {
-   *   for (var i = 0; i < eq.bands.length; i++) {
+   * function toggleSound() {
+   *   if (!soundFile.isPlaying()) {
+   *     soundFile.play();
+   *   } else {
+   *     eqBandIndex = (eqBandIndex + 1) % eq.bands.length;
+   *   }
+   *
+   *   for (let i = 0; i < eq.bands.length; i++) {
    *     eq.bands[i].gain(0);
    *   }
-   *   eq.bands[band_index].gain(-40);
-   *   if (mouseX > 0 && mouseX < width && mouseY < height && mouseY > 0) {
-   *     band_index === 2 ? band_index = 0 : band_index++;
-   *   }
-   * }
-   *
-   * //use space bar to trigger play / pause
-   * function keyPressed() {
-   *   if (key===' ') {
-   *     play = !play
-   *     play ? soundFile.loop() : soundFile.pause();
-   *   }
+   *   // filter the band we want to filter
+   *   eq.bands[eqBandIndex].gain(-40);
    * }
    * </code></div>
    */

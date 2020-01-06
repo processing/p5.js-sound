@@ -22,11 +22,15 @@ define(function (require) {
    *  @constructor
    *  @example
    *  <div><code>
-   *  var mic, recorder, soundFile;
-   *  var state = 0;
+   *  let mic, recorder, soundFile;
+   *  let state = 0;
    *
    *  function setup() {
-   *    background(200);
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(canvasPressed);
+   *    background(220);
+   *    textAlign(CENTER, CENTER);
+   *
    *    // create an audio in
    *    mic = new p5.AudioIn();
    *
@@ -43,10 +47,13 @@ define(function (require) {
    *    // playback & save the recording
    *    soundFile = new p5.SoundFile();
    *
-   *    text('keyPress to record', 20, 20);
+   *    text('tap to record', width/2, height/2);
    *  }
    *
-   *  function keyPressed() {
+   *  function canvasPressed() {
+   *    // ensure audio is enabled
+   *    userStartAudio();
+   *
    *    // make sure user enabled the mic
    *    if (state === 0 && mic.enabled) {
    *
@@ -54,7 +61,7 @@ define(function (require) {
    *      recorder.record(soundFile);
    *
    *      background(255,0,0);
-   *      text('Recording!', 20, 20);
+   *      text('Recording!', width/2, height/2);
    *      state++;
    *    }
    *    else if (state === 1) {
@@ -64,7 +71,7 @@ define(function (require) {
    *      // send result to soundFile
    *      recorder.stop();
    *
-   *      text('Stopped', 20, 20);
+   *      text('Done! Tap to play and download', width/2, height/2, width - 20);
    *      state++;
    *    }
    *

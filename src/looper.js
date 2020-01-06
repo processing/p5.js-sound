@@ -54,43 +54,35 @@ define(function(require) {
    *                            at each step of the phrase.
    *  @example
    *  <div><code>
-   *  var mySound, myPhrase, myPart;
-   *  var pattern = [1,0,0,2,0,2,0,0];
-   *  var msg = 'click to play';
+   *  let mySound, myPhrase, myPart;
+   *  let pattern = [1,0,0,2,0,2,0,0];
    *
    *  function preload() {
    *    mySound = loadSound('assets/beatbox.mp3');
    *  }
    *
    *  function setup() {
-   *    noStroke();
-   *    fill(255);
-   *    textAlign(CENTER);
-   *    masterVolume(0.1);
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playMyPart);
+   *    background(220);
+   *    text('tap to play', width/2, height/2);
+   *    textAlign(CENTER, CENTER);
    *
-   *    myPhrase = new p5.Phrase('bbox', makeSound, pattern);
+   *    myPhrase = new p5.Phrase('bbox', onEachStep, pattern);
    *    myPart = new p5.Part();
    *    myPart.addPhrase(myPhrase);
    *    myPart.setBPM(60);
    *  }
    *
-   *  function draw() {
-   *    background(0);
-   *    text(msg, width/2, height/2);
-   *  }
-   *
-   *  function makeSound(time, playbackRate) {
+   *  function onEachStep(time, playbackRate) {
    *    mySound.rate(playbackRate);
    *    mySound.play(time);
    *  }
    *
-   *  function mouseClicked() {
-   *    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-   *      myPart.start();
-   *      msg = 'playing pattern';
-   *    }
+   *  function playMyPart() {
+   *    userStartAudio();
+   *    myPart.start();
    *  }
-   *
    *  </code></div>
    */
   p5.Phrase = function(name, callback, sequence) {
@@ -121,10 +113,9 @@ define(function(require) {
    *  @param {Number} [tatums] Divisions of a beat, e.g. use 1/4, or 0.25 for a quater note (default is 1/16, a sixteenth note)
    *  @example
    *  <div><code>
-   *  var box, drum, myPart;
-   *  var boxPat = [1,0,0,2,0,2,0,0];
-   *  var drumPat = [0,1,1,0,2,0,1,0];
-   *  var msg = 'click to play';
+   *  let box, drum, myPart;
+   *  let boxPat = [1,0,0,2,0,2,0,0];
+   *  let drumPat = [0,1,1,0,2,0,1,0];
    *
    *  function preload() {
    *    box = loadSound('assets/beatbox.mp3');
@@ -132,23 +123,18 @@ define(function(require) {
    *  }
    *
    *  function setup() {
-   *    noStroke();
-   *    fill(255);
-   *    textAlign(CENTER);
-   *    masterVolume(0.1);
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playMyPart);
+   *    background(220);
+   *    textAlign(CENTER, CENTER);
+   *    text('tap to play', width/2, height/2);
    *
-   *    var boxPhrase = new p5.Phrase('box', playBox, boxPat);
-   *    var drumPhrase = new p5.Phrase('drum', playDrum, drumPat);
+   *    let boxPhrase = new p5.Phrase('box', playBox, boxPat);
+   *    let drumPhrase = new p5.Phrase('drum', playDrum, drumPat);
    *    myPart = new p5.Part();
    *    myPart.addPhrase(boxPhrase);
    *    myPart.addPhrase(drumPhrase);
    *    myPart.setBPM(60);
-   *    masterVolume(0.1);
-   *  }
-   *
-   *  function draw() {
-   *    background(0);
-   *    text(msg, width/2, height/2);
    *  }
    *
    *  function playBox(time, playbackRate) {
@@ -161,11 +147,10 @@ define(function(require) {
    *    drum.play(time);
    *  }
    *
-   *  function mouseClicked() {
-   *    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-   *      myPart.start();
-   *      msg = 'playing part';
-   *    }
+   *  function playMyPart() {
+   *    userStartAudio();
+   *
+   *    myPart.start();
    *  }
    *  </code></div>
    */
@@ -363,7 +348,6 @@ define(function(require) {
       this.partStep += 1;
     } else {
       if (!this.looping && this.partStep === this.length - 1) {
-        console.log('done');
         // this.callback(time);
         this.onended();
       }

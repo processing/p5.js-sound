@@ -47,22 +47,36 @@ define(function (require) {
    *  @return {Number} Frequency value of the given MIDI note
    *  @example
    *  <div><code>
-   *  var notes = [60, 64, 67, 72];
-   *  var i = 0;
+   *  let midiNotes = [60, 64, 67, 72];
+   *  let noteIndex = 0;
+   *  let midiVal, freq;
    *
    *  function setup() {
-   *    osc = new p5.Oscillator('Triangle');
-   *    osc.start();
-   *    frameRate(1);
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(startSound);
+   *    osc = new p5.TriOsc();
+   *    env = new p5.Envelope();
    *  }
    *
    *  function draw() {
-   *    var freq = midiToFreq(notes[i]);
-   *    osc.freq(freq);
-   *    i++;
-   *    if (i >= notes.length){
-   *      i = 0;
+   *    background(220);
+   *    text('tap to play', 10, 20);
+   *    if (midiVal) {
+   *      text('MIDI: ' + midiVal, 10, 40);
+   *      text('Freq: ' + freq, 10, 60);
    *    }
+   *  }
+   *
+   *  function startSound() {
+   *    // see also: userStartAudio();
+   *    osc.start();
+   *
+   *    midiVal = midiNotes[noteIndex % midiNotes.length];
+   *    freq = midiToFreq(midiVal);
+   *    osc.freq(freq);
+   *    env.ramp(osc, 0, 1.0, 0);
+   *
+   *    noteIndex++;
    *  }
    *  </code></div>
    */
@@ -113,8 +127,13 @@ define(function (require) {
    *  }
    *
    *  function setup() {
-   *    mySound.play();
-   *  }
+   *       let cnv = createCanvas(100, 100);
+   *       background(220);
+   *       text('sound loaded! tap to play', 10, 20, width - 20);
+   *       cnv.mousePressed(function() {
+   *         mySound.play();
+   *       });
+   *     }
    *  </code></div>
    */
   p5.prototype.soundFormats = function() {

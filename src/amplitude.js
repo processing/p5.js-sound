@@ -17,30 +17,32 @@ define(function (require) {
    *                             amplitude readings (defaults to 0)
    *  @example
    *  <div><code>
-   *  var sound, amplitude, cnv;
+   *  let sound, amplitude;
    *
    *  function preload(){
    *    sound = loadSound('assets/beat.mp3');
    *  }
    *  function setup() {
-   *    cnv = createCanvas(100,100);
+   *    let cnv = createCanvas(100,100);
+   *    cnv.mouseClicked(toggleSound);
    *    amplitude = new p5.Amplitude();
-   *
-   *    // start / stop the sound when canvas is clicked
-   *    cnv.mouseClicked(function() {
-   *      if (sound.isPlaying() ){
-   *        sound.stop();
-   *      } else {
-   *        sound.play();
-   *      }
-   *    });
    *  }
+   *
    *  function draw() {
-   *    background(0);
-   *    fill(255);
-   *    var level = amplitude.getLevel();
-   *    var size = map(level, 0, 1, 0, 200);
+   *    background(220);
+   *    text('tap to play', 20, 20);
+   *
+   *    let level = amplitude.getLevel();
+   *    let size = map(level, 0, 1, 0, 200);
    *    ellipse(width/2, height/2, size, size);
+   *  }
+   *
+   *  function toggleSound() {
+   *    if (sound.isPlaying() ){
+   *      sound.stop();
+   *    } else {
+   *      sound.play();
+   *    }
    *  }
    *
    *  </code></div>
@@ -117,21 +119,30 @@ define(function (require) {
    *    sound2 = loadSound('assets/drum.mp3');
    *  }
    *  function setup(){
+   *    cnv = createCanvas(100, 100);
+   *    cnv.mouseClicked(toggleSound);
+   *
    *    amplitude = new p5.Amplitude();
-   *    sound1.play();
-   *    sound2.play();
    *    amplitude.setInput(sound2);
    *  }
+   *
    *  function draw() {
-   *    background(0);
-   *    fill(255);
-   *    var level = amplitude.getLevel();
-   *    var size = map(level, 0, 1, 0, 200);
+   *    background(220);
+   *    text('tap to play', 20, 20);
+   *
+   *    let level = amplitude.getLevel();
+   *    let size = map(level, 0, 1, 0, 200);
    *    ellipse(width/2, height/2, size, size);
    *  }
-   *  function mouseClicked(){
-   *    sound1.stop();
-   *    sound2.stop();
+   *
+   *  function toggleSound(){
+   *    if (sound1.isPlaying() && sound2.isPlaying()) {
+   *      sound1.stop();
+   *      sound2.stop();
+   *    } else {
+   *      sound1.play();
+   *      sound2.play();
+   *    }
    *  }
    *  </code></div>
    */
@@ -197,19 +208,29 @@ define(function (require) {
    *  function preload(){
    *    sound = loadSound('assets/beat.mp3');
    *  }
+   *
    *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mouseClicked(toggleSound);
    *    amplitude = new p5.Amplitude();
-   *    sound.play();
    *  }
+   *
    *  function draw() {
-   *    background(0);
-   *    fill(255);
-   *    var level = amplitude.getLevel();
-   *    var size = map(level, 0, 1, 0, 200);
+   *    background(220, 150);
+   *    textAlign(CENTER);
+   *    text('tap to play', width/2, 20);
+   *
+   *    let level = amplitude.getLevel();
+   *    let size = map(level, 0, 1, 0, 200);
    *    ellipse(width/2, height/2, size, size);
    *  }
-   *  function mouseClicked(){
-   *    sound.stop();
+   *
+   *  function toggleSound(){
+   *    if (sound.isPlaying()) {
+   *      sound.stop();
+   *    } else {
+   *      sound.play();
+   *    }
    *  }
    *  </code></div>
    */

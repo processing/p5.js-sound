@@ -30,22 +30,38 @@ define(function (require) {
    *  @return {Tone.Signal} A Signal object from the Tone.js library
    *  @example
    *  <div><code>
+   *  let carrier, modulator;
+   *
    *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(canvasPressed);
+   *    background(220);
+   *    text('tap to play', 20, 20);
+   *
    *    carrier = new p5.Oscillator('sine');
+   *    carrier.start();
    *    carrier.amp(1); // set amplitude
    *    carrier.freq(220); // set frequency
-   *    carrier.start(); // start oscillating
    *
    *    modulator = new p5.Oscillator('sawtooth');
    *    modulator.disconnect();
+   *    modulator.start();
    *    modulator.amp(1);
    *    modulator.freq(4);
-   *    modulator.start();
    *
    *    // Modulator's default amplitude range is -1 to 1.
    *    // Multiply it by -200, so the range is -200 to 200
    *    // then add 220 so the range is 20 to 420
-   *    carrier.freq( modulator.mult(-200).add(220) );
+   *    carrier.freq( modulator.mult(-400).add(220) );
+   *  }
+   *
+   *  function canvasPressed() {
+   *    userStartAudio();
+   *    carrier.amp(1.0);
+   *  }
+   *
+   *  function mouseReleased() {
+   *    carrier.amp(0);
    *  }
    *  </code></div>
    */

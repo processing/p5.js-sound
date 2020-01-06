@@ -23,18 +23,34 @@ define(function (require) {
    *  @constructor
    *  @example
    *  <div><code>
-   *  var soundFile, reverb;
+   *  let soundFile, reverb;
    *  function preload() {
    *    soundFile = loadSound('assets/Damscray_DancingTiger.mp3');
    *  }
    *
    *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playSound);
+   *
    *    reverb = new p5.Reverb();
    *    soundFile.disconnect(); // so we'll only hear reverb...
    *
    *    // connect soundFile to reverb, process w/
    *    // 3 second reverbTime, decayRate of 2%
    *    reverb.process(soundFile, 3, 2);
+   *  }
+   *
+   *  function draw() {
+   *    let dryWet = constrain(map(mouseX, 0, width, 0, 1), 0, 1);
+   *    // 1 = all reverb, 0 = no reverb
+   *    reverb.drywet(dryWet);
+   *
+   *    background(220);
+   *    text('tap to play', 10, 20);
+   *    text('dry/wet: ' + round(dryWet * 100) + '%', 10, height - 20);
+   *  }
+   *
+   *  function playSound() {
    *    soundFile.play();
    *  }
    *  </code></div>
@@ -224,7 +240,7 @@ define(function (require) {
    *                                     about what went wrong.
    *  @example
    *  <div><code>
-   *  var cVerb, sound;
+   *  let cVerb, sound;
    *  function preload() {
    *    // We have both MP3 and OGG versions of all sound assets
    *    soundFormats('ogg', 'mp3');
@@ -239,13 +255,20 @@ define(function (require) {
    *  }
    *
    *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playSound);
+   *    background(220);
+   *    text('tap to play', 20, 20);
+   *
    *    // disconnect from master output...
    *    sound.disconnect();
    *
    *    // ...and process with cVerb
    *    // so that we only hear the convolution
    *    cVerb.process(sound);
+   *  }
    *
+   *  function playSound() {
    *    sound.play();
    *  }
    *  </code></div>
@@ -300,7 +323,7 @@ define(function (require) {
    *  @return {p5.Convolver}
    *  @example
    *  <div><code>
-   *  var cVerb, sound;
+   *  let cVerb, sound;
    *  function preload() {
    *    // We have both MP3 and OGG versions of all sound assets
    *    soundFormats('ogg', 'mp3');
@@ -315,13 +338,20 @@ define(function (require) {
    *  }
    *
    *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playSound);
+   *    background(220);
+   *    text('tap to play', 20, 20);
+   *
    *    // disconnect from master output...
    *    sound.disconnect();
    *
    *    // ...and process with cVerb
    *    // so that we only hear the convolution
    *    cVerb.process(sound);
+   *  }
    *
+   *  function playSound() {
    *    sound.play();
    *  }
    *  </code></div>
@@ -425,7 +455,7 @@ define(function (require) {
   p5.Convolver.prototype.set = null;
 
   /**
-   *  Connect a source to the reverb, and assign reverb parameters.
+   *  Connect a source to the convolver.
    *
    *  @method  process
    *  @for p5.Convolver
@@ -433,25 +463,38 @@ define(function (require) {
    *                           output.
    *  @example
    *  <div><code>
-   *  var cVerb, sound;
+   *  let cVerb, sound;
    *  function preload() {
+   *    // We have both MP3 and OGG versions of all sound assets
    *    soundFormats('ogg', 'mp3');
    *
-   *    cVerb = createConvolver('assets/concrete-tunnel.mp3');
+   *    // Try replacing 'bx-spring' with other soundfiles like
+   *    // 'concrete-tunnel' 'small-plate' 'drum' 'beatbox'
+   *    cVerb = createConvolver('assets/bx-spring.mp3');
    *
-   *    sound = loadSound('assets/beat.mp3');
+   *    // Try replacing 'Damscray_DancingTiger' with
+   *    // 'beat', 'doorbell', lucky_dragons_-_power_melody'
+   *    sound = loadSound('assets/Damscray_DancingTiger.mp3');
    *  }
    *
    *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playSound);
+   *    background(220);
+   *    text('tap to play', 20, 20);
+   *
    *    // disconnect from master output...
    *    sound.disconnect();
    *
-   *    // ...and process with (i.e. connect to) cVerb
+   *    // ...and process with cVerb
    *    // so that we only hear the convolution
    *    cVerb.process(sound);
+   *  }
    *
+   *  function playSound() {
    *    sound.play();
    *  }
+   *
    *  </code></div>
    */
   p5.Convolver.prototype.process = function(src) {
