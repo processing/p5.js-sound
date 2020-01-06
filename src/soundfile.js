@@ -1700,8 +1700,7 @@ define(function (require) {
    * </code></div>
    */
   p5.SoundFile.prototype.save = function(fileName) {
-    const dataView = convertToWav(this.buffer);
-    p5.prototype.saveSound([dataView], fileName, 'wav');
+    p5.prototype.saveSound(this, fileName, 'wav');
   };
 
   /**
