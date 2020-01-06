@@ -1662,7 +1662,7 @@ define(function (require) {
       var callbackTime = cue.time;
       var val = cue.val;
 
-      if (this._prevTime < callbackTime && callbackTime <= playbackTime) {
+      if (~~this._prevUpdateTime <= callbackTime && callbackTime <= playbackTime) {
 
         // pass the scheduled callbackTime as parameter to the callback
         cue.callback(val);
@@ -1670,7 +1670,7 @@ define(function (require) {
 
     }
 
-    this._prevTime = playbackTime;
+    this._prevUpdateTime = playbackTime;
   };
 
   /**
