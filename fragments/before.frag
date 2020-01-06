@@ -1,40 +1,46 @@
 /**
- *  p5.sound extends p5 with <a href="http://caniuse.com/audio-api"
+ *  <p>p5.sound extends p5 with <a href="http://caniuse.com/audio-api"
  *  target="_blank">Web Audio</a> functionality including audio input,
  *  playback, analysis and synthesis.
- *  <br/><br/>
- *  <a href="#/p5.SoundFile"><b>p5.SoundFile</b></a>: Load and play sound files.<br/>
- *  <a href="#/p5.Amplitude"><b>p5.Amplitude</b></a>: Get the current volume of a sound.<br/>
- *  <a href="#/p5.AudioIn"><b>p5.AudioIn</b></a>: Get sound from an input source, typically
- *    a computer microphone.<br/>
- *  <a href="#/p5.FFT"><b>p5.FFT</b></a>: Analyze the frequency of sound. Returns
- *    results from the frequency spectrum or time domain (waveform).<br/>
- *  <a href="#/p5.Oscillator"><b>p5.Oscillator</b></a>: Generate Sine,
+ *  </p>
+ *  <ul>
+ *  <li><a href="#/p5.SoundFile"><b>p5.SoundFile</b></a>: Load and play sound files.</li>
+ *  <li><a href="#/p5.Amplitude"><b>p5.Amplitude</b></a>: Get the current volume of a sound.</li>
+ *  <li><a href="#/p5.AudioIn"><b>p5.AudioIn</b></a>: Get sound from an input source, typically
+ *    a computer microphone.</li>
+ *  <li><a href="#/p5.FFT"><b>p5.FFT</b></a>: Analyze the frequency of sound. Returns
+ *    results from the frequency spectrum or time domain (waveform).</li>
+ *  <li><a href="#/p5.Oscillator"><b>p5.Oscillator</b></a>: Generate Sine,
  *    Triangle, Square and Sawtooth waveforms. Base class of
- *    <a href="#/p5.Noise">p5.Noise</a> and <a href="#/p5.Pulse">p5.Pulse</a>.
- *    <br/>
- *  <a href="#/p5.Envelope"><b>p5.Envelope</b></a>: An Envelope is a series
+ *    <li><a href="#/p5.Noise">p5.Noise</a> and <a href="#/p5.Pulse">p5.Pulse</a>.
+ *    </li>
+ *  <li>
+ *    <a href="#/p5.MonoSynth">p5.MonoSynth</a> and <a href="#/p5.PolySynth">p5.PolySynth</a>: Play musical notes
+ *  </li>
+ *  <li><a href="#/p5.Envelope"><b>p5.Envelope</b></a>: An Envelope is a series
  *    of fades over time. Often used to control an object's
  *    output gain level as an "ADSR Envelope" (Attack, Decay,
- *    Sustain, Release). Can also modulate other parameters.<br/>
- *  <a href="#/p5.Delay"><b>p5.Delay</b></a>: A delay effect with
- *    parameters for feedback, delayTime, and lowpass filter.<br/>
- *  <a href="#/p5.Filter"><b>p5.Filter</b></a>: Filter the frequency range of a
+ *    Sustain, Release). Can also modulate other parameters.</li>
+ *  <li><a href="#/p5.Delay"><b>p5.Delay</b></a>: A delay effect with
+ *    parameters for feedback, delayTime, and lowpass filter.</li>
+ *  <li><a href="#/p5.Filter"><b>p5.Filter</b></a>: Filter the frequency range of a
  *    sound.
- *  <br/>
- *  <a href="#/p5.Reverb"><b>p5.Reverb</b></a>: Add reverb to a sound by specifying
- *    duration and decay. <br/>
- *  <b><a href="#/p5.Convolver">p5.Convolver</a>:</b> Extends
+ *  </li>
+ *  <li><a href="#/p5.Reverb"><b>p5.Reverb</b></a>: Add reverb to a sound by specifying
+ *    duration and decay. </li>
+ *  <b><li><a href="#/p5.Convolver">p5.Convolver</a>:</b> Extends
  *  <a href="#/p5.Reverb">p5.Reverb</a> to simulate the sound of real
- *    physical spaces through convolution.<br/>
- *  <b><a href="#/p5.SoundRecorder">p5.SoundRecorder</a></b>: Record sound for playback
+ *    physical spaces through convolution.</li>
+ *  <b><li><a href="#/p5.SoundRecorder">p5.SoundRecorder</a></b>: Record sound for playback
  *    / save the .wav file.
- *  <b><a href="#/p5.Phrase">p5.Phrase</a></b>, <b><a href="#/p5.Part">p5.Part</a></b> and
+ *  <b><li><a href="#/p5.SoundLoop">p5.SoundLoop</a>, <a href="#/p5.Phrase">p5.Phrase</a></b>, <b><a href="#/p5.Part">p5.Part</a></b> and
  *  <b><a href="#/p5.Score">p5.Score</a></b>: Compose musical sequences.
- *  <br/><br/>
- *  p5.sound is on <a href="https://github.com/therewasaguy/p5.sound/">GitHub</a>.
+ *  </li>
+ *  <li><a href="#/p5/userStartAudio">userStartAudio</a>: Enable audio in a
+ *  browser- and user-friendly way.</a>
+ *  <p>p5.sound is on <a href="https://github.com/therewasaguy/p5.sound/">GitHub</a>.
  *  Download the latest version
- *  <a href="https://github.com/therewasaguy/p5.sound/blob/master/lib/p5.sound.js">here</a>.
+ *  <a href="https://github.com/therewasaguy/p5.sound/blob/master/lib/p5.sound.js">here</a>.</p>
  *
  *  @module p5.sound
  *  @submodule p5.sound
