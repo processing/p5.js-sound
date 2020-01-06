@@ -19,6 +19,7 @@ define(['startaudiocontext', 'Tone/core/Context', 'Tone/core/Tone'], function (S
    * <p>Some browsers require users to startAudioContext
    * with a user gesture, such as touchStarted in the example below.</p>
    *
+   * @for p5
    * @method getAudioContext
    * @return {Object}    AudioContext for this sketch
    * @example
@@ -50,44 +51,54 @@ define(['startaudiocontext', 'Tone/core/Context', 'Tone/core/Tone'], function (S
 
 
   /**
-   *  <p>It is a good practice to give users control over starting audio playback.
-   *  This practice is enforced by Google Chrome's autoplay policy as of r70
-   *  (<a href="https://goo.gl/7K7WLu">info</a>), iOS Safari, and other browsers.
-   *  </p>
+   *  <p>It is not only a good practice to give users control over starting
+   *  audio. This policy is enforced by many web browsers, including iOS and
+   *  <a href="https://goo.gl/7K7WLu" title="Google Chrome's autoplay
+   *  policy">Google Chrome</a>, which create the Web Audio API's
+   *  <a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext"
+   *  title="Audio Context @ MDN">Audio Context</a>
+   *  in a suspended state.</p>
    *
-   *  <p>
-   *  userStartAudio() starts the <a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext"
-   *  target="_blank" title="Audio Context @ MDN">Audio Context</a> on a user gesture. It utilizes
-   *  the <a href="https://github.com/tambien/StartAudioContext">StartAudioContext</a> library by
-   *  Yotam Mann (MIT Licence, 2016). Read more at https://github.com/tambien/StartAudioContext.
-   *  </p>
+   *  <p>In these browser-specific policies, sound will not play until a user
+   *  interaction event (i.e. <code>mousePressed()</code>) explicitly resumes
+   *  the AudioContext, or starts an audio node. This can be accomplished by
+   *  calling <code>start()</code> on a <code>p5.Oscillator</code>,
+   *  <code> play()</code> on a <code>p5.SoundFile</code>, or simply
+   *  <code>userStartAudio()</code>.</p>
    *
-   *  <p>Starting the audio context on a user gesture can be as simple as <code>userStartAudio()</code>.
-   *  Optional parameters let you decide on a specific element that will start the audio context,
-   *  and/or call a function once the audio context is started.</p>
+   *  <p><code>userStartAudio()</code> starts the AudioContext on a user
+   *  gesture. The default behavior will enable audio on any
+   *  mouseUp or touchEnd event. It can also be placed in a specific
+   *  interaction function, such as <code>mousePressed()</code> as in the
+   *  example below. This method utilizes
+   *  <a href="https://github.com/tambien/StartAudioContext">StartAudioContext
+   *  </a>, a library by Yotam Mann (MIT Licence, 2016).</p>
    *  @param  {Element|Array}   [element(s)] This argument can be an Element,
    *                                Selector String, NodeList, p5.Element,
    *                                jQuery Element, or an Array of any of those.
-   *  @param  {Function} [callback] Callback to invoke when the AudioContext has started
-   *  @return {Promise}            Returns a Promise which is resolved when
+   *  @param  {Function} [callback] Callback to invoke when the AudioContext
+   *                                has started
+   *  @return {Promise}            Returns a Promise that resolves when
    *                                       the AudioContext state is 'running'
    *  @method userStartAudio
    *  @for p5
    *  @example
    *  <div><code>
    *  function setup() {
-   *    var myDiv = createDiv('click to start audio');
-   *    myDiv.position(0, 0);
+   *    // mimics the autoplay policy
+   *    getAudioContext().suspend();
    *
-   *    var mySynth = new p5.MonoSynth();
+   *    let mySynth = new p5.MonoSynth();
    *
-   *    // This won't play until the context has started
+   *    // This won't play until the context has resumed
    *    mySynth.play('A6');
-   *
-   *    // Start the audio context on a click/touch event
-   *    userStartAudio().then(function() {
-   *       myDiv.remove();
-   *     });
+   *  }
+   *  function draw() {
+   *    background(220);
+   *    text(getAudioContext().state, 20, 20);
+   *  }
+   *  function mousePressed() {
+   *    userStartAudio();
    *  }
    *  </code></div>
    */
