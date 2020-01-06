@@ -95,7 +95,8 @@ define(['startaudiocontext', 'Tone/core/Context', 'Tone/core/Tone'], function (S
    *  }
    *  function draw() {
    *    background(220);
-   *    text(getAudioContext().state, 20, 20);
+   *    textAlign(CENTER, CENTER);
+   *    text(getAudioContext().state, width/2, height/2);
    *  }
    *  function mousePressed() {
    *    userStartAudio();

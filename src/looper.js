@@ -56,7 +56,6 @@ define(function(require) {
    *  <div><code>
    *  let mySound, myPhrase, myPart;
    *  let pattern = [1,0,0,2,0,2,0,0];
-   *  let msg = 'click to play';
    *
    *  function preload() {
    *    mySound = loadSound('assets/beatbox.mp3');
@@ -65,17 +64,14 @@ define(function(require) {
    *  function setup() {
    *    let cnv = createCanvas(100, 100);
    *    cnv.mousePressed(playMyPart);
-   *    textAlign(CENTER);
+   *    background(220);
+   *    text('tap to play', width/2, height/2);
+   *    textAlign(CENTER, CENTER);
    *
    *    myPhrase = new p5.Phrase('bbox', onEachStep, pattern);
    *    myPart = new p5.Part();
    *    myPart.addPhrase(myPhrase);
    *    myPart.setBPM(60);
-   *  }
-   *
-   *  function draw() {
-   *    background(220);
-   *    text(msg, width/2, height/2);
    *  }
    *
    *  function onEachStep(time, playbackRate) {
@@ -86,7 +82,6 @@ define(function(require) {
    *  function playMyPart() {
    *    userStartAudio();
    *    myPart.start();
-   *    msg = 'playing pattern';
    *  }
    *  </code></div>
    */
@@ -121,10 +116,8 @@ define(function(require) {
    *  let box, drum, myPart;
    *  let boxPat = [1,0,0,2,0,2,0,0];
    *  let drumPat = [0,1,1,0,2,0,1,0];
-   *  let msg = 'click to play';
    *
    *  function preload() {
-   *    // TODO: fix me!
    *    box = loadSound('assets/beatbox.mp3');
    *    drum = loadSound('assets/drum.mp3');
    *  }
@@ -132,7 +125,9 @@ define(function(require) {
    *  function setup() {
    *    let cnv = createCanvas(100, 100);
    *    cnv.mousePressed(playMyPart);
-   *    textAlign(CENTER);
+   *    background(220);
+   *    textAlign(CENTER, CENTER);
+   *    text('tap to play', width/2, height/2);
    *
    *    let boxPhrase = new p5.Phrase('box', playBox, boxPat);
    *    let drumPhrase = new p5.Phrase('drum', playDrum, drumPat);
@@ -140,11 +135,6 @@ define(function(require) {
    *    myPart.addPhrase(boxPhrase);
    *    myPart.addPhrase(drumPhrase);
    *    myPart.setBPM(60);
-   *  }
-   *
-   *  function draw() {
-   *    background(220);
-   *    text(msg, width/2, height/2);
    *  }
    *
    *  function playBox(time, playbackRate) {
@@ -161,7 +151,6 @@ define(function(require) {
    *    userStartAudio();
    *
    *    myPart.start();
-   *    msg = 'playing part';
    *  }
    *  </code></div>
    */

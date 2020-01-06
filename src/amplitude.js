@@ -127,6 +127,7 @@ define(function (require) {
    *  }
    *
    *  function draw() {
+   *    background(220);
    *    text('tap to play', 20, 20);
    *
    *    let level = amplitude.getLevel();

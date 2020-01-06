@@ -2,10 +2,7 @@
 
 
 define(['audiocontext'], function (audiocontext) {
-  /**
-   * Master contains AudioContext and the master sound output.
-   * @for p5
-   */
+  // Master contains the master sound output.
   var Master = function() {
     this.input = audiocontext.createGain();
     this.output = audiocontext.createGain();
@@ -113,13 +110,9 @@ define(['audiocontext'], function (audiocontext) {
    */
   p5.prototype.soundOut = p5.soundOut = p5sound;
 
-  /**
-   *  a silent connection to the DesinationNode
-   *  which will ensure that anything connected to it
-   *  will not be garbage collected
-   *
-   *  @private
-   */
+  // a silent connection to the DesinationNode
+  // which will ensure that anything connected to it
+  // will not be garbage collected
   p5.soundOut._silentNode = p5sound.audiocontext.createGain();
   p5.soundOut._silentNode.gain.value = 0;
   p5.soundOut._silentNode.connect(p5sound.audiocontext.destination);
