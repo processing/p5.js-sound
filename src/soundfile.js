@@ -903,9 +903,11 @@ define(function (require) {
   };
 
   /**
-   * Move the playhead of the song to a position, in seconds. Start timing
-   * and playback duration. If none are given, will reset the file to play
-   * entire duration from start to finish.
+   * Move the playhead of a soundfile that is currently playing to a
+   * new position and a new duration, in seconds.
+   * If none are given, will reset the file to play entire duration
+   * from start to finish. To set the position of a soundfile that is
+   * not currently playing, use the `play` or `loop` methods.
    *
    * @method jump
    * @for p5.SoundFile
@@ -924,8 +926,8 @@ define(function (require) {
     var dur = duration || undefined;
     if (this.isPlaying()) {
       this.stop(0);
+      this.play(0, this.playbackRate, this.output.gain.value, cTime, dur);
     }
-    this.play(0, this.playbackRate, this.output.gain.value, cTime, dur);
   };
 
   /**
@@ -1058,7 +1060,7 @@ define(function (require) {
       // set reversed flag
       this.reversed = !this.reversed;
 
-      if (currentPos) {
+      if (this.isPlaying() && currentPos) {
         this.jump(this.duration() - currentPos);
       }
       this.setVolume(curVol, 0.001);
