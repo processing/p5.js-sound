@@ -65,7 +65,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('lint', ['eslint:source']);
   grunt.registerTask('default', ['webpack:prod', 'decomment']);
-  grunt.registerTask('dev', ['connect','webpack:dev']);
+  grunt.registerTask('dev', ['connect','webpack:dev', 'decomment']);
   grunt.registerTask('serve', 'connect:server:keepalive');
   grunt.registerTask('run-tests', ['serve', 'open']);
 };
