@@ -47,10 +47,10 @@ define(function (require) {
    *
    *  </code></div>
    */
-  p5.Amplitude = function(smoothing) {
+  p5.Amplitude = function(smoothing, bufferSize = 2048) {
 
     // Set to 2048 for now. In future iterations, this should be inherited or parsed from p5sound's default
-    this.bufferSize = safeBufferSize(2048);
+    this.bufferSize = safeBufferSize(bufferSize);
 
     // set audio context
     this.audiocontext = p5sound.audiocontext;
@@ -290,6 +290,23 @@ define(function (require) {
     }
   };
 
+/**
+   *  Smooth Amplitude analysis by averaging with the last analysis
+   *  frame. Off by default.
+   *
+   *  @method bufferSize
+   *  @for p5.Amplitude
+   *  @param {Number} set bufferSize to any value multiple of 2
+   */
+
+  p5.Amplitude.prototype.setBufferSize = function(s) {
+    if (s%2==0) {
+      this._workletNode.port.postMessage({ name: 'bufferSize', bufferSize: s });
+    } else {
+      console.log('Error: bufferSize must be multiple of 2');
+    }
+  };
+ 
   p5.Amplitude.prototype.dispose = function() {
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
@@ -309,3 +326,5 @@ define(function (require) {
   };
 
 });
+
+ 

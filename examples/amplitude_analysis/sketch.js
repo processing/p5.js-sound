@@ -4,6 +4,7 @@
 
 var soundFile;
 var amplitude;
+var bufferSize = 2048; // a value which can be multiple of 2 , eg. 256 , 512 , 1024 , 2048 ..etc
 
 // description text
 var description;
@@ -11,6 +12,7 @@ var p1;
 
 var smoothing = .01;
 var smoothSlider, smoothLabel;
+var bufferDropDown, bufferLabel;
 
 function preload() {
   soundFile = loadSound(['../files/beat.mp3', '../files/beat.ogg']);
@@ -25,7 +27,7 @@ function setup() {
   soundFile.loop();
 
   // create a new p5.Amplitude. Optionally, give it a 'smoothing' value betw 0.0 and .999
-  amplitude = new p5.Amplitude(smoothing);
+  amplitude = new p5.Amplitude(smoothing, bufferSize);
 
   // instruction text
   description = 'Spacebar: pause/unpause the loop. <br>Press "N" to toggle Normalize';
@@ -33,6 +35,16 @@ function setup() {
 
   smoothSlider = createSlider(0.0, 99.9, smoothing*100);
   smoothLabel = createP('Smoothing: ' + smoothing);
+
+  bufferDropDown = createSelect();
+  bufferLabel = createP('BufferSize: ' + bufferSize);
+
+  bufferDropDown.option('256');
+  bufferDropDown.option('512');
+  bufferDropDown.option('1024');
+  bufferDropDown.option('2048');
+
+
 }
 
 function draw() {
@@ -56,6 +68,12 @@ function draw() {
   smoothing = smoothSlider.value()/100;
   smoothLabel.html('Smoothing: ' + smoothing);
   amplitude.smooth(smoothing);
+
+  //change bufferSize
+  bufferSize = bufferDropDown.value();
+  bufferLabel.html('BufferSize :' + bufferSize);
+  amplitude.setBufferSize(parseInt(bufferSize));
+
 }
 
 // on key pressed...
