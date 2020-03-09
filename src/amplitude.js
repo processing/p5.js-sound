@@ -291,10 +291,8 @@ define(function (require) {
   };
 
 /**
-   *  Smooth Amplitude analysis by averaging with the last analysis
-   *  frame. Off by default.
-   *
-   *  @method bufferSize
+   *  bufferSize of Amplitude 
+   *  @method setBufferSize
    *  @for p5.Amplitude
    *  @param {Number} set bufferSize to any value multiple of 2
    */
