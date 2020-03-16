@@ -68,14 +68,6 @@ define(['chai'], function(chai) {
       }, 100);
     });
 
-    it('can getLevel', function(done) {
-      expect( sf.isPlaying() ).to.equal(true);
-      setTimeout(function() {
-        expect(sf.getLevel()).not.equal(0.0);
-        done();
-      }, 100);
-    });
-
     var peaks, firstPeak;
     it('can get peaks', function() {
       peaks = sf.getPeaks(sf.buffer.length);
