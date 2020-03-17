@@ -124,8 +124,16 @@ define(function (require) {
   };
 
   /**
-   *  Set the output level of the gain node.
-   *
+   *  The main way to affect the loudness of a sound is using a Web Audio API node called GainNode. GainNode always has exactly one input and one output, both with the same number of channels.
+   *  It is an AudioNode audio-processing module that causes a given gain to be applied to the input data before its propagation to the output.
+   *  Sets the output level of the GainNode. These nodes have a gain parameter, which acts as a multiplier on the incoming sound buffer. Gain is the amount of amplification done to the signal.
+   *  The gain is a unitless value, changing with time, that is multiplied to each corresponding sample of all input channels. 
+   *  If modified, the new gain is instantly applied, causing unaesthetic 'clicks' in the resulting audio.
+   *  To prevent this from happening, never change the value directly but use the exponential interpolation methods on the AudioParam interface.
+   *  The default gain value is one, which means that the input sound is unaffected.
+   *  Values between zero and one reduce the loudness, and values greater than one amplify the loudness. 
+   *  Negative gain (values less than zero) inverts the waveform (i.e., the amplitude is flipped). 
+   *  
    *  @method  amp
    *  @for p5.Gain
    *  @param  {Number} volume amplitude between 0 and 1.0
