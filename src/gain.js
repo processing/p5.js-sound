@@ -130,17 +130,21 @@ define(function (require) {
    *  @for p5.Gain
    *  @param  {Number} volume amplitude between 0 and 1.0
    *  @param  {Number} [rampTime] create a fade that lasts rampTime
-   *  @param  {Number} [timeFromNow] schedule this event to happen
-   *                                seconds from now
+   *  @param  {string} [isExp=false ] to Allow Exponentialchange in value of amplitude
    */
-  p5.Gain.prototype.amp = function(vol, rampTime, tFromNow) {
+  p5.Gain.prototype.amp = function(vol, rampTime, tFromNow, isExp = false) {
     var rampTime = rampTime || 0;
     var tFromNow = tFromNow || 0;
     var now = p5sound.audiocontext.currentTime;
     var currentVol = this.output.gain.value;
     this.output.gain.cancelScheduledValues(now);
-    this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
-    this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
+    if(isExp){
+      this.output.gain.exponentialRampToValueAtTime(currentVol, now + tFromNow);
+      this.output.gain.exponentialRampToValueAtTime(vol, now + tFromNow + rampTime);
+    }else{
+      this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
+      this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
+    }
   };
 
   p5.Gain.prototype.dispose = function() {
