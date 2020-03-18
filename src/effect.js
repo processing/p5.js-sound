@@ -63,7 +63,14 @@ define(function (require) {
    *
    *  @method  amp
    *  @for p5.Effect
-   *  @param {Number} [vol] amplitude between 0 and 1.0
+   *  @param {Number} [vol] 
+   *  Amplitude lies between 0 and 1.0.
+   *  This signal peak amplitude of 1.0 is constant and cannot be changed. 
+   *  Values with magnitude greater than 1.0 may cause distortion.
+   *  Clipping occurs when the signal exceeds the maximum dynamic range of the audio channel.
+   *  In Web Audio API, sounds clip if the values sent to the destination node lie outside of the range.
+   *  Negative gain (values less than zero) inverts the waveform (i.e., the amplitude is flipped). 
+   *  
    *  @param {Number} [rampTime] create a fade that lasts until rampTime
    *  @param {Number} [tFromNow] schedule this event to happen in tFromNow seconds
    */
