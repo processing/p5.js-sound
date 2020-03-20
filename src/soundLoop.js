@@ -5,13 +5,18 @@ define(function (require) {
   var Clock = require('Tone/core/Clock');
 
   /**
+   * 
    * SoundLoop
-   *
+   * Beats are the periodic and repeating fluctuations heard in the intensity of a sound when the two sound waves of very similar frequency interfere with one another.
+   * Nodes are the locations where no sound is produced as a result of destructive interference.
+   * Beat pattern is characterized by a wave whose amplitude is changing at a regular rate. It oscillates from a zero amplitude to a larger amplitude, back to zero amplitude throughout the pattern.
+   * This corresponds to a peak on the beat pattern when constructive interference occurs between two sound waves and a loud sound is heard.
    * @class p5.SoundLoop
    * @constructor
    *
-   * @param {Function} callback this function will be called on each iteration of theloop
-   * @param {Number|String} [interval] amount of time (if a number) or beats (if a string, following <a href = "https://github.com/Tonejs/Tone.js/wiki/Time">Tone.Time</a> convention) for each iteration of the loop. Defaults to 1 second.
+   * @param {Function} callback this function will be called on each iteration of the loop
+   * @param {Number|String} [interval] amount of time (if a number) or beats (if a string, following <a href = "https://github.com/Tonejs/Tone.js/wiki/Time">Tone.Time</a> convention) for each iteration of the loop.
+   * Time always defaults to 1 second(and never milliseconds) here.
    *
    * @example
    * <div><code>
@@ -75,7 +80,7 @@ define(function (require) {
     this.isPlaying = false;
 
     /**
-     * Set a limit to the number of loops to play. defaults to Infinity
+     * Set a limit to the number of loops to play.Defaults to Infinity
      * @property {Number} maxIterations
      */
     this.maxIterations = Infinity;
@@ -86,7 +91,7 @@ define(function (require) {
         var timeFromNow = time - p5sound.audiocontext.currentTime;
         /**
          * Do not initiate the callback if timeFromNow is < 0
-         * This ususually occurs for a few milliseconds when the page
+         * This usually occurs for a few milliseconds when the page
          * is not fully loaded
          *
          * The callback should only be called until maxIterations is reached
@@ -245,9 +250,9 @@ define(function (require) {
 
 
   /**
-   * Getters and Setters, setting any paramter will result in a change in the clock's
-   * frequency, that will be reflected after the next callback
-   * beats per minute (defaults to 60)
+   * Getters and Setters, setting any paramter will result in a change in the clock's frequency, that will be reflected after the next callback
+   * Beat frequency equals the difference between the frequencies of two notes interfering to produce the beats which is bpm here, in minutes.
+   * beats per minute (defaults to 60) refers to the rate at which the volume is heard to be oscillating from its from high to low per minute.
    * @property {Number} bpm
    * @for p5.SoundLoop
    */
@@ -268,7 +273,9 @@ define(function (require) {
   });
 
   /**
-   * number of quarter notes in a measure (defaults to 4)
+   * One note is defined as a completion of 4 beats exactly, which is, 1 full beat = 1/4 * note. That is why on looping a two-sound phrase at say x BPM,you get 4 times of x sounds per minute.
+   * Hence, number of quarter notes in a measure (defaults to 4)
+   * 4 times intensity of sound varies between its minimum and maximum.
    * @property {Number} timeSignature
    * @for p5.SoundLoop
    */
