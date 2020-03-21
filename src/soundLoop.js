@@ -144,7 +144,7 @@ define(function (require) {
 
 
   /**
-   * Synchronize loops. Use this method to start two more more loops in synchronization
+   * Synchronize loops. Use this method to start two or more loops in synchronization
    * or to start a loop in synchronization with a loop that is already playing
    * This method will schedule the implicit loop in sync with the explicit master loop
    * i.e. loopToStart.syncedStart(loopToSyncWith)
