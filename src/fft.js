@@ -395,7 +395,7 @@ define(function(require) {
    *
    *  @method  getCentroid
    *  @for p5.FFT
-   *  @return {Number}   Spectral Centroid Frequency   Frequency of the spectral centroid in Hz.
+   *  @return {Number}   Spectral Centroid Frequency  of the spectral centroid in Hz.
    *
    *
    * @example
