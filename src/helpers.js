@@ -343,7 +343,7 @@ define(function (require) {
       console.log("the value of bins must be power of two and between 16 and 1024");
       return safeBins
     }
-    if(bins && bins>=16 && bins<=1024 && Math.log2(bins)%1===0 ) // 
+    if(bins && bins>=16 && bins<=1024 && Math.log2(bins)%1===0 ) 
     return bins;
     else {
       console.log("the value of bins must be power of two and between 16 and 1024");
