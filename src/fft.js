@@ -2,6 +2,7 @@
 
 define(function(require) {
   var p5sound = require('master');
+  const {safeBins} = require('helpers');
 
   /**
    *  <p>FFT (Fast Fourier Transform) is an analysis algorithm that
@@ -115,7 +116,7 @@ define(function(require) {
 
     // set default smoothing and bins
     this.smooth(smoothing);
-    this.bins = bins || 1024;
+    this.bins = safeBins(bins) || 1024;
 
     // default connections to p5sound fftMeter
     p5sound.fftMeter.connect(this.analyser);
