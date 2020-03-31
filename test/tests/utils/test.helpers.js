@@ -5,6 +5,13 @@ define(['chai'],(chai)=>{
     let expect = chai.expect;
 
     describe('safeBins', ()=>{
+        
+        it('works fine for values in Range',()=>{
+            let test = 256;    
+            expect(safeBins(test)).to.equal(256);
+            let test2 = 512;    
+            expect(safeBins(test2)).to.equal(512);
+        });
         it('can handle negative input ',()=>{
             let test =-Math.random()*2;
             expect(safeBins(test)).to.equal(1024);
@@ -29,6 +36,7 @@ define(['chai'],(chai)=>{
             let test = 'testString';    
             expect(safeBins(test)).to.equal(1024);
         });
+        
 
     });
 
