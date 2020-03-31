@@ -37,7 +37,6 @@ define(['chai'],(chai)=>{
             expect(safeBins(test)).to.equal(1024);
         });
         
-
     });
 
 });
