@@ -405,11 +405,6 @@ define(function(require) {
     if (this.looping) {
       // this.resetParts();
       this.parts[0].start();
-    } else {
-      this.parts[this.parts.length - 1].onended = function() {
-        this.stop();
-        this.resetParts();
-      };
     }
     this.currentPart = 0;
   };
