@@ -389,7 +389,7 @@ define(function(require) {
 
     var thisScore = this;
     for (var i in arguments) {
-      if (arguments[i] && this.parts[i]) {
+      if (arguments[i]) {
         this.parts[i] = arguments[i];
         this.parts[i].nextPart = this.parts[i + 1];
         this.parts[i].onended = function() {
