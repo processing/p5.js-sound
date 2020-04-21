@@ -17,7 +17,7 @@ function setup() {
 
   src_length = source_file.duration();
   source_file.playMode('restart'); 
-  println("source duration: " +src_length);
+  console.log("source duration: " + src_length);
 
   // find beat preprocessing the source file with lowpass
   var beats = source_file.processPeaks(onComplete);
