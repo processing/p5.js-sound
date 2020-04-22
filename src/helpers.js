@@ -340,13 +340,13 @@ define(function (require) {
  var safeBins =  p5.prototype.safeBins  = function(bins) {
     let safeBins = 1024;
     if(typeof(bins)==="string"){
-      console.log("the value of bins must be power of two and between 16 and 1024");
+      console.warn("the value of bins must be power of two and between 16 and 1024");
       return safeBins
     }
     if(bins && bins>=16 && bins<=1024 && Math.log2(bins)%1===0 ) 
     return bins;
     else {
-      console.log("the value of bins must be power of two and between 16 and 1024");
+      console.warn("the value of bins must be power of two and between 16 and 1024");
       return safeBins
     }
     
