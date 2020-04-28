@@ -65,6 +65,12 @@ define(function (require) {
 
     this._interval = interval || 1;
 
+    // Set the limit of the desiredInterval to zero.
+
+    let desiredInterval = 0;
+
+    SoundLoop._interval = max(desiredInterval, 0.01);
+
     /**
      * musicalTimeMode variables
      * modify these only when the interval is specified in musicalTime format as a string
