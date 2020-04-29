@@ -37,8 +37,8 @@ function setup() {
 
   // // set tempo (Beats Per Minute) of the part and tell it to loop
   part.setBPM(60);
-  part.noLoop();
-  part.start();
+  // Using part.loop() instead of part.start() to call part.onStep() 8 times.
+  part.loop();
 
 }
 
