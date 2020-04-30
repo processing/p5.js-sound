@@ -79,7 +79,41 @@ define(function (require) {
     brownBuffer.type = 'brown';
     return brownBuffer;
   })();
+  /**
+   * In the spirit of p5’s friendly error system, this is clearly an example for overriding the freq() on the Noise class 
+   * by calling a Noise instance (as “Noise is a type of oscillator”) and make it throw an exception,
+   * so that it proves to be useful for beginners. 
+   * The freq() method isn’t meant to be used by Noise instances and hence, will throw an exception.
+   * 
+   * Set frequency of an oscillator to a value. Or, pass in an object
+   * such as an oscillator to modulate the frequency with an audio signal. 
+   * 
+   * Set frequency of an oscillator to a value. Or, pass in an object
+   *  such as an oscillator to modulate the frequency with an audio signal.
+   *
+   *  @method  freq
+   *  @for p5.Oscillator
+   *  @param  {Number|Object} Frequency Frequency in Hz
+   *                                        or modulating signal/oscillator
+   *  @param  {Number} [rampTime] Ramp time (in seconds)
+   *  @param  {Number} [timeFromNow] Schedule this event to happen
+   *                                   at x seconds from now
+   *  @return  {AudioParam} Frequency If no value is provided,
+   *                                  returns the Web Audio API
+   *                                  AudioParam that controls
+   *                                  this oscillator's frequency
+   */
 
+  p5.Noise.prototype.freq = function(val, rampTime, tFromNow){
+    // passing values for the parameters.
+    var example = new p5.Noise(440, 0.1, 1);
+    // calling the freq() method
+    example.freq(()=>{
+      if(!this.output){
+        console.error('TypeError:value not of the expected type.`freq()` is not available for p5.Noise class. Can’t be used for controlling the noise of an audio signal as that would be absurd.');
+      }
+    });
+  }
   /**
    *  Set type of noise to 'white', 'pink' or 'brown'.
    *  White is the default.
