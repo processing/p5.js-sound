@@ -1724,7 +1724,7 @@ define(function (require) {
   /**
    * Save a p5.SoundFile as a .wav file. The browser will prompt the user
    * to download the file to their device. To upload a file to a server, see
-   * <a href="/docs/reference/#/p5.SoundFile/getBlob">getBlob</a>
+   * <a href="/reference/#/p5.SoundFile/getBlob">getBlob</a>
    *
    * @method save
    * @for p5.SoundFile
@@ -1756,7 +1756,7 @@ define(function (require) {
    * .wav-encoded audio data as a "<a target="_blank" title="Blob reference at
    * MDN" href="https://developer.mozilla.org/en-US/docs/Web/API/Blob">Blob</a>".
    * A Blob is a file-like data object that can be uploaded to a server
-   * with an <a href="/docs/reference/#/p5/httpDo">http</a> request. We'll
+   * with an <a href="/reference/#/p5/httpDo">http</a> request. We'll
    * use the `httpDo` options object to send a POST request with some
    * specific options: we encode the request as `multipart/form-data`,
    * and attach the blob as one of the form values using `FormData`.
