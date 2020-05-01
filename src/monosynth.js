@@ -200,9 +200,10 @@ define(function (require) {
      *  }
      *  </code></div>
      */
-  p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow) {
+  p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow, targetValue) {
+    var targetValue = targetValue || 0;
     var secondsFromNow = secondsFromNow || 0;
-    this.env.ramp(this.output.gain, secondsFromNow, 0);
+    this.env.ramp(this.output.gain, secondsFromNow, targetValue);
   };
 
   /**
