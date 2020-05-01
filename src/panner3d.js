@@ -20,6 +20,7 @@ define(function (require) {
    * @class p5.Panner3D
    * @constructor
    */
+
 	p5.Panner3D = function() {
       Effect.call(this);
 
@@ -28,13 +29,11 @@ define(function (require) {
        *  "https://developer.mozilla.org/en-US/docs/Web/API/PannerNode">
        *  Web Audio Spatial Panner Node</a>
        *
-       *  Properties include
-       *    -  <a title="w3 spec for Panning Model"
-       *    href="https://www.w3.org/TR/webaudio/#idl-def-PanningModelType"
-       *    >panningModel</a>: "equal power" or "HRTF"
-       *    -  <a title="w3 spec for Distance Model"
-       *    href="https://www.w3.org/TR/webaudio/#idl-def-DistanceModelType"
-       *    >distanceModel</a>: "linear", "inverse", or "exponential"
+       *  Properties include<br>
+       * [Panning Model](https://www.w3.org/TR/webaudio/#idl-def-PanningModelType)
+       * : "equal power" or "HRTF"<br>
+       * [DistanceModel](https://www.w3.org/TR/webaudio/#idl-def-DistanceModelType)
+       *  : "linear", "inverse", or "exponential"
        *
        *  @property {AudioNode} panner
        *
