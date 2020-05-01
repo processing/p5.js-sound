@@ -707,7 +707,7 @@ define(function (require) {
    *  @param  {Object} unit           p5.sound Object or Web Audio Param
    *  @param  {Number} secondsFromNow When to trigger the ramp
    *  @param  {Number} v              Target value
-   *  @param  {Number} [v2]           Second target value (optional)
+   *  @param  {Number} [v2]           Second target value
    *  @example
    *  <div><code>
    *  let env, osc, amp;
