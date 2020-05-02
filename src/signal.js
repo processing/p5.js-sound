@@ -13,7 +13,7 @@ define(function (require) {
    *  <p>p5.Signal is a constant audio-rate signal used by p5.Oscillator
    *  and p5.Envelope for modulation math.</p>
    *
-   *  <p>This is necessary because Web Audio is processed on a seprate clock.
+   *  <p>This is necessary because Web Audio is processed on a separate clock.
    *  For example, the p5 draw loop runs about 60 times per second. But
    *  the audio clock must process samples 44100 times per second. If we
    *  want to add a value to each of those samples, we can't do it in the
