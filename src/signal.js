@@ -31,6 +31,7 @@ define(function (require) {
    *  @example
    *  <div><code>
    *  let carrier, modulator;
+   *  let hasStarted = false;
    *
    *  function setup() {
    *    let cnv = createCanvas(100, 100);
@@ -39,7 +40,6 @@ define(function (require) {
    *    text('tap to play', 20, 20);
    *
    *    carrier = new p5.Oscillator('sine');
-   *    carrier.start();
    *    carrier.amp(1); // set amplitude
    *    carrier.freq(220); // set frequency
    *
@@ -58,6 +58,10 @@ define(function (require) {
    *  function canvasPressed() {
    *    userStartAudio();
    *    carrier.amp(1.0);
+   *    if(!hasStarted){
+   *      carrier.start();
+   *      hasStarted = true;
+   *    }
    *  }
    *
    *  function mouseReleased() {
