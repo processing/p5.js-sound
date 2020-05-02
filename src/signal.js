@@ -39,7 +39,6 @@ define(function (require) {
    *    text('tap to play', 20, 20);
    *
    *    carrier = new p5.Oscillator('sine');
-   *    carrier.start();
    *    carrier.amp(1); // set amplitude
    *    carrier.freq(220); // set frequency
    *
@@ -58,6 +57,7 @@ define(function (require) {
    *  function canvasPressed() {
    *    userStartAudio();
    *    carrier.amp(1.0);
+   *    carrier.start();
    *  }
    *
    *  function mouseReleased() {
