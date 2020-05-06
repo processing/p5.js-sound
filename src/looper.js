@@ -389,7 +389,7 @@ define(function(require) {
 
     var thisScore = this;
     for (var i in arguments) {
-      if (arguments[i] && this.parts[i]) {
+      if (arguments[i]) {
         this.parts[i] = arguments[i];
         this.parts[i].nextPart = this.parts[i + 1];
         this.parts[i].onended = function() {
@@ -405,11 +405,6 @@ define(function(require) {
     if (this.looping) {
       // this.resetParts();
       this.parts[0].start();
-    } else {
-      this.parts[this.parts.length - 1].onended = function() {
-        this.stop();
-        this.resetParts();
-      };
     }
     this.currentPart = 0;
   };
