@@ -262,7 +262,7 @@ define(function (require) {
   /**
    * Returns a list of available input sources. This is a wrapper
    * for <a href="https://developer.mozilla.org/
-   * en-US/docs/Web/API/MediaDevices/enumerateDevices">
+   * en-US/docs/Web/API/MediaDevices/enumerateDevices" target="_blank">
    * MediaDevices.enumerateDevices() - Web APIs | MDN</a>
    * and it returns a Promise.
    * @method  getSources
@@ -321,8 +321,9 @@ define(function (require) {
    *  Set the input source. Accepts a number representing a
    *  position in the array returned by getSources().
    *  This is only available in browsers that support
-   *  [navigator.mediaDevices.enumerateDevices()](https://developer.mozilla.org/
-   *  en-US/docs/Web/API/MediaDevices/enumerateDevices)
+   * <a href="https://developer.mozilla.org/
+   * en-US/docs/Web/API/MediaDevices/enumerateDevices" target="_blank">
+   * navigator.mediaDevices.enumerateDevices()</a>
    *
    *  @method setSource
    *  @for p5.AudioIn
