@@ -69,12 +69,13 @@ define(function (require) {
    *  }
    *  </code> </div>
    */
-  p5.Oscillator = function(freq, type) {
+  p5.Oscillator = function (freq, type) {
     if (typeof freq === 'string') {
       var f = type;
       type = freq;
       freq = f;
-    } if (typeof type === 'number') {
+    }
+    if (typeof type === 'number') {
       var f = type;
       type = freq;
       freq = f;
@@ -86,7 +87,10 @@ define(function (require) {
     this.oscillator = p5sound.audiocontext.createOscillator();
     this.f = freq || 440.0; // frequency
     this.oscillator.type = type || 'sine';
-    this.oscillator.frequency.setValueAtTime(this.f, p5sound.audiocontext.currentTime);
+    this.oscillator.frequency.setValueAtTime(
+      this.f,
+      p5sound.audiocontext.currentTime
+    );
 
     // connections
     this.output = p5sound.audiocontext.createGain();
@@ -122,7 +126,7 @@ define(function (require) {
    *  @param  {Number} [time] startTime in seconds from now.
    *  @param  {Number} [frequency] frequency in Hz.
    */
-  p5.Oscillator.prototype.start = function(time, f) {
+  p5.Oscillator.prototype.start = function (time, f) {
     if (this.started) {
       var now = p5sound.audiocontext.currentTime;
       this.stop(now);
@@ -167,7 +171,7 @@ define(function (require) {
    *  @for p5.Oscillator
    *  @param  {Number} secondsFromNow Time, in seconds from now.
    */
-  p5.Oscillator.prototype.stop = function(time) {
+  p5.Oscillator.prototype.stop = function (time) {
     if (this.started) {
       var t = time || 0;
       var now = p5sound.audiocontext.currentTime;
@@ -193,16 +197,14 @@ define(function (require) {
    *                              this oscillator's
    *                              gain/amplitude/volume)
    */
-  p5.Oscillator.prototype.amp = function(vol, rampTime, tFromNow) {
+  p5.Oscillator.prototype.amp = function (vol, rampTime, tFromNow) {
     var self = this;
     if (typeof vol === 'number') {
       var rampTime = rampTime || 0;
       var tFromNow = tFromNow || 0;
       var now = p5sound.audiocontext.currentTime;
       this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
-    }
-
-    else if (vol) {
+    } else if (vol) {
       vol.connect(self.output.gain);
     } else {
       // return the Gain Node
@@ -211,9 +213,9 @@ define(function (require) {
   };
 
   // these are now the same thing
-  p5.Oscillator.prototype.fade =   p5.Oscillator.prototype.amp;
+  p5.Oscillator.prototype.fade = p5.Oscillator.prototype.amp;
 
-  p5.Oscillator.prototype.getAmp = function() {
+  p5.Oscillator.prototype.getAmp = function () {
     return this.output.gain.value;
   };
 
@@ -255,7 +257,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Oscillator.prototype.freq = function(val, rampTime, tFromNow) {
+  p5.Oscillator.prototype.freq = function (val, rampTime, tFromNow) {
     if (typeof val === 'number' && !isNaN(val)) {
       this.f = val;
       var now = p5sound.audiocontext.currentTime;
@@ -268,10 +270,16 @@ define(function (require) {
       if (rampTime === 0) {
         this.oscillator.frequency.setValueAtTime(val, tFromNow + now);
       } else {
-        if (val > 0 ) {
-          this.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
+        if (val > 0) {
+          this.oscillator.frequency.exponentialRampToValueAtTime(
+            val,
+            tFromNow + rampTime + now
+          );
         } else {
-          this.oscillator.frequency.linearRampToValueAtTime(val, tFromNow + rampTime + now);
+          this.oscillator.frequency.linearRampToValueAtTime(
+            val,
+            tFromNow + rampTime + now
+          );
         }
       }
 
@@ -279,7 +287,6 @@ define(function (require) {
       if (this.phaseAmount) {
         this.phase(this.phaseAmount);
       }
-
     } else if (val) {
       if (val.output) {
         val = val.output;
@@ -288,14 +295,14 @@ define(function (require) {
 
       // keep track of what is modulating this param
       // so it can be re-connected if
-      this._freqMods.push( val );
+      this._freqMods.push(val);
     } else {
       // return the Frequency Node
       return this.oscillator.frequency;
     }
   };
 
-  p5.Oscillator.prototype.getFreq = function() {
+  p5.Oscillator.prototype.getFreq = function () {
     return this.oscillator.frequency.value;
   };
 
@@ -306,11 +313,11 @@ define(function (require) {
    *  @for p5.Oscillator
    *  @param {String} type 'sine', 'triangle', 'sawtooth' or 'square'.
    */
-  p5.Oscillator.prototype.setType = function(type) {
+  p5.Oscillator.prototype.setType = function (type) {
     this.oscillator.type = type;
   };
 
-  p5.Oscillator.prototype.getType = function() {
+  p5.Oscillator.prototype.getType = function () {
     return this.oscillator.type;
   };
 
@@ -321,15 +328,13 @@ define(function (require) {
    *  @for p5.Oscillator
    *  @param  {Object} unit A p5.sound or Web Audio object
    */
-  p5.Oscillator.prototype.connect = function(unit) {
+  p5.Oscillator.prototype.connect = function (unit) {
     if (!unit) {
       this.panner.connect(p5sound.input);
-    }
-    else if (unit.hasOwnProperty('input')) {
+    } else if (unit.hasOwnProperty('input')) {
       this.panner.connect(unit.input);
       this.connection = unit.input;
-    }
-    else {
+    } else {
       this.panner.connect(unit);
       this.connection = unit;
     }
@@ -341,7 +346,7 @@ define(function (require) {
    *  @method  disconnect
    *  @for p5.Oscillator
    */
-  p5.Oscillator.prototype.disconnect = function() {
+  p5.Oscillator.prototype.disconnect = function () {
     if (this.output) {
       this.output.disconnect();
     }
@@ -363,17 +368,17 @@ define(function (require) {
    *  @param  {Number} timeFromNow schedule this event to happen
    *                                seconds from now
    */
-  p5.Oscillator.prototype.pan = function(pval, tFromNow) {
+  p5.Oscillator.prototype.pan = function (pval, tFromNow) {
     this.panPosition = pval;
     this.panner.pan(pval, tFromNow);
   };
 
-  p5.Oscillator.prototype.getPan = function() {
+  p5.Oscillator.prototype.getPan = function () {
     return this.panPosition;
   };
 
   // get rid of the oscillator
-  p5.Oscillator.prototype.dispose = function() {
+  p5.Oscillator.prototype.dispose = function () {
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
@@ -400,8 +405,8 @@ define(function (require) {
    *  @for p5.Oscillator
    *  @param  {Number} phase float between 0.0 and 1.0
    */
-  p5.Oscillator.prototype.phase = function(p) {
-    var delayAmt = p5.prototype.map(p, 0, 1.0, 0, 1/this.f);
+  p5.Oscillator.prototype.phase = function (p) {
+    var delayAmt = p5.prototype.map(p, 0, 1.0, 0, 1 / this.f);
     var now = p5sound.audiocontext.currentTime;
 
     this.phaseAmount = p;
@@ -424,7 +429,7 @@ define(function (require) {
   // ========================== //
 
   // return sigChain(this, scale, thisChain, nextChain, Scale);
-  var sigChain = function(o, mathObj, thisChain, nextChain, type) {
+  var sigChain = function (o, mathObj, thisChain, nextChain, type) {
     var chainSource = o.oscillator;
     // if this type of math already exists in the chain, replace it
     for (var i in o.mathOps) {
@@ -434,7 +439,7 @@ define(function (require) {
         thisChain = i;
         // assume nextChain is output gain node unless...
         if (thisChain < o.mathOps.length - 2) {
-          nextChain = o.mathOps[i+1];
+          nextChain = o.mathOps[i + 1];
         }
       }
     }
@@ -443,7 +448,7 @@ define(function (require) {
     }
     // assume source is the oscillator unless i > 0
     if (i > 0) {
-      chainSource = o.mathOps[i-1];
+      chainSource = o.mathOps[i - 1];
     }
     chainSource.disconnect();
     chainSource.connect(mathObj);
@@ -464,9 +469,9 @@ define(function (require) {
    *                                     with scaled output
    *
    */
-  p5.Oscillator.prototype.add = function(num) {
+  p5.Oscillator.prototype.add = function (num) {
     var add = new Add(num);
-    var thisChain = this.mathOps.length-1;
+    var thisChain = this.mathOps.length - 1;
     var nextChain = this.output;
     return sigChain(this, add, thisChain, nextChain, Add);
   };
@@ -482,9 +487,9 @@ define(function (require) {
    *  @return {p5.Oscillator} Oscillator Returns this oscillator
    *                                     with multiplied output
    */
-  p5.Oscillator.prototype.mult = function(num) {
+  p5.Oscillator.prototype.mult = function (num) {
     var mult = new Mult(num);
-    var thisChain = this.mathOps.length-1;
+    var thisChain = this.mathOps.length - 1;
     var nextChain = this.output;
     return sigChain(this, mult, thisChain, nextChain, Mult);
   };
@@ -503,18 +508,17 @@ define(function (require) {
    *  @return {p5.Oscillator} Oscillator Returns this oscillator
    *                                     with scaled output
    */
-  p5.Oscillator.prototype.scale = function(inMin, inMax, outMin, outMax) {
+  p5.Oscillator.prototype.scale = function (inMin, inMax, outMin, outMax) {
     var mapOutMin, mapOutMax;
     if (arguments.length === 4) {
       mapOutMin = p5.prototype.map(outMin, inMin, inMax, 0, 1) - 0.5;
       mapOutMax = p5.prototype.map(outMax, inMin, inMax, 0, 1) - 0.5;
-    }
-    else {
+    } else {
       mapOutMin = arguments[0];
       mapOutMax = arguments[1];
     }
     var scale = new Scale(mapOutMin, mapOutMax);
-    var thisChain = this.mathOps.length-1;
+    var thisChain = this.mathOps.length - 1;
     var nextChain = this.output;
     return sigChain(this, scale, thisChain, nextChain, Scale);
 
@@ -539,7 +543,7 @@ define(function (require) {
    *  @extends p5.Oscillator
    *  @param {Number} [freq] Set the frequency
    */
-  p5.SinOsc = function(freq) {
+  p5.SinOsc = function (freq) {
     p5.Oscillator.call(this, freq, 'sine');
   };
 
@@ -558,7 +562,7 @@ define(function (require) {
    *  @extends p5.Oscillator
    *  @param {Number} [freq] Set the frequency
    */
-  p5.TriOsc = function(freq) {
+  p5.TriOsc = function (freq) {
     p5.Oscillator.call(this, freq, 'triangle');
   };
 
@@ -577,7 +581,7 @@ define(function (require) {
    *  @extends p5.Oscillator
    *  @param {Number} [freq] Set the frequency
    */
-  p5.SawOsc = function(freq) {
+  p5.SawOsc = function (freq) {
     p5.Oscillator.call(this, freq, 'sawtooth');
   };
 
@@ -596,10 +600,9 @@ define(function (require) {
    *  @extends p5.Oscillator
    *  @param {Number} [freq] Set the frequency
    */
-  p5.SqrOsc = function(freq) {
+  p5.SqrOsc = function (freq) {
     p5.Oscillator.call(this, freq, 'square');
   };
 
   p5.SqrOsc.prototype = Object.create(p5.Oscillator.prototype);
-
 });

@@ -13,9 +13,17 @@ class AmplitudeProcessor extends AudioWorkletProcessor {
     this.smoothing = processorOptions.smoothing || 0;
 
     this.bufferSize = processorOptions.bufferSize || 2048;
-    this.inputRingBuffer = new RingBuffer(this.bufferSize, this.numInputChannels);
-    this.outputRingBuffer = new RingBuffer(this.bufferSize, this.numOutputChannels);
-    this.inputRingBufferArraySequence = new Array(this.numInputChannels).fill(null).map(() => new Float32Array(this.bufferSize));
+    this.inputRingBuffer = new RingBuffer(
+      this.bufferSize,
+      this.numInputChannels
+    );
+    this.outputRingBuffer = new RingBuffer(
+      this.bufferSize,
+      this.numOutputChannels
+    );
+    this.inputRingBufferArraySequence = new Array(this.numInputChannels)
+      .fill(null)
+      .map(() => new Float32Array(this.bufferSize));
 
     this.stereoVol = [0, 0];
     this.stereoVolNorm = [0, 0];
@@ -51,7 +59,9 @@ class AmplitudeProcessor extends AudioWorkletProcessor {
         for (var i = 0; i < bufLength; i++) {
           const x = inputBuffer[i];
           if (this.normalize) {
-            sum += Math.max(Math.min(x / this.volMax, 1), -1) * Math.max(Math.min(x / this.volMax, 1), -1);
+            sum +=
+              Math.max(Math.min(x / this.volMax, 1), -1) *
+              Math.max(Math.min(x / this.volMax, 1), -1);
           } else {
             sum += x * x;
           }
@@ -60,14 +70,20 @@ class AmplitudeProcessor extends AudioWorkletProcessor {
         // ... then take the square root of the sum.
         const rms = Math.sqrt(sum / bufLength);
 
-        this.stereoVol[channel] = Math.max(rms, this.stereoVol[channel] * smoothing);
+        this.stereoVol[channel] = Math.max(
+          rms,
+          this.stereoVol[channel] * smoothing
+        );
         this.volMax = Math.max(this.stereoVol[channel], this.volMax);
       }
 
       // calculate stero normalized volume and add volume from all channels together
       let volSum = 0;
       for (let index = 0; index < this.stereoVol.length; index++) {
-        this.stereoVolNorm[index] = Math.max(Math.min(this.stereoVol[index] / this.volMax, 1), 0);
+        this.stereoVolNorm[index] = Math.max(
+          Math.min(this.stereoVol[index] / this.volMax, 1),
+          0
+        );
         volSum += this.stereoVol[index];
       }
 
@@ -82,7 +98,7 @@ class AmplitudeProcessor extends AudioWorkletProcessor {
         volume: volume,
         volNorm: volNorm,
         stereoVol: this.stereoVol,
-        stereoVolNorm: this.stereoVolNorm
+        stereoVolNorm: this.stereoVolNorm,
       });
 
       // pass input through to output

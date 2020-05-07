@@ -1,7 +1,6 @@
 'use strict';
 
 define(function (require) {
-
   // Signal is built with the Tone.js signal by Yotam Mann
   // https://github.com/TONEnoTONE/Tone.js/
   var Signal = require('Tone/signal/Signal');
@@ -69,7 +68,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Signal = function(value) {
+  p5.Signal = function (value) {
     var s = new Signal(value);
     // p5sound.soundArray.push(s);
     return s; // TODO: is this really a constructor?
@@ -84,10 +83,9 @@ define(function (require) {
    *  @param  {Number} [secondsFromNow] Length of fade, in seconds from now
    */
   Signal.prototype.fade = Signal.prototype.linearRampToValueAtTime;
-  Mult.prototype.fade =   Signal.prototype.fade;
-  Add.prototype.fade =   Signal.prototype.fade;
-  Scale.prototype.fade =   Signal.prototype.fade;
-
+  Mult.prototype.fade = Signal.prototype.fade;
+  Add.prototype.fade = Signal.prototype.fade;
+  Scale.prototype.fade = Signal.prototype.fade;
 
   /**
    *  Connect a p5.sound object or Web Audio node to this
@@ -97,13 +95,12 @@ define(function (require) {
    *  @for p5.Signal
    *  @param {Object} input
    */
-  Signal.prototype.setInput = function(_input) {
+  Signal.prototype.setInput = function (_input) {
     _input.connect(this);
   };
-  Mult.prototype.setInput =   Signal.prototype.setInput;
-  Add.prototype.setInput =   Signal.prototype.setInput;
-  Scale.prototype.setInput =   Signal.prototype.setInput;
-
+  Mult.prototype.setInput = Signal.prototype.setInput;
+  Add.prototype.setInput = Signal.prototype.setInput;
+  Scale.prototype.setInput = Signal.prototype.setInput;
 
   // signals can add / mult / scale themselves
 
@@ -118,15 +115,15 @@ define(function (require) {
    *  @param {Number} number
    *  @return {p5.Signal} object
    */
-  Signal.prototype.add = function(num) {
+  Signal.prototype.add = function (num) {
     var add = new Add(num);
     // add.setInput(this);
     this.connect(add);
     return add;
   };
-  Mult.prototype.add =   Signal.prototype.add;
-  Add.prototype.add =   Signal.prototype.add;
-  Scale.prototype.add =   Signal.prototype.add;
+  Mult.prototype.add = Signal.prototype.add;
+  Add.prototype.add = Signal.prototype.add;
+  Scale.prototype.add = Signal.prototype.add;
 
   /**
    *  Multiply this signal by a constant value,
@@ -139,15 +136,15 @@ define(function (require) {
    *  @param {Number} number to multiply
    *  @return {p5.Signal} object
    */
-  Signal.prototype.mult = function(num) {
+  Signal.prototype.mult = function (num) {
     var mult = new Mult(num);
     // mult.setInput(this);
     this.connect(mult);
     return mult;
   };
-  Mult.prototype.mult =   Signal.prototype.mult;
-  Add.prototype.mult =   Signal.prototype.mult;
-  Scale.prototype.mult =   Signal.prototype.mult;
+  Mult.prototype.mult = Signal.prototype.mult;
+  Add.prototype.mult = Signal.prototype.mult;
+  Scale.prototype.mult = Signal.prototype.mult;
 
   /**
    *  Scale this signal value to a given range,
@@ -164,13 +161,12 @@ define(function (require) {
    *  @param  {Number} outMax input range maximum
    *  @return {p5.Signal} object
    */
-  Signal.prototype.scale = function(inMin, inMax, outMin, outMax) {
+  Signal.prototype.scale = function (inMin, inMax, outMin, outMax) {
     var mapOutMin, mapOutMax;
     if (arguments.length === 4) {
       mapOutMin = p5.prototype.map(outMin, inMin, inMax, 0, 1) - 0.5;
       mapOutMax = p5.prototype.map(outMax, inMin, inMax, 0, 1) - 0.5;
-    }
-    else {
+    } else {
       mapOutMin = arguments[0];
       mapOutMax = arguments[1];
     }
@@ -178,10 +174,7 @@ define(function (require) {
     this.connect(scale);
     return scale;
   };
-  Mult.prototype.scale =   Signal.prototype.scale;
-  Add.prototype.scale =   Signal.prototype.scale;
-  Scale.prototype.scale =   Signal.prototype.scale;
-
+  Mult.prototype.scale = Signal.prototype.scale;
+  Add.prototype.scale = Signal.prototype.scale;
+  Scale.prototype.scale = Signal.prototype.scale;
 });
-
-

@@ -71,7 +71,7 @@ define(function (require) {
    *</code></div>
    */
 
-  p5.Gain = function() {
+  p5.Gain = function () {
     this.ac = p5sound.audiocontext;
 
     this.input = this.ac.createGain();
@@ -94,8 +94,7 @@ define(function (require) {
    *                           output.
    */
 
-
-  p5.Gain.prototype.setInput = function(src) {
+  p5.Gain.prototype.setInput = function (src) {
     src.connect(this.input);
   };
 
@@ -106,7 +105,7 @@ define(function (require) {
    *  @for p5.Gain
    *  @param  {Object} unit
    */
-  p5.Gain.prototype.connect = function(unit) {
+  p5.Gain.prototype.connect = function (unit) {
     var u = unit || p5.soundOut.input;
     this.output.connect(u.input ? u.input : u);
   };
@@ -117,7 +116,7 @@ define(function (require) {
    *  @method disconnect
    *  @for p5.Gain
    */
-  p5.Gain.prototype.disconnect = function() {
+  p5.Gain.prototype.disconnect = function () {
     if (this.output) {
       this.output.disconnect();
     }
@@ -133,7 +132,7 @@ define(function (require) {
    *  @param  {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
    */
-  p5.Gain.prototype.amp = function(vol, rampTime, tFromNow) {
+  p5.Gain.prototype.amp = function (vol, rampTime, tFromNow) {
     var rampTime = rampTime || 0;
     var tFromNow = tFromNow || 0;
     var now = p5sound.audiocontext.currentTime;
@@ -143,7 +142,7 @@ define(function (require) {
     this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
   };
 
-  p5.Gain.prototype.dispose = function() {
+  p5.Gain.prototype.dispose = function () {
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
@@ -156,5 +155,4 @@ define(function (require) {
       delete this.input;
     }
   };
-
 });

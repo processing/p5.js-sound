@@ -1,6 +1,6 @@
 'use strict';
 
-define(function(require) {
+define(function (require) {
   var p5sound = require('master');
 
   /**
@@ -87,30 +87,30 @@ define(function(require) {
    *  }
    *  </code></div>
    */
-  p5.FFT = function(smoothing, bins) {
+  p5.FFT = function (smoothing, bins) {
     this.input = this.analyser = p5sound.audiocontext.createAnalyser();
 
     Object.defineProperties(this, {
       bins: {
-        get: function() {
+        get: function () {
           return this.analyser.fftSize / 2;
         },
-        set: function(b) {
+        set: function (b) {
           this.analyser.fftSize = b * 2;
         },
         configurable: true,
-        enumerable: true
+        enumerable: true,
       },
       smoothing: {
-        get: function() {
+        get: function () {
           return this.analyser.smoothingTimeConstant;
         },
-        set: function(s) {
+        set: function (s) {
           this.analyser.smoothingTimeConstant = s;
         },
         configurable: true,
-        enumerable: true
-      }
+        enumerable: true,
+      },
     });
 
     // set default smoothing and bins
@@ -142,7 +142,7 @@ define(function(require) {
    *  @for p5.FFT
    *  @param {Object} [source] p5.sound object (or web audio API source node)
    */
-  p5.FFT.prototype.setInput = function(source) {
+  p5.FFT.prototype.setInput = function (source) {
     if (!source) {
       p5sound.fftMeter.connect(this.analyser);
     } else {
@@ -172,7 +172,7 @@ define(function(require) {
    *                            over time. Array length = bins.
    *
    */
-  p5.FFT.prototype.waveform = function() {
+  p5.FFT.prototype.waveform = function () {
     var bins, mode, normalArray;
 
     for (var i = 0; i < arguments.length; i++) {
@@ -271,7 +271,7 @@ define(function(require) {
    *
    *
    */
-  p5.FFT.prototype.analyze = function() {
+  p5.FFT.prototype.analyze = function () {
     var mode;
 
     for (var i = 0; i < arguments.length; i++) {
@@ -326,7 +326,7 @@ define(function(require) {
    *                              0 and 255.
    *
    */
-  p5.FFT.prototype.getEnergy = function(frequency1, frequency2) {
+  p5.FFT.prototype.getEnergy = function (frequency1, frequency2) {
     var nyquist = p5sound.audiocontext.sampleRate / 2;
 
     if (frequency1 === 'bass') {
@@ -350,7 +350,7 @@ define(function(require) {
       throw 'invalid input for getEnergy()';
     } else if (!frequency2) {
       // if only one parameter:
-      var index = Math.round(frequency1 / nyquist * this.freqDomain.length);
+      var index = Math.round((frequency1 / nyquist) * this.freqDomain.length);
       return this.freqDomain[index];
     } else if (frequency1 && frequency2) {
       // if two parameters:
@@ -360,8 +360,12 @@ define(function(require) {
         frequency2 = frequency1;
         frequency1 = swap;
       }
-      var lowIndex = Math.round(frequency1 / nyquist * this.freqDomain.length);
-      var highIndex = Math.round(frequency2 / nyquist * this.freqDomain.length);
+      var lowIndex = Math.round(
+        (frequency1 / nyquist) * this.freqDomain.length
+      );
+      var highIndex = Math.round(
+        (frequency2 / nyquist) * this.freqDomain.length
+      );
 
       var total = 0;
       var numFrequencies = 0;
@@ -379,7 +383,7 @@ define(function(require) {
   };
 
   // compatability with v.012, changed to getEnergy in v.0121. Will be deprecated...
-  p5.FFT.prototype.getFreq = function(freq1, freq2) {
+  p5.FFT.prototype.getFreq = function (freq1, freq2) {
     console.log('getFreq() is deprecated. Please use getEnergy() instead.');
     var x = this.getEnergy(freq1, freq2);
     return x;
@@ -450,7 +454,7 @@ define(function(require) {
    *}
    * </code></div>
    */
-  p5.FFT.prototype.getCentroid = function() {
+  p5.FFT.prototype.getCentroid = function () {
     var nyquist = p5sound.audiocontext.sampleRate / 2;
     var cumulative_sum = 0;
     var centroid_normalization = 0;
@@ -478,14 +482,14 @@ define(function(require) {
    *  @param {Number} smoothing    0.0 < smoothing < 1.0.
    *                               Defaults to 0.8.
    */
-  p5.FFT.prototype.smooth = function(s) {
+  p5.FFT.prototype.smooth = function (s) {
     if (typeof s !== 'undefined') {
       this.smoothing = s;
     }
     return this.smoothing;
   };
 
-  p5.FFT.prototype.dispose = function() {
+  p5.FFT.prototype.dispose = function () {
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
@@ -508,7 +512,7 @@ define(function(require) {
    *  @param  {Number}  N                Number of returned frequency groups
    *  @return {Array}   linearAverages   Array of average amplitude values for each group
    */
-  p5.FFT.prototype.linAverages = function(N) {
+  p5.FFT.prototype.linAverages = function (N) {
     var N = N || 16; // This prevents undefined, null or 0 values of N
 
     var spectrum = this.freqDomain;
@@ -548,7 +552,7 @@ define(function(require) {
    *  @param  {Array}   octaveBands    Array of Octave Bands objects for grouping
    *  @return {Array}   logAverages    Array of average amplitude values for each group
    */
-  p5.FFT.prototype.logAverages = function(octaveBands) {
+  p5.FFT.prototype.logAverages = function (octaveBands) {
     var nyquist = p5sound.audiocontext.sampleRate / 2;
     var spectrum = this.freqDomain;
     var spectrumLength = spectrum.length;
@@ -560,7 +564,7 @@ define(function(require) {
 
     for (var specIndex = 0; specIndex < spectrumLength; specIndex++) {
       var specIndexFrequency = Math.round(
-        specIndex * nyquist / this.freqDomain.length
+        (specIndex * nyquist) / this.freqDomain.length
       );
 
       // Increase the group index if the current frequency exceeds the limits of the band
@@ -591,7 +595,7 @@ define(function(require) {
    *  @param  {Number}  fCtr0         Minimum central frequency for the lowest band
    *  @return {Array}   octaveBands   Array of octave band objects with their bounds
    */
-  p5.FFT.prototype.getOctaveBands = function(N, fCtr0) {
+  p5.FFT.prototype.getOctaveBands = function (N, fCtr0) {
     var N = N || 3; // Default to 1/3 Octave Bands
     var fCtr0 = fCtr0 || 15.625; // Minimum central frequency, defaults to 15.625Hz
 
@@ -599,7 +603,7 @@ define(function(require) {
     var lastFrequencyBand = {
       lo: fCtr0 / Math.pow(2, 1 / (2 * N)),
       ctr: fCtr0,
-      hi: fCtr0 * Math.pow(2, 1 / (2 * N))
+      hi: fCtr0 * Math.pow(2, 1 / (2 * N)),
     };
     octaveBands.push(lastFrequencyBand);
 
@@ -618,22 +622,22 @@ define(function(require) {
   };
 
   // helper methods to convert type from float (dB) to int (0-255)
-  var freqToFloat = function(fft) {
+  var freqToFloat = function (fft) {
     if (fft.freqDomain instanceof Float32Array === false) {
       fft.freqDomain = new Float32Array(fft.analyser.frequencyBinCount);
     }
   };
-  var freqToInt = function(fft) {
+  var freqToInt = function (fft) {
     if (fft.freqDomain instanceof Uint8Array === false) {
       fft.freqDomain = new Uint8Array(fft.analyser.frequencyBinCount);
     }
   };
-  var timeToFloat = function(fft) {
+  var timeToFloat = function (fft) {
     if (fft.timeDomain instanceof Float32Array === false) {
       fft.timeDomain = new Float32Array(fft.analyser.frequencyBinCount);
     }
   };
-  var timeToInt = function(fft) {
+  var timeToInt = function (fft) {
     if (fft.timeDomain instanceof Uint8Array === false) {
       fft.timeDomain = new Uint8Array(fft.analyser.frequencyBinCount);
     }

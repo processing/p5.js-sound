@@ -1,12 +1,10 @@
 'use strict';
 
-define(['chai'], function(chai) {
-
+define(['chai'], function (chai) {
   var expect = chai.expect;
 
-  describe('p5.EQ', function() {
-
-    it('can be created and disposed', function() {
+  describe('p5.EQ', function () {
+    it('can be created and disposed', function () {
       var origSoundArrayLength = p5.soundOut.soundArray.length;
       var eq = new p5.EQ();
       expect(p5.soundOut.soundArray.length).to.not.equal(origSoundArrayLength);
@@ -17,7 +15,7 @@ define(['chai'], function(chai) {
       expect(eq.bands).to.equal(undefined);
     });
 
-    it('can be only be created with size 3 or 8', function() {
+    it('can be only be created with size 3 or 8', function () {
       var eq = new p5.EQ();
       expect(eq.bands.length).to.equal(3);
       eq.dispose();
@@ -32,7 +30,7 @@ define(['chai'], function(chai) {
       eq.dispose();
     });
 
-    it('a band can be toggled on and off', function() {
+    it('a band can be toggled on and off', function () {
       var eq = new p5.EQ(8);
       expect(eq.bands[2].biquad.type).to.equal('peaking');
       eq.bands[2].toggle();
@@ -41,14 +39,14 @@ define(['chai'], function(chai) {
       expect(eq.bands[2].biquad.type).to.equal('peaking');
     });
 
-    it('a bands gain value can be changed', function() {
+    it('a bands gain value can be changed', function () {
       var eq = new p5.EQ(8);
       expect(eq.bands[2].gain()).to.equal(0);
       eq.bands[2].gain(30);
       expect(eq.bands[2].gain()).to.equal(30);
     });
 
-    it('a bands freq value can be changed', function() {
+    it('a bands freq value can be changed', function () {
       var eq = new p5.EQ(8);
       expect(eq.bands[0].freq()).to.equal(100);
       eq.bands[0].freq(200);
@@ -56,14 +54,14 @@ define(['chai'], function(chai) {
       expect(eq.bands[0].freq()).to.equal(200);
     });
 
-    it('a bands type can be changed', function() {
+    it('a bands type can be changed', function () {
       var eq = new p5.EQ();
       expect(eq.bands[2]._untoggledType).to.equal('peaking');
       eq.bands[2].setType('highshelf');
       expect(eq.bands[2]._untoggledType).to.equal('highshelf');
     });
 
-    it('drywet value can be changed', function() {
+    it('drywet value can be changed', function () {
       var eq = new p5.EQ();
       expect(eq.drywet(0.5)).to.equal(0.5);
     });

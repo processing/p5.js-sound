@@ -1,26 +1,26 @@
 'use strict';
 
-define(['chai'], function(chai) {
+define(['chai'], function (chai) {
   var expect = chai.expect;
 
-  describe('p5.Amplitude', function() {
+  describe('p5.Amplitude', function () {
     this.timeout(1000);
 
     var sf, amp;
 
-    it('can be created', function() {
+    it('can be created', function () {
       amp = new p5.Amplitude();
     });
 
-    after(function(done) {
-      expect( amp.getLevel() ).to.not.equal(1.0);
+    after(function (done) {
+      expect(amp.getLevel()).to.not.equal(1.0);
       osc.dispose();
       sf.dispose();
       done();
     });
 
     var osc, oAmp;
-    it('accepts oscillator input', function() {
+    it('accepts oscillator input', function () {
       osc = new p5.Oscillator('square');
       osc.amp(1);
       osc.start();
@@ -29,42 +29,40 @@ define(['chai'], function(chai) {
       oAmp.setInput(osc);
     });
 
-    it('gets oscillator level', function() {
-      setTimeout(function() {
+    it('gets oscillator level', function () {
+      setTimeout(function () {
         // console.log( 'unnormalized: ' + oAmp.getLevel() );
-        expect( oAmp.getLevel() ).to.be.closeTo(0.55, 0.25);
+        expect(oAmp.getLevel()).to.be.closeTo(0.55, 0.25);
       }, 100);
     });
 
-    it('gets normalized osc level', function(done) {
-      setTimeout(function() {
+    it('gets normalized osc level', function (done) {
+      setTimeout(function () {
         oAmp.toggleNormalize(true);
         // console.log( 'normalized: ' + oAmp.getLevel() );
-        expect( oAmp.getLevel() ).to.be.closeTo(1.0, 0.4);
+        expect(oAmp.getLevel()).to.be.closeTo(1.0, 0.4);
         done();
       }, 200);
     });
 
-
-    it('loop a SoundFile with params, disconnected from master, setInput()', function(done) {
+    it('loop a SoundFile with params, disconnected from master, setInput()', function (done) {
       p5.prototype.soundFormats('ogg', 'mp3');
-      sf = p5.prototype.loadSound('./testAudio/drum', function() {
+      sf = p5.prototype.loadSound('./testAudio/drum', function () {
         sf.disconnect();
-        sf.loop(1,1,0.0, 0.05);
+        sf.loop(1, 1, 0.0, 0.05);
         sf.connect(amp);
-        setTimeout(function() {
+        setTimeout(function () {
           done();
         }, 100);
       });
     });
 
-    it('stop getting level', function(done) {
+    it('stop getting level', function (done) {
       sf.stop();
-      setTimeout(function() {
+      setTimeout(function () {
         // console.log( amp.getLevel() );
         done();
       }, 10);
     });
-
   });
 });

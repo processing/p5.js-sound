@@ -1,7 +1,6 @@
 'use strict';
 
 define(function (require) {
-
   const CustomError = require('errorHandler');
   const p5sound = require('master');
   const ac = p5sound.audiocontext;
@@ -65,14 +64,15 @@ define(function (require) {
    *  }
    * </code></div>
    */
-  p5.SoundFile = function(paths, onload, onerror, whileLoading) {
+  p5.SoundFile = function (paths, onload, onerror, whileLoading) {
     if (typeof paths !== 'undefined') {
       if (typeof paths === 'string' || typeof paths[0] === 'string') {
         var path = p5.prototype._checkFileFormats(paths);
         this.url = path;
-      }
-      else if(typeof paths === 'object') {
-        if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
+      } else if (typeof paths === 'object') {
+        if (
+          !(window.File && window.FileReader && window.FileList && window.Blob)
+        ) {
           // The File API isn't supported in this browser
           throw 'Unable to load file because the File API is not supported';
         }
@@ -87,7 +87,7 @@ define(function (require) {
     }
 
     // private _onended callback, set by the method: onended(callback)
-    this._onended = function() {};
+    this._onended = function () {};
 
     this._looping = false;
     this._playing = false;
@@ -143,7 +143,7 @@ define(function (require) {
     if (typeof whileLoading === 'function') {
       this._whileLoading = whileLoading;
     } else {
-      this._whileLoading = function() {};
+      this._whileLoading = function () {};
     }
 
     this._clearOnEnd = _clearOnEnd.bind(this);
@@ -197,22 +197,32 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.prototype.loadSound = function(path, callback, onerror, whileLoading) {
+  p5.prototype.loadSound = function (path, callback, onerror, whileLoading) {
     // if loading locally without a server
-    if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined' ) {
-      window.alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
+    if (
+      window.location.origin.indexOf('file://') > -1 &&
+      window.cordova === 'undefined'
+    ) {
+      window.alert(
+        'This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS'
+      );
     }
 
     var self = this;
-    var s = new p5.SoundFile(path, function() {
-      if(typeof callback === 'function') {
-        callback.apply(self, arguments);
-      }
+    var s = new p5.SoundFile(
+      path,
+      function () {
+        if (typeof callback === 'function') {
+          callback.apply(self, arguments);
+        }
 
-      if (typeof self._decrementPreload === 'function') {
-        self._decrementPreload();
-      }
-    }, onerror, whileLoading);
+        if (typeof self._decrementPreload === 'function') {
+          self._decrementPreload();
+        }
+      },
+      onerror,
+      whileLoading
+    );
 
     return s;
   };
@@ -227,25 +237,30 @@ define(function (require) {
    * @param {Function} [successCallback]   Name of a function to call once file loads
    * @param {Function} [errorCallback]   Name of a function to call if there is an error
    */
-  p5.SoundFile.prototype.load = function(callback, errorCallback) {
+  p5.SoundFile.prototype.load = function (callback, errorCallback) {
     var self = this;
     var errorTrace = new Error().stack;
 
     if (this.url !== undefined && this.url !== '') {
       var request = new XMLHttpRequest();
-      request.addEventListener('progress', function(evt) {
-        self._updateProgress(evt);
-      }, false);
+      request.addEventListener(
+        'progress',
+        function (evt) {
+          self._updateProgress(evt);
+        },
+        false
+      );
       request.open('GET', this.url, true);
       request.responseType = 'arraybuffer';
 
-      request.onload = function() {
+      request.onload = function () {
         if (request.status === 200) {
           // on sucess loading file:
           if (!self.panner) return;
-          ac.decodeAudioData(request.response,
+          ac.decodeAudioData(
+            request.response,
             // success decoding buffer:
-            function(buff) {
+            function (buff) {
               if (!self.panner) return;
               self.buffer = buff;
               self.panner.inputChannels(buff.numberOfChannels);
@@ -254,15 +269,21 @@ define(function (require) {
               }
             },
             // error decoding buffer. "e" is undefined in Chrome 11/22/2015
-            function() {
+            function () {
               if (!self.panner) return;
-              var err = new CustomError('decodeAudioData', errorTrace, self.url);
+              var err = new CustomError(
+                'decodeAudioData',
+                errorTrace,
+                self.url
+              );
               var msg = 'AudioContext error at decodeAudioData for ' + self.url;
               if (errorCallback) {
                 err.msg = msg;
                 errorCallback(err);
               } else {
-                console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+                console.error(
+                  msg + '\n The error stack trace includes: \n' + err.stack
+                );
               }
             }
           );
@@ -271,38 +292,50 @@ define(function (require) {
         else {
           if (!self.panner) return;
           var err = new CustomError('loadSound', errorTrace, self.url);
-          var msg = 'Unable to load ' + self.url + '. The request status was: ' +
-            request.status + ' (' + request.statusText + ')';
+          var msg =
+            'Unable to load ' +
+            self.url +
+            '. The request status was: ' +
+            request.status +
+            ' (' +
+            request.statusText +
+            ')';
 
           if (errorCallback) {
             err.message = msg;
             errorCallback(err);
           } else {
-            console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+            console.error(
+              msg + '\n The error stack trace includes: \n' + err.stack
+            );
           }
         }
       };
 
       // if there is another error, aside from 404...
-      request.onerror = function() {
+      request.onerror = function () {
         var err = new CustomError('loadSound', errorTrace, self.url);
-        var msg = 'There was no response from the server at ' + self.url + '. Check the url and internet connectivity.';
+        var msg =
+          'There was no response from the server at ' +
+          self.url +
+          '. Check the url and internet connectivity.';
 
         if (errorCallback) {
           err.message = msg;
           errorCallback(err);
         } else {
-          console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+          console.error(
+            msg + '\n The error stack trace includes: \n' + err.stack
+          );
         }
       };
 
       request.send();
-    }
-    else if (this.file !== undefined) {
+    } else if (this.file !== undefined) {
       var reader = new FileReader();
-      reader.onload = function() {
+      reader.onload = function () {
         if (!self.panner) return;
-        ac.decodeAudioData(reader.result, function(buff) {
+        ac.decodeAudioData(reader.result, function (buff) {
           if (!self.panner) return;
           self.buffer = buff;
           self.panner.inputChannels(buff.numberOfChannels);
@@ -311,7 +344,7 @@ define(function (require) {
           }
         });
       };
-      reader.onerror = function(e) {
+      reader.onerror = function (e) {
         if (!self.panner) return;
         if (onerror) {
           onerror(e);
@@ -322,9 +355,9 @@ define(function (require) {
   };
 
   // TO DO: use this method to create a loading bar that shows progress during file upload/decode.
-  p5.SoundFile.prototype._updateProgress = function(evt) {
+  p5.SoundFile.prototype._updateProgress = function (evt) {
     if (evt.lengthComputable) {
-      var percentComplete = evt.loaded / evt.total * 0.99;
+      var percentComplete = (evt.loaded / evt.total) * 0.99;
       this._whileLoading(percentComplete, evt);
       // ...
     } else {
@@ -340,7 +373,7 @@ define(function (require) {
    *  @for p5.SoundFile
    *  @return {Boolean}
    */
-  p5.SoundFile.prototype.isLoaded = function() {
+  p5.SoundFile.prototype.isLoaded = function () {
     if (this.buffer) {
       return true;
     } else {
@@ -360,7 +393,13 @@ define(function (require) {
    * @param {Number} [cueStart]        (optional) cue start time in seconds
    * @param {Number} [duration]          (optional) duration of playback in seconds
    */
-  p5.SoundFile.prototype.play = function(startTime, rate, amp, _cueStart, duration) {
+  p5.SoundFile.prototype.play = function (
+    startTime,
+    rate,
+    amp,
+    _cueStart,
+    duration
+  ) {
     if (!this.output) {
       console.warn('SoundFile.play() called after dispose');
       return;
@@ -406,17 +445,22 @@ define(function (require) {
       this._counterNode = this._initCounterNode();
 
       if (_cueStart) {
-        if (_cueStart >=0 && _cueStart < this.buffer.duration) {
+        if (_cueStart >= 0 && _cueStart < this.buffer.duration) {
           // this.startTime = cueStart;
           cueStart = _cueStart;
-        } else { throw 'start time out of range'; }
+        } else {
+          throw 'start time out of range';
+        }
       } else {
         cueStart = 0;
       }
 
       if (duration) {
         // if duration is greater than buffer.duration, just play entire file anyway rather than throw an error
-        duration = duration <= this.buffer.duration - cueStart ? duration : this.buffer.duration;
+        duration =
+          duration <= this.buffer.duration - cueStart
+            ? duration
+            : this.buffer.duration;
       }
 
       // if it was paused, play at the pause position
@@ -453,9 +497,7 @@ define(function (require) {
       this._counterNode.loopStart = cueStart;
       this._counterNode.loopEnd = cueEnd;
     }
-
   };
-
 
   /**
    *  p5.SoundFile has two play modes: <code>restart</code> and
@@ -497,7 +539,7 @@ define(function (require) {
    *
    * </code></div>
    */
-  p5.SoundFile.prototype.playMode = function(str) {
+  p5.SoundFile.prototype.playMode = function (str) {
     var s = str.toLowerCase();
 
     // if restart, stop all other sounds from playing
@@ -553,7 +595,7 @@ define(function (require) {
    *  </code>
    *  </div>
    */
-  p5.SoundFile.prototype.pause = function(startTime) {
+  p5.SoundFile.prototype.pause = function (startTime) {
     var now = p5sound.audiocontext.currentTime;
     var time = startTime || 0;
     var pTime = time + now;
@@ -611,7 +653,13 @@ define(function (require) {
    *  </code>
    *  </div>
    */
-  p5.SoundFile.prototype.loop = function(startTime, rate, amp, loopStart, duration) {
+  p5.SoundFile.prototype.loop = function (
+    startTime,
+    rate,
+    amp,
+    loopStart,
+    duration
+  ) {
     this._looping = true;
     this.play(startTime, rate, amp, loopStart, duration);
   };
@@ -625,14 +673,12 @@ define(function (require) {
    * @for p5.SoundFile
    * @param {Boolean} Boolean   set looping to true or false
    */
-  p5.SoundFile.prototype.setLoop = function(bool) {
+  p5.SoundFile.prototype.setLoop = function (bool) {
     if (bool === true) {
       this._looping = true;
-    }
-    else if (bool === false) {
+    } else if (bool === false) {
       this._looping = false;
-    }
-    else {
+    } else {
       throw 'Error: setLoop accepts either true or false';
     }
     if (this.bufferSourceNode) {
@@ -648,7 +694,7 @@ define(function (require) {
    * @for p5.SoundFile
    * @return {Boolean}
    */
-  p5.SoundFile.prototype.isLooping = function() {
+  p5.SoundFile.prototype.isLooping = function () {
     if (!this.bufferSourceNode) {
       return false;
     }
@@ -666,7 +712,7 @@ define(function (require) {
    *  @for p5.SoundFile
    *  @return {Boolean}
    */
-  p5.SoundFile.prototype.isPlaying = function() {
+  p5.SoundFile.prototype.isPlaying = function () {
     return this._playing;
   };
 
@@ -678,7 +724,7 @@ define(function (require) {
    *  @for p5.SoundFile
    *  @return {Boolean}
    */
-  p5.SoundFile.prototype.isPaused = function() {
+  p5.SoundFile.prototype.isPaused = function () {
     return this._paused;
   };
 
@@ -690,7 +736,7 @@ define(function (require) {
    * @param {Number} [startTime] (optional) schedule event to occur
    *                             in seconds from now
    */
-  p5.SoundFile.prototype.stop = function(timeFromNow) {
+  p5.SoundFile.prototype.stop = function (timeFromNow) {
     var time = timeFromNow || 0;
 
     if (this.mode === 'sustain' || this.mode === 'untildone') {
@@ -698,8 +744,7 @@ define(function (require) {
       this._playing = false;
       this.pauseTime = 0;
       this._paused = false;
-    }
-    else if (this.buffer && this.bufferSourceNode) {
+    } else if (this.buffer && this.bufferSourceNode) {
       var now = p5sound.audiocontext.currentTime;
       var t = time || 0;
       this.pauseTime = 0;
@@ -714,16 +759,16 @@ define(function (require) {
    *  Stop playback on all of this soundfile's sources.
    *  @private
    */
-  p5.SoundFile.prototype.stopAll = function(_time) {
+  p5.SoundFile.prototype.stopAll = function (_time) {
     var now = p5sound.audiocontext.currentTime;
     var time = _time || 0;
     if (this.buffer && this.bufferSourceNode) {
       for (var i in this.bufferSourceNodes) {
         const bufferSourceNode = this.bufferSourceNodes[i];
-        if (!!bufferSourceNode) {
+        if (bufferSourceNode) {
           try {
             bufferSourceNode.stop(now + time);
-          } catch(e) {
+          } catch (e) {
             // this was throwing errors only on Safari
           }
         }
@@ -752,7 +797,7 @@ define(function (require) {
    *  @param {Number} [timeFromNow]  Schedule this event to happen at
    *                                 t seconds in the future
    */
-  p5.SoundFile.prototype.setVolume = function(vol, _rampTime, _tFromNow) {
+  p5.SoundFile.prototype.setVolume = function (vol, _rampTime, _tFromNow) {
     if (typeof vol === 'number') {
       var rampTime = _rampTime || 0;
       var tFromNow = _tFromNow || 0;
@@ -761,8 +806,7 @@ define(function (require) {
       this.output.gain.cancelScheduledValues(now + tFromNow);
       this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
       this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
-    }
-    else if (vol) {
+    } else if (vol) {
       vol.connect(this.output.gain);
     } else {
       // return the Gain Node
@@ -776,7 +820,7 @@ define(function (require) {
   // these are the same thing
   p5.SoundFile.prototype.fade = p5.SoundFile.prototype.setVolume;
 
-  p5.SoundFile.prototype.getVolume = function() {
+  p5.SoundFile.prototype.getVolume = function () {
     return this.output.gain.value;
   };
 
@@ -817,7 +861,7 @@ define(function (require) {
    *  }
    *  </div></code>
    */
-  p5.SoundFile.prototype.pan = function(pval, tFromNow) {
+  p5.SoundFile.prototype.pan = function (pval, tFromNow) {
     this.panPosition = pval;
     this.panner.pan(pval, tFromNow);
   };
@@ -831,7 +875,7 @@ define(function (require) {
    *                          as a number between -1.0 (left) and 1.0 (right).
    *                          0.0 is center and default.
    */
-  p5.SoundFile.prototype.getPan = function() {
+  p5.SoundFile.prototype.getPan = function () {
     return this.panPosition;
   };
 
@@ -879,7 +923,7 @@ define(function (require) {
    * </div>
    *
    */
-  p5.SoundFile.prototype.rate = function(playbackRate) {
+  p5.SoundFile.prototype.rate = function (playbackRate) {
     var reverse = false;
     if (typeof playbackRate === 'undefined') {
       return this.playbackRate;
@@ -889,23 +933,25 @@ define(function (require) {
 
     if (playbackRate === 0) {
       playbackRate = 0.0000000000001;
-    }
-
-    else if (playbackRate < 0 && !this.reversed) {
+    } else if (playbackRate < 0 && !this.reversed) {
       playbackRate = Math.abs(playbackRate);
       reverse = true;
-    }
-
-    else if (playbackRate > 0 && this.reversed) {
+    } else if (playbackRate > 0 && this.reversed) {
       reverse = true;
     }
 
     if (this.bufferSourceNode) {
       var now = p5sound.audiocontext.currentTime;
       this.bufferSourceNode.playbackRate.cancelScheduledValues(now);
-      this.bufferSourceNode.playbackRate.linearRampToValueAtTime(Math.abs(playbackRate), now);
+      this.bufferSourceNode.playbackRate.linearRampToValueAtTime(
+        Math.abs(playbackRate),
+        now
+      );
       this._counterNode.playbackRate.cancelScheduledValues(now);
-      this._counterNode.playbackRate.linearRampToValueAtTime(Math.abs(playbackRate), now);
+      this._counterNode.playbackRate.linearRampToValueAtTime(
+        Math.abs(playbackRate),
+        now
+      );
     }
 
     if (reverse) {
@@ -915,12 +961,12 @@ define(function (require) {
   };
 
   // TO DO: document this
-  p5.SoundFile.prototype.setPitch = function(num) {
+  p5.SoundFile.prototype.setPitch = function (num) {
     var newPlaybackRate = midiToFreq(num) / midiToFreq(60);
     this.rate(newPlaybackRate);
   };
 
-  p5.SoundFile.prototype.getPlaybackRate = function() {
+  p5.SoundFile.prototype.getPlaybackRate = function () {
     return this.playbackRate;
   };
 
@@ -931,7 +977,7 @@ define(function (require) {
    * @for p5.SoundFile
    * @return {Number} The duration of the soundFile in seconds.
    */
-  p5.SoundFile.prototype.duration = function() {
+  p5.SoundFile.prototype.duration = function () {
     // Return Duration
     if (this.buffer) {
       return this.buffer.duration;
@@ -949,7 +995,7 @@ define(function (require) {
    * @for p5.SoundFile
    * @return {Number}   currentTime of the soundFile in seconds.
    */
-  p5.SoundFile.prototype.currentTime = function() {
+  p5.SoundFile.prototype.currentTime = function () {
     return this.reversed
       ? Math.abs(this._lastPos - this.buffer.length) / ac.sampleRate
       : this._lastPos / ac.sampleRate;
@@ -967,7 +1013,7 @@ define(function (require) {
    * @param {Number} cueTime    cueTime of the soundFile in seconds.
    * @param {Number} duration    duration in seconds.
    */
-  p5.SoundFile.prototype.jump = function(cueTime, duration) {
+  p5.SoundFile.prototype.jump = function (cueTime, duration) {
     if (cueTime < 0 || cueTime > this.buffer.duration) {
       throw 'jump time out of range';
     }
@@ -984,37 +1030,37 @@ define(function (require) {
   };
 
   /**
-    * Return the number of channels in a sound file.
-    * For example, Mono = 1, Stereo = 2.
-    *
-    * @method channels
-    * @for p5.SoundFile
-    * @return {Number} [channels]
-    */
-  p5.SoundFile.prototype.channels = function() {
+   * Return the number of channels in a sound file.
+   * For example, Mono = 1, Stereo = 2.
+   *
+   * @method channels
+   * @for p5.SoundFile
+   * @return {Number} [channels]
+   */
+  p5.SoundFile.prototype.channels = function () {
     return this.buffer.numberOfChannels;
   };
 
   /**
-    * Return the sample rate of the sound file.
-    *
-    * @method sampleRate
-    * @for p5.SoundFile
-    * @return {Number} [sampleRate]
-    */
-  p5.SoundFile.prototype.sampleRate = function() {
+   * Return the sample rate of the sound file.
+   *
+   * @method sampleRate
+   * @for p5.SoundFile
+   * @return {Number} [sampleRate]
+   */
+  p5.SoundFile.prototype.sampleRate = function () {
     return this.buffer.sampleRate;
   };
 
   /**
-    * Return the number of samples in a sound file.
-    * Equal to sampleRate * duration.
-    *
-    * @method frames
-    * @for p5.SoundFile
-    * @return {Number} [sampleCount]
-    */
-  p5.SoundFile.prototype.frames = function() {
+   * Return the number of samples in a sound file.
+   * Equal to sampleRate * duration.
+   *
+   * @method frames
+   * @for p5.SoundFile
+   * @return {Number} [sampleCount]
+   */
+  p5.SoundFile.prototype.frames = function () {
     return this.buffer.length;
   };
 
@@ -1034,12 +1080,11 @@ define(function (require) {
    *                          Defaults to 5*width of the browser window.
    * @returns {Float32Array} Array of peaks.
    */
-  p5.SoundFile.prototype.getPeaks = function(length) {
-
+  p5.SoundFile.prototype.getPeaks = function (length) {
     if (this.buffer) {
       // set length to window's width if no length is provided
       if (!length) {
-        length = window.width*5;
+        length = window.width * 5;
       }
       if (this.buffer) {
         var buffer = this.buffer;
@@ -1051,14 +1096,14 @@ define(function (require) {
         for (var c = 0; c < channels; c++) {
           var chan = buffer.getChannelData(c);
           for (var i = 0; i < length; i++) {
-            var start = ~~(i*sampleSize);
+            var start = ~~(i * sampleSize);
             var end = ~~(start + sampleSize);
             var max = 0;
-            for (var j = start; j < end; j+= sampleStep) {
+            for (var j = start; j < end; j += sampleStep) {
               var value = chan[j];
               if (value > max) {
                 max = value;
-              // faster than Math.abs
+                // faster than Math.abs
               } else if (-value > max) {
                 max = value;
               }
@@ -1071,9 +1116,7 @@ define(function (require) {
 
         return peaks;
       }
-    }
-
-    else {
+    } else {
       throw 'Cannot load peaks yet, buffer is not loaded';
     }
   };
@@ -1106,7 +1149,7 @@ define(function (require) {
    * </code>
    * </div>
    */
-  p5.SoundFile.prototype.reverseBuffer = function() {
+  p5.SoundFile.prototype.reverseBuffer = function () {
     if (this.buffer) {
       var currentPos = this._lastPos / ac.sampleRate;
       var curVol = this.getVolume();
@@ -1140,16 +1183,16 @@ define(function (require) {
    *  @param  {Function} callback function to call when the
    *                              soundfile has ended.
    */
-  p5.SoundFile.prototype.onended = function(callback) {
+  p5.SoundFile.prototype.onended = function (callback) {
     this._onended = callback;
     return this;
   };
 
-  p5.SoundFile.prototype.add = function() {
+  p5.SoundFile.prototype.add = function () {
     // TO DO
   };
 
-  p5.SoundFile.prototype.dispose = function() {
+  p5.SoundFile.prototype.dispose = function () {
     var now = p5sound.audiocontext.currentTime;
 
     // remove reference to soundfile
@@ -1163,16 +1206,16 @@ define(function (require) {
           this.bufferSourceNodes[i].disconnect();
           try {
             this.bufferSourceNodes[i].stop(now);
-          } catch(e) {
+          } catch (e) {
             console.warn('no buffer source node to dispose');
           }
           this.bufferSourceNodes[i] = null;
         }
       }
-      if ( this.isPlaying() ) {
+      if (this.isPlaying()) {
         try {
           this._counterNode.stop(now);
-        } catch(e) {
+        } catch (e) {
           console.log(e);
         }
         this._counterNode = null;
@@ -1199,11 +1242,10 @@ define(function (require) {
    * @for p5.SoundFile
    * @param {Object} [object] Audio object that accepts an input
    */
-  p5.SoundFile.prototype.connect = function(unit) {
+  p5.SoundFile.prototype.connect = function (unit) {
     if (!unit) {
       this.panner.connect(p5sound.input);
-    }
-    else {
+    } else {
       if (unit.hasOwnProperty('input')) {
         this.panner.connect(unit.input);
       } else {
@@ -1218,7 +1260,7 @@ define(function (require) {
    * @method disconnect
    * @for p5.SoundFile
    */
-  p5.SoundFile.prototype.disconnect = function() {
+  p5.SoundFile.prototype.disconnect = function () {
     if (this.panner) {
       this.panner.disconnect();
     }
@@ -1226,8 +1268,10 @@ define(function (require) {
 
   /**
    */
-  p5.SoundFile.prototype.getLevel = function() {
-    console.warn('p5.SoundFile.getLevel has been removed from the library. Use p5.Amplitude instead');
+  p5.SoundFile.prototype.getLevel = function () {
+    console.warn(
+      'p5.SoundFile.getLevel has been removed from the library. Use p5.Amplitude instead'
+    );
   };
 
   /**
@@ -1239,7 +1283,7 @@ define(function (require) {
    *  @param {String}   path     path to audio file
    *  @param {Function} callback Callback
    */
-  p5.SoundFile.prototype.setPath = function(p, callback) {
+  p5.SoundFile.prototype.setPath = function (p, callback) {
     var path = p5.prototype._checkFileFormats(p);
     this.url = path;
     this.load(callback);
@@ -1254,7 +1298,7 @@ define(function (require) {
    *                     will create a stereo source. 1 will create
    *                     a mono source.
    */
-  p5.SoundFile.prototype.setBuffer = function(buf) {
+  p5.SoundFile.prototype.setBuffer = function (buf) {
     var numChannels = buf.length;
     var size = buf[0].length;
     var newBuffer = ac.createBuffer(numChannels, size, ac.sampleRate);
@@ -1264,7 +1308,7 @@ define(function (require) {
     }
 
     for (var channelNum = 0; channelNum < numChannels; channelNum++) {
-      var channel = newBuffer.getChannelData( channelNum );
+      var channel = newBuffer.getChannelData(channelNum);
       channel.set(buf[channelNum]);
     }
 
@@ -1282,9 +1326,9 @@ define(function (require) {
   // Licensed under the Apache License http://apache.org/licenses/LICENSE-2.0
   ////////////////////////////////////////////////////////////////////////////////////
 
-  var _createCounterBuffer = function(buffer) {
+  var _createCounterBuffer = function (buffer) {
     const len = buffer.length;
-    const audioBuf = ac.createBuffer( 1, buffer.length, ac.sampleRate );
+    const audioBuf = ac.createBuffer(1, buffer.length, ac.sampleRate);
     const arrayBuffer = audioBuf.getChannelData(0);
     for (var index = 0; index < len; index++) {
       arrayBuffer[index] = index;
@@ -1293,7 +1337,7 @@ define(function (require) {
   };
 
   // initialize counterNode, set its initial buffer and playbackRate
-  p5.SoundFile.prototype._initCounterNode = function() {
+  p5.SoundFile.prototype._initCounterNode = function () {
     var self = this;
     var now = ac.currentTime;
     var cNode = ac.createBufferSource();
@@ -1305,10 +1349,14 @@ define(function (require) {
       self._workletNode.disconnect();
       delete self._workletNode;
     }
-    self._workletNode = new AudioWorkletNode(ac, processorNames.soundFileProcessor, {
-      processorOptions: { bufferSize: workletBufferSize }
-    });
-    self._workletNode.port.onmessage = event => {
+    self._workletNode = new AudioWorkletNode(
+      ac,
+      processorNames.soundFileProcessor,
+      {
+        processorOptions: { bufferSize: workletBufferSize },
+      }
+    );
+    self._workletNode.port.onmessage = (event) => {
       if (event.data.name === 'position') {
         // event.data.position should only be 0 when paused
         if (event.data.position === 0) {
@@ -1322,7 +1370,7 @@ define(function (require) {
     };
 
     // create counter buffer of the same length as self.buffer
-    cNode.buffer = _createCounterBuffer( self.buffer );
+    cNode.buffer = _createCounterBuffer(self.buffer);
 
     cNode.playbackRate.setValueAtTime(self.playbackRate, now);
 
@@ -1333,7 +1381,7 @@ define(function (require) {
   };
 
   // initialize sourceNode, set its initial buffer and playbackRate
-  p5.SoundFile.prototype._initSourceNode = function() {
+  p5.SoundFile.prototype._initSourceNode = function () {
     var bufferSourceNode = ac.createBufferSource();
     bufferSourceNode.buffer = this.buffer;
     bufferSourceNode.playbackRate.value = this.playbackRate;
@@ -1359,7 +1407,12 @@ define(function (require) {
    *  @param  {Number}   [minPeaks]       minimum number of peaks defaults to 200
    *  @return {Array}                  Array of timestamped peaks
    */
-  p5.SoundFile.prototype.processPeaks = function(callback, _initThreshold, _minThreshold, _minPeaks) {
+  p5.SoundFile.prototype.processPeaks = function (
+    callback,
+    _initThreshold,
+    _minThreshold,
+    _minPeaks
+  ) {
     var bufLen = this.buffer.length;
     var sampleRate = this.buffer.sampleRate;
     var buffer = this.buffer;
@@ -1388,32 +1441,37 @@ define(function (require) {
     offlineContext.startRendering(); // Render the song
 
     // act on the result
-    offlineContext.oncomplete = function(e) {
+    offlineContext.oncomplete = function (e) {
       if (!self.panner) return;
       var filteredBuffer = e.renderedBuffer;
       var bufferData = filteredBuffer.getChannelData(0);
-
 
       // step 1:
       // create Peak instances, add them to array, with strength and sampleIndex
       do {
         allPeaks = getPeaksAtThreshold(bufferData, threshold);
         threshold -= 0.005;
-      } while (Object.keys(allPeaks).length < minPeaks && threshold >= minThreshold);
-
+      } while (
+        Object.keys(allPeaks).length < minPeaks &&
+        threshold >= minThreshold
+      );
 
       // step 2:
       // find intervals for each peak in the sampleIndex, add tempos array
       var intervalCounts = countIntervalsBetweenNearbyPeaks(allPeaks);
 
       // step 3: find top tempos
-      var groups = groupNeighborsByTempo(intervalCounts, filteredBuffer.sampleRate);
+      var groups = groupNeighborsByTempo(
+        intervalCounts,
+        filteredBuffer.sampleRate
+      );
 
       // sort top intervals
-      var topTempos = groups.sort(function(intA, intB) {
-        return intB.count - intA.count;
-
-      }).splice(0,5);
+      var topTempos = groups
+        .sort(function (intA, intB) {
+          return intB.count - intA.count;
+        })
+        .splice(0, 5);
 
       // set this SoundFile's tempo to the top tempo ??
       this.tempo = topTempos[0].tempo;
@@ -1421,14 +1479,19 @@ define(function (require) {
       // step 4:
       // new array of peaks at top tempo within a bpmVariance
       var bpmVariance = 5;
-      var tempoPeaks = getPeaksAtTopTempo(allPeaks, topTempos[0].tempo, filteredBuffer.sampleRate, bpmVariance);
+      var tempoPeaks = getPeaksAtTopTempo(
+        allPeaks,
+        topTempos[0].tempo,
+        filteredBuffer.sampleRate,
+        bpmVariance
+      );
 
       callback(tempoPeaks);
     };
   };
 
   // process peaks
-  var Peak = function(amp, i) {
+  var Peak = function (amp, i) {
     this.sampleIndex = i;
     this.amplitude = amp;
     this.tempos = [];
@@ -1460,7 +1523,6 @@ define(function (require) {
     var peaksArray = Object.keys(peaksObj).sort();
 
     for (var index = 0; index < peaksArray.length; index++) {
-
       // find intervals in comparison to nearby peaks
       for (var i = 0; i < 10; i++) {
         var startPeak = peaksObj[peaksArray[index]];
@@ -1469,7 +1531,7 @@ define(function (require) {
         if (startPeak && endPeak) {
           var startPos = startPeak.sampleIndex;
           var endPos = endPeak.sampleIndex;
-          var interval =  endPos - startPos;
+          var interval = endPos - startPos;
 
           // add a sample interval to the startPeak in the allPeaks array
           if (interval > 0) {
@@ -1477,7 +1539,7 @@ define(function (require) {
           }
 
           // tally the intervals and return interval counts
-          var foundInterval = intervalCounts.some(function(intervalCount) {
+          var foundInterval = intervalCounts.some(function (intervalCount) {
             if (intervalCount.interval === interval) {
               intervalCount.count++;
               return intervalCount;
@@ -1498,22 +1560,22 @@ define(function (require) {
     return intervalCounts;
   }
 
-
   // 3. for processPeaks --> find tempo
   function groupNeighborsByTempo(intervalCounts, sampleRate) {
     var tempoCounts = [];
 
-    intervalCounts.forEach(function(intervalCount) {
-
+    intervalCounts.forEach(function (intervalCount) {
       try {
         // Convert an interval to tempo
-        var theoreticalTempo = Math.abs( 60 / (intervalCount.interval / sampleRate ) );
+        var theoreticalTempo = Math.abs(
+          60 / (intervalCount.interval / sampleRate)
+        );
 
         theoreticalTempo = mapTempo(theoreticalTempo);
 
-        var foundTempo = tempoCounts.some(function(tempoCount) {
+        var foundTempo = tempoCounts.some(function (tempoCount) {
           if (tempoCount.tempo === theoreticalTempo)
-            return tempoCount.count += intervalCount.count;
+            return (tempoCount.count += intervalCount.count);
         });
         if (!foundTempo) {
           if (isNaN(theoreticalTempo)) {
@@ -1521,13 +1583,12 @@ define(function (require) {
           }
           tempoCounts.push({
             tempo: Math.round(theoreticalTempo),
-            count: intervalCount.count
+            count: intervalCount.count,
           });
         }
-      } catch(e) {
+      } catch (e) {
         throw e;
       }
-
     });
 
     return tempoCounts;
@@ -1544,19 +1605,21 @@ define(function (require) {
       var peak = peaksObj[key];
 
       for (var j = 0; j < peak.intervals.length; j++) {
-        var intervalBPM = Math.round(Math.abs( 60 / (peak.intervals[j] / sampleRate) ) );
+        var intervalBPM = Math.round(
+          Math.abs(60 / (peak.intervals[j] / sampleRate))
+        );
 
         intervalBPM = mapTempo(intervalBPM);
 
-        if ( Math.abs(intervalBPM - tempo) < bpmVariance ) {
+        if (Math.abs(intervalBPM - tempo) < bpmVariance) {
           // convert sampleIndex to seconds
-          peaksAtTopTempo.push(peak.sampleIndex/sampleRate);
+          peaksAtTopTempo.push(peak.sampleIndex / sampleRate);
         }
       }
     }
 
     // filter out peaks that are very close to each other
-    peaksAtTopTempo = peaksAtTopTempo.filter(function(peakTime, index, arr) {
+    peaksAtTopTempo = peaksAtTopTempo.filter(function (peakTime, index, arr) {
       var dif = arr[index + 1] - peakTime;
       if (dif > 0.01) {
         return true;
@@ -1569,23 +1632,23 @@ define(function (require) {
   // helper function for processPeaks
   function mapTempo(theoreticalTempo) {
     // these scenarios create infinite while loop
-    if (!isFinite(theoreticalTempo) || theoreticalTempo === 0 ) {
+    if (!isFinite(theoreticalTempo) || theoreticalTempo === 0) {
       return;
     }
 
     // Adjust the tempo to fit within the 90-180 BPM range
     while (theoreticalTempo < 90) theoreticalTempo *= 2;
-    while (theoreticalTempo > 180 && theoreticalTempo > 90) theoreticalTempo /= 2;
+    while (theoreticalTempo > 180 && theoreticalTempo > 90)
+      theoreticalTempo /= 2;
 
     return theoreticalTempo;
   }
-
 
   /*** SCHEDULE EVENTS ***/
 
   // Cue inspired by JavaScript setTimeout, and the
   // Tone.js Transport Timeline Event, MIT License Yotam Mann 2015 tonejs.org
-  var Cue = function(callback, time, id, val) {
+  var Cue = function (callback, time, id, val) {
     this.callback = callback;
     this.time = time;
     this.id = id;
@@ -1651,7 +1714,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.SoundFile.prototype.addCue = function(time, callback, val) {
+  p5.SoundFile.prototype.addCue = function (time, callback, val) {
     var id = this._cueIDCounter++;
 
     var cue = new Cue(callback, time, id, val);
@@ -1672,7 +1735,7 @@ define(function (require) {
    *  @for p5.SoundFile
    *  @param  {Number} id ID of the cue, as returned by addCue
    */
-  p5.SoundFile.prototype.removeCue = function(id) {
+  p5.SoundFile.prototype.removeCue = function (id) {
     var cueLength = this._cues.length;
     for (var i = 0; i < cueLength; i++) {
       var cue = this._cues[i];
@@ -1694,28 +1757,29 @@ define(function (require) {
    *
    *  @method  clearCues
    */
-  p5.SoundFile.prototype.clearCues = function() {
+  p5.SoundFile.prototype.clearCues = function () {
     this._cues = [];
     // this.elt.ontimeupdate = null;
   };
 
   // private method that checks for cues to be fired if events
   // have been scheduled using addCue(callback, time).
-  p5.SoundFile.prototype._onTimeUpdate = function(position) {
-    var playbackTime = position/this.buffer.sampleRate;
+  p5.SoundFile.prototype._onTimeUpdate = function (position) {
+    var playbackTime = position / this.buffer.sampleRate;
     var cueLength = this._cues.length;
 
-    for (var i = 0 ; i < cueLength; i++) {
+    for (var i = 0; i < cueLength; i++) {
       var cue = this._cues[i];
       var callbackTime = cue.time;
       var val = cue.val;
 
-      if (~~this._prevUpdateTime <= callbackTime && callbackTime <= playbackTime) {
-
+      if (
+        ~~this._prevUpdateTime <= callbackTime &&
+        callbackTime <= playbackTime
+      ) {
         // pass the scheduled callbackTime as parameter to the callback
         cue.callback(val);
       }
-
     }
 
     this._prevUpdateTime = playbackTime;
@@ -1747,7 +1811,7 @@ define(function (require) {
    *  }
    * </code></div>
    */
-  p5.SoundFile.prototype.save = function(fileName) {
+  p5.SoundFile.prototype.save = function (fileName) {
     p5.prototype.saveSound(this, fileName, 'wav');
   };
 
@@ -1802,7 +1866,7 @@ define(function (require) {
    *
    * </code></div>
    */
-  p5.SoundFile.prototype.getBlob = function() {
+  p5.SoundFile.prototype.getBlob = function () {
     const dataView = convertToWav(this.buffer);
     return new Blob([dataView], { type: 'audio/wav' });
   };
@@ -1821,13 +1885,16 @@ define(function (require) {
 
     // delete bufferSourceNode(s) in soundFile.bufferSourceNodes
     // iterate in reverse order because the index changes by splice
-    soundFile.bufferSourceNodes.map((_, i) => i).reverse().forEach(function (i) {
-      const n = soundFile.bufferSourceNodes[i];
+    soundFile.bufferSourceNodes
+      .map((_, i) => i)
+      .reverse()
+      .forEach(function (i) {
+        const n = soundFile.bufferSourceNodes[i];
 
-      if (n._playing === false) {
-        soundFile.bufferSourceNodes.splice(i, 1);
-      }
-    });
+        if (n._playing === false) {
+          soundFile.bufferSourceNodes.splice(i, 1);
+        }
+      });
 
     if (soundFile.bufferSourceNodes.length === 0) {
       soundFile._playing = false;

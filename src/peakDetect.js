@@ -92,7 +92,7 @@ define(function () {
    *  }
    *  </code></div>
    */
-  p5.PeakDetect = function(freq1, freq2, threshold, _framesPerPeak) {
+  p5.PeakDetect = function (freq1, freq2, threshold, _framesPerPeak) {
     // framesPerPeak determines how often to look for a beat.
     // If a beat is provided, try to look for a beat based on bpm
     this.framesPerPeak = _framesPerPeak || 20;
@@ -124,9 +124,8 @@ define(function () {
     this.f2 = freq2 || 20000;
 
     // function to call when a peak is detected
-    this._onPeak = function() {};
+    this._onPeak = function () {};
   };
-
 
   /**
    *  The update method is run in the draw loop.
@@ -138,10 +137,9 @@ define(function () {
    *  @method  update
    *  @param  {p5.FFT} fftObject A p5.FFT object
    */
-  p5.PeakDetect.prototype.update = function(fftObject) {
-    var nrg = this.energy = fftObject.getEnergy(this.f1,this.f2)/255;
-    if (nrg > this.cutoff && nrg > this.threshold && nrg-this.penergy > 0) {
-
+  p5.PeakDetect.prototype.update = function (fftObject) {
+    var nrg = (this.energy = fftObject.getEnergy(this.f1, this.f2) / 255);
+    if (nrg > this.cutoff && nrg > this.threshold && nrg - this.penergy > 0) {
       // trigger callback
       this._onPeak();
       this.isDetected = true;
@@ -226,12 +224,11 @@ define(function () {
    *  }
    *  </code></div>
    */
-  p5.PeakDetect.prototype.onPeak = function(callback, val) {
+  p5.PeakDetect.prototype.onPeak = function (callback, val) {
     var self = this;
 
-    self._onPeak = function() {
+    self._onPeak = function () {
       callback(self.energy, val);
     };
   };
-
 });

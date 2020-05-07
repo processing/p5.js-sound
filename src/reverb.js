@@ -56,8 +56,7 @@ define(function (require) {
    *  </code></div>
    */
 
-
-  p5.Reverb = function() {
+  p5.Reverb = function () {
     Effect.call(this);
 
     this._initConvolverNode();
@@ -71,25 +70,24 @@ define(function (require) {
     this._reverse = false;
 
     this._buildImpulse();
-
   };
 
   p5.Reverb.prototype = Object.create(Effect.prototype);
 
-  p5.Reverb.prototype._initConvolverNode = function() {
+  p5.Reverb.prototype._initConvolverNode = function () {
     this.convolverNode = this.ac.createConvolver();
     this.input.connect(this.convolverNode);
     this.convolverNode.connect(this.wet);
   };
 
-  p5.Reverb.prototype._teardownConvolverNode = function() {
+  p5.Reverb.prototype._teardownConvolverNode = function () {
     if (this.convolverNode) {
       this.convolverNode.disconnect();
       delete this.convolverNode;
     }
   };
 
-  p5.Reverb.prototype._setBuffer = function(audioBuffer) {
+  p5.Reverb.prototype._setBuffer = function (audioBuffer) {
     this._teardownConvolverNode();
     this._initConvolverNode();
     this.convolverNode.buffer = audioBuffer;
@@ -107,7 +105,7 @@ define(function (require) {
    *                            Min: 0, Max: 100. Defaults to 2.
    *  @param  {Boolean} [reverse] Play the reverb backwards or forwards.
    */
-  p5.Reverb.prototype.process = function(src, seconds, decayRate, reverse) {
+  p5.Reverb.prototype.process = function (src, seconds, decayRate, reverse) {
     src.connect(this.input);
     var rebuild = false;
     if (seconds) {
@@ -137,7 +135,7 @@ define(function (require) {
    *                            Min: 0, Max: 100. Defaults to 2.
    *  @param  {Boolean} [reverse] Play the reverb backwards or forwards.
    */
-  p5.Reverb.prototype.set = function(seconds, decayRate, reverse) {
+  p5.Reverb.prototype.set = function (seconds, decayRate, reverse) {
     var rebuild = false;
     if (seconds) {
       this._seconds = seconds;
@@ -188,9 +186,9 @@ define(function (require) {
    *
    *  @private
    */
-  p5.Reverb.prototype._buildImpulse = function() {
+  p5.Reverb.prototype._buildImpulse = function () {
     var rate = this.ac.sampleRate;
-    var length = rate*this._seconds;
+    var length = rate * this._seconds;
     var decay = this._decay;
     var impulse = this.ac.createBuffer(2, length, rate);
     var impulseL = impulse.getChannelData(0);
@@ -204,7 +202,7 @@ define(function (require) {
     this._setBuffer(impulse);
   };
 
-  p5.Reverb.prototype.dispose = function() {
+  p5.Reverb.prototype.dispose = function () {
     Effect.prototype.dispose.apply(this);
     this._teardownConvolverNode();
   };
@@ -273,8 +271,8 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Convolver = function(path, callback, errorCallback) {
- 	  p5.Reverb.call(this);
+  p5.Convolver = function (path, callback, errorCallback) {
+    p5.Reverb.call(this);
 
     /**
      *  Internally, the p5.Convolver uses the a
@@ -291,8 +289,7 @@ define(function (require) {
     if (path) {
       this.impulses = [];
       this._loadBuffer(path, callback, errorCallback);
-    }
-    else {
+    } else {
       // parameters
       this._seconds = 3;
       this._decay = 2;
@@ -300,7 +297,6 @@ define(function (require) {
 
       this._buildImpulse();
     }
-
   };
 
   p5.Convolver.prototype = Object.create(p5.Reverb.prototype);
@@ -356,21 +352,30 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.prototype.createConvolver = function(path, callback, errorCallback) {
+  p5.prototype.createConvolver = function (path, callback, errorCallback) {
     // if loading locally without a server
-    if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined') {
-      alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
+    if (
+      window.location.origin.indexOf('file://') > -1 &&
+      window.cordova === 'undefined'
+    ) {
+      alert(
+        'This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS'
+      );
     }
     var self = this;
-    var cReverb = new p5.Convolver(path, function(buffer) {
-      if (typeof callback === 'function') {
-        callback(buffer);
-      }
+    var cReverb = new p5.Convolver(
+      path,
+      function (buffer) {
+        if (typeof callback === 'function') {
+          callback(buffer);
+        }
 
-      if (typeof self._decrementPreload === 'function') {
-        self._decrementPreload();
-      }
-    }, errorCallback);
+        if (typeof self._decrementPreload === 'function') {
+          self._decrementPreload();
+        }
+      },
+      errorCallback
+    );
     cReverb.impulses = [];
     return cReverb;
   };
@@ -384,7 +389,11 @@ define(function (require) {
    *  @param   {Function} errorCallback
    *  @private
    */
-  p5.Convolver.prototype._loadBuffer = function(path, callback, errorCallback) {
+  p5.Convolver.prototype._loadBuffer = function (
+    path,
+    callback,
+    errorCallback
+  ) {
     var path = p5.prototype._checkFileFormats(path);
     var self = this;
     var errorTrace = new Error().stack;
@@ -394,11 +403,12 @@ define(function (require) {
     request.open('GET', path, true);
     request.responseType = 'arraybuffer';
 
-    request.onload = function() {
+    request.onload = function () {
       if (request.status === 200) {
         // on success loading file:
-        ac.decodeAudioData(request.response,
-          function(buff) {
+        ac.decodeAudioData(
+          request.response,
+          function (buff) {
             var buffer = {};
             var chunks = path.split('/');
             buffer.name = chunks[chunks.length - 1];
@@ -410,14 +420,16 @@ define(function (require) {
             }
           },
           // error decoding buffer. "e" is undefined in Chrome 11/22/2015
-          function() {
+          function () {
             var err = new CustomError('decodeAudioData', errorTrace, self.url);
             var msg = 'AudioContext error at decodeAudioData for ' + self.url;
             if (errorCallback) {
               err.msg = msg;
               errorCallback(err);
             } else {
-              console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+              console.error(
+                msg + '\n The error stack trace includes: \n' + err.stack
+              );
             }
           }
         );
@@ -425,28 +437,41 @@ define(function (require) {
       // if request status != 200, it failed
       else {
         var err = new CustomError('loadConvolver', errorTrace, self.url);
-        var msg = 'Unable to load ' + self.url +
-          '. The request status was: ' + request.status + ' (' + request.statusText + ')';
+        var msg =
+          'Unable to load ' +
+          self.url +
+          '. The request status was: ' +
+          request.status +
+          ' (' +
+          request.statusText +
+          ')';
 
         if (errorCallback) {
           err.message = msg;
           errorCallback(err);
         } else {
-          console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+          console.error(
+            msg + '\n The error stack trace includes: \n' + err.stack
+          );
         }
       }
     };
 
     // if there is another error, aside from 404...
-    request.onerror = function() {
+    request.onerror = function () {
       var err = new CustomError('loadConvolver', errorTrace, self.url);
-      var msg = 'There was no response from the server at ' + self.url + '. Check the url and internet connectivity.';
+      var msg =
+        'There was no response from the server at ' +
+        self.url +
+        '. Check the url and internet connectivity.';
 
       if (errorCallback) {
         err.message = msg;
         errorCallback(err);
       } else {
-        console.error(msg +'\n The error stack trace includes: \n' + err.stack);
+        console.error(
+          msg + '\n The error stack trace includes: \n' + err.stack
+        );
       }
     };
     request.send();
@@ -497,7 +522,7 @@ define(function (require) {
    *
    *  </code></div>
    */
-  p5.Convolver.prototype.process = function(src) {
+  p5.Convolver.prototype.process = function (src) {
     src.connect(this.input);
   };
 
@@ -523,10 +548,15 @@ define(function (require) {
    *  @param  {Function} callback function (optional)
    *  @param  {Function} errorCallback function (optional)
    */
-  p5.Convolver.prototype.addImpulse = function(path, callback, errorCallback) {
+  p5.Convolver.prototype.addImpulse = function (path, callback, errorCallback) {
     // if loading locally without a server
-    if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined') {
-      alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
+    if (
+      window.location.origin.indexOf('file://') > -1 &&
+      window.cordova === 'undefined'
+    ) {
+      alert(
+        'This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS'
+      );
     }
     this._loadBuffer(path, callback, errorCallback);
   };
@@ -542,10 +572,19 @@ define(function (require) {
    *  @param  {Function} callback function (optional)
    *  @param  {Function} errorCallback function (optional)
    */
-  p5.Convolver.prototype.resetImpulse = function(path, callback, errorCallback) {
+  p5.Convolver.prototype.resetImpulse = function (
+    path,
+    callback,
+    errorCallback
+  ) {
     // if loading locally without a server
-    if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined') {
-      alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
+    if (
+      window.location.origin.indexOf('file://') > -1 &&
+      window.cordova === 'undefined'
+    ) {
+      alert(
+        'This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS'
+      );
     }
     this.impulses = [];
     this._loadBuffer(path, callback, errorCallback);
@@ -571,7 +610,7 @@ define(function (require) {
    *                            (String), or by its position in the
    *                            <code>.impulses</code> Array (Number).
    */
-  p5.Convolver.prototype.toggleImpulse = function(id) {
+  p5.Convolver.prototype.toggleImpulse = function (id) {
     if (typeof id === 'number' && id < this.impulses.length) {
       this._setBuffer(this.impulses[id].audioBuffer);
     }
@@ -585,7 +624,7 @@ define(function (require) {
     }
   };
 
-  p5.Convolver.prototype.dispose = function() {
+  p5.Convolver.prototype.dispose = function () {
     p5.Reverb.prototype.dispose.apply(this);
 
     // remove all the Impulse Response buffers
@@ -595,5 +634,4 @@ define(function (require) {
       }
     }
   };
-
 });

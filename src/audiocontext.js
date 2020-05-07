@@ -2,7 +2,11 @@
 
 global.TONE_SILENCE_VERSION_LOGGING = true;
 
-define(['startaudiocontext', 'Tone/core/Context', 'Tone/core/Tone'], function (StartAudioContext, Context, Tone) {
+define(['startaudiocontext', 'Tone/core/Context', 'Tone/core/Tone'], function (
+  StartAudioContext,
+  Context,
+  Tone
+) {
   // Create the Audio Context
   const audiocontext = new window.AudioContext();
 
@@ -45,10 +49,9 @@ define(['startaudiocontext', 'Tone/core/Context', 'Tone/core/Tone'], function (S
    *
    * </div></code>
    */
-  p5.prototype.getAudioContext = function() {
+  p5.prototype.getAudioContext = function () {
     return audiocontext;
   };
-
 
   /**
    *  <p>It is not only a good practice to give users control over starting
@@ -103,12 +106,14 @@ define(['startaudiocontext', 'Tone/core/Context', 'Tone/core/Tone'], function (S
    *  }
    *  </code></div>
    */
-  p5.prototype.userStartAudio = function(elements, callback) {
+  p5.prototype.userStartAudio = function (elements, callback) {
     var elt = elements;
     if (elements instanceof p5.Element) {
       elt = elements.elt;
-    } else if (elements instanceof Array && elements[0] instanceof p5.Element ) {
-      elt = elements.map(function(e) { return e.elt});
+    } else if (elements instanceof Array && elements[0] instanceof p5.Element) {
+      elt = elements.map(function (e) {
+        return e.elt;
+      });
     }
     return StartAudioContext(audiocontext, elt, callback);
   };

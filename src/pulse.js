@@ -1,7 +1,6 @@
 'use strict';
 
 define(function (require) {
-
   var p5sound = require('master');
   require('oscillator');
 
@@ -49,7 +48,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Pulse = function(freq, w) {
+  p5.Pulse = function (freq, w) {
     p5.Oscillator.call(this, freq, 'sawtooth');
 
     // width of PWM, should be betw 0 to 1.0
@@ -70,7 +69,7 @@ define(function (require) {
     this.f = freq || 440;
     var mW = this.w / this.oscillator.frequency.value;
     this.dNode.delayTime.value = mW;
-    this.dcGain.gain.value = 1.7*(0.5-this.w);
+    this.dcGain.gain.value = 1.7 * (0.5 - this.w);
 
     // disconnect osc2 and connect it to delay, which is connected to output
     this.osc2.disconnect();
@@ -93,7 +92,7 @@ define(function (require) {
    *  @param {Number} [width]    Width between the pulses (0 to 1.0,
    *                         defaults to 0)
    */
-  p5.Pulse.prototype.width = function(w) {
+  p5.Pulse.prototype.width = function (w) {
     if (typeof w === 'number') {
       if (w <= 1.0 && w >= 0.0) {
         this.w = w;
@@ -104,7 +103,7 @@ define(function (require) {
         this.dNode.delayTime.value = mW;
       }
 
-      this.dcGain.gain.value = 1.7*(0.5-this.w);
+      this.dcGain.gain.value = 1.7 * (0.5 - this.w);
     } else {
       w.connect(this.dNode.delayTime);
       var sig = new p5.SignalAdd(-0.5);
@@ -115,7 +114,7 @@ define(function (require) {
     }
   };
 
-  p5.Pulse.prototype.start = function(f, time) {
+  p5.Pulse.prototype.start = function (f, time) {
     var now = p5sound.audiocontext.currentTime;
     var t = time || 0;
     if (!this.started) {
@@ -133,7 +132,10 @@ define(function (require) {
       this.osc2.oscillator.type = type;
       this.osc2.oscillator.connect(this.osc2.output);
       this.osc2.start(t + now);
-      this.freqNode = [this.oscillator.frequency, this.osc2.oscillator.frequency];
+      this.freqNode = [
+        this.oscillator.frequency,
+        this.osc2.oscillator.frequency,
+      ];
 
       // start dcOffset, too
       this.dcOffset = createDCOffset();
@@ -150,7 +152,7 @@ define(function (require) {
     }
   };
 
-  p5.Pulse.prototype.stop = function(time) {
+  p5.Pulse.prototype.stop = function (time) {
     if (this.started) {
       var t = time || 0;
       var now = p5sound.audiocontext.currentTime;
@@ -164,7 +166,7 @@ define(function (require) {
     }
   };
 
-  p5.Pulse.prototype.freq = function(val, rampTime, tFromNow) {
+  p5.Pulse.prototype.freq = function (val, rampTime, tFromNow) {
     if (typeof val === 'number') {
       this.f = val;
       var now = p5sound.audiocontext.currentTime;
@@ -173,16 +175,24 @@ define(function (require) {
       var currentFreq = this.oscillator.frequency.value;
       this.oscillator.frequency.cancelScheduledValues(now);
       this.oscillator.frequency.setValueAtTime(currentFreq, now + tFromNow);
-      this.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
+      this.oscillator.frequency.exponentialRampToValueAtTime(
+        val,
+        tFromNow + rampTime + now
+      );
       this.osc2.oscillator.frequency.cancelScheduledValues(now);
-      this.osc2.oscillator.frequency.setValueAtTime(currentFreq, now + tFromNow);
-      this.osc2.oscillator.frequency.exponentialRampToValueAtTime(val, tFromNow + rampTime + now);
+      this.osc2.oscillator.frequency.setValueAtTime(
+        currentFreq,
+        now + tFromNow
+      );
+      this.osc2.oscillator.frequency.exponentialRampToValueAtTime(
+        val,
+        tFromNow + rampTime + now
+      );
 
       if (this.freqMod) {
         this.freqMod.output.disconnect();
         this.freqMod = null;
       }
-
     } else if (val.output) {
       val.output.disconnect();
       val.output.connect(this.oscillator.frequency);
@@ -194,14 +204,12 @@ define(function (require) {
   // inspiration: http://webaudiodemos.appspot.com/oscilloscope/
   function createDCOffset() {
     var ac = p5sound.audiocontext;
-    var buffer=ac.createBuffer(1,2048,ac.sampleRate);
+    var buffer = ac.createBuffer(1, 2048, ac.sampleRate);
     var data = buffer.getChannelData(0);
-    for (var i=0; i<2048; i++)
-      data[i]=1.0;
-    var bufferSource=ac.createBufferSource();
-    bufferSource.buffer=buffer;
-    bufferSource.loop=true;
+    for (var i = 0; i < 2048; i++) data[i] = 1.0;
+    var bufferSource = ac.createBufferSource();
+    bufferSource.buffer = buffer;
+    bufferSource.loop = true;
     return bufferSource;
   }
-
 });

@@ -40,7 +40,9 @@ class RecorderProcessor extends AudioWorkletProcessor {
       this.inputRingBuffer.pull(this.inputRingBufferArraySequence);
 
       for (let channel = 0; channel < this.numOutputChannels; ++channel) {
-        const inputChannelCopy = this.inputRingBufferArraySequence[channel].slice();
+        const inputChannelCopy = this.inputRingBufferArraySequence[
+          channel
+        ].slice();
         if (channel === 0) {
           this.leftBuffers.push(inputChannelCopy);
           if (this.numInputChannels === 1) {
@@ -68,7 +70,10 @@ class RecorderProcessor extends AudioWorkletProcessor {
     const buffers = this.getBuffers();
     const leftBuffer = buffers[0].buffer;
     const rightBuffer = buffers[1].buffer;
-    this.port.postMessage({ name: 'buffers', leftBuffer: leftBuffer, rightBuffer: rightBuffer }, [leftBuffer, rightBuffer]);
+    this.port.postMessage(
+      { name: 'buffers', leftBuffer: leftBuffer, rightBuffer: rightBuffer },
+      [leftBuffer, rightBuffer]
+    );
     this.clear();
   }
 
@@ -94,8 +99,13 @@ class RecorderProcessor extends AudioWorkletProcessor {
   clear() {
     this.leftBuffers = [];
     this.rightBuffers = [];
-    this.inputRingBuffer = new RingBuffer(this.bufferSize, this.numInputChannels);
-    this.inputRingBufferArraySequence = new Array(this.numInputChannels).fill(null).map(() => new Float32Array(this.bufferSize));
+    this.inputRingBuffer = new RingBuffer(
+      this.bufferSize,
+      this.numInputChannels
+    );
+    this.inputRingBufferArraySequence = new Array(this.numInputChannels)
+      .fill(null)
+      .map(() => new Float32Array(this.bufferSize));
     this.recordedSamples = 0;
     this.sampleLimit = null;
   }
