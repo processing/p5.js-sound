@@ -106,7 +106,7 @@ define(function (require) {
       this.dcGain.gain.value = 1.7 * (0.5 - this.w);
     } else {
       w.connect(this.dNode.delayTime);
-      var sig = new p5.SignalAdd(-0.5);
+      var sig = new Signal(-0.5);
       sig.setInput(w);
       sig = sig.mult(-1);
       sig = sig.mult(1.7);

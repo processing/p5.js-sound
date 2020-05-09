@@ -12,7 +12,6 @@ define(function (require) {
   require('soundfile');
   require('amplitude');
   require('fft');
-  require('signal');
   require('oscillator');
   require('envelope');
   require('pulse');
