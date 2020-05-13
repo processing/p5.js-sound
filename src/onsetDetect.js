@@ -1,6 +1,5 @@
 'use strict';
 
-define(function () {
   /**
    *  Listen for onsets (a sharp increase in volume) within a given
    *  frequency range.
@@ -49,4 +48,3 @@ define(function () {
 
     this.penergy = this.energy;
   };
-});

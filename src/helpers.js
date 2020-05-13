@@ -1,7 +1,6 @@
 'use strict';
-define(function (require) {
-  var p5sound = require('master');
-  var processorNames = require('./audioWorklet/processorNames');
+  import  p5sound from './master'
+  import processorNames from './audioWorklet/processorNames'
   /**
    * @for p5
    */
@@ -79,12 +78,12 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  var midiToFreq = (p5.prototype.midiToFreq = function (m) {
-    return 440 * Math.pow(2, (m - 69) / 12.0);
-  });
+  export var midiToFreq = p5.prototype.midiToFreq = function (m) {
+    return 440 * Math.pow(2, (m-69)/12.0);
+  };
 
   // This method converts ANSI notes specified as a string "C4", "Eb3" to a frequency
-  var noteToFreq = function (note) {
+ export  var noteToFreq = function (note) {
     if (typeof note !== 'string') {
       return note;
     }
@@ -244,7 +243,7 @@ define(function (require) {
   // will use as saving .wav file and saving blob object
   // Thank you to Matt Diamond's RecorderJS (MIT License)
   // https://github.com/mattdiamond/Recorderjs
-  function convertToWav(audioBuffer) {
+  export function convertToWav(audioBuffer) {
     var leftChannel, rightChannel;
     leftChannel = audioBuffer.getChannelData(0);
 
@@ -316,7 +315,7 @@ define(function (require) {
     }
   }
 
-  function safeBufferSize(idealBufferSize) {
+ export function safeBufferSize(idealBufferSize) {
     let bufferSize = idealBufferSize;
 
     // if the AudioWorkletNode is actually a ScriptProcessorNode created via polyfill,
@@ -336,10 +335,10 @@ define(function (require) {
     return bufferSize;
   }
 
-  return {
-    convertToWav: convertToWav,
-    midiToFreq: midiToFreq,
-    noteToFreq: noteToFreq,
-    safeBufferSize: safeBufferSize,
-  };
-});
+  // export default {
+  //   // convertToWav: convertToWav,
+  //   // midiToFreq: midiToFreq,
+  //   // noteToFreq: noteToFreq,
+  //   // safeBufferSize: safeBufferSize
+  // };
+

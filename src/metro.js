@@ -1,11 +1,9 @@
 'use strict';
 
-define(function (require) {
-  var p5sound = require('master');
-
+  import p5sound from './master'
   // requires the Tone.js library's Clock (MIT license, Yotam Mann)
   // https://github.com/TONEnoTONE/Tone.js/
-  var Clock = require('Tone/core/Clock');
+  import Clock from 'Tone/core/Clock'
 
   p5.Metro = function () {
     this.clock = new Clock({
@@ -97,4 +95,3 @@ define(function (require) {
   p5.Metro.prototype.beatLength = function (tatums) {
     this.tatums = 1 / tatums / 4; // lowest possible division of a beat
   };
-});

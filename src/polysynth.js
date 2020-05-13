@@ -1,8 +1,8 @@
 'use strict';
-define(function (require) {
-  var p5sound = require('master');
-  var TimelineSignal = require('Tone/signal/TimelineSignal');
-  var noteToFreq = require('helpers').noteToFreq;
+
+  import p5sound from './master'
+  import TimelineSignal from 'Tone/signal/TimelineSignal'
+  import {noteToFreq} from './helpers'
 
   /**
    *  An AudioVoice is used as a single voice for sound synthesis.
@@ -478,4 +478,3 @@ define(function (require) {
       delete this.output;
     }
   };
-});

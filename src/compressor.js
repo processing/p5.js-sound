@@ -1,7 +1,6 @@
-define(function (require) {
-  'use strict';
+	'use strict';
 
-  var Effect = require('effect');
+	import  Effect from  './effect'
 
   /**
    * Compressor is an audio effect class that performs dynamics compression
@@ -263,5 +262,3 @@ define(function (require) {
     }
   };
 
-  return p5.Compressor;
-});

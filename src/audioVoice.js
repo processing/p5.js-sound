@@ -1,6 +1,5 @@
 'use strict';
-define(function () {
-  var p5sound = require('master');
+  import p5sound from './master'
 
   /**
    * Base class for monophonic synthesizers. Any extensions of this class
@@ -10,11 +9,11 @@ define(function () {
    * @class p5.AudioVoice
    * @constructor
    */
-  p5.AudioVoice = function () {
-    this.ac = p5sound.audiocontext;
-    this.output = this.ac.createGain();
-    this.connect();
-    p5sound.soundArray.push(this);
+   p5.AudioVoice = function () {
+	  this.ac = p5sound.audiocontext;
+	  this.output = this.ac.createGain();
+	  this.connect();
+	  p5sound.soundArray.push(this);
   };
 
   p5.AudioVoice.prototype.play = function (
@@ -61,5 +60,4 @@ define(function () {
     }
   };
 
-  return p5.AudioVoice;
-});
+export default p5.AudioVoice;

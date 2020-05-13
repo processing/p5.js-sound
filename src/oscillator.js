@@ -1,11 +1,10 @@
 'use strict';
 
-define(function (require) {
-  var p5sound = require('master');
+  import p5sound from './master'
 
-  var Add = require('Tone/signal/Add');
-  var Mult = require('Tone/signal/Multiply');
-  var Scale = require('Tone/signal/Scale');
+  import Add from 'Tone/signal/Add' 
+  import Mult from 'Tone/signal/Multiply'
+  import Scale from 'Tone/signal/Scale'
 
   /**
    *  <p>Creates a signal that oscillates between -1.0 and 1.0.
@@ -597,4 +596,5 @@ define(function (require) {
   };
 
   p5.SqrOsc.prototype = Object.create(p5.Oscillator.prototype);
-});
+
+export default p5.oscillator;

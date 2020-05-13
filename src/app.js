@@ -1,42 +1,40 @@
-'use strict';
 
-define(function (require) {
-  require('audioworklet-polyfill');
-  require('shims');
-  require('audiocontext');
-  var p5SOUND = require('master');
-  require('helpers');
-  require('errorHandler');
-  require('audioWorklet');
-  require('panner');
-  require('soundfile');
-  require('amplitude');
-  require('fft');
-  require('signal');
-  require('oscillator');
-  require('envelope');
-  require('pulse');
-  require('noise');
-  require('audioin');
-  require('filter');
-  require('eq');
-  require('panner3d');
-  require('listener3d');
-  require('delay');
-  require('reverb');
-  require('metro');
-  require('looper');
-  require('soundLoop');
-  require('compressor');
-  require('soundRecorder');
-  require('peakDetect');
-  require('gain');
-  require('monosynth');
-  require('polysynth');
-  require('distortion');
-  require('audioVoice');
-  require('monosynth');
-  require('polysynth');
 
-  return p5SOUND;
-});
+  import 'audioworklet-polyfill'
+  import './shims'
+  import './audiocontext'
+  import './master'
+  import './helpers'
+  import './errorHandler'
+  import './audioWorklet'
+  import './panner'
+  import './soundfile'
+  import './amplitude'
+  import './fft'
+  import './signal'
+  import './oscillator'
+  import './envelope'
+  import './pulse'
+  import './noise'
+  import './audioin'
+  import './filter'
+  import './eq'
+  import './panner3d'
+  import './listener3d'
+  import './delay'
+  import './reverb'
+  import './metro'
+  import './looper'
+  import './soundLoop'
+  import './compressor'
+  import './soundRecorder'
+  import './peakDetect'
+  import './gain'
+  import './monosynth'
+  import './polysynth'
+  import './distortion'
+  import './audioVoice'
+  import './monosynth'
+  import './polysynth'
+
+

@@ -1,8 +1,8 @@
 'use strict';
 
-define(function (require) {
-  var Effect = require('effect');
-  var EQFilter = require('eqFilter');
+
+   import Effect from './effect'
+   import EQFilter from './eqFilter'
 
   /**
    * p5.EQ is an audio effect that performs the function of a multiband
@@ -203,5 +203,4 @@ define(function (require) {
     }
   };
 
-  return p5.EQ;
-});
+  export default p5.EQ;

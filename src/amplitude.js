@@ -1,9 +1,7 @@
-'use strict';
-
-define(function (require) {
-  const p5sound = require('master');
-  const { safeBufferSize } = require('helpers');
-  const processorNames = require('./audioWorklet/processorNames');
+  'use strict'
+  import p5sound from './master'
+  import { safeBufferSize } from './helpers'
+  import processorNames from './audioWorklet/processorNames'
 
   /**
    *  Amplitude measures volume between 0.0 and 1.0.
@@ -311,4 +309,3 @@ define(function (require) {
     this._workletNode.disconnect();
     delete this._workletNode;
   };
-});

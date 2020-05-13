@@ -1,6 +1,4 @@
-'use strict';
 
-define(function () {
   /*
     Helper function to generate an error
     with a custom stack trace that points to the sketch
@@ -37,6 +35,5 @@ define(function () {
 
     return err; // TODO: is this really a constructor?
   };
+export default CustomError ;
 
-  return CustomError;
-});

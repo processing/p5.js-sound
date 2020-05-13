@@ -1,6 +1,6 @@
-'use strict';
 
-define(['audiocontext'], function (audiocontext) {
+
+  import audiocontext from './audiocontext'
   // Master contains the master sound output.
   var Master = function () {
     this.input = audiocontext.createGain();
@@ -41,7 +41,7 @@ define(['audiocontext'], function (audiocontext) {
   };
 
   // create a single instance of the p5Sound / master output for use within this sketch
-  var p5sound = new Master();
+    const  p5sound = new Master();
 
   /**
    * Returns a number representing the master amplitude (volume) for sound
@@ -116,5 +116,4 @@ define(['audiocontext'], function (audiocontext) {
   p5.soundOut._silentNode.gain.value = 0;
   p5.soundOut._silentNode.connect(p5sound.audiocontext.destination);
 
-  return p5sound;
-});
+export default p5sound;

@@ -1,7 +1,6 @@
 'use strict';
 
-define(function (require) {
-  var p5sound = require('master');
+  import p5sound from './master'
 
   var BPM = 120;
 
@@ -513,4 +512,3 @@ define(function (require) {
       aScore.parts[aScore.currentPart].start();
     }
   }
-});

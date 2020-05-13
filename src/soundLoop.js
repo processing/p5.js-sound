@@ -1,8 +1,7 @@
 'use strict';
 
-define(function (require) {
-  var p5sound = require('master');
-  var Clock = require('Tone/core/Clock');
+  import p5sound from './master'
+  import Clock from 'Tone/core/Clock'
 
   /**
    * SoundLoop
@@ -323,5 +322,4 @@ define(function (require) {
     },
   });
 
-  return p5.SoundLoop;
-});
+export default p5.SoundLoop;

@@ -1,7 +1,6 @@
 'use strict';
 
-define(function (require) {
-  var p5sound = require('master');
+  import p5sound from './master'
 
   /**
    *  <p>FFT (Fast Fourier Transform) is an analysis algorithm that
@@ -641,5 +640,6 @@ define(function (require) {
     if (fft.timeDomain instanceof Uint8Array === false) {
       fft.timeDomain = new Uint8Array(fft.analyser.frequencyBinCount);
     }
-  }
-});
+  };
+
+  export default p5.FFT;

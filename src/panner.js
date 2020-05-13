@@ -1,7 +1,7 @@
 'use strict';
 
-define(function (require) {
-  var p5sound = require('master');
+
+  import p5sound from './master'
   var ac = p5sound.audiocontext;
 
   // Stereo panner
@@ -103,4 +103,3 @@ define(function (require) {
       }
     };
   }
-});

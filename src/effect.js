@@ -1,7 +1,7 @@
 'use strict';
-define(function (require) {
-  var p5sound = require('master');
-  var CrossFade = require('Tone/component/CrossFade');
+
+  import  p5sound from './master' 
+  import CrossFade from 'Tone/component/CrossFade'
 
   /**
    * Effect is a base class for audio effects in p5. <br>
@@ -161,5 +161,6 @@ define(function (require) {
     this.ac = undefined;
   };
 
-  return p5.Effect;
-});
+
+  export default p5.Effect ; 
+  //why can't we do export p5.Effect ? 

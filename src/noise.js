@@ -1,7 +1,6 @@
 'use strict';
 
-define(function (require) {
-  var p5sound = require('master');
+  import p5sound from './master'
 
   // generate noise buffers
   const _whiteNoiseBuffer = (function () {
@@ -167,4 +166,3 @@ define(function (require) {
     this.buffer = null;
     this.noise = null;
   };
-});

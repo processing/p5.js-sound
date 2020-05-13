@@ -1,8 +1,8 @@
 'use strict';
-define(function (require) {
-  var p5sound = require('master');
-  var AudioVoice = require('audioVoice');
-  var noteToFreq = require('helpers').noteToFreq;
+
+  import p5sound from './master'
+  import AudioVoice from './audioVoice'
+  import {noteToFreq} from './helpers'
 
   var DEFAULT_SUSTAIN = 0.15;
 
@@ -366,4 +366,3 @@ define(function (require) {
       this.oscillator.dispose();
     }
   };
-});

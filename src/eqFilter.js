@@ -1,8 +1,7 @@
 'use strict';
 
-define(function (require) {
-  var Filter = require('filter');
-  var p5sound = require('master');
+  import  Filter from './filter'
+  import  p5sound from './master'
 
   /**
    *  EQFilter extends p5.Filter with constraints
@@ -44,11 +43,10 @@ define(function (require) {
   };
   EQFilter.prototype.dispose = function () {
     // remove reference form soundArray
-    var index = p5sound.soundArray.indexOf(this);
+    const index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
     this.disconnect();
     delete this.biquad;
   };
 
-  return EQFilter;
-});
+export default EQFilter;

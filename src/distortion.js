@@ -1,7 +1,7 @@
 'use strict';
 
-define(function (require) {
-  var Effect = require('effect');
+
+  import Effect from 'effect'
 
   /*
    * Adapted from [Kevin Ennis on StackOverflow](http://stackoverflow.com/questions/22312841/waveshaper-node-in-webaudio-how-to-emulate-distortion)
@@ -140,4 +140,5 @@ define(function (require) {
       this.waveShaperNode = null;
     }
   };
-});
+
+  export default p5.Distortion;

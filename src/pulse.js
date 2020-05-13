@@ -1,7 +1,7 @@
 'use strict';
 
-define(function (require) {
-  var p5sound = require('master');
+
+  import p5sound from './master'
   require('oscillator');
 
   /**
@@ -210,4 +210,3 @@ define(function (require) {
     bufferSource.loop = true;
     return bufferSource;
   }
-});

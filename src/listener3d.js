@@ -1,7 +1,6 @@
 'use strict';
 
-define(function (require) {
-  var p5sound = require('master');
+  import p5sound from './master'
 
   //  /**
   //   * listener is a class that can construct both a Spatial Panner
@@ -267,6 +266,5 @@ define(function (require) {
     }
     return this.listener.upZ.value;
   };
-
-  return p5.Listener3D;
-});
+ 
+  export default 	p5.Listener3D;

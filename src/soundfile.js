@@ -1,11 +1,12 @@
 'use strict';
 
-define(function (require) {
-  const CustomError = require('errorHandler');
-  const p5sound = require('master');
+
+  import CustomError from './errorHandler'
+  import p5sound from './master'
+  import { midiToFreq, convertToWav, safeBufferSize } from  './helpers'
+  import processorNames from './audioWorklet/processorNames'
+
   const ac = p5sound.audiocontext;
-  const { midiToFreq, convertToWav, safeBufferSize } = require('helpers');
-  var processorNames = require('./audioWorklet/processorNames');
 
   /**
    *  <p>SoundFile object with a path to a file.</p>
@@ -1900,4 +1901,3 @@ define(function (require) {
       soundFile._playing = false;
     }
   }
-});

@@ -2,11 +2,9 @@
 
 global.TONE_SILENCE_VERSION_LOGGING = true;
 
-define(['startaudiocontext', 'Tone/core/Context', 'Tone/core/Tone'], function (
-  StartAudioContext,
-  Context,
-  Tone
-) {
+  import StartAudioContext from 'startaudiocontext'
+  import  Tone from 'Tone/core/Tone'
+
   // Create the Audio Context
   const audiocontext = new window.AudioContext();
 
@@ -118,5 +116,4 @@ define(['startaudiocontext', 'Tone/core/Context', 'Tone/core/Tone'], function (
     return StartAudioContext(audiocontext, elt, callback);
   };
 
-  return audiocontext;
-});
+  export default audiocontext ;

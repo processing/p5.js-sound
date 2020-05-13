@@ -1,8 +1,7 @@
 'use strict';
 
-define(function (require) {
-  var Filter = require('filter');
-  var Effect = require('effect');
+  import Filter from './filter'
+  import Effect from './effect'
 
   /**
    *  Delay is an echo effect. It processes an existing sound source,
@@ -52,8 +51,8 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Delay = function () {
-    Effect.call(this);
+   p5.Delay = function () {
+  	Effect.call(this);
 
     this._split = this.ac.createChannelSplitter(2);
     this._merge = this.ac.createChannelMerger(2);
@@ -307,4 +306,4 @@ define(function (require) {
     this.leftDelay = undefined;
     this.rightDelay = undefined;
   };
-});
+  export default p5.Delay;

@@ -1,7 +1,6 @@
 'use strict';
 
-define(function (require) {
-  var p5sound = require('master');
+  import  p5sound from './master'
 
   /**
    *  A gain node is usefull to set the relative volume of sound.
@@ -153,4 +152,5 @@ define(function (require) {
       delete this.input;
     }
   };
-});
+
+export default p5.Gain;

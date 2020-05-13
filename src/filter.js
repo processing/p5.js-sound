@@ -1,7 +1,6 @@
 'use strict';
 
-define(function (require) {
-  var Effect = require('effect');
+  import Effect from './effect'
 
   /**
    *  <p>A p5.Filter uses a Web Audio Biquad Filter to filter
@@ -310,5 +309,5 @@ define(function (require) {
   };
   p5.BandPass.prototype = Object.create(p5.Filter.prototype);
 
-  return p5.Filter;
-});
+
+export default p5.Filter;

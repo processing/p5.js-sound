@@ -1,11 +1,11 @@
 'use strict';
 
-define(function (require) {
   // inspiration: recorder.js, Tone.js & typedarray.org
 
-  const p5sound = require('master');
-  const { convertToWav, safeBufferSize } = require('helpers');
-  const processorNames = require('./audioWorklet/processorNames');
+  import  p5sound from './master'
+  import  { convertToWav, safeBufferSize } from './helpers'
+  import processorNames from './audioWorklet/processorNames'
+  
   const ac = p5sound.audiocontext;
 
   /**
@@ -224,4 +224,3 @@ define(function (require) {
     const dataView = convertToWav(soundFile.buffer);
     p5.prototype.writeFile([dataView], fileName, 'wav');
   };
-});

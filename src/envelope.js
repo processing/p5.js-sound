@@ -1,11 +1,11 @@
 'use strict';
 
-define(function (require) {
-  var p5sound = require('master');
-  var Add = require('Tone/signal/Add');
-  var Mult = require('Tone/signal/Multiply');
-  var Scale = require('Tone/signal/Scale');
-  var TimelineSignal = require('Tone/signal/TimelineSignal');
+
+  import p5sound from './master' 
+  import Add from 'Tone/signal/Add' 
+  import Mult from 'Tone/signal/Multiply' 
+  import Scale from 'Tone/signal/Scale' 
+  import TimelineSignal from 'Tone/signal/TimelineSignal' 
 
   /**
    *  <p>Envelopes are pre-defined amplitude distribution over time.
@@ -906,4 +906,5 @@ define(function (require) {
     p5.Envelope.call(this, t1, l1, t2, l2, t3, l3);
   };
   p5.Env.prototype = Object.create(p5.Envelope.prototype);
-});
+
+  export default p5.Envelope;

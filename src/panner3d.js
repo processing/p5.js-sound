@@ -1,7 +1,6 @@
 'use strict';
 
-define(function (require) {
-  var Effect = require('effect');
+  import Effect from './effect'
 
   /**
    * Panner3D is based on the <a title="Web Audio Panner docs"  href=
@@ -279,5 +278,4 @@ define(function (require) {
     }
   };
 
-  return p5.Panner3D;
-});
+export default p5.Panner3D;
