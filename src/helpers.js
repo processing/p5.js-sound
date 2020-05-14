@@ -322,7 +322,7 @@ define(function (require) {
   }
 
   function safeBufferSize(idealBufferSize) {
-    let bufferSize = idealBufferSize;
+    let bufferSize = idealBufferSize; 
 
     // if the AudioWorkletNode is actually a ScriptProcessorNode created via polyfill,
     // make sure that our chosen buffer size isn't smaller than the buffer size automatically
@@ -337,12 +337,27 @@ define(function (require) {
 
     return bufferSize;
   }
+ var safeBins =  p5.prototype.safeBins  = function(bins) {
+    let safeBins = 1024;
+    if(typeof(bins)==="string"){
+      console.warn("the value of bins must be power of two and between 16 and 1024");
+      return safeBins
+    }
+    if(bins && bins>=16 && bins<=1024 && Math.log2(bins)%1===0 ) 
+    return bins;
+    else {
+      console.warn("the value of bins must be power of two and between 16 and 1024");
+      return safeBins
+    }
+    
+  }
 
   return {
     convertToWav: convertToWav,
     midiToFreq: midiToFreq,
     noteToFreq: noteToFreq,
-    safeBufferSize: safeBufferSize
+    safeBufferSize: safeBufferSize,
+    safeBins:safeBins
   };
 
 });
