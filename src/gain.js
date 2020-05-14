@@ -132,9 +132,7 @@ define(function (require) {
    *  @param  {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
    */
-  p5.Gain.prototype.amp = function (vol, rampTime, tFromNow) {
-    var rampTime = rampTime || 0;
-    var tFromNow = tFromNow || 0;
+  p5.Gain.prototype.amp = function (vol, rampTime = 0, tFromNow = 0) {
     var now = p5sound.audiocontext.currentTime;
     var currentVol = this.output.gain.value;
     this.output.gain.cancelScheduledValues(now);

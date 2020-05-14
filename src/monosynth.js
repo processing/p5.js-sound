@@ -168,9 +168,8 @@ define(function (require) {
   p5.MonoSynth.prototype.triggerAttack = function (
     note,
     velocity,
-    secondsFromNow
+    secondsFromNow = 0
   ) {
-    var secondsFromNow = ~~secondsFromNow;
     var freq = noteToFreq(note);
     var vel = velocity || 0.1;
     this.oscillator.freq(freq, 0, secondsFromNow);
@@ -208,8 +207,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow) {
-    var secondsFromNow = secondsFromNow || 0;
+  p5.MonoSynth.prototype.triggerRelease = function (secondsFromNow = 0) {
     this.env.ramp(this.output.gain, secondsFromNow, 0);
   };
 

@@ -81,10 +81,8 @@ define(['audiocontext'], function (audiocontext) {
    *  @param {Number} [timeFromNow]  Schedule this event to happen at
    *                                 t seconds in the future
    */
-  p5.prototype.masterVolume = function (vol, rampTime, tFromNow) {
+  p5.prototype.masterVolume = function (vol, rampTime = 0, tFromNow = 0) {
     if (typeof vol === 'number') {
-      var rampTime = rampTime || 0;
-      var tFromNow = tFromNow || 0;
       var now = p5sound.audiocontext.currentTime;
       var currentVol = p5sound.output.gain.value;
       p5sound.output.gain.cancelScheduledValues(now + tFromNow);

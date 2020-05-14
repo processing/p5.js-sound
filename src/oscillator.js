@@ -71,12 +71,12 @@ define(function (require) {
    */
   p5.Oscillator = function (freq, type) {
     if (typeof freq === 'string') {
-      var f = type;
+      let f = type;
       type = freq;
       freq = f;
     }
     if (typeof type === 'number') {
-      var f = type;
+      let f = type;
       type = freq;
       freq = f;
     }
@@ -197,15 +197,12 @@ define(function (require) {
    *                              this oscillator's
    *                              gain/amplitude/volume)
    */
-  p5.Oscillator.prototype.amp = function (vol, rampTime, tFromNow) {
-    var self = this;
+  p5.Oscillator.prototype.amp = function (vol, rampTime = 0, tFromNow = 0) {
     if (typeof vol === 'number') {
-      var rampTime = rampTime || 0;
-      var tFromNow = tFromNow || 0;
       var now = p5sound.audiocontext.currentTime;
       this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
     } else if (vol) {
-      vol.connect(self.output.gain);
+      vol.connect(this.output.gain);
     } else {
       // return the Gain Node
       return this.output.gain;
@@ -257,15 +254,10 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Oscillator.prototype.freq = function (val, rampTime, tFromNow) {
+  p5.Oscillator.prototype.freq = function (val, rampTime = 0, tFromNow = 0) {
     if (typeof val === 'number' && !isNaN(val)) {
       this.f = val;
       var now = p5sound.audiocontext.currentTime;
-      var rampTime = rampTime || 0;
-      var tFromNow = tFromNow || 0;
-      var t = now + tFromNow + rampTime;
-      // var currentFreq = this.oscillator.frequency.value;
-      // this.oscillator.frequency.cancelScheduledValues(now);
 
       if (rampTime === 0) {
         this.oscillator.frequency.setValueAtTime(val, tFromNow + now);

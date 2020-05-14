@@ -30,8 +30,7 @@ define(function () {
     err.failedPath = failedPath;
 
     // only print the part of the stack trace that refers to the user code:
-    var splitStack = tempStack.split('\n');
-    splitStack = splitStack.filter(function (ln) {
+    splitStack = tempStack.split('\n').filter(function (ln) {
       return !ln.match(/(p5.|native code|globalInit)/g);
     });
     err.stack = splitStack.join('\n');

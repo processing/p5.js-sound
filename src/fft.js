@@ -173,7 +173,8 @@ define(function (require) {
    *
    */
   p5.FFT.prototype.waveform = function () {
-    var bins, mode, normalArray;
+    var bins, mode;
+    var normalArray = new Array();
 
     for (var i = 0; i < arguments.length; i++) {
       if (typeof arguments[i] === 'number') {
@@ -193,7 +194,6 @@ define(function (require) {
     } else {
       timeToInt(this, this.timeDomain);
       this.analyser.getByteTimeDomainData(this.timeDomain);
-      var normalArray = new Array();
       for (var j = 0; j < this.timeDomain.length; j++) {
         var scaled = p5.prototype.map(this.timeDomain[j], 0, 255, -1, 1);
         normalArray.push(scaled);
@@ -512,8 +512,8 @@ define(function (require) {
    *  @param  {Number}  N                Number of returned frequency groups
    *  @return {Array}   linearAverages   Array of average amplitude values for each group
    */
-  p5.FFT.prototype.linAverages = function (N) {
-    var N = N || 16; // This prevents undefined, null or 0 values of N
+  p5.FFT.prototype.linAverages = function (_N) {
+    var N = _N || 16; // This prevents undefined, null or 0 values of N
 
     var spectrum = this.freqDomain;
     var spectrumLength = spectrum.length;
@@ -595,9 +595,9 @@ define(function (require) {
    *  @param  {Number}  fCtr0         Minimum central frequency for the lowest band
    *  @return {Array}   octaveBands   Array of octave band objects with their bounds
    */
-  p5.FFT.prototype.getOctaveBands = function (N, fCtr0) {
-    var N = N || 3; // Default to 1/3 Octave Bands
-    var fCtr0 = fCtr0 || 15.625; // Minimum central frequency, defaults to 15.625Hz
+  p5.FFT.prototype.getOctaveBands = function (_N, _fCtr0) {
+    var N = _N || 3; // Default to 1/3 Octave Bands
+    var fCtr0 = _fCtr0 || 15.625; // Minimum central frequency, defaults to 15.625Hz
 
     var octaveBands = [];
     var lastFrequencyBand = {
@@ -622,24 +622,24 @@ define(function (require) {
   };
 
   // helper methods to convert type from float (dB) to int (0-255)
-  var freqToFloat = function (fft) {
+  function freqToFloat(fft) {
     if (fft.freqDomain instanceof Float32Array === false) {
       fft.freqDomain = new Float32Array(fft.analyser.frequencyBinCount);
     }
-  };
-  var freqToInt = function (fft) {
+  }
+  function freqToInt(fft) {
     if (fft.freqDomain instanceof Uint8Array === false) {
       fft.freqDomain = new Uint8Array(fft.analyser.frequencyBinCount);
     }
-  };
-  var timeToFloat = function (fft) {
+  }
+  function timeToFloat(fft) {
     if (fft.timeDomain instanceof Float32Array === false) {
       fft.timeDomain = new Float32Array(fft.analyser.frequencyBinCount);
     }
-  };
-  var timeToInt = function (fft) {
+  }
+  function timeToInt(fft) {
     if (fft.timeDomain instanceof Uint8Array === false) {
       fft.timeDomain = new Uint8Array(fft.analyser.frequencyBinCount);
     }
-  };
+  }
 });

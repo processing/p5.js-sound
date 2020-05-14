@@ -3,36 +3,8 @@
 define(function (require) {
   var p5sound = require('master');
 
-  /**
-   *  Noise is a type of oscillator that generates a buffer with random values.
-   *
-   *  @class p5.Noise
-   *  @extends p5.Oscillator
-   *  @constructor
-   *  @param {String} type Type of noise can be 'white' (default),
-   *                       'brown' or 'pink'.
-   */
-  p5.Noise = function (type) {
-    var assignType;
-    p5.Oscillator.call(this);
-    delete this.f;
-    delete this.freq;
-    delete this.oscillator;
-
-    if (type === 'brown') {
-      assignType = _brownNoise;
-    } else if (type === 'pink') {
-      assignType = _pinkNoise;
-    } else {
-      assignType = _whiteNoise;
-    }
-    this.buffer = assignType;
-  };
-
-  p5.Noise.prototype = Object.create(p5.Oscillator.prototype);
-
   // generate noise buffers
-  var _whiteNoise = (function () {
+  const _whiteNoiseBuffer = (function () {
     var bufferSize = 2 * p5sound.audiocontext.sampleRate;
     var whiteBuffer = p5sound.audiocontext.createBuffer(
       1,
@@ -47,7 +19,7 @@ define(function (require) {
     return whiteBuffer;
   })();
 
-  var _pinkNoise = (function () {
+  const _pinkNoiseBuffer = (function () {
     var bufferSize = 2 * p5sound.audiocontext.sampleRate;
     var pinkBuffer = p5sound.audiocontext.createBuffer(
       1,
@@ -73,7 +45,7 @@ define(function (require) {
     return pinkBuffer;
   })();
 
-  var _brownNoise = (function () {
+  const _brownNoiseBuffer = (function () {
     var bufferSize = 2 * p5sound.audiocontext.sampleRate;
     var brownBuffer = p5sound.audiocontext.createBuffer(
       1,
@@ -93,6 +65,34 @@ define(function (require) {
   })();
 
   /**
+   *  Noise is a type of oscillator that generates a buffer with random values.
+   *
+   *  @class p5.Noise
+   *  @extends p5.Oscillator
+   *  @constructor
+   *  @param {String} type Type of noise can be 'white' (default),
+   *                       'brown' or 'pink'.
+   */
+  p5.Noise = function (type) {
+    var assignType;
+    p5.Oscillator.call(this);
+    delete this.f;
+    delete this.freq;
+    delete this.oscillator;
+
+    if (type === 'brown') {
+      assignType = _brownNoiseBuffer;
+    } else if (type === 'pink') {
+      assignType = _pinkNoiseBuffer;
+    } else {
+      assignType = _whiteNoiseBuffer;
+    }
+    this.buffer = assignType;
+  };
+
+  p5.Noise.prototype = Object.create(p5.Oscillator.prototype);
+
+  /**
    *  Set type of noise to 'white', 'pink' or 'brown'.
    *  White is the default.
    *
@@ -102,16 +102,16 @@ define(function (require) {
   p5.Noise.prototype.setType = function (type) {
     switch (type) {
       case 'white':
-        this.buffer = _whiteNoise;
+        this.buffer = _whiteNoiseBuffer;
         break;
       case 'pink':
-        this.buffer = _pinkNoise;
+        this.buffer = _pinkNoiseBuffer;
         break;
       case 'brown':
-        this.buffer = _brownNoise;
+        this.buffer = _brownNoiseBuffer;
         break;
       default:
-        this.buffer = _whiteNoise;
+        this.buffer = _whiteNoiseBuffer;
     }
     if (this.started) {
       var now = p5sound.audiocontext.currentTime;

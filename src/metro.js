@@ -52,12 +52,11 @@ define(function (require) {
     }
   };
 
-  p5.Metro.prototype.setBPM = function (bpm, rampTime) {
+  p5.Metro.prototype.setBPM = function (bpm, rampTime = 0) {
     var beatTime = 60 / (bpm * this.tatums);
     var now = p5sound.audiocontext.currentTime;
     this.tatumTime = beatTime;
 
-    var rampTime = rampTime || 0;
     this.clock.frequency.setValueAtTime(this.clock.frequency.value, now);
     this.clock.frequency.linearRampToValueAtTime(bpm, now + rampTime);
     this.bpm = bpm;

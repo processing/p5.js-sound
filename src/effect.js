@@ -66,20 +66,14 @@ define(function (require) {
    *  @param {Number} [rampTime] create a fade that lasts until rampTime
    *  @param {Number} [tFromNow] schedule this event to happen in tFromNow seconds
    */
-  p5.Effect.prototype.amp = function (vol, rampTime, tFromNow) {
-    var rampTime = rampTime || 0;
-    var tFromNow = tFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
-    var currentVol = this.output.gain.value;
+  p5.Effect.prototype.amp = function (vol, rampTime = 0, tFromNow = 0) {
+    const now = p5sound.audiocontext.currentTime;
+    const startTime = now + tFromNow;
+    const endTime = startTime + rampTime + 0.001;
+    const currentVol = this.output.gain.value;
     this.output.gain.cancelScheduledValues(now);
-    this.output.gain.linearRampToValueAtTime(
-      currentVol,
-      now + tFromNow + 0.001
-    );
-    this.output.gain.linearRampToValueAtTime(
-      vol,
-      now + tFromNow + rampTime + 0.001
-    );
+    this.output.gain.linearRampToValueAtTime(currentVol, startTime + 0.001);
+    this.output.gain.linearRampToValueAtTime(vol, endTime);
   };
 
   /**

@@ -390,11 +390,11 @@ define(function (require) {
    *  @private
    */
   p5.Convolver.prototype._loadBuffer = function (
-    path,
+    _path,
     callback,
     errorCallback
   ) {
-    var path = p5.prototype._checkFileFormats(path);
+    var path = p5.prototype._checkFileFormats(_path);
     var self = this;
     var errorTrace = new Error().stack;
     var ac = p5.prototype.getAudioContext();

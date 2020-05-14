@@ -6,7 +6,7 @@ define(['chai'], function (chai) {
   describe('p5.Amplitude', function () {
     this.timeout(1000);
 
-    var sf, amp;
+    var sf, amp, osc, oAmp;
 
     it('can be created', function () {
       amp = new p5.Amplitude();
@@ -19,7 +19,6 @@ define(['chai'], function (chai) {
       done();
     });
 
-    var osc, oAmp;
     it('accepts oscillator input', function () {
       osc = new p5.Oscillator('square');
       osc.amp(1);

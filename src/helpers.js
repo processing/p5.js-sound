@@ -168,20 +168,18 @@ define(function (require) {
       var extTest = path.split('.').pop();
       // if an extension is provided...
       if (['mp3', 'wav', 'ogg', 'm4a', 'aac'].indexOf(extTest) > -1) {
-        if (p5.prototype.isFileSupported(extTest)) {
-          path = path;
-        } else {
+        if (!p5.prototype.isFileSupported(extTest)) {
           var pathSplit = path.split('.');
           var pathCore = pathSplit[pathSplit.length - 1];
-          for (var i = 0; i < p5sound.extensions.length; i++) {
-            var extension = p5sound.extensions[i];
-            var supported = p5.prototype.isFileSupported(extension);
+          for (let i = 0; i < p5sound.extensions.length; i++) {
+            const extension = p5sound.extensions[i];
+            const supported = p5.prototype.isFileSupported(extension);
             if (supported) {
               pathCore = '';
               if (pathSplit.length === 2) {
                 pathCore += pathSplit[0];
               }
-              for (var i = 1; i <= pathSplit.length - 2; i++) {
+              for (let i = 1; i <= pathSplit.length - 2; i++) {
                 var p = pathSplit[i];
                 pathCore += '.' + p;
               }
@@ -194,9 +192,9 @@ define(function (require) {
       }
       // if no extension is provided...
       else {
-        for (var i = 0; i < p5sound.extensions.length; i++) {
-          var extension = p5sound.extensions[i];
-          var supported = p5.prototype.isFileSupported(extension);
+        for (let i = 0; i < p5sound.extensions.length; i++) {
+          const extension = p5sound.extensions[i];
+          const supported = p5.prototype.isFileSupported(extension);
           if (supported) {
             path = path + '.' + extension;
             break;

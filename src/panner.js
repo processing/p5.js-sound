@@ -83,7 +83,7 @@ define(function (require) {
         this.input.connect(this.left);
         this.input.connect(this.right);
       } else if (numChannels === 2) {
-        if (typeof (this.splitter === 'undefined')) {
+        if (typeof this.splitter === 'undefined') {
           this.splitter = ac.createChannelSplitter(2);
         }
         this.input.disconnect();

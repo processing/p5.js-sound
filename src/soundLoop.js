@@ -305,7 +305,7 @@ define(function (require) {
       return this._interval;
     },
     set: function (interval) {
-      this.musicalTimeMode = typeof interval === 'Number' ? false : true;
+      this.musicalTimeMode = typeof interval === 'number' ? false : true;
       this._interval = interval;
       this._update();
     },

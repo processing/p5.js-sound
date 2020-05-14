@@ -166,12 +166,10 @@ define(function (require) {
     }
   };
 
-  p5.Pulse.prototype.freq = function (val, rampTime, tFromNow) {
+  p5.Pulse.prototype.freq = function (val, rampTime = 0, tFromNow = 0) {
     if (typeof val === 'number') {
       this.f = val;
       var now = p5sound.audiocontext.currentTime;
-      var rampTime = rampTime || 0;
-      var tFromNow = tFromNow || 0;
       var currentFreq = this.oscillator.frequency.value;
       this.oscillator.frequency.cancelScheduledValues(now);
       this.oscillator.frequency.setValueAtTime(currentFreq, now + tFromNow);

@@ -455,7 +455,6 @@ define(function (require) {
    */
   p5.Envelope.prototype.play = function (unit, secondsFromNow, susTime) {
     var tFromNow = secondsFromNow || 0;
-    var susTime = susTime || 0;
 
     if (unit) {
       if (this.connection !== unit) {
@@ -465,7 +464,7 @@ define(function (require) {
 
     this.triggerAttack(unit, tFromNow);
 
-    this.triggerRelease(unit, tFromNow + this.aTime + this.dTime + susTime);
+    this.triggerRelease(unit, tFromNow + this.aTime + this.dTime + ~~susTime);
   };
 
   /**

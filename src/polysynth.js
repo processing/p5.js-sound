@@ -154,9 +154,8 @@ define(function (require) {
     note,
     velocity,
     secondsFromNow,
-    susTime
+    susTime = 1
   ) {
-    var susTime = susTime || 1;
     this.noteAttack(note, velocity, secondsFromNow);
     this.noteRelease(note, secondsFromNow + susTime);
   };
@@ -185,9 +184,15 @@ define(function (require) {
    *  @param {Number} [releaseTime]   Time in seconds from now (defaults to 0)
    **/
 
-  p5.PolySynth.prototype.noteADSR = function (note, a, d, s, r, timeFromNow) {
+  p5.PolySynth.prototype.noteADSR = function (
+    note,
+    a,
+    d,
+    s,
+    r,
+    timeFromNow = 0
+  ) {
     var now = p5sound.audiocontext.currentTime;
-    var timeFromNow = timeFromNow || 0;
     var t = now + timeFromNow;
     this.audiovoices[this.notes[note].getValueAtTime(t)].setADSR(a, d, s, r);
   };
@@ -260,11 +265,8 @@ define(function (require) {
   p5.PolySynth.prototype.noteAttack = function (
     _note,
     _velocity,
-    secondsFromNow
+    secondsFromNow = 0
   ) {
-    //this value goes to the audiovoices which handle their own scheduling
-    var secondsFromNow = ~~secondsFromNow;
-
     //this value is used by this._voicesInUse
     var acTime = p5sound.audiocontext.currentTime + secondsFromNow;
 
@@ -318,6 +320,8 @@ define(function (require) {
       var maxRange = (1 / this._voicesInUse.getValueAtTime(acTime)) * 2;
       velocity = velocity > maxRange ? maxRange : velocity;
     }
+
+    // use secondsFromNow because this method will add AudioContext currentTime
     this.audiovoices[currentVoice].triggerAttack(
       note,
       velocity,
