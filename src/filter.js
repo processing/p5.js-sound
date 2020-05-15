@@ -30,70 +30,69 @@ define(function (require) {
    *  @param {String} [type] 'lowpass' (default), 'highpass', 'bandpass'
    *  @example
    *  <div><code>
-  *  let fft, noise, filter;
-  *
-  *  function setup() {
-  *    let cnv = createCanvas(100,100);
-  *    cnv.mousePressed(makeNoise);
-  *    fill(255, 0, 255);
-  *
-  *    filter = new p5.BandPass();
-  *    noise = new p5.Noise();
-  *    noise.disconnect();
-  *    noise.connect(filter);
-  *
-  *    fft = new p5.FFT();
-  *  }
-  *
-  *  function draw() {
-  *    background(220);
-  *
-  *    // set the BandPass frequency based on mouseX
-  *    let freq = map(mouseX, 0, width, 20, 10000);
-  *    freq = constrain(freq, 0, 22050);
-  *    filter.freq(freq);
-  *    // give the filter a narrow band (lower res = wider bandpass)
-  *    filter.res(50);
-  *
-  *    // draw filtered spectrum
-  *    let spectrum = fft.analyze();
-  *    noStroke();
-  *    for (let i = 0; i < spectrum.length; i++) {
-  *      let x = map(i, 0, spectrum.length, 0, width);
-  *      let h = -height + map(spectrum[i], 0, 255, height, 0);
-  *      rect(x, height, width/spectrum.length, h);
-  *    }
-  *    if (!noise.started) {
-  *      text('tap here and drag to change frequency', 10, 20, width - 20);
-  *    } else {
-  *      text('Frequency: ' + round(freq)+'Hz', 20, 20, width - 20);
-  *    }
-  *  }
-  *
-  *  function makeNoise() {
-  *    // see also: `userStartAudio()`
-  *    noise.start();
-  *    noise.amp(0.5, 0.2);
-  *  }
-  *
-  *  function mouseReleased() {
-  *    noise.amp(0, 0.2);
-  *  }
-  *
+   *  let fft, noise, filter;
+   *
+   *  function setup() {
+   *    let cnv = createCanvas(100,100);
+   *    cnv.mousePressed(makeNoise);
+   *    fill(255, 0, 255);
+   *
+   *    filter = new p5.BandPass();
+   *    noise = new p5.Noise();
+   *    noise.disconnect();
+   *    noise.connect(filter);
+   *
+   *    fft = new p5.FFT();
+   *  }
+   *
+   *  function draw() {
+   *    background(220);
+   *
+   *    // set the BandPass frequency based on mouseX
+   *    let freq = map(mouseX, 0, width, 20, 10000);
+   *    freq = constrain(freq, 0, 22050);
+   *    filter.freq(freq);
+   *    // give the filter a narrow band (lower res = wider bandpass)
+   *    filter.res(50);
+   *
+   *    // draw filtered spectrum
+   *    let spectrum = fft.analyze();
+   *    noStroke();
+   *    for (let i = 0; i < spectrum.length; i++) {
+   *      let x = map(i, 0, spectrum.length, 0, width);
+   *      let h = -height + map(spectrum[i], 0, 255, height, 0);
+   *      rect(x, height, width/spectrum.length, h);
+   *    }
+   *    if (!noise.started) {
+   *      text('tap here and drag to change frequency', 10, 20, width - 20);
+   *    } else {
+   *      text('Frequency: ' + round(freq)+'Hz', 20, 20, width - 20);
+   *    }
+   *  }
+   *
+   *  function makeNoise() {
+   *    // see also: `userStartAudio()`
+   *    noise.start();
+   *    noise.amp(0.5, 0.2);
+   *  }
+   *
+   *  function mouseReleased() {
+   *    noise.amp(0, 0.2);
+   *  }
+   *
    *  </code></div>
    */
   p5.Filter = function (type) {
-
     Effect.call(this);
     //add extend Effect by adding a Biquad Filter
 
     /**
-      *  The p5.Filter is built with a
-      *  <a href="http://www.w3.org/TR/webaudio/#BiquadFilterNode">
-      *  Web Audio BiquadFilter Node</a>.
-      *
-      *  @property {DelayNode} biquadFilter
-	  */
+     *  The p5.Filter is built with a
+     *  <a href="http://www.w3.org/TR/webaudio/#BiquadFilterNode">
+     *  Web Audio BiquadFilter Node</a>.
+     *
+     *  @property {DelayNode} biquadFilter
+     */
 
     this.biquad = this.ac.createBiquadFilter();
 
@@ -111,7 +110,6 @@ define(function (require) {
   };
   p5.Filter.prototype = Object.create(Effect.prototype);
 
-
   /**
    *  Filter an audio signal according to a set
    *  of filter parameters.
@@ -122,11 +120,10 @@ define(function (require) {
    *  @param {Number} [res] Resonance/Width of the filter frequency
    *                        from 0.001 to 1000
    */
-  p5.Filter.prototype.process = function(src, freq, res, time) {
+  p5.Filter.prototype.process = function (src, freq, res, time) {
     src.connect(this.input);
     this.set(freq, res, time);
   };
-
 
   /**
    *  Set the frequency and the resonance of the filter.
@@ -137,7 +134,7 @@ define(function (require) {
    *  @param {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
    */
-  p5.Filter.prototype.set = function(freq, res, time) {
+  p5.Filter.prototype.set = function (freq, res, time) {
     if (freq) {
       this.freq(freq, time);
     }
@@ -157,14 +154,19 @@ define(function (require) {
    *                                seconds from now
    *  @return {Number} value  Returns the current frequency value
    */
-  p5.Filter.prototype.freq = function(freq, time) {
+  p5.Filter.prototype.freq = function (freq, time) {
     var t = time || 0;
     if (freq <= 0) {
       freq = 1;
     }
     if (typeof freq === 'number') {
-      this.biquad.frequency.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.biquad.frequency.exponentialRampToValueAtTime(freq, this.ac.currentTime + 0.02 + t);
+      this.biquad.frequency.cancelScheduledValues(
+        this.ac.currentTime + 0.01 + t
+      );
+      this.biquad.frequency.exponentialRampToValueAtTime(
+        freq,
+        this.ac.currentTime + 0.02 + t
+      );
     } else if (freq) {
       freq.connect(this.biquad.frequency);
     }
@@ -182,12 +184,15 @@ define(function (require) {
    *                                seconds from now
    *  @return {Number} value Returns the current res value
    */
-  p5.Filter.prototype.res = function(res, time) {
+  p5.Filter.prototype.res = function (res, time) {
     var t = time || 0;
     if (typeof res === 'number') {
       this.biquad.Q.value = res;
       this.biquad.Q.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.biquad.Q.linearRampToValueAtTime(res, this.ac.currentTime + 0.02 + t);
+      this.biquad.Q.linearRampToValueAtTime(
+        res,
+        this.ac.currentTime + 0.02 + t
+      );
     } else if (res) {
       res.connect(this.biquad.Q);
     }
@@ -204,18 +209,20 @@ define(function (require) {
    * @param  {Number} gain
    * @return {Number} Returns the current or updated gain value
    */
-  p5.Filter.prototype.gain = function(gain, time) {
+  p5.Filter.prototype.gain = function (gain, time) {
     var t = time || 0;
     if (typeof gain === 'number') {
       this.biquad.gain.value = gain;
       this.biquad.gain.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-      this.biquad.gain.linearRampToValueAtTime(gain, this.ac.currentTime + 0.02 + t);
+      this.biquad.gain.linearRampToValueAtTime(
+        gain,
+        this.ac.currentTime + 0.02 + t
+      );
     } else if (gain) {
       gain.connect(this.biquad.gain);
     }
     return this.biquad.gain.value;
   };
-
 
   /**
    * Toggle function. Switches between the specified type and allpass
@@ -223,7 +230,7 @@ define(function (require) {
    * @method toggle
    * @return {boolean} [Toggle value]
    */
-  p5.Filter.prototype.toggle = function() {
+  p5.Filter.prototype.toggle = function () {
     this._on = !this._on;
 
     if (this._on === true) {
@@ -244,12 +251,12 @@ define(function (require) {
    *  @method  setType
    *  @param {String} t
    */
-  p5.Filter.prototype.setType = function(t) {
+  p5.Filter.prototype.setType = function (t) {
     this.biquad.type = t;
     this._untoggledType = this.biquad.type;
   };
 
-  p5.Filter.prototype.dispose = function() {
+  p5.Filter.prototype.dispose = function () {
     // remove reference from soundArray
     Effect.prototype.dispose.apply(this);
     if (this.biquad) {
@@ -268,7 +275,7 @@ define(function (require) {
    *  @constructor
    *  @extends p5.Filter
    */
-  p5.LowPass = function() {
+  p5.LowPass = function () {
     p5.Filter.call(this, 'lowpass');
   };
   p5.LowPass.prototype = Object.create(p5.Filter.prototype);
@@ -283,7 +290,7 @@ define(function (require) {
    *  @constructor
    *  @extends p5.Filter
    */
-  p5.HighPass = function() {
+  p5.HighPass = function () {
     p5.Filter.call(this, 'highpass');
   };
   p5.HighPass.prototype = Object.create(p5.Filter.prototype);
@@ -298,7 +305,7 @@ define(function (require) {
    *  @constructor
    *  @extends p5.Filter
    */
-  p5.BandPass = function() {
+  p5.BandPass = function () {
     p5.Filter.call(this, 'bandpass');
   };
   p5.BandPass.prototype = Object.create(p5.Filter.prototype);

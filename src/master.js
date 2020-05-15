@@ -1,9 +1,8 @@
 'use strict';
 
-
 define(['audiocontext'], function (audiocontext) {
   // Master contains the master sound output.
-  var Master = function() {
+  var Master = function () {
     this.input = audiocontext.createGain();
     this.output = audiocontext.createGain();
 
@@ -52,7 +51,7 @@ define(['audiocontext'], function (audiocontext) {
    * @return {Number} Master amplitude (volume) for sound in this sketch.
    *                  Should be between 0.0 (silence) and 1.0.
    */
-  p5.prototype.getMasterVolume = function() {
+  p5.prototype.getMasterVolume = function () {
     return p5sound.output.gain.value;
   };
 
@@ -82,17 +81,17 @@ define(['audiocontext'], function (audiocontext) {
    *  @param {Number} [timeFromNow]  Schedule this event to happen at
    *                                 t seconds in the future
    */
-  p5.prototype.masterVolume = function(vol, rampTime, tFromNow) {
+  p5.prototype.masterVolume = function (vol, rampTime = 0, tFromNow = 0) {
     if (typeof vol === 'number') {
-      var rampTime = rampTime || 0;
-      var tFromNow = tFromNow || 0;
       var now = p5sound.audiocontext.currentTime;
       var currentVol = p5sound.output.gain.value;
       p5sound.output.gain.cancelScheduledValues(now + tFromNow);
       p5sound.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
-      p5sound.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
-    }
-    else if (vol) {
+      p5sound.output.gain.linearRampToValueAtTime(
+        vol,
+        now + tFromNow + rampTime
+      );
+    } else if (vol) {
       vol.connect(p5sound.output.gain);
     } else {
       // return the Gain Node
@@ -116,7 +115,6 @@ define(['audiocontext'], function (audiocontext) {
   p5.soundOut._silentNode = p5sound.audiocontext.createGain();
   p5.soundOut._silentNode.gain.value = 0;
   p5.soundOut._silentNode.connect(p5sound.audiocontext.destination);
-
 
   return p5sound;
 });

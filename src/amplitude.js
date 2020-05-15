@@ -47,26 +47,29 @@ define(function (require) {
    *
    *  </code></div>
    */
-  p5.Amplitude = function(smoothing) {
-
+  p5.Amplitude = function (smoothing) {
     // Set to 2048 for now. In future iterations, this should be inherited or parsed from p5sound's default
     this.bufferSize = safeBufferSize(2048);
 
     // set audio context
     this.audiocontext = p5sound.audiocontext;
-    this._workletNode = new AudioWorkletNode(this.audiocontext, processorNames.amplitudeProcessor, {
-      outputChannelCount: [1],
+    this._workletNode = new AudioWorkletNode(
+      this.audiocontext,
+      processorNames.amplitudeProcessor,
+      {
+        outputChannelCount: [1],
 
-      parameterData: { smoothing: smoothing || 0 },
-      processorOptions: {
-        normalize: false,
-        smoothing: smoothing || 0,
-        numInputChannels: 2,
-        bufferSize: this.bufferSize
+        parameterData: { smoothing: smoothing || 0 },
+        processorOptions: {
+          normalize: false,
+          smoothing: smoothing || 0,
+          numInputChannels: 2,
+          bufferSize: this.bufferSize,
+        },
       }
-    });
+    );
 
-    this._workletNode.port.onmessage = function(event) {
+    this._workletNode.port.onmessage = function (event) {
       if (event.data.name === 'amplitude') {
         this.volume = event.data.volume;
         this.volNorm = event.data.volNorm;
@@ -146,8 +149,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Amplitude.prototype.setInput = function(source, smoothing) {
-
+  p5.Amplitude.prototype.setInput = function (source, smoothing) {
     p5sound.meter.disconnect();
 
     if (smoothing) {
@@ -156,7 +158,9 @@ define(function (require) {
 
     // connect to the master out of p5s instance if no snd is provided
     if (source == null) {
-      console.log('Amplitude input source is not ready! Connecting to master output instead');
+      console.log(
+        'Amplitude input source is not ready! Connecting to master output instead'
+      );
       p5sound.meter.connect(this._workletNode);
     }
 
@@ -177,7 +181,7 @@ define(function (require) {
     }
   };
 
-  p5.Amplitude.prototype.connect = function(unit) {
+  p5.Amplitude.prototype.connect = function (unit) {
     if (unit) {
       if (unit.hasOwnProperty('input')) {
         this.output.connect(unit.input);
@@ -189,7 +193,7 @@ define(function (require) {
     }
   };
 
-  p5.Amplitude.prototype.disconnect = function() {
+  p5.Amplitude.prototype.disconnect = function () {
     if (this.output) {
       this.output.disconnect();
     }
@@ -234,18 +238,16 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Amplitude.prototype.getLevel = function(channel) {
+  p5.Amplitude.prototype.getLevel = function (channel) {
     if (typeof channel !== 'undefined') {
       if (this.normalize) {
         return this.stereoVolNorm[channel];
       } else {
         return this.stereoVol[channel];
       }
-    }
-    else if (this.normalize) {
+    } else if (this.normalize) {
       return this.volNorm;
-    }
-    else {
+    } else {
       return this.volume;
     }
   };
@@ -264,14 +266,16 @@ define(function (require) {
    * @for p5.Amplitude
    * @param {boolean} [boolean] set normalize to true (1) or false (0)
    */
-  p5.Amplitude.prototype.toggleNormalize = function(bool) {
+  p5.Amplitude.prototype.toggleNormalize = function (bool) {
     if (typeof bool === 'boolean') {
       this.normalize = bool;
-    }
-    else {
+    } else {
       this.normalize = !this.normalize;
     }
-    this._workletNode.port.postMessage({ name: 'toggleNormalize', normalize: this.normalize });
+    this._workletNode.port.postMessage({
+      name: 'toggleNormalize',
+      normalize: this.normalize,
+    });
   };
 
   /**
@@ -282,7 +286,7 @@ define(function (require) {
    *  @for p5.Amplitude
    *  @param {Number} set smoothing from 0.0 <= 1
    */
-  p5.Amplitude.prototype.smooth = function(s) {
+  p5.Amplitude.prototype.smooth = function (s) {
     if (s >= 0 && s < 1) {
       this._workletNode.port.postMessage({ name: 'smoothing', smoothing: s });
     } else {
@@ -290,7 +294,7 @@ define(function (require) {
     }
   };
 
-  p5.Amplitude.prototype.dispose = function() {
+  p5.Amplitude.prototype.dispose = function () {
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
@@ -307,5 +311,4 @@ define(function (require) {
     this._workletNode.disconnect();
     delete this._workletNode;
   };
-
 });

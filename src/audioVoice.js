@@ -1,5 +1,5 @@
 'use strict';
-define(function() {
+define(function () {
   var p5sound = require('master');
 
   /**
@@ -11,23 +11,28 @@ define(function() {
    * @constructor
    */
   p5.AudioVoice = function () {
-	  this.ac = p5sound.audiocontext;
-	  this.output = this.ac.createGain();
-	  this.connect();
-	  p5sound.soundArray.push(this);
+    this.ac = p5sound.audiocontext;
+    this.output = this.ac.createGain();
+    this.connect();
+    p5sound.soundArray.push(this);
   };
 
-  p5.AudioVoice.prototype.play = function (note, velocity, secondsFromNow, sustime) {
-  };
+  p5.AudioVoice.prototype.play = function (
+    note,
+    velocity,
+    secondsFromNow,
+    sustime
+  ) {};
 
-  p5.AudioVoice.prototype.triggerAttack = function (note, velocity, secondsFromNow) {
-  };
+  p5.AudioVoice.prototype.triggerAttack = function (
+    note,
+    velocity,
+    secondsFromNow
+  ) {};
 
-  p5.AudioVoice.prototype.triggerRelease = function (secondsFromNow) {
-  };
+  p5.AudioVoice.prototype.triggerRelease = function (secondsFromNow) {};
 
-  p5.AudioVoice.prototype.amp = function(vol, rampTime) {
-  };
+  p5.AudioVoice.prototype.amp = function (vol, rampTime) {};
 
   /**
    * Connect to p5 objects or Web Audio Nodes
@@ -35,7 +40,7 @@ define(function() {
    * @for p5.AudioVoice
    * @param {Object} unit
    */
-  p5.AudioVoice.prototype.connect = function(unit) {
+  p5.AudioVoice.prototype.connect = function (unit) {
     var u = unit || p5sound.input;
     this.output.connect(u.input ? u.input : u);
   };
@@ -45,11 +50,11 @@ define(function() {
    * @method  disconnect
    * @for p5.AudioVoice
    */
-  p5.AudioVoice.prototype.disconnect = function() {
+  p5.AudioVoice.prototype.disconnect = function () {
     this.output.disconnect();
   };
 
-  p5.AudioVoice.prototype.dispose = function() {
+  p5.AudioVoice.prototype.dispose = function () {
     if (this.output) {
       this.output.disconnect();
       delete this.output;

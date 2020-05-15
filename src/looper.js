@@ -1,6 +1,6 @@
 'use strict';
 
-define(function(require) {
+define(function (require) {
   var p5sound = require('master');
 
   var BPM = 120;
@@ -14,7 +14,7 @@ define(function(require) {
    *  @param {Number} BPM      Beats Per Minute
    *  @param {Number} rampTime Seconds from now
    */
-  p5.prototype.setBPM = function(bpm, rampTime) {
+  p5.prototype.setBPM = function (bpm, rampTime) {
     BPM = bpm;
     for (var i in p5sound.parts) {
       if (p5sound.parts[i]) {
@@ -85,7 +85,7 @@ define(function(require) {
    *  }
    *  </code></div>
    */
-  p5.Phrase = function(name, callback, sequence) {
+  p5.Phrase = function (name, callback, sequence) {
     this.phraseStep = 0;
     this.name = name;
     this.callback = callback;
@@ -154,7 +154,7 @@ define(function(require) {
    *  }
    *  </code></div>
    */
-  p5.Part = function(steps, bLength) {
+  p5.Part = function (steps, bLength) {
     this.length = steps || 0; // how many beats
     this.partStep = 0;
     this.phrases = [];
@@ -167,7 +167,7 @@ define(function(require) {
     this.metro.beatLength(this.tatums);
     this.metro.setBPM(BPM);
     p5sound.parts.push(this);
-    this.callback = function() {};
+    this.callback = function () {};
   };
 
   /**
@@ -178,7 +178,7 @@ define(function(require) {
    *  @param {Number} BPM      Beats Per Minute
    *  @param {Number} [rampTime] Seconds from now
    */
-  p5.Part.prototype.setBPM = function(tempo, rampTime) {
+  p5.Part.prototype.setBPM = function (tempo, rampTime) {
     this.metro.setBPM(tempo, rampTime);
   };
 
@@ -189,7 +189,7 @@ define(function(require) {
    *  @for p5.Part
    *  @return {Number}
    */
-  p5.Part.prototype.getBPM = function() {
+  p5.Part.prototype.getBPM = function () {
     return this.metro.getBPM();
   };
 
@@ -202,7 +202,7 @@ define(function(require) {
    *  @for p5.Part
    *  @param  {Number} [time] seconds from now
    */
-  p5.Part.prototype.start = function(time) {
+  p5.Part.prototype.start = function (time) {
     if (!this.isPlaying) {
       this.isPlaying = true;
       this.metro.resetSync(this);
@@ -220,10 +220,10 @@ define(function(require) {
    *  @for p5.Part
    *  @param  {Number} [time] seconds from now
    */
-  p5.Part.prototype.loop = function(time) {
+  p5.Part.prototype.loop = function (time) {
     this.looping = true;
     // rest onended function
-    this.onended = function() {
+    this.onended = function () {
       this.partStep = 0;
     };
     var t = time || 0;
@@ -236,10 +236,10 @@ define(function(require) {
    *  @method  noLoop
    *  @for p5.Part
    */
-  p5.Part.prototype.noLoop = function() {
+  p5.Part.prototype.noLoop = function () {
     this.looping = false;
     // rest onended function
-    this.onended = function() {
+    this.onended = function () {
       this.stop();
     };
   };
@@ -251,7 +251,7 @@ define(function(require) {
    *  @for p5.Part
    *  @param  {Number} [time] seconds from now
    */
-  p5.Part.prototype.stop = function(time) {
+  p5.Part.prototype.stop = function (time) {
     this.partStep = 0;
     this.pause(time);
   };
@@ -264,7 +264,7 @@ define(function(require) {
    *  @for p5.Part
    *  @param  {Number} time seconds from now
    */
-  p5.Part.prototype.pause = function(time) {
+  p5.Part.prototype.pause = function (time) {
     this.isPlaying = false;
     var t = time || 0;
     this.metro.stop(t);
@@ -277,7 +277,7 @@ define(function(require) {
    *  @for p5.Part
    *  @param {p5.Phrase}   phrase   reference to a p5.Phrase
    */
-  p5.Part.prototype.addPhrase = function(name, callback, array) {
+  p5.Part.prototype.addPhrase = function (name, callback, array) {
     var p;
     if (arguments.length === 3) {
       p = new p5.Phrase(name, callback, array);
@@ -301,7 +301,7 @@ define(function(require) {
    *  @for p5.Part
    *  @param  {String} phraseName
    */
-  p5.Part.prototype.removePhrase = function(name) {
+  p5.Part.prototype.removePhrase = function (name) {
     for (var i in this.phrases) {
       if (this.phrases[i].name === name) {
         this.phrases.splice(i, 1);
@@ -317,7 +317,7 @@ define(function(require) {
    *  @for p5.Part
    *  @param  {String} phraseName
    */
-  p5.Part.prototype.getPhrase = function(name) {
+  p5.Part.prototype.getPhrase = function (name) {
     for (var i in this.phrases) {
       if (this.phrases[i].name === name) {
         return this.phrases[i];
@@ -334,7 +334,7 @@ define(function(require) {
    *  @param  {Array} sequence  Array of values to pass into the callback
    *                            at each step of the phrase.
    */
-  p5.Part.prototype.replaceSequence = function(name, array) {
+  p5.Part.prototype.replaceSequence = function (name, array) {
     for (var i in this.phrases) {
       if (this.phrases[i].name === name) {
         this.phrases[i].sequence = array;
@@ -342,7 +342,7 @@ define(function(require) {
     }
   };
 
-  p5.Part.prototype.incrementStep = function(time) {
+  p5.Part.prototype.incrementStep = function (time) {
     if (this.partStep < this.length - 1) {
       this.callback(time);
       this.partStep += 1;
@@ -363,10 +363,9 @@ define(function(require) {
    *                              you want to fire
    *                              on every beat/tatum.
    */
-  p5.Part.prototype.onStep = function(callback) {
+  p5.Part.prototype.onStep = function (callback) {
     this.callback = callback;
   };
-
 
   // ===============
   // p5.Score
@@ -382,7 +381,7 @@ define(function(require) {
    *  @constructor
    *  @param {p5.Part} [...parts] One or multiple parts, to be played in sequence.
    */
-  p5.Score = function() {
+  p5.Score = function () {
     // for all of the arguments
     this.parts = [];
     this.currentPart = 0;
@@ -392,7 +391,7 @@ define(function(require) {
       if (arguments[i] && this.parts[i]) {
         this.parts[i] = arguments[i];
         this.parts[i].nextPart = this.parts[i + 1];
-        this.parts[i].onended = function() {
+        this.parts[i].onended = function () {
           thisScore.resetPart(i);
           playNextPart(thisScore);
         };
@@ -401,12 +400,12 @@ define(function(require) {
     this.looping = false;
   };
 
-  p5.Score.prototype.onended = function() {
+  p5.Score.prototype.onended = function () {
     if (this.looping) {
       // this.resetParts();
       this.parts[0].start();
     } else {
-      this.parts[this.parts.length - 1].onended = function() {
+      this.parts[this.parts.length - 1].onended = function () {
         this.stop();
         this.resetParts();
       };
@@ -420,7 +419,7 @@ define(function(require) {
    *  @method  start
    *  @for p5.Score
    */
-  p5.Score.prototype.start = function() {
+  p5.Score.prototype.start = function () {
     this.parts[this.currentPart].start();
     this.scoreStep = 0;
   };
@@ -431,7 +430,7 @@ define(function(require) {
    *  @method  stop
    *  @for p5.Score
    */
-  p5.Score.prototype.stop = function() {
+  p5.Score.prototype.stop = function () {
     this.parts[this.currentPart].stop();
     this.currentPart = 0;
     this.scoreStep = 0;
@@ -443,7 +442,7 @@ define(function(require) {
    *  @method  pause
    *  @for p5.Score
    */
-  p5.Score.prototype.pause = function() {
+  p5.Score.prototype.pause = function () {
     this.parts[this.currentPart].stop();
   };
 
@@ -453,7 +452,7 @@ define(function(require) {
    *  @method  loop
    *  @for p5.Score
    */
-  p5.Score.prototype.loop = function() {
+  p5.Score.prototype.loop = function () {
     this.looping = true;
     this.start();
   };
@@ -466,18 +465,18 @@ define(function(require) {
    *  @method  noLoop
    *  @for p5.Score
    */
-  p5.Score.prototype.noLoop = function() {
+  p5.Score.prototype.noLoop = function () {
     this.looping = false;
   };
 
-  p5.Score.prototype.resetParts = function() {
+  p5.Score.prototype.resetParts = function () {
     var self = this;
-    this.parts.forEach(function(part) {
+    this.parts.forEach(function (part) {
       self.resetParts[part];
     });
   };
 
-  p5.Score.prototype.resetPart = function(i) {
+  p5.Score.prototype.resetPart = function (i) {
     this.parts[i].stop();
     this.parts[i].partStep = 0;
     for (var p in this.parts[i].phrases) {
@@ -495,7 +494,7 @@ define(function(require) {
    *  @param {Number} BPM      Beats Per Minute
    *  @param {Number} rampTime Seconds from now
    */
-  p5.Score.prototype.setBPM = function(bpm, rampTime) {
+  p5.Score.prototype.setBPM = function (bpm, rampTime) {
     for (var i in this.parts) {
       if (this.parts[i]) {
         this.parts[i].setBPM(bpm, rampTime);
@@ -514,5 +513,4 @@ define(function(require) {
       aScore.parts[aScore.currentPart].start();
     }
   }
-
 });

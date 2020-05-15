@@ -52,8 +52,8 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.Delay = function() {
-  	Effect.call(this);
+  p5.Delay = function () {
+    Effect.call(this);
 
     this._split = this.ac.createChannelSplitter(2);
     this._merge = this.ac.createChannelMerger(2);
@@ -85,7 +85,10 @@ define(function (require) {
     this._rightFilter.disconnect();
 
     this._leftFilter.biquad.frequency.setValueAtTime(1200, this.ac.currentTime);
-    this._rightFilter.biquad.frequency.setValueAtTime(1200, this.ac.currentTime);
+    this._rightFilter.biquad.frequency.setValueAtTime(
+      1200,
+      this.ac.currentTime
+    );
     this._leftFilter.biquad.Q.setValueAtTime(0.3, this.ac.currentTime);
     this._rightFilter.biquad.Q.setValueAtTime(0.3, this.ac.currentTime);
 
@@ -97,7 +100,6 @@ define(function (require) {
     this._rightGain.connect(this._rightFilter.input);
     this._merge.connect(this.wet);
 
-
     this._leftFilter.biquad.gain.setValueAtTime(1, this.ac.currentTime);
     this._rightFilter.biquad.gain.setValueAtTime(1, this.ac.currentTime);
 
@@ -108,8 +110,6 @@ define(function (require) {
 
     // set initial feedback to 0.5
     this.feedback(0.5);
-
-
   };
 
   p5.Delay.prototype = Object.create(Effect.prototype);
@@ -130,14 +130,18 @@ define(function (require) {
    *                               below the lowPass will be part of the
    *                               delay.
    */
-  p5.Delay.prototype.process = function(src, _delayTime, _feedback, _filter) {
+  p5.Delay.prototype.process = function (src, _delayTime, _feedback, _filter) {
     var feedback = _feedback || 0;
     var delayTime = _delayTime || 0;
     if (feedback >= 1.0) {
       throw new Error('Feedback value will force a positive feedback loop.');
     }
     if (delayTime >= this._maxDelay) {
-      throw new Error('Delay Time exceeds maximum delay time of ' + this._maxDelay + ' second.');
+      throw new Error(
+        'Delay Time exceeds maximum delay time of ' +
+          this._maxDelay +
+          ' second.'
+      );
     }
 
     src.connect(this.input);
@@ -160,14 +164,12 @@ define(function (require) {
    *  @for p5.Delay
    *  @param {Number} delayTime Time (in seconds) of the delay
    */
-  p5.Delay.prototype.delayTime = function(t) {
+  p5.Delay.prototype.delayTime = function (t) {
     // if t is an audio node...
     if (typeof t !== 'number') {
       t.connect(this.leftDelay.delayTime);
       t.connect(this.rightDelay.delayTime);
-    }
-
-    else {
+    } else {
       this.leftDelay.delayTime.cancelScheduledValues(this.ac.currentTime);
       this.rightDelay.delayTime.cancelScheduledValues(this.ac.currentTime);
       this.leftDelay.delayTime.linearRampToValueAtTime(t, this.ac.currentTime);
@@ -190,16 +192,14 @@ define(function (require) {
    *  @returns {Number} Feedback value
    *
    */
-  p5.Delay.prototype.feedback = function(f) {
+  p5.Delay.prototype.feedback = function (f) {
     // if f is an audio node...
     if (f && typeof f !== 'number') {
       f.connect(this._leftGain.gain);
       f.connect(this._rightGain.gain);
-    }
-    else if (f >= 1.0) {
+    } else if (f >= 1.0) {
       throw new Error('Feedback value will force a positive feedback loop.');
-    }
-    else if (typeof f === 'number') {
+    } else if (typeof f === 'number') {
       this._leftGain.gain.value = f;
       this._rightGain.gain.value = f;
     }
@@ -222,11 +222,10 @@ define(function (require) {
    *                              High numbers (i.e. 15) will produce a resonance,
    *                              low numbers (i.e. .2) will produce a slope.
    */
-  p5.Delay.prototype.filter = function(freq, q) {
+  p5.Delay.prototype.filter = function (freq, q) {
     this._leftFilter.set(freq, q);
     this._rightFilter.set(freq, q);
   };
-
 
   /**
    *  Choose a preset type of delay. 'pingPong' bounces the signal
@@ -237,7 +236,7 @@ define(function (require) {
    *  @for p5.Delay
    *  @param {String|Number} type 'pingPong' (1) or 'default' (0)
    */
-  p5.Delay.prototype.setType = function(t) {
+  p5.Delay.prototype.setType = function (t) {
     if (t === 1) {
       t = 'pingPong';
     }
@@ -246,9 +245,9 @@ define(function (require) {
     this._rightFilter.disconnect();
     this._split.connect(this.leftDelay, 0);
     this._split.connect(this.rightDelay, 1);
-    switch(t) {
+    switch (t) {
       case 'pingPong':
-        this._rightFilter.setType( this._leftFilter.biquad.type );
+        this._rightFilter.setType(this._leftFilter.biquad.type);
         this._leftFilter.output.connect(this._merge, 0, 0);
         this._rightFilter.output.connect(this._merge, 0, 1);
         this._leftFilter.output.connect(this.rightDelay);
@@ -287,8 +286,7 @@ define(function (require) {
    *  @for p5.Delay
    */
 
-  p5.Delay.prototype.dispose = function() {
-
+  p5.Delay.prototype.dispose = function () {
     Effect.prototype.dispose.apply(this);
 
     this._split.disconnect();
@@ -309,5 +307,4 @@ define(function (require) {
     this.leftDelay = undefined;
     this.rightDelay = undefined;
   };
-
 });

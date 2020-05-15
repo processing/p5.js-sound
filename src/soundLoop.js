@@ -54,7 +54,7 @@ define(function (require) {
    * }
    * </code></div>
    */
-  p5.SoundLoop = function(callback, interval) {
+  p5.SoundLoop = function (callback, interval) {
     this.callback = callback;
     /**
      * musicalTimeMode uses <a href = "https://github.com/Tonejs/Tone.js/wiki/Time">Tone.Time</a> convention
@@ -82,7 +82,7 @@ define(function (require) {
     var self = this;
 
     this.clock = new Clock({
-      'callback' : function(time) {
+      callback: function (time) {
         var timeFromNow = time - p5sound.audiocontext.currentTime;
         /**
          * Do not initiate the callback if timeFromNow is < 0
@@ -92,9 +92,10 @@ define(function (require) {
          * The callback should only be called until maxIterations is reached
          */
         if (timeFromNow > 0 && self.iterations <= self.maxIterations) {
-          self.callback(timeFromNow);}
+          self.callback(timeFromNow);
+        }
       },
-      'frequency' : this._calcFreq()
+      frequency: this._calcFreq(),
     });
   };
 
@@ -104,7 +105,7 @@ define(function (require) {
    * @for p5.SoundLoop
    * @param  {Number} [timeFromNow] schedule a starting time
    */
-  p5.SoundLoop.prototype.start = function(timeFromNow) {
+  p5.SoundLoop.prototype.start = function (timeFromNow) {
     var t = timeFromNow || 0;
     var now = p5sound.audiocontext.currentTime;
     if (!this.isPlaying) {
@@ -119,7 +120,7 @@ define(function (require) {
    * @for p5.SoundLoop
    * @param  {Number} [timeFromNow] schedule a stopping time
    */
-  p5.SoundLoop.prototype.stop = function(timeFromNow) {
+  p5.SoundLoop.prototype.stop = function (timeFromNow) {
     var t = timeFromNow || 0;
     var now = p5sound.audiocontext.currentTime;
     if (this.isPlaying) {
@@ -133,7 +134,7 @@ define(function (require) {
    * @for p5.SoundLoop
    * @param  {Number} [timeFromNow] schedule a pausing time
    */
-  p5.SoundLoop.prototype.pause  = function(timeFromNow) {
+  p5.SoundLoop.prototype.pause = function (timeFromNow) {
     var t = timeFromNow || 0;
     var now = p5sound.audiocontext.currentTime;
     if (this.isPlaying) {
@@ -141,7 +142,6 @@ define(function (require) {
       this.isPlaying = false;
     }
   };
-
 
   /**
    * Synchronize loops. Use this method to start two or more loops in synchronization
@@ -154,7 +154,7 @@ define(function (require) {
    * @param  {Object} otherLoop   a p5.SoundLoop to sync with
    * @param  {Number} [timeFromNow] Start the loops in sync after timeFromNow seconds
    */
-  p5.SoundLoop.prototype.syncedStart = function(otherLoop, timeFromNow) {
+  p5.SoundLoop.prototype.syncedStart = function (otherLoop, timeFromNow) {
     var t = timeFromNow || 0;
     var now = p5sound.audiocontext.currentTime;
 
@@ -170,14 +170,13 @@ define(function (require) {
     }
   };
 
-
   /**
    * Updates frequency value, reflected in next callback
    * @private
    * @for p5.SoundLoop
    * @method  _update
    */
-  p5.SoundLoop.prototype._update = function() {
+  p5.SoundLoop.prototype._update = function () {
     this.clock.frequency.value = this._calcFreq();
   };
 
@@ -188,7 +187,7 @@ define(function (require) {
    * @method  _calcFreq
    * @return {Number} new clock frequency value
    */
-  p5.SoundLoop.prototype._calcFreq = function() {
+  p5.SoundLoop.prototype._calcFreq = function () {
     //Seconds mode, bpm / timesignature has no effect
     if (typeof this._interval === 'number') {
       this.musicalTimeMode = false;
@@ -197,7 +196,10 @@ define(function (require) {
     //Musical timing mode, calculate interval based bpm, interval,and time signature
     else if (typeof this._interval === 'string') {
       this.musicalTimeMode = true;
-      return this._bpm / 60 / this._convertNotation(this._interval) * (this._timeSignature / 4);
+      return (
+        (this._bpm / 60 / this._convertNotation(this._interval)) *
+        (this._timeSignature / 4)
+      );
     }
   };
 
@@ -210,17 +212,19 @@ define(function (require) {
    * @param  {String} value value to be converted
    * @return {Number}       converted value in seconds
    */
-  p5.SoundLoop.prototype._convertNotation = function(value) {
+  p5.SoundLoop.prototype._convertNotation = function (value) {
     var type = value.slice(-1);
-    value = Number(value.slice(0,-1));
+    value = Number(value.slice(0, -1));
     switch (type) {
       case 'm':
         return this._measure(value);
       case 'n':
         return this._note(value);
       default:
-        console.warn('Specified interval is not formatted correctly. See Tone.js '+
-        'timing reference for more info: https://github.com/Tonejs/Tone.js/wiki/Time');
+        console.warn(
+          'Specified interval is not formatted correctly. See Tone.js ' +
+            'timing reference for more info: https://github.com/Tonejs/Tone.js/wiki/Time'
+        );
     }
   };
 
@@ -230,7 +234,7 @@ define(function (require) {
    * @for p5.SoundLoop
    * @method  _measure
    */
-  p5.SoundLoop.prototype._measure = function(value) {
+  p5.SoundLoop.prototype._measure = function (value) {
     return value * this._timeSignature;
   };
 
@@ -239,10 +243,9 @@ define(function (require) {
    * @method  _note
    * @for p5.SoundLoop
    */
-  p5.SoundLoop.prototype._note = function(value) {
-    return this._timeSignature / value ;
+  p5.SoundLoop.prototype._note = function (value) {
+    return this._timeSignature / value;
   };
-
 
   /**
    * Getters and Setters, setting any paramter will result in a change in the clock's
@@ -252,19 +255,21 @@ define(function (require) {
    * @for p5.SoundLoop
    */
   Object.defineProperty(p5.SoundLoop.prototype, 'bpm', {
-    get : function() {
+    get: function () {
       return this._bpm;
     },
-    set : function(bpm) {
+    set: function (bpm) {
       if (!this.musicalTimeMode) {
-        console.warn('Changing the BPM in "seconds" mode has no effect. '+
-                            'BPM is only relevant in musicalTimeMode '+
-                            'when the interval is specified as a string '+
-                            '("2n", "4n", "1m"...etc)');
+        console.warn(
+          'Changing the BPM in "seconds" mode has no effect. ' +
+            'BPM is only relevant in musicalTimeMode ' +
+            'when the interval is specified as a string ' +
+            '("2n", "4n", "1m"...etc)'
+        );
       }
       this._bpm = bpm;
       this._update();
-    }
+    },
   });
 
   /**
@@ -273,19 +278,21 @@ define(function (require) {
    * @for p5.SoundLoop
    */
   Object.defineProperty(p5.SoundLoop.prototype, 'timeSignature', {
-    get : function() {
+    get: function () {
       return this._timeSignature;
     },
-    set : function(timeSig) {
+    set: function (timeSig) {
       if (!this.musicalTimeMode) {
-        console.warn('Changing the timeSignature in "seconds" mode has no effect. '+
-                            'BPM is only relevant in musicalTimeMode '+
-                            'when the interval is specified as a string '+
-                            '("2n", "4n", "1m"...etc)');
+        console.warn(
+          'Changing the timeSignature in "seconds" mode has no effect. ' +
+            'BPM is only relevant in musicalTimeMode ' +
+            'when the interval is specified as a string ' +
+            '("2n", "4n", "1m"...etc)'
+        );
       }
       this._timeSignature = timeSig;
       this._update();
-    }
+    },
   });
 
   /**
@@ -294,14 +301,14 @@ define(function (require) {
    * @for p5.SoundLoop
    */
   Object.defineProperty(p5.SoundLoop.prototype, 'interval', {
-    get : function() {
+    get: function () {
       return this._interval;
     },
-    set : function(interval) {
-      this.musicalTimeMode = typeof interval === 'Number'? false : true;
+    set: function (interval) {
+      this.musicalTimeMode = typeof interval === 'number' ? false : true;
       this._interval = interval;
       this._update();
-    }
+    },
   });
 
   /**
@@ -311,9 +318,9 @@ define(function (require) {
    * @readonly
    */
   Object.defineProperty(p5.SoundLoop.prototype, 'iterations', {
-    get : function() {
+    get: function () {
       return this.clock.ticks;
-    }
+    },
   });
 
   return p5.SoundLoop;

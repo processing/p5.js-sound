@@ -1,7 +1,6 @@
 'use strict';
 
 define(function (require) {
-
   var Effect = require('effect');
 
   /*
@@ -14,9 +13,9 @@ define(function (require) {
     var deg = Math.PI / 180;
     var i = 0;
     var x;
-    for ( ; i < numSamples; ++i ) {
-      x = i * 2 / numSamples - 1;
-      curve[i] = ( 3 + k ) * x * 20 * deg / ( Math.PI + k * Math.abs(x) );
+    for (; i < numSamples; ++i) {
+      x = (i * 2) / numSamples - 1;
+      curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
     }
     return curve;
   }
@@ -39,16 +38,19 @@ define(function (require) {
    * @param {String} [oversample='none'] 'none', '2x', or '4x'.
    *
    */
-  p5.Distortion = function(amount, oversample) {
+  p5.Distortion = function (amount, oversample) {
     Effect.call(this);
 
     if (typeof amount === 'undefined') {
       amount = 0.25;
-    } if (typeof amount !== 'number') {
+    }
+    if (typeof amount !== 'number') {
       throw new Error('amount must be a number');
-    } if (typeof oversample === 'undefined') {
+    }
+    if (typeof oversample === 'undefined') {
       oversample = '2x';
-    } if (typeof oversample !== 'string') {
+    }
+    if (typeof oversample !== 'string') {
       throw new Error('oversample must be a String');
     }
 
@@ -74,7 +76,6 @@ define(function (require) {
 
   p5.Distortion.prototype = Object.create(Effect.prototype);
 
-
   /**
    * Process a sound source, optionally specify amount and oversample values.
    *
@@ -84,7 +85,7 @@ define(function (require) {
    *                                Normal values range from 0-1.
    * @param {String} [oversample='none'] 'none', '2x', or '4x'.
    */
-  p5.Distortion.prototype.process = function(src, amount, oversample) {
+  p5.Distortion.prototype.process = function (src, amount, oversample) {
     src.connect(this.input);
     this.set(amount, oversample);
   };
@@ -98,7 +99,7 @@ define(function (require) {
    *                                Normal values range from 0-1.
    * @param {String} [oversample='none'] 'none', '2x', or '4x'.
    */
-  p5.Distortion.prototype.set = function(amount, oversample) {
+  p5.Distortion.prototype.set = function (amount, oversample) {
     if (amount) {
       var curveAmount = p5.prototype.map(amount, 0.0, 1.0, 0, 2000);
       this.amount = curveAmount;
@@ -117,7 +118,7 @@ define(function (require) {
    *  @return {Number} Unbounded distortion amount.
    *                   Normal values range from 0-1.
    */
-  p5.Distortion.prototype.getAmount = function() {
+  p5.Distortion.prototype.getAmount = function () {
     return this.amount;
   };
 
@@ -128,12 +129,11 @@ define(function (require) {
    *  @for p5.Distortion
    *  @return {String} Oversample can either be 'none', '2x', or '4x'.
    */
-  p5.Distortion.prototype.getOversample = function() {
+  p5.Distortion.prototype.getOversample = function () {
     return this.waveShaperNode.oversample;
   };
 
-
-  p5.Distortion.prototype.dispose = function() {
+  p5.Distortion.prototype.dispose = function () {
     Effect.prototype.dispose.apply(this);
     if (this.waveShaperNode) {
       this.waveShaperNode.disconnect();
