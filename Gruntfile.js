@@ -56,7 +56,12 @@ module.exports = function(grunt) {
           hostname: '*'
         }
       }
-    }
+    },
+    githooks: {
+      all: {
+      'pre-commit':'lint' //runs linting test  before every git commit 
+      }
+      }
   });
 
   
@@ -65,6 +70,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-open');
   grunt.loadNpmTasks('grunt-decomment');
+  grunt.loadNpmTasks('grunt-githooks');
 
   grunt.registerTask('lint', ['eslint:source']);
   grunt.registerTask('default', ['webpack:prod', 'decomment']);
