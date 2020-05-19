@@ -1,5 +1,4 @@
-
-  /*
+/*
     Helper function to generate an error
     with a custom stack trace that points to the sketch
     and removes other parts of the stack trace.
@@ -18,22 +17,21 @@
     @property {String} failedPath path to the file that failed to load
     @return {Error}     returns a custom Error object
    */
-  var CustomError = function (name, errorTrace, failedPath) {
-    var err = new Error();
-    var tempStack, splitStack;
+var CustomError = function (name, errorTrace, failedPath) {
+  var err = new Error();
+  var tempStack, splitStack;
 
-    err.name = name;
-    err.originalStack = err.stack + errorTrace;
-    tempStack = err.stack + errorTrace;
-    err.failedPath = failedPath;
+  err.name = name;
+  err.originalStack = err.stack + errorTrace;
+  tempStack = err.stack + errorTrace;
+  err.failedPath = failedPath;
 
-    // only print the part of the stack trace that refers to the user code:
-    splitStack = tempStack.split('\n').filter(function (ln) {
-      return !ln.match(/(p5.|native code|globalInit)/g);
-    });
-    err.stack = splitStack.join('\n');
+  // only print the part of the stack trace that refers to the user code:
+  splitStack = tempStack.split('\n').filter(function (ln) {
+    return !ln.match(/(p5.|native code|globalInit)/g);
+  });
+  err.stack = splitStack.join('\n');
 
-    return err; // TODO: is this really a constructor?
-  };
-export default CustomError ;
-
+  return err; // TODO: is this really a constructor?
+};
+export default CustomError;
