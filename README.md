@@ -20,7 +20,7 @@ Interactive documentation at [p5js.org/reference/#/libraries/p5.sound](http://p5
 
 ### Latest Build
 * Visit http://p5js.org/download/ for the latest official release of p5 with the latest p5.sound included.
-* The sound library [here](https://github.com/therewasaguy/p5.sound/blob/master/lib) is updated more frequently, and we occasionally offer new [releases](https://github.com/processing/p5.js-sound/releases) before p5's release cycle.
+* The sound library [here](https://github.com/processing/p5.js-sound/blob/master/lib) is updated more frequently, and we occasionally offer new [releases](https://github.com/processing/p5.js-sound/releases) before p5's release cycle.
 
 
 ### Contribute

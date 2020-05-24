@@ -38,9 +38,9 @@
  *  </li>
  *  <li><a href="#/p5/userStartAudio">userStartAudio</a>: Enable audio in a
  *  browser- and user-friendly way.</a>
- *  <p>p5.sound is on <a href="https://github.com/therewasaguy/p5.sound/">GitHub</a>.
+ *  <p>p5.sound is on <a href="https://github.com/processing/p5.js-sound/">GitHub</a>.
  *  Download the latest version
- *  <a href="https://github.com/therewasaguy/p5.sound/blob/master/lib/p5.sound.js">here</a>.</p>
+ *  <a href="https://github.com/processing/p5.js-sound/blob/master/lib/p5.sound.js">here</a>.</p>
  *
  *  @module p5.sound
  *  @submodule p5.sound
