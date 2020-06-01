@@ -115,5 +115,30 @@ define(['chai'], function (chai) {
         done();
       }, 100);
     });
+    it('calls the cueCallbacks correct number of times', function (done) {
+      this.timeout(2000);
+      let sf = new p5.SoundFile('./testAudio/drum', onloaded);
+
+      function onloaded() {
+        let audioLength = sf.duration();
+        let numberOfCuesCalls = 0;
+
+        let callback = () => {
+          numberOfCuesCalls++;
+        };
+
+        sf.addCue(audioLength / 5, callback);
+        sf.addCue((audioLength * 2) / 5, callback);
+        sf.addCue((audioLength * 3) / 5, callback);
+        sf.addCue((audioLength * 4) / 5, callback);
+
+        sf.play();
+
+        sf.onended(() => {
+          expect(numberOfCuesCalls).to.equal(4);
+          done();
+        });
+      }
+    });
   });
 });
