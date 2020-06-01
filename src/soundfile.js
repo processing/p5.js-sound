@@ -1772,15 +1772,18 @@ define(function (require) {
       var cue = this._cues[i];
       var callbackTime = cue.time;
       var val = cue.val;
+
       var leftLimit = this._prevUpdateTime || 0;
       var rightLimit = playbackTime;
       if (leftLimit <= callbackTime && callbackTime <= rightLimit) {
+
         // pass the scheduled callbackTime as parameter to the callback
         cue.callback(val);
       }
     }
 
     this._prevUpdateTime = playbackTime;
+    
   };
 
   /**
