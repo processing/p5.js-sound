@@ -1,7 +1,6 @@
 'use strict';
 
 define(function (require) {
-
   var Effect = require('effect');
   var EQFilter = require('eqFilter');
 
@@ -83,52 +82,50 @@ define(function (require) {
    * }
    * </code></div>
    */
-  p5.EQ = function(_eqsize) {
+  p5.EQ = function (_eqsize) {
     Effect.call(this);
 
     //p5.EQ can be of size (3) or (8), defaults to 3
     _eqsize = _eqsize === 3 || _eqsize === 8 ? _eqsize : 3;
 
     var factor;
-    _eqsize === 3 ? factor = Math.pow(2,3) : factor = 2;
+    _eqsize === 3 ? (factor = Math.pow(2, 3)) : (factor = 2);
 
     /**
-      *  The p5.EQ is built with abstracted p5.Filter objects.
-      *  To modify any bands, use methods of the <a
-      *  href="/reference/#/p5.Filter" title="p5.Filter reference">
-      *  p5.Filter</a> API, especially `gain` and `freq`.
-      *  Bands are stored in an array, with indices 0 - 3, or 0 - 7
-      *  @property {Array}  bands
-      *
-    */
+     *  The p5.EQ is built with abstracted p5.Filter objects.
+     *  To modify any bands, use methods of the <a
+     *  href="/reference/#/p5.Filter" title="p5.Filter reference">
+     *  p5.Filter</a> API, especially `gain` and `freq`.
+     *  Bands are stored in an array, with indices 0 - 3, or 0 - 7
+     *  @property {Array}  bands
+     *
+     */
     this.bands = [];
-
 
     var freq, res;
     for (var i = 0; i < _eqsize; i++) {
       if (i === _eqsize - 1) {
         freq = 21000;
-        res = .01;
+        res = 0.01;
       } else if (i === 0) {
         freq = 100;
-        res = .1;
-      }
-      else if (i===1) {
+        res = 0.1;
+      } else if (i === 1) {
         freq = _eqsize === 3 ? 360 * factor : 360;
         res = 1;
-      }else {
-        freq = this.bands[i-1].freq() * factor;
+      } else {
+        freq = this.bands[i - 1].freq() * factor;
         res = 1;
       }
       this.bands[i] = this._newBand(freq, res);
 
-      if (i>0) {
-        this.bands[i-1].connect(this.bands[i].biquad);
+      if (i > 0) {
+        this.bands[i - 1].connect(this.bands[i].biquad);
       } else {
         this.input.connect(this.bands[i].biquad);
       }
     }
-    this.bands[_eqsize-1].connect(this.output);
+    this.bands[_eqsize - 1].connect(this.output);
   };
   p5.EQ.prototype = Object.create(Effect.prototype);
 
@@ -165,16 +162,18 @@ define(function (require) {
   //   * @param {Number} [freq7] Frequency value for band with index 7
   //   * @param {Number} [gain7] Gain value for band with index 7
   //   */
-  p5.EQ.prototype.set = function() {
+  p5.EQ.prototype.set = function () {
     if (arguments.length === this.bands.length * 2) {
-      for (var i = 0; i < arguments.length; i+=2) {
-        this.bands[i/2].freq(arguments[i]);
-        this.bands[i/2].gain(arguments[i+1]);
+      for (var i = 0; i < arguments.length; i += 2) {
+        this.bands[i / 2].freq(arguments[i]);
+        this.bands[i / 2].gain(arguments[i + 1]);
       }
-    }
-    else {
-      console.error('Argument mismatch. .set() should be called with ' + this.bands.length*2 +
-        ' arguments. (one frequency and gain value pair for each band of the eq)');
+    } else {
+      console.error(
+        'Argument mismatch. .set() should be called with ' +
+          this.bands.length * 2 +
+          ' arguments. (one frequency and gain value pair for each band of the eq)'
+      );
     }
   };
 
@@ -189,7 +188,7 @@ define(function (require) {
    * @param  {Number} res
    * @return {Object}      Abstracted Filter
    */
-  p5.EQ.prototype._newBand = function(freq, res) {
+  p5.EQ.prototype._newBand = function (freq, res) {
     return new EQFilter(freq, res);
   };
 

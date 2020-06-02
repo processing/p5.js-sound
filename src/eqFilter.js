@@ -10,7 +10,7 @@ define(function (require) {
    *
    *  @private
    */
-  var EQFilter = function(freq, res) {
+  var EQFilter = function (freq, res) {
     Filter.call(this, 'peaking');
     this.disconnect();
     this.set(freq, res);
@@ -19,17 +19,16 @@ define(function (require) {
     delete this.output;
     delete this._drywet;
     delete this.wet;
-
   };
   EQFilter.prototype = Object.create(Filter.prototype);
 
-  EQFilter.prototype.amp = function() {
+  EQFilter.prototype.amp = function () {
     console.warn('`amp()` is not available for p5.EQ bands. Use `.gain()`');
   };
-  EQFilter.prototype.drywet = function() {
+  EQFilter.prototype.drywet = function () {
     console.warn('`drywet()` is not available for p5.EQ bands.');
   };
-  EQFilter.prototype.connect = function(unit) {
+  EQFilter.prototype.connect = function (unit) {
     var u = unit || p5.soundOut.input;
     if (this.biquad) {
       this.biquad.connect(u.input ? u.input : u);
@@ -38,12 +37,12 @@ define(function (require) {
     }
   };
 
-  EQFilter.prototype.disconnect = function() {
+  EQFilter.prototype.disconnect = function () {
     if (this.biquad) {
       this.biquad.disconnect();
     }
   };
-  EQFilter.prototype.dispose = function() {
+  EQFilter.prototype.dispose = function () {
     // remove reference form soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);

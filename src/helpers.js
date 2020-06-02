@@ -16,10 +16,9 @@ define(function (require) {
    * @method sampleRate
    * @return {Number} samplerate samples per second
    */
-  p5.prototype.sampleRate = function() {
+  p5.prototype.sampleRate = function () {
     return p5sound.audiocontext.sampleRate;
   };
-
 
   /**
    *  Returns the closest MIDI note value for
@@ -30,9 +29,9 @@ define(function (require) {
    *                             above Middle C is 440Hz
    *  @return {Number}   MIDI note value
    */
-  p5.prototype.freqToMidi = function(f) {
-    var mathlog2 = Math.log(f/440) / Math.log(2);
-    var m = Math.round(12*mathlog2)+69;
+  p5.prototype.freqToMidi = function (f) {
+    var mathlog2 = Math.log(f / 440) / Math.log(2);
+    var m = Math.round(12 * mathlog2) + 69;
     return m;
   };
 
@@ -80,21 +79,21 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  var midiToFreq = p5.prototype.midiToFreq = function(m) {
-    return 440 * Math.pow(2, (m-69)/12.0);
-  };
+  var midiToFreq = (p5.prototype.midiToFreq = function (m) {
+    return 440 * Math.pow(2, (m - 69) / 12.0);
+  });
 
   // This method converts ANSI notes specified as a string "C4", "Eb3" to a frequency
-  var noteToFreq = function(note) {
+  var noteToFreq = function (note) {
     if (typeof note !== 'string') {
       return note;
     }
-    var wholeNotes = {A:21, B:23, C:24, D:26, E:28, F:29, G:31};
-    var value = wholeNotes[ note[0].toUpperCase() ];
+    var wholeNotes = { A: 21, B: 23, C: 24, D: 26, E: 28, F: 29, G: 31 };
+    var value = wholeNotes[note[0].toUpperCase()];
     var octave = ~~note.slice(-1);
-    value += 12 * (octave -1);
+    value += 12 * (octave - 1);
 
-    switch(note[1]) {
+    switch (note[1]) {
       case '#':
         value += 1;
         break;
@@ -136,13 +135,13 @@ define(function (require) {
    *     }
    *  </code></div>
    */
-  p5.prototype.soundFormats = function() {
+  p5.prototype.soundFormats = function () {
     // reset extensions array
     p5sound.extensions = [];
     // add extensions
     for (var i = 0; i < arguments.length; i++) {
       arguments[i] = arguments[i].toLowerCase();
-      if (['mp3','wav','ogg', 'm4a', 'aac'].indexOf(arguments[i]) > -1) {
+      if (['mp3', 'wav', 'ogg', 'm4a', 'aac'].indexOf(arguments[i]) > -1) {
         p5sound.extensions.push(arguments[i]);
       } else {
         throw arguments[i] + ' is not a valid sound format!';
@@ -150,7 +149,7 @@ define(function (require) {
     }
   };
 
-  p5.prototype.disposeSound = function() {
+  p5.prototype.disposeSound = function () {
     for (var i = 0; i < p5sound.soundArray.length; i++) {
       p5sound.soundArray[i].dispose();
     }
@@ -160,7 +159,7 @@ define(function (require) {
   // Oscillators etc when sketch ends
   p5.prototype.registerMethod('remove', p5.prototype.disposeSound);
 
-  p5.prototype._checkFileFormats = function(paths) {
+  p5.prototype._checkFileFormats = function (paths) {
     var path;
     // if path is a single string, check to see if extension is provided
     if (typeof paths === 'string') {
@@ -168,22 +167,19 @@ define(function (require) {
       // see if extension is provided
       var extTest = path.split('.').pop();
       // if an extension is provided...
-      if (['mp3','wav','ogg', 'm4a', 'aac'].indexOf(extTest) > -1) {
-        if (p5.prototype.isFileSupported(extTest)) {
-          path = path;
-        }
-        else {
+      if (['mp3', 'wav', 'ogg', 'm4a', 'aac'].indexOf(extTest) > -1) {
+        if (!p5.prototype.isFileSupported(extTest)) {
           var pathSplit = path.split('.');
           var pathCore = pathSplit[pathSplit.length - 1];
-          for (var i = 0; i<p5sound.extensions.length; i++) {
-            var extension = p5sound.extensions[i];
-            var supported = p5.prototype.isFileSupported(extension);
+          for (let i = 0; i < p5sound.extensions.length; i++) {
+            const extension = p5sound.extensions[i];
+            const supported = p5.prototype.isFileSupported(extension);
             if (supported) {
               pathCore = '';
               if (pathSplit.length === 2) {
                 pathCore += pathSplit[0];
               }
-              for (var i = 1; i <= pathSplit.length - 2; i++) {
+              for (let i = 1; i <= pathSplit.length - 2; i++) {
                 var p = pathSplit[i];
                 pathCore += '.' + p;
               }
@@ -196,9 +192,9 @@ define(function (require) {
       }
       // if no extension is provided...
       else {
-        for (var i = 0; i<p5sound.extensions.length; i++) {
-          var extension = p5sound.extensions[i];
-          var supported = p5.prototype.isFileSupported(extension);
+        for (let i = 0; i < p5sound.extensions.length; i++) {
+          const extension = p5sound.extensions[i];
+          const supported = p5.prototype.isFileSupported(extension);
           if (supported) {
             path = path + '.' + extension;
             break;
@@ -209,7 +205,7 @@ define(function (require) {
 
     // path can either be a single string, or an array
     else if (typeof paths === 'object') {
-      for (var i = 0; i<paths.length; i++) {
+      for (var i = 0; i < paths.length; i++) {
         var extension = paths[i].split('.').pop();
         var supported = p5.prototype.isFileSupported(extension);
         if (supported) {
@@ -226,24 +222,23 @@ define(function (require) {
   /**
    *  Used by Osc and Envelope to chain signal math
    */
-  p5.prototype._mathChain = function(o, math, thisChain, nextChain, type) {
+  p5.prototype._mathChain = function (o, math, thisChain, nextChain, type) {
     // if this type of math already exists in the chain, replace it
     for (var i in o.mathOps) {
       if (o.mathOps[i] instanceof type) {
         o.mathOps[i].dispose();
         thisChain = i;
         if (thisChain < o.mathOps.length - 1) {
-          nextChain = o.mathOps[i+1];
+          nextChain = o.mathOps[i + 1];
         }
       }
     }
-    o.mathOps[thisChain-1].disconnect();
-    o.mathOps[thisChain-1].connect(math);
+    o.mathOps[thisChain - 1].disconnect();
+    o.mathOps[thisChain - 1].connect(math);
     math.connect(nextChain);
     o.mathOps[thisChain] = math;
     return o;
   };
-
 
   // helper methods to convert audio file as .wav format,
   // will use as saving .wav file and saving blob object
@@ -292,7 +287,7 @@ define(function (require) {
     var index = 44;
     var volume = 1;
     for (var i = 0; i < lng; i++) {
-      view.setInt16(index, interleaved[i] * (0x7FFF * volume), true);
+      view.setInt16(index, interleaved[i] * (0x7fff * volume), true);
       index += 2;
     }
 
@@ -306,7 +301,7 @@ define(function (require) {
 
     var inputIndex = 0;
 
-    for (var index = 0; index < length;) {
+    for (var index = 0; index < length; ) {
       result[index++] = leftChannel[inputIndex];
       result[index++] = rightChannel[inputIndex];
       inputIndex++;
@@ -328,7 +323,10 @@ define(function (require) {
     // make sure that our chosen buffer size isn't smaller than the buffer size automatically
     // selected by the polyfill
     // reference: https://github.com/GoogleChromeLabs/audioworklet-polyfill/issues/13#issuecomment-425014930
-    let tempAudioWorkletNode = new AudioWorkletNode(p5sound.audiocontext, processorNames.soundFileProcessor);
+    let tempAudioWorkletNode = new AudioWorkletNode(
+      p5sound.audiocontext,
+      processorNames.soundFileProcessor
+    );
     if (tempAudioWorkletNode instanceof ScriptProcessorNode) {
       bufferSize = tempAudioWorkletNode.bufferSize;
     }
@@ -342,7 +340,6 @@ define(function (require) {
     convertToWav: convertToWav,
     midiToFreq: midiToFreq,
     noteToFreq: noteToFreq,
-    safeBufferSize: safeBufferSize
+    safeBufferSize: safeBufferSize,
   };
-
 });

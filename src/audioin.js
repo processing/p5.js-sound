@@ -50,7 +50,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.AudioIn = function(errorCallback) {
+  p5.AudioIn = function (errorCallback) {
     // set up audio input
     /**
      * @property {GainNode} input
@@ -90,8 +90,16 @@ define(function (require) {
     this.amplitude = new p5.Amplitude();
     this.output.connect(this.amplitude.input);
 
-    if (!window.MediaStreamTrack || !window.navigator.mediaDevices || !window.navigator.mediaDevices.getUserMedia) {
-      errorCallback ? errorCallback() : window.alert('This browser does not support MediaStreamTrack and mediaDevices');
+    if (
+      !window.MediaStreamTrack ||
+      !window.navigator.mediaDevices ||
+      !window.navigator.mediaDevices.getUserMedia
+    ) {
+      errorCallback
+        ? errorCallback()
+        : window.alert(
+            'This browser does not support MediaStreamTrack and mediaDevices'
+          );
     }
 
     // add to soundArray so we can dispose on close
@@ -118,7 +126,7 @@ define(function (require) {
    *                                    some browsers do not support
    *                                    getUserMedia.
    */
-  p5.AudioIn.prototype.start = function(successCallback, errorCallback) {
+  p5.AudioIn.prototype.start = function (successCallback, errorCallback) {
     var self = this;
 
     if (this.stream) {
@@ -130,8 +138,8 @@ define(function (require) {
     var constraints = {
       audio: {
         sampleRate: p5sound.audiocontext.sampleRate,
-        echoCancellation: false
-      }
+        echoCancellation: false,
+      },
     };
 
     // if developers determine which source to use
@@ -139,8 +147,9 @@ define(function (require) {
       constraints.audio.deviceId = audioSource.deviceId;
     }
 
-    window.navigator.mediaDevices.getUserMedia( constraints )
-      .then( function(stream) {
+    window.navigator.mediaDevices
+      .getUserMedia(constraints)
+      .then(function (stream) {
         self.stream = stream;
         self.enabled = true;
         // Wrap a MediaStreamSourceNode around the live input
@@ -150,7 +159,7 @@ define(function (require) {
         self.amplitude.setInput(self.output);
         if (successCallback) successCallback();
       })
-      .catch( function(err) {
+      .catch(function (err) {
         if (errorCallback) errorCallback(err);
         else console.error(err);
       });
@@ -163,9 +172,9 @@ define(function (require) {
    *  @method stop
    *  @for p5.AudioIn
    */
-  p5.AudioIn.prototype.stop = function() {
+  p5.AudioIn.prototype.stop = function () {
     if (this.stream) {
-      this.stream.getTracks().forEach(function(track) {
+      this.stream.getTracks().forEach(function (track) {
         track.stop();
       });
 
@@ -185,19 +194,16 @@ define(function (require) {
    *  @param  {Object} [unit] An object that accepts audio input,
    *                          such as an FFT
    */
-  p5.AudioIn.prototype.connect = function(unit) {
+  p5.AudioIn.prototype.connect = function (unit) {
     if (unit) {
       if (unit.hasOwnProperty('input')) {
         this.output.connect(unit.input);
-      }
-      else if (unit.hasOwnProperty('analyser')) {
+      } else if (unit.hasOwnProperty('analyser')) {
         this.output.connect(unit.analyser);
-      }
-      else {
+      } else {
         this.output.connect(unit);
       }
-    }
-    else {
+    } else {
       this.output.connect(p5sound.input);
     }
   };
@@ -210,7 +216,7 @@ define(function (require) {
    *  @method  disconnect
    *  @for p5.AudioIn
    */
-  p5.AudioIn.prototype.disconnect = function() {
+  p5.AudioIn.prototype.disconnect = function () {
     if (this.output) {
       this.output.disconnect();
       // stay connected to amplitude even if not outputting to p5
@@ -231,7 +237,7 @@ define(function (require) {
    *                               Smooths values based on previous values.
    *  @return {Number}           Volume level (between 0.0 and 1.0)
    */
-  p5.AudioIn.prototype.getLevel = function(smoothing) {
+  p5.AudioIn.prototype.getLevel = function (smoothing) {
     if (smoothing) {
       this.amplitude.smoothing = smoothing;
     }
@@ -246,13 +252,19 @@ define(function (require) {
    *  @param  {Number} vol between 0 and 1.0
    *  @param {Number} [time] ramp time (optional)
    */
-  p5.AudioIn.prototype.amp = function(vol, t) {
+  p5.AudioIn.prototype.amp = function (vol, t) {
     if (t) {
       var rampTime = t || 0;
       var currentVol = this.output.gain.value;
       this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
-      this.output.gain.setValueAtTime(currentVol, p5sound.audiocontext.currentTime);
-      this.output.gain.linearRampToValueAtTime(vol, rampTime + p5sound.audiocontext.currentTime);
+      this.output.gain.setValueAtTime(
+        currentVol,
+        p5sound.audiocontext.currentTime
+      );
+      this.output.gain.linearRampToValueAtTime(
+        vol,
+        rampTime + p5sound.audiocontext.currentTime
+      );
     } else {
       this.output.gain.cancelScheduledValues(p5sound.audiocontext.currentTime);
       this.output.gain.setValueAtTime(vol, p5sound.audiocontext.currentTime);
@@ -261,10 +273,10 @@ define(function (require) {
 
   /**
    * Returns a list of available input sources. This is a wrapper
-   * for [MediaDevices.enumerateDevices() - Web APIs | MDN](https://developer.mozilla.org/
-   * en-US/docs/Web/API/MediaDevices/enumerateDevices)
+   * for <a href="https://developer.mozilla.org/
+   * en-US/docs/Web/API/MediaDevices/enumerateDevices" target="_blank">
+   * MediaDevices.enumerateDevices() - Web APIs | MDN</a>
    * and it returns a Promise.
-   *
    * @method  getSources
    * @for p5.AudioIn
    * @param  {Function} [successCallback] This callback function handles the sources when they
@@ -295,10 +307,11 @@ define(function (require) {
    *  </code></div>
    */
   p5.AudioIn.prototype.getSources = function (onSuccess, onError) {
-    return new Promise( function(resolve, reject) {
-      window.navigator.mediaDevices.enumerateDevices()
-        .then( function(devices) {
-          p5sound.inputSources = devices.filter(function(device) {
+    return new Promise(function (resolve, reject) {
+      window.navigator.mediaDevices
+        .enumerateDevices()
+        .then(function (devices) {
+          p5sound.inputSources = devices.filter(function (device) {
             return device.kind === 'audioinput';
           });
           resolve(p5sound.inputSources);
@@ -306,12 +319,14 @@ define(function (require) {
             onSuccess(p5sound.inputSources);
           }
         })
-        .catch( function(error) {
+        .catch(function (error) {
           reject(error);
           if (onError) {
             onError(error);
           } else {
-            console.error('This browser does not support MediaStreamTrack.getSources()');
+            console.error(
+              'This browser does not support MediaStreamTrack.getSources()'
+            );
           }
         });
     });
@@ -321,8 +336,9 @@ define(function (require) {
    *  Set the input source. Accepts a number representing a
    *  position in the array returned by getSources().
    *  This is only available in browsers that support
-   *  [navigator.mediaDevices.enumerateDevices()](https://developer.mozilla.org/
-   *  en-US/docs/Web/API/MediaDevices/enumerateDevices)
+   * <a href="https://developer.mozilla.org/
+   * en-US/docs/Web/API/MediaDevices/enumerateDevices" target="_blank">
+   * navigator.mediaDevices.enumerateDevices()</a>
    *
    *  @method setSource
    *  @for p5.AudioIn
@@ -347,7 +363,7 @@ define(function (require) {
    *  }
    *  </code></div>
    */
-  p5.AudioIn.prototype.setSource = function(num) {
+  p5.AudioIn.prototype.setSource = function (num) {
     if (p5sound.inputSources.length > 0 && num < p5sound.inputSources.length) {
       // set the current source
       this.currentSource = num;
@@ -363,7 +379,7 @@ define(function (require) {
   };
 
   // private method
-  p5.AudioIn.prototype.dispose = function() {
+  p5.AudioIn.prototype.dispose = function () {
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
@@ -379,5 +395,4 @@ define(function (require) {
     delete this.amplitude;
     delete this.output;
   };
-
 });

@@ -1,7 +1,6 @@
 'use strict';
 
 define(function (require) {
-
   require('audioworklet-polyfill');
   require('shims');
   require('audiocontext');
@@ -40,5 +39,4 @@ define(function (require) {
   require('polysynth');
 
   return p5SOUND;
-
 });

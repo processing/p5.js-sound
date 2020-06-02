@@ -20,7 +20,7 @@ define(function () {
     @property {String} failedPath path to the file that failed to load
     @return {Error}     returns a custom Error object
    */
-  var CustomError = function(name, errorTrace, failedPath) {
+  var CustomError = function (name, errorTrace, failedPath) {
     var err = new Error();
     var tempStack, splitStack;
 
@@ -30,8 +30,7 @@ define(function () {
     err.failedPath = failedPath;
 
     // only print the part of the stack trace that refers to the user code:
-    var splitStack = tempStack.split('\n');
-    splitStack = splitStack.filter(function(ln) {
+    splitStack = tempStack.split('\n').filter(function (ln) {
       return !ln.match(/(p5.|native code|globalInit)/g);
     });
     err.stack = splitStack.join('\n');

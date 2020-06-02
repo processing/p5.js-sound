@@ -1,7 +1,6 @@
 'use strict';
 
 define(function (require) {
-
   // inspiration: recorder.js, Tone.js & typedarray.org
 
   const p5sound = require('master');
@@ -83,7 +82,7 @@ define(function (require) {
    *  }
    *  </div></code>
    */
-  p5.SoundRecorder = function() {
+  p5.SoundRecorder = function () {
     this.input = ac.createGain();
     this.output = ac.createGain();
 
@@ -92,19 +91,23 @@ define(function (require) {
 
     const workletBufferSize = safeBufferSize(1024);
 
-    this._workletNode = new AudioWorkletNode(ac, processorNames.recorderProcessor, {
-      outputChannelCount: [this._outputChannels],
-      processorOptions: {
-        numInputChannels: this._inputChannels,
-        bufferSize: workletBufferSize
+    this._workletNode = new AudioWorkletNode(
+      ac,
+      processorNames.recorderProcessor,
+      {
+        outputChannelCount: [this._outputChannels],
+        processorOptions: {
+          numInputChannels: this._inputChannels,
+          bufferSize: workletBufferSize,
+        },
       }
-    });
+    );
 
-    this._workletNode.port.onmessage = function(event) {
+    this._workletNode.port.onmessage = function (event) {
       if (event.data.name === 'buffers') {
         const buffers = [
           new Float32Array(event.data.leftBuffer),
-          new Float32Array(event.data.rightBuffer)
+          new Float32Array(event.data.rightBuffer),
         ];
         this._callback(buffers);
       }
@@ -115,7 +118,7 @@ define(function (require) {
      *  @private
      *  @type Function(Float32Array)
      */
-    this._callback = function() {};
+    this._callback = function () {};
 
     // connections
     this._workletNode.connect(p5.soundOut._silentNode);
@@ -135,7 +138,7 @@ define(function (require) {
    *  @param {Object} [unit] p5.sound object or a web audio unit
    *                         that outputs sound
    */
-  p5.SoundRecorder.prototype.setInput = function(unit) {
+  p5.SoundRecorder.prototype.setInput = function (unit) {
     this.input.disconnect();
     this.input = null;
     this.input = ac.createGain();
@@ -164,17 +167,16 @@ define(function (require) {
    *  @param  {Function} [callback] The name of a function that will be
    *                                called once the recording completes
    */
-  p5.SoundRecorder.prototype.record = function(sFile, duration, callback) {
+  p5.SoundRecorder.prototype.record = function (sFile, duration, callback) {
     this._workletNode.port.postMessage({ name: 'start', duration: duration });
 
     if (sFile && callback) {
-      this._callback = function(buffer) {
+      this._callback = function (buffer) {
         sFile.setBuffer(buffer);
         callback();
       };
-    }
-    else if (sFile) {
-      this._callback = function(buffer) {
+    } else if (sFile) {
+      this._callback = function (buffer) {
         sFile.setBuffer(buffer);
       };
     }
@@ -189,23 +191,22 @@ define(function (require) {
    *  @method  stop
    *  @for p5.SoundRecorder
    */
-  p5.SoundRecorder.prototype.stop = function() {
+  p5.SoundRecorder.prototype.stop = function () {
     this._workletNode.port.postMessage({ name: 'stop' });
   };
 
-  p5.SoundRecorder.prototype.dispose = function() {
+  p5.SoundRecorder.prototype.dispose = function () {
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
 
-    this._callback = function() {};
+    this._callback = function () {};
     if (this.input) {
       this.input.disconnect();
     }
     this.input = null;
     this._workletNode = null;
   };
-
 
   /**
    * Save a p5.SoundFile as a .wav file. The browser will prompt the user

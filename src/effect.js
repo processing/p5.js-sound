@@ -1,6 +1,5 @@
 'use strict';
 define(function (require) {
-
   var p5sound = require('master');
   var CrossFade = require('Tone/component/CrossFade');
 
@@ -27,17 +26,17 @@ define(function (require) {
    *                              to the wet signal to this gain node, so that dry and wet
    *                              signals are mixed properly.
    */
-  p5.Effect = function() {
+  p5.Effect = function () {
     this.ac = p5sound.audiocontext;
 
     this.input = this.ac.createGain();
     this.output = this.ac.createGain();
 
-     /**
-      *	The p5.Effect class is built
-      * 	using Tone.js CrossFade
-      * 	@private
-      */
+    /**
+     *	The p5.Effect class is built
+     * 	using Tone.js CrossFade
+     * 	@private
+     */
 
     this._drywet = new CrossFade(1);
 
@@ -67,14 +66,14 @@ define(function (require) {
    *  @param {Number} [rampTime] create a fade that lasts until rampTime
    *  @param {Number} [tFromNow] schedule this event to happen in tFromNow seconds
    */
-  p5.Effect.prototype.amp = function(vol, rampTime, tFromNow){
-    var rampTime = rampTime || 0;
-    var tFromNow = tFromNow || 0;
-    var now = p5sound.audiocontext.currentTime;
-    var currentVol = this.output.gain.value;
+  p5.Effect.prototype.amp = function (vol, rampTime = 0, tFromNow = 0) {
+    const now = p5sound.audiocontext.currentTime;
+    const startTime = now + tFromNow;
+    const endTime = startTime + rampTime + 0.001;
+    const currentVol = this.output.gain.value;
     this.output.gain.cancelScheduledValues(now);
-    this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow + .001);
-    this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime + .001);
+    this.output.gain.linearRampToValueAtTime(currentVol, startTime + 0.001);
+    this.output.gain.linearRampToValueAtTime(vol, endTime);
   };
 
   /**
@@ -86,11 +85,11 @@ define(function (require) {
    *  @for p5.Effect
    *  @param {Object} [arguments]  Chain together multiple sound objects
    */
-  p5.Effect.prototype.chain = function(){
-    if (arguments.length>0){
+  p5.Effect.prototype.chain = function () {
+    if (arguments.length > 0) {
       this.connect(arguments[0]);
-      for(var i=1;i<arguments.length; i+=1){
-        arguments[i-1].connect(arguments[i]);
+      for (var i = 1; i < arguments.length; i += 1) {
+        arguments[i - 1].connect(arguments[i]);
       }
     }
     return this;
@@ -103,9 +102,9 @@ define(function (require) {
    *  @for p5.Effect
    *  @param {Number} [fade] The desired drywet value (0 - 1.0)
    */
-  p5.Effect.prototype.drywet = function(fade){
-    if (typeof fade !=="undefined"){
-      this._drywet.fade.value = fade
+  p5.Effect.prototype.drywet = function (fade) {
+    if (typeof fade !== 'undefined') {
+      this._drywet.fade.value = fade;
     }
     return this._drywet.fade.value;
   };
@@ -128,13 +127,13 @@ define(function (require) {
    * @method disconnect
    * @for p5.Effect
    */
-  p5.Effect.prototype.disconnect = function() {
+  p5.Effect.prototype.disconnect = function () {
     if (this.output) {
       this.output.disconnect();
     }
   };
 
-  p5.Effect.prototype.dispose = function() {
+  p5.Effect.prototype.dispose = function () {
     // remove refernce form soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
@@ -163,5 +162,4 @@ define(function (require) {
   };
 
   return p5.Effect;
-
 });
