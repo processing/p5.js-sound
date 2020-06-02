@@ -212,7 +212,17 @@ define(function (require) {
   // these are now the same thing
   p5.Oscillator.prototype.fade = p5.Oscillator.prototype.amp;
 
-  p5.Oscillator.prototype.getAmp = function () {
+
+  /**
+   * Returns the value of output gain 
+   *
+   *  @method  getAmp
+   *  @for p5.Oscillator
+   * 
+   * @returns {number} Amplitude value between 0.0 and 1.0
+   */ 
+  p5.Oscillator.prototype.getAmp = function() {
+
     return this.output.gain.value;
   };
 
@@ -293,6 +303,13 @@ define(function (require) {
       return this.oscillator.frequency;
     }
   };
+   /**
+   * Returns the value of frequency of oscillator 
+   *
+   *  @method  getFreq
+   *  @for p5.Oscillator
+   *  @returns {number} Frequency of oscillator in Hertz 
+   */ 
 
   p5.Oscillator.prototype.getFreq = function () {
     return this.oscillator.frequency.value;
@@ -308,6 +325,13 @@ define(function (require) {
   p5.Oscillator.prototype.setType = function (type) {
     this.oscillator.type = type;
   };
+  /**
+   *  Returns  current type of oscillator eg. 'sine', 'triangle', 'sawtooth' or 'square'.
+   *
+   *  @method  getType
+   *  @for p5.Oscillator
+   *  @returns {String} type of oscillator  eg . 'sine', 'triangle', 'sawtooth' or 'square'.
+   */
 
   p5.Oscillator.prototype.getType = function () {
     return this.oscillator.type;
@@ -365,7 +389,17 @@ define(function (require) {
     this.panner.pan(pval, tFromNow);
   };
 
-  p5.Oscillator.prototype.getPan = function () {
+  /**
+   *  Returns the current value of panPosition , between Left (-1) and Right (1)
+   *
+   *  @method  getPan
+   *  @for p5.Oscillator
+   * 
+   *  @returns {number} panPosition of oscillator , between Left (-1) and Right (1)
+   */
+
+  p5.Oscillator.prototype.getPan = function() {
+
     return this.panPosition;
   };
 
