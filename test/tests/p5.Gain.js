@@ -19,14 +19,16 @@ define(['chai'],(chai)=>{
             
             mainGainNode.connect(outputNode);
         });
-        it('can disconnect  all output' ,()=>{
-            let inputNode = new p5.Gain();
-            let outputNode = new p5.Gain();
-            let mainGainNode  = new p5.Gain();
+        it('can disconnect  from the given output if present any' ,()=>{
+            let outputNode1 = new p5.Gain();
+            let mainGainNode1  = new p5.Gain();
 
-            mainGainNode.setInput(inputNode);
-            mainGainNode.connect(outputNode);
-            mainGainNode.disconnect();
+            mainGainNode1.connect(outputNode1);
+            mainGainNode1.disconnect();         // it disconnects from the output if present 
+
+            let mainGainNode2 = new p5.Gain();
+            mainGainNode2.disconnect();         // the disconnects can handle things if there is no output too 
+
         });
         it('can set the output level of gain Node', ()=>{
             let osc = new p5.Oscillator('sine');
