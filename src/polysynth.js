@@ -1,7 +1,7 @@
 'use strict';
 
 import p5sound from './master';
-import TimelineSignal from 'Tone/signal/TimelineSignal';
+import TimelineSignal from 'Tone/signal/TransportTimelineSignal.js';
 import { noteToFreq } from './helpers';
 
 /**
