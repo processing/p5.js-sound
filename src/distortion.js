@@ -1,6 +1,6 @@
 'use strict';
 
-import Effect from 'effect';
+import Effect from './effect.js';
 
 /*
  * Adapted from [Kevin Ennis on StackOverflow](http://stackoverflow.com/questions/22312841/waveshaper-node-in-webaudio-how-to-emulate-distortion)

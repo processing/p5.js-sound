@@ -2,16 +2,15 @@
 
 global.TONE_SILENCE_VERSION_LOGGING = true;
 
-import StartAudioContext from 'startaudiocontext';
-// import Tone from 'Tone/core/Tone';
+import StartAudioContext from 'startaudiocontext'
+import Tone from 'Tone/core/Tone'
+import 'Tone/core/Context'
 
 // Create the Audio Context
 const audiocontext = new window.AudioContext();
 
 // Tone and p5.sound share the same audio context
-// Tone.context.dispose();
-// console.log(audiocontext)
-// Tone.setContext(audiocontext);
+Tone.setContext(audiocontext);
 
 /**
  * <p>Returns the Audio Context for this sketch. Useful for users

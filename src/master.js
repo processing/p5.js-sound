@@ -1,4 +1,4 @@
-import audiocontext from './audiocontext';
+import audiocontext from './audiocontext.js';
 // Master contains the master sound output.
 var Master = function () {
   this.input = audiocontext.createGain();
@@ -40,6 +40,7 @@ var Master = function () {
 
 // create a single instance of the p5Sound / master output for use within this sketch
 const p5sound = new Master();
+// console.log(p5sound.audiocontext)
 
 /**
  * Returns a number representing the master amplitude (volume) for sound

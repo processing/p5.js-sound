@@ -1,7 +1,7 @@
 'use strict';
 
 import p5sound from './master';
-import CrossFade from 'Tone/component/CrossFade';
+import CrossFade from 'Tone/component/CrossFade.js';
 
 /**
  * Effect is a base class for audio effects in p5. <br>
