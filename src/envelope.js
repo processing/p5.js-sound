@@ -4,7 +4,7 @@ import p5sound from './master';
 import Add from 'Tone/signal/Add';
 import Mult from 'Tone/signal/Multiply';
 import Scale from 'Tone/signal/Scale';
-import TimelineSignal from 'Tone/signal/TransportTimelineSignal.js';
+import TimelineSignal from 'Tone/signal/TimelineSignal.js';
 
 /**
  *  <p>Envelopes are pre-defined amplitude distribution over time.
