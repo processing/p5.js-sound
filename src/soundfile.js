@@ -1767,11 +1767,9 @@ p5.SoundFile.prototype._onTimeUpdate = function (position) {
     var cue = this._cues[i];
     var callbackTime = cue.time;
     var val = cue.val;
-
-    if (
-      ~~this._prevUpdateTime <= callbackTime &&
-      callbackTime <= playbackTime
-    ) {
+    var leftLimit = this._prevUpdateTime || 0;
+    var rightLimit = playbackTime;
+    if (leftLimit <= callbackTime && callbackTime <= rightLimit) {
       // pass the scheduled callbackTime as parameter to the callback
       cue.callback(val);
     }
