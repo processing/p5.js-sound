@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * This module has shims
  */

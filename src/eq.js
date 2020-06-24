@@ -1,5 +1,3 @@
-'use strict';
-
 import Effect from './effect';
 import EQFilter from './eqFilter';
 

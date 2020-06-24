@@ -1,5 +1,3 @@
-'use strict';
-
 import p5sound from './master';
 // requires the Tone.js library's Clock (MIT license, Yotam Mann)
 // https://github.com/TONEnoTONE/Tone.js/

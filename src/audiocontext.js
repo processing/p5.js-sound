@@ -1,5 +1,3 @@
-'use strict';
-
 global.TONE_SILENCE_VERSION_LOGGING = true;
 
 import StartAudioContext from 'startaudiocontext'

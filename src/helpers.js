@@ -1,4 +1,3 @@
-'use strict';
 import p5sound from './master';
 import processorNames from './audioWorklet/processorNames';
 /**

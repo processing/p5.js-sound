@@ -1,5 +1,3 @@
-
-
 import 'audioworklet-polyfill';
 import './shims';
 import './audiocontext';

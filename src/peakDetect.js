@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  *  <p>PeakDetect works in conjunction with p5.FFT to
  *  look for onsets in some or all of the frequency spectrum.

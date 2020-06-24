@@ -1,5 +1,3 @@
-'use strict';
-
 // Signal is built with the Tone.js signal by Yotam Mann
 // https://github.com/TONEnoTONE/Tone.js/
 import Signal from 'Tone/signal/Signal';

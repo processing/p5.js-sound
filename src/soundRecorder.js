@@ -1,5 +1,3 @@
-'use strict';
-
 // inspiration: recorder.js, Tone.js & typedarray.org
 
 import p5sound from './master';

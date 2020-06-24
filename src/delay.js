@@ -1,5 +1,3 @@
-'use strict';
-
 import Filter from './filter';
 import Effect from './effect';
 

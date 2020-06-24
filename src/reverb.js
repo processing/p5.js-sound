@@ -1,5 +1,3 @@
-'use strict';
-
 import CustomError from './errorHandler';
 import Effect from './effect';
 

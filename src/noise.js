@@ -1,5 +1,3 @@
-'use strict';
-
 import p5sound from './master';
 
 // generate noise buffers

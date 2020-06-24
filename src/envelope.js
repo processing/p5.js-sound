@@ -1,5 +1,3 @@
-'use strict';
-
 import p5sound from './master';
 import Add from 'Tone/signal/Add';
 import Mult from 'Tone/signal/Multiply';

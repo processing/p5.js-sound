@@ -1,5 +1,3 @@
-'use strict';
-
 import p5sound from './master';
 var ac = p5sound.audiocontext;
 

@@ -1,4 +1,3 @@
-'use strict';
 import p5sound from './master';
 import { safeBufferSize } from './helpers';
 import processorNames from './audioWorklet/processorNames';

@@ -1,5 +1,3 @@
-'use strict';
-
 import CustomError from './errorHandler';
 import p5sound from './master';
 import { midiToFreq, convertToWav, safeBufferSize } from './helpers';

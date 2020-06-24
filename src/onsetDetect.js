@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  *  Listen for onsets (a sharp increase in volume) within a given
  *  frequency range.
