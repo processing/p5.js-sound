@@ -1,5 +1,5 @@
-import p5sound from './master';
-require('oscillator');
+import p5sound from './master'
+import './oscillator'
 
 /**
  *  Creates a Pulse object, an oscillator that implements

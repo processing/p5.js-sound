@@ -1,5 +1,4 @@
 import p5sound from './master';
-
 import Add from 'Tone/signal/Add';
 import Mult from 'Tone/signal/Multiply';
 import Scale from 'Tone/signal/Scale';
@@ -627,4 +626,4 @@ p5.SqrOsc = function (freq) {
 
 p5.SqrOsc.prototype = Object.create(p5.Oscillator.prototype);
 
-export default p5.Oscillator;
+export const Oscillator  = p5.Oscillator;

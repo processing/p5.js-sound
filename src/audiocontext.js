@@ -1,8 +1,8 @@
 global.TONE_SILENCE_VERSION_LOGGING = true;
 
-import StartAudioContext from 'startaudiocontext'
-import Tone from 'Tone/core/Tone'
-import 'Tone/core/Context'
+import StartAudioContext from 'startaudiocontext';
+import Tone from 'Tone/core/Tone';
+import 'Tone/core/Context';
 
 // Create the Audio Context
 const audiocontext = new window.AudioContext();
