@@ -13,7 +13,7 @@ var allTests = [
   'tests/p5.Amplitude',
   'tests/p5.Oscillator',
   'tests/p5.Distortion',
-  'tests/p5.Effect',
+  'tests/p5.Effect',      
   'tests/p5.Filter',
   'tests/p5.FFT',
   'tests/p5.Compressor',
