@@ -27,7 +27,7 @@ module.exports = function(grunt) {
           configFile: './.eslintrc',
           fix: true
         },
-        src: ['src/**/*.js', 'test/tests/**/*.js']
+        src: ['sr/**/*.js','test/tests/*.js'] 
       }
     },
     webpack: {
