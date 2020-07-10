@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "audioworklet-polyfill": "^1.1.2",
-    "p5": "^x.0.0",
+    "p5": "1.0.0",
     "startaudiocontext": "^1.2.1",
     "tone": "0.10.0"
   },
@@ -43,6 +43,6 @@
     "test": "grunt run-tests",
     "lint": "grunt lint",
     "dev": "grunt dev",
-    "postinstall": "mv ./node_modules/p5/lib/p5.js ./lib  &&  rm -rf ./node_modules/p5 &&   grunt githooks"
+    "postinstall": "cp ./node_modules/p5/lib/p5.js ./node_modules/p5/lib/p5.min.js  ./lib   &&   grunt githooks"
   }
 }

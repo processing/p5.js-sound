@@ -1,4 +1,4 @@
-import p5sound from '../master.js'
+import p5sound from '../master.js';
 const moduleSources = [
   require('raw-loader!./recorderProcessor').default,
   require('raw-loader!./soundFileProcessor').default,
