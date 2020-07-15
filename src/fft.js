@@ -84,52 +84,54 @@ import p5sound from './master';
  *  }
  *  </code></div>
  */
-p5.FFT = function (smoothing, bins) {
-  this.input = this.analyser = p5sound.audiocontext.createAnalyser();
+class FFT {
+  constructor(smoothing, bins) {
+    this.input = this.analyser = p5sound.audiocontext.createAnalyser();
 
-  Object.defineProperties(this, {
-    bins: {
-      get: function () {
-        return this.analyser.fftSize / 2;
+    Object.defineProperties(this, {
+      bins: {
+        get: function () {
+          return this.analyser.fftSize / 2;
+        },
+        set: function (b) {
+          this.analyser.fftSize = b * 2;
+        },
+        configurable: true,
+        enumerable: true,
       },
-      set: function (b) {
-        this.analyser.fftSize = b * 2;
+      smoothing: {
+        get: function () {
+          return this.analyser.smoothingTimeConstant;
+        },
+        set: function (s) {
+          this.analyser.smoothingTimeConstant = s;
+        },
+        configurable: true,
+        enumerable: true,
       },
-      configurable: true,
-      enumerable: true,
-    },
-    smoothing: {
-      get: function () {
-        return this.analyser.smoothingTimeConstant;
-      },
-      set: function (s) {
-        this.analyser.smoothingTimeConstant = s;
-      },
-      configurable: true,
-      enumerable: true,
-    },
-  });
+    });
 
-  // set default smoothing and bins
-  this.smooth(smoothing);
-  this.bins = bins || 1024;
+    // set default smoothing and bins
+    this.smooth(smoothing);
+    this.bins = bins || 1024;
 
-  // default connections to p5sound fftMeter
-  p5sound.fftMeter.connect(this.analyser);
+    // default connections to p5sound fftMeter
+    p5sound.fftMeter.connect(this.analyser);
 
-  this.freqDomain = new Uint8Array(this.analyser.frequencyBinCount);
-  this.timeDomain = new Uint8Array(this.analyser.frequencyBinCount);
+    this.freqDomain = new Uint8Array(this.analyser.frequencyBinCount);
+    this.timeDomain = new Uint8Array(this.analyser.frequencyBinCount);
 
-  // predefined frequency ranges, these will be tweakable
-  this.bass = [20, 140];
-  this.lowMid = [140, 400];
-  this.mid = [400, 2600];
-  this.highMid = [2600, 5200];
-  this.treble = [5200, 14000];
+    // predefined frequency ranges, these will be tweakable
+    this.bass = [20, 140];
+    this.lowMid = [140, 400];
+    this.mid = [400, 2600];
+    this.highMid = [2600, 5200];
+    this.treble = [5200, 14000];
 
-  // add this p5.SoundFile to the soundArray
-  p5sound.soundArray.push(this);
-};
+    // add this p5.SoundFile to the soundArray
+    p5sound.soundArray.push(this);
+  }
+}
 
 /**
  *  Set the input source for the FFT analysis. If no source is
@@ -139,7 +141,7 @@ p5.FFT = function (smoothing, bins) {
  *  @for p5.FFT
  *  @param {Object} [source] p5.sound object (or web audio API source node)
  */
-p5.FFT.prototype.setInput = function (source) {
+FFT.prototype.setInput = function (source) {
   if (!source) {
     p5sound.fftMeter.connect(this.analyser);
   } else {
@@ -169,7 +171,7 @@ p5.FFT.prototype.setInput = function (source) {
  *                            over time. Array length = bins.
  *
  */
-p5.FFT.prototype.waveform = function () {
+FFT.prototype.waveform = function () {
   var bins, mode;
   var normalArray = new Array();
 
@@ -268,7 +270,7 @@ p5.FFT.prototype.waveform = function () {
  *
  *
  */
-p5.FFT.prototype.analyze = function () {
+FFT.prototype.analyze = function () {
   var mode;
 
   for (var i = 0; i < arguments.length; i++) {
@@ -323,7 +325,7 @@ p5.FFT.prototype.analyze = function () {
  *                              0 and 255.
  *
  */
-p5.FFT.prototype.getEnergy = function (frequency1, frequency2) {
+FFT.prototype.getEnergy = function (frequency1, frequency2) {
   var nyquist = p5sound.audiocontext.sampleRate / 2;
 
   if (frequency1 === 'bass') {
@@ -376,7 +378,7 @@ p5.FFT.prototype.getEnergy = function (frequency1, frequency2) {
 };
 
 // compatability with v.012, changed to getEnergy in v.0121. Will be deprecated...
-p5.FFT.prototype.getFreq = function (freq1, freq2) {
+FFT.prototype.getFreq = function (freq1, freq2) {
   console.log('getFreq() is deprecated. Please use getEnergy() instead.');
   var x = this.getEnergy(freq1, freq2);
   return x;
@@ -447,7 +449,7 @@ p5.FFT.prototype.getFreq = function (freq1, freq2) {
  *}
  * </code></div>
  */
-p5.FFT.prototype.getCentroid = function () {
+FFT.prototype.getCentroid = function () {
   var nyquist = p5sound.audiocontext.sampleRate / 2;
   var cumulative_sum = 0;
   var centroid_normalization = 0;
@@ -474,14 +476,14 @@ p5.FFT.prototype.getCentroid = function () {
  *  @param {Number} smoothing    0.0 < smoothing < 1.0.
  *                               Defaults to 0.8.
  */
-p5.FFT.prototype.smooth = function (s) {
+FFT.prototype.smooth = function (s) {
   if (typeof s !== 'undefined') {
     this.smoothing = s;
   }
   return this.smoothing;
 };
 
-p5.FFT.prototype.dispose = function () {
+FFT.prototype.dispose = function () {
   // remove reference from soundArray
   var index = p5sound.soundArray.indexOf(this);
   p5sound.soundArray.splice(index, 1);
@@ -504,7 +506,7 @@ p5.FFT.prototype.dispose = function () {
  *  @param  {Number}  N                Number of returned frequency groups
  *  @return {Array}   linearAverages   Array of average amplitude values for each group
  */
-p5.FFT.prototype.linAverages = function (_N) {
+FFT.prototype.linAverages = function (_N) {
   var N = _N || 16; // This prevents undefined, null or 0 values of N
 
   var spectrum = this.freqDomain;
@@ -544,7 +546,7 @@ p5.FFT.prototype.linAverages = function (_N) {
  *  @param  {Array}   octaveBands    Array of Octave Bands objects for grouping
  *  @return {Array}   logAverages    Array of average amplitude values for each group
  */
-p5.FFT.prototype.logAverages = function (octaveBands) {
+FFT.prototype.logAverages = function (octaveBands) {
   var nyquist = p5sound.audiocontext.sampleRate / 2;
   var spectrum = this.freqDomain;
   var spectrumLength = spectrum.length;
@@ -587,7 +589,7 @@ p5.FFT.prototype.logAverages = function (octaveBands) {
  *  @param  {Number}  fCtr0         Minimum central frequency for the lowest band
  *  @return {Array}   octaveBands   Array of octave band objects with their bounds
  */
-p5.FFT.prototype.getOctaveBands = function (_N, _fCtr0) {
+FFT.prototype.getOctaveBands = function (_N, _fCtr0) {
   var N = _N || 3; // Default to 1/3 Octave Bands
   var fCtr0 = _fCtr0 || 15.625; // Minimum central frequency, defaults to 15.625Hz
 
@@ -635,4 +637,4 @@ function timeToInt(fft) {
   }
 }
 
-export default p5.FFT;
+export default FFT;
