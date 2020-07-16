@@ -159,6 +159,6 @@ p5.Effect.prototype.dispose = function () {
   this.ac = undefined;
 };
 
-const Effect  = p5.Effect;
+const Effect = p5.Effect;
 
-export default Effect
+export default Effect;
