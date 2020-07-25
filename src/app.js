@@ -7,9 +7,13 @@ import './errorHandler';
 import './audioWorklet';
 import './panner';
 import './soundfile';
-import './amplitude';
+
+import Amplitude from './amplitude';
+p5.Amplitude = Amplitude;
+
 import FFT from './fft';
 p5.FFT = FFT;
+
 import './signal';
 import './oscillator';
 import './envelope';
