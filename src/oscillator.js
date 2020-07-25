@@ -626,4 +626,4 @@ p5.SqrOsc = function (freq) {
 
 p5.SqrOsc.prototype = Object.create(p5.Oscillator.prototype);
 
-export const Oscillator  = p5.Oscillator;
+export const Oscillator = p5.Oscillator;
