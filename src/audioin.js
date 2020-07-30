@@ -1,4 +1,5 @@
 import p5sound from './master';
+import Amplitude from './amplitude';
 
 // an array of input sources
 p5sound.inputSources = [];
@@ -84,7 +85,7 @@ p5.AudioIn = function (errorCallback) {
    *
    *  @property {p5.Amplitude} amplitude
    */
-  this.amplitude = new p5.Amplitude();
+  this.amplitude = new Amplitude();
   this.output.connect(this.amplitude.input);
 
   if (
