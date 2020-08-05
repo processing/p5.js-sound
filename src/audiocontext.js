@@ -45,9 +45,9 @@ Tone.setContext(audiocontext);
  *
  * </div></code>
  */
-p5.prototype.getAudioContext = function () {
+export function getAudioContext() {
   return audiocontext;
-};
+}
 
 /**
  *  <p>It is not only a good practice to give users control over starting
@@ -102,7 +102,7 @@ p5.prototype.getAudioContext = function () {
  *  }
  *  </code></div>
  */
-p5.prototype.userStartAudio = function (elements, callback) {
+export function userStartAudio(elements, callback) {
   var elt = elements;
   if (elements instanceof p5.Element) {
     elt = elements.elt;
@@ -112,6 +112,6 @@ p5.prototype.userStartAudio = function (elements, callback) {
     });
   }
   return StartAudioContext(audiocontext, elt, callback);
-};
+}
 
 export default audiocontext;
