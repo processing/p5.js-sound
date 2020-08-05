@@ -40,9 +40,14 @@ import './compressor';
 import './soundRecorder';
 import './peakDetect';
 import './gain';
-import './monosynth';
-import './polysynth';
+// import './monosynth';
+// import './polysynth';
 import './distortion';
-import './audioVoice';
-import './monosynth';
+
+import AudioVoice from './audioVoice';
+p5.AudioVoice = AudioVoice;
+
+import MonoSynth from './monosynth';
+p5.MonoSynth = MonoSynth;
+
 import './polysynth';
