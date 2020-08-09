@@ -1,6 +1,10 @@
 import 'audioworklet-polyfill';
 import './shims';
-import './audiocontext';
+
+import { getAudioContext, userStartAudio } from './audiocontext';
+p5.prototype.getAudioContext = getAudioContext;
+p5.prototype.userStartAudio = userStartAudio;
+
 import './master';
 import './helpers';
 import './errorHandler';
@@ -19,7 +23,10 @@ import './oscillator';
 import './envelope';
 import './pulse';
 import './noise';
-import './audioin';
+
+import AudioIn from './audioin';
+p5.AudioIn = AudioIn;
+
 import './filter';
 import './eq';
 import './panner3d';
