@@ -40,8 +40,6 @@ import './compressor';
 import './soundRecorder';
 import './peakDetect';
 import './gain';
-// import './monosynth';
-// import './polysynth';
 import './distortion';
 
 import AudioVoice from './audioVoice';
