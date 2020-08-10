@@ -897,4 +897,5 @@ p5.Env = function (t1, l1, t2, l2, t3, l3) {
 };
 p5.Env.prototype = Object.create(p5.Envelope.prototype);
 
-export default p5.Envelope;
+const Envelope = p5.Envelope;
+export default Envelope;
