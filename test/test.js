@@ -27,6 +27,23 @@ var allTests = [
 
 p5.prototype.masterVolume(0);
 
+var test_has_run = false;
+
 require(allTests, function(){
-  mocha.run();
+  document.getElementById('mocha').innerHTML = 'click to begin tests';
+
+  // chromes autoplay policy requires a user interaction
+  // before the audiocontext can activate
+  function mousePressed() {
+    if(!test_has_run) {
+      document.getElementById('mocha').innerHTML = '';
+      getAudioContext().resume()
+      mocha.run();
+      test_has_run = true;
+    }
+  } 
+
+  document.addEventListener('click', mousePressed, false);
 });
+
+
