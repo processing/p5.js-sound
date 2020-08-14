@@ -36,7 +36,10 @@ import './reverb';
 import './metro';
 import './looper';
 import './soundLoop';
-import './compressor';
+
+import Compressor from './compressor';
+p5.Compressor = Compressor;
+
 import './soundRecorder';
 import './peakDetect';
 import './gain';
