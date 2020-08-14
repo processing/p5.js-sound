@@ -40,7 +40,9 @@ import './compressor';
 import './soundRecorder';
 import './peakDetect';
 import './gain';
-import './distortion';
+
+import Distortion from './distortion';
+p5.Distortion = Distortion;
 
 import AudioVoice from './audioVoice';
 p5.AudioVoice = AudioVoice;
