@@ -48,10 +48,18 @@ p5.Compressor = Compressor;
 
 import './soundRecorder';
 import './peakDetect';
-import './gain';
+
+
 
 import Distortion from './distortion';
 p5.Distortion = Distortion;
+
+
+import Gain from './gain';
+p5.Gain = Gain;
+
+
+
 
 import AudioVoice from './audioVoice';
 p5.AudioVoice = AudioVoice;

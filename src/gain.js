@@ -68,87 +68,89 @@ import p5sound from './master';
  *</code></div>
  */
 
-p5.Gain = function () {
-  this.ac = p5sound.audiocontext;
+class Gain {
+  constructor() {
+    this.ac = p5sound.audiocontext;
 
-  this.input = this.ac.createGain();
-  this.output = this.ac.createGain();
+    this.input = this.ac.createGain();
+    this.output = this.ac.createGain();
 
-  // otherwise, Safari distorts
-  this.input.gain.value = 0.5;
-  this.input.connect(this.output);
+    // otherwise, Safari distorts
+    this.input.gain.value = 0.5;
+    this.input.connect(this.output);
 
-  // add  to the soundArray
-  p5sound.soundArray.push(this);
-};
-
-/**
- *  Connect a source to the gain node.
- *
- *  @method  setInput
- *  @for p5.Gain
- *  @param  {Object} src     p5.sound / Web Audio object with a sound
- *                           output.
- */
-
-p5.Gain.prototype.setInput = function (src) {
-  src.connect(this.input);
-};
-
-/**
- *  Send output to a p5.sound or web audio object
- *
- *  @method  connect
- *  @for p5.Gain
- *  @param  {Object} unit
- */
-p5.Gain.prototype.connect = function (unit) {
-  var u = unit || p5.soundOut.input;
-  this.output.connect(u.input ? u.input : u);
-};
-
-/**
- *  Disconnect all output.
- *
- *  @method disconnect
- *  @for p5.Gain
- */
-p5.Gain.prototype.disconnect = function () {
-  if (this.output) {
-    this.output.disconnect();
+    // add  to the soundArray
+    p5sound.soundArray.push(this);
   }
-};
 
-/**
- *  Set the output level of the gain node.
- *
- *  @method  amp
- *  @for p5.Gain
- *  @param  {Number} volume amplitude between 0 and 1.0
- *  @param  {Number} [rampTime] create a fade that lasts rampTime
- *  @param  {Number} [timeFromNow] schedule this event to happen
- *                                seconds from now
- */
-p5.Gain.prototype.amp = function (vol, rampTime = 0, tFromNow = 0) {
-  var now = p5sound.audiocontext.currentTime;
-  var currentVol = this.output.gain.value;
-  this.output.gain.cancelScheduledValues(now);
-  this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
-  this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
-};
+  /**
+   *  Connect a source to the gain node.
+   *
+   *  @method  setInput
+   *  @for p5.Gain
+   *  @param  {Object} src     p5.sound / Web Audio object with a sound
+   *                           output.
+   */
 
-p5.Gain.prototype.dispose = function () {
-  // remove reference from soundArray
-  var index = p5sound.soundArray.indexOf(this);
-  p5sound.soundArray.splice(index, 1);
-  if (this.output) {
-    this.output.disconnect();
-    delete this.output;
+  setInput(src) {
+    src.connect(this.input);
   }
-  if (this.input) {
-    this.input.disconnect();
-    delete this.input;
-  }
-};
 
-export default p5.Gain;
+  /**
+   *  Send output to a p5.sound or web audio object
+   *
+   *  @method  connect
+   *  @for p5.Gain
+   *  @param  {Object} unit
+   */
+  connect(unit) {
+    var u = unit || p5.soundOut.input;
+    this.output.connect(u.input ? u.input : u);
+  }
+
+  /**
+   *  Disconnect all output.
+   *
+   *  @method disconnect
+   *  @for p5.Gain
+   */
+  disconnect() {
+    if (this.output) {
+      this.output.disconnect();
+    }
+  }
+
+  /**
+   *  Set the output level of the gain node.
+   *
+   *  @method  amp
+   *  @for p5.Gain
+   *  @param  {Number} volume amplitude between 0 and 1.0
+   *  @param  {Number} [rampTime] create a fade that lasts rampTime
+   *  @param  {Number} [timeFromNow] schedule this event to happen
+   *                                seconds from now
+   */
+  amp(vol, rampTime = 0, tFromNow = 0) {
+    var now = p5sound.audiocontext.currentTime;
+    var currentVol = this.output.gain.value;
+    this.output.gain.cancelScheduledValues(now);
+    this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
+    this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
+  }
+
+  dispose() {
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+    if (this.output) {
+      this.output.disconnect();
+      delete this.output;
+    }
+    if (this.input) {
+      this.input.disconnect();
+      delete this.input;
+    }
+  }
+}
+
+export default Gain;
