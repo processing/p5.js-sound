@@ -49,16 +49,16 @@ import Effect from './effect';
  *  }
  *  </code></div>
  */
-p5.Delay = function () {
-  Effect.call(this);
+class Delay extends Effect {
+  constructor(){
+    super();
 
-  this._split = this.ac.createChannelSplitter(2);
-  this._merge = this.ac.createChannelMerger(2);
-
-  this._leftGain = this.ac.createGain();
-  this._rightGain = this.ac.createGain();
-
-  /**
+    this._split = this.ac.createChannelSplitter(2);
+    this._merge = this.ac.createChannelMerger(2);
+  
+    this._leftGain = this.ac.createGain();
+    this._rightGain = this.ac.createGain();
+     /**
    *  The p5.Delay is built with two
    *  <a href="http://www.w3.org/TR/webaudio/#DelayNode">
    *  Web Audio Delay Nodes</a>, one for each stereo channel.
@@ -104,10 +104,8 @@ p5.Delay = function () {
 
   // set initial feedback to 0.5
   this.feedback(0.5);
-};
-
-p5.Delay.prototype = Object.create(Effect.prototype);
-/**
+  }
+ /**
  *  Add delay to an audio signal according to a set
  *  of delay parameters.
  *
@@ -124,7 +122,7 @@ p5.Delay.prototype = Object.create(Effect.prototype);
  *                               below the lowPass will be part of the
  *                               delay.
  */
-p5.Delay.prototype.process = function (src, _delayTime, _feedback, _filter) {
+process (src, _delayTime, _feedback, _filter) {
   var feedback = _feedback || 0;
   var delayTime = _delayTime || 0;
   if (feedback >= 1.0) {
@@ -148,6 +146,7 @@ p5.Delay.prototype.process = function (src, _delayTime, _feedback, _filter) {
   }
 };
 
+
 /**
  *  Set the delay (echo) time, in seconds. Usually this value will be
  *  a floating point number between 0.0 and 1.0.
@@ -156,7 +155,7 @@ p5.Delay.prototype.process = function (src, _delayTime, _feedback, _filter) {
  *  @for p5.Delay
  *  @param {Number} delayTime Time (in seconds) of the delay
  */
-p5.Delay.prototype.delayTime = function (t) {
+delayTime (t) {
   // if t is an audio node...
   if (typeof t !== 'number') {
     t.connect(this.leftDelay.delayTime);
@@ -184,7 +183,7 @@ p5.Delay.prototype.delayTime = function (t) {
  *  @returns {Number} Feedback value
  *
  */
-p5.Delay.prototype.feedback = function (f) {
+feedback(f) {
   // if f is an audio node...
   if (f && typeof f !== 'number') {
     f.connect(this._leftGain.gain);
@@ -214,7 +213,7 @@ p5.Delay.prototype.feedback = function (f) {
  *                              High numbers (i.e. 15) will produce a resonance,
  *                              low numbers (i.e. .2) will produce a slope.
  */
-p5.Delay.prototype.filter = function (freq, q) {
+filter(freq, q) {
   this._leftFilter.set(freq, q);
   this._rightFilter.set(freq, q);
 };
@@ -228,7 +227,7 @@ p5.Delay.prototype.filter = function (freq, q) {
  *  @for p5.Delay
  *  @param {String|Number} type 'pingPong' (1) or 'default' (0)
  */
-p5.Delay.prototype.setType = function (t) {
+setType (t) {
   if (t === 1) {
     t = 'pingPong';
   }
@@ -278,8 +277,8 @@ p5.Delay.prototype.setType = function (t) {
  *  @for p5.Delay
  */
 
-p5.Delay.prototype.dispose = function () {
-  Effect.prototype.dispose.apply(this);
+dispose () {
+  super.dispose();
 
   this._split.disconnect();
   this._leftFilter.dispose();
@@ -299,4 +298,15 @@ p5.Delay.prototype.dispose = function () {
   this.leftDelay = undefined;
   this.rightDelay = undefined;
 };
-export default p5.Delay;
+ 
+};
+
+
+
+
+
+
+
+
+
+export default Delay;
