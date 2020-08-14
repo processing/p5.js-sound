@@ -39,7 +39,10 @@ import './soundLoop';
 import './compressor';
 import './soundRecorder';
 import './peakDetect';
-import './gain';
+
+import Gain from './gain';
+p5.Gain = Gain;
+
 import './distortion';
 
 import AudioVoice from './audioVoice';
