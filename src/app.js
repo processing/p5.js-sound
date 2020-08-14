@@ -27,6 +27,9 @@ import './noise';
 import AudioIn from './audioin';
 p5.AudioIn = AudioIn;
 
+import Effect from './effect' ;
+p5.Effect = Effect;
+
 import './filter';
 import './eq';
 import './panner3d';
