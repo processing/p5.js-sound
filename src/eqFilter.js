@@ -7,44 +7,48 @@ import p5sound from './master';
  *
  *  @private
  */
-var EQFilter = function (freq, res) {
-  Filter.call(this, 'peaking');
-  this.disconnect();
-  this.set(freq, res);
-  this.biquad.gain.value = 0;
-  delete this.input;
-  delete this.output;
-  delete this._drywet;
-  delete this.wet;
-};
-EQFilter.prototype = Object.create(Filter.prototype);
+class EQFilter extends Filter {
+  constructor(freq, res) {
+    super('peaking');
 
-EQFilter.prototype.amp = function () {
-  console.warn('`amp()` is not available for p5.EQ bands. Use `.gain()`');
-};
-EQFilter.prototype.drywet = function () {
-  console.warn('`drywet()` is not available for p5.EQ bands.');
-};
-EQFilter.prototype.connect = function (unit) {
-  var u = unit || p5.soundOut.input;
-  if (this.biquad) {
-    this.biquad.connect(u.input ? u.input : u);
-  } else {
-    this.output.connect(u.input ? u.input : u);
+    this.disconnect();
+    this.set(freq, res);
+    this.biquad.gain.value = 0;
+    delete this.input;
+    delete this.output;
+    delete this._drywet;
+    delete this.wet;
   }
-};
 
-EQFilter.prototype.disconnect = function () {
-  if (this.biquad) {
-    this.biquad.disconnect();
+  amp() {
+    console.warn('`amp()` is not available for p5.EQ bands. Use `.gain()`');
   }
-};
-EQFilter.prototype.dispose = function () {
-  // remove reference form soundArray
-  const index = p5sound.soundArray.indexOf(this);
-  p5sound.soundArray.splice(index, 1);
-  this.disconnect();
-  delete this.biquad;
-};
+
+  drywet() {
+    console.warn('`drywet()` is not available for p5.EQ bands.');
+  }
+
+  connect(unit) {
+    var u = unit || p5.soundOut.input;
+    if (this.biquad) {
+      this.biquad.connect(u.input ? u.input : u);
+    } else {
+      this.output.connect(u.input ? u.input : u);
+    }
+  }
+  disconnect() {
+    if (this.biquad) {
+      this.biquad.disconnect();
+    }
+  }
+
+  dispose() {
+    // remove reference form soundArray
+    const index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+    this.disconnect();
+    delete this.biquad;
+  }
+}
 
 export default EQFilter;
