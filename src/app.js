@@ -31,7 +31,10 @@ import Effect from './effect' ;
 p5.Effect = Effect;
 
 import './filter';
-import './eq';
+
+import EQ from './eq';
+p5.EQ = EQ;
+
 import './panner3d';
 import './listener3d';
 import './delay';
