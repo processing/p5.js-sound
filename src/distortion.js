@@ -35,107 +35,106 @@ function makeDistortionCurve(amount) {
  * @param {String} [oversample='none'] 'none', '2x', or '4x'.
  *
  */
-p5.Distortion = function (amount, oversample) {
-  Effect.call(this);
+class Distortion extends Effect {
+  constructor(amount, oversample) {
+    super();
+    if (typeof amount === 'undefined') {
+      amount = 0.25;
+    }
+    if (typeof amount !== 'number') {
+      throw new Error('amount must be a number');
+    }
+    if (typeof oversample === 'undefined') {
+      oversample = '2x';
+    }
+    if (typeof oversample !== 'string') {
+      throw new Error('oversample must be a String');
+    }
 
-  if (typeof amount === 'undefined') {
-    amount = 0.25;
-  }
-  if (typeof amount !== 'number') {
-    throw new Error('amount must be a number');
-  }
-  if (typeof oversample === 'undefined') {
-    oversample = '2x';
-  }
-  if (typeof oversample !== 'string') {
-    throw new Error('oversample must be a String');
-  }
-
-  var curveAmount = p5.prototype.map(amount, 0.0, 1.0, 0, 2000);
-
-  /**
-   *  The p5.Distortion is built with a
-   *  <a href="http://www.w3.org/TR/webaudio/#WaveShaperNode">
-   *  Web Audio WaveShaper Node</a>.
-   *
-   *  @property {AudioNode} WaveShaperNode
-   */
-  this.waveShaperNode = this.ac.createWaveShaper();
-
-  this.amount = curveAmount;
-  this.waveShaperNode.curve = makeDistortionCurve(curveAmount);
-  this.waveShaperNode.oversample = oversample;
-
-  this.input.connect(this.waveShaperNode);
-
-  this.waveShaperNode.connect(this.wet);
-};
-
-p5.Distortion.prototype = Object.create(Effect.prototype);
-
-/**
- * Process a sound source, optionally specify amount and oversample values.
- *
- * @method process
- * @for p5.Distortion
- * @param {Number} [amount=0.25] Unbounded distortion amount.
- *                                Normal values range from 0-1.
- * @param {String} [oversample='none'] 'none', '2x', or '4x'.
- */
-p5.Distortion.prototype.process = function (src, amount, oversample) {
-  src.connect(this.input);
-  this.set(amount, oversample);
-};
-
-/**
- * Set the amount and oversample of the waveshaper distortion.
- *
- * @method set
- * @for p5.Distortion
- * @param {Number} [amount=0.25] Unbounded distortion amount.
- *                                Normal values range from 0-1.
- * @param {String} [oversample='none'] 'none', '2x', or '4x'.
- */
-p5.Distortion.prototype.set = function (amount, oversample) {
-  if (amount) {
     var curveAmount = p5.prototype.map(amount, 0.0, 1.0, 0, 2000);
+
+    /**
+     *  The p5.Distortion is built with a
+     *  <a href="http://www.w3.org/TR/webaudio/#WaveShaperNode">
+     *  Web Audio WaveShaper Node</a>.
+     *
+     *  @property {AudioNode} WaveShaperNode
+     */
+    this.waveShaperNode = this.ac.createWaveShaper();
+
     this.amount = curveAmount;
     this.waveShaperNode.curve = makeDistortionCurve(curveAmount);
-  }
-  if (oversample) {
     this.waveShaperNode.oversample = oversample;
+
+    this.input.connect(this.waveShaperNode);
+
+    this.waveShaperNode.connect(this.wet);
   }
-};
 
-/**
- *  Return the distortion amount, typically between 0-1.
- *
- *  @method  getAmount
- *  @for p5.Distortion
- *  @return {Number} Unbounded distortion amount.
- *                   Normal values range from 0-1.
- */
-p5.Distortion.prototype.getAmount = function () {
-  return this.amount;
-};
-
-/**
- *  Return the oversampling.
- *
- *  @method getOversample
- *  @for p5.Distortion
- *  @return {String} Oversample can either be 'none', '2x', or '4x'.
- */
-p5.Distortion.prototype.getOversample = function () {
-  return this.waveShaperNode.oversample;
-};
-
-p5.Distortion.prototype.dispose = function () {
-  Effect.prototype.dispose.apply(this);
-  if (this.waveShaperNode) {
-    this.waveShaperNode.disconnect();
-    this.waveShaperNode = null;
+  /**
+   * Process a sound source, optionally specify amount and oversample values.
+   *
+   * @method process
+   * @for p5.Distortion
+   * @param {Number} [amount=0.25] Unbounded distortion amount.
+   *                                Normal values range from 0-1.
+   * @param {String} [oversample='none'] 'none', '2x', or '4x'.
+   */
+  process(src, amount, oversample) {
+    src.connect(this.input);
+    this.set(amount, oversample);
   }
-};
 
-export default p5.Distortion;
+  /**
+   * Set the amount and oversample of the waveshaper distortion.
+   *
+   * @method set
+   * @for p5.Distortion
+   * @param {Number} [amount=0.25] Unbounded distortion amount.
+   *                                Normal values range from 0-1.
+   * @param {String} [oversample='none'] 'none', '2x', or '4x'.
+   */
+  set(amount, oversample) {
+    if (amount) {
+      var curveAmount = p5.prototype.map(amount, 0.0, 1.0, 0, 2000);
+      this.amount = curveAmount;
+      this.waveShaperNode.curve = makeDistortionCurve(curveAmount);
+    }
+    if (oversample) {
+      this.waveShaperNode.oversample = oversample;
+    }
+  }
+
+  /**
+   *  Return the distortion amount, typically between 0-1.
+   *
+   *  @method  getAmount
+   *  @for p5.Distortion
+   *  @return {Number} Unbounded distortion amount.
+   *                   Normal values range from 0-1.
+   */
+  getAmount() {
+    return this.amount;
+  }
+
+  /**
+   *  Return the oversampling.
+   *
+   *  @method getOversample
+   *  @for p5.Distortion
+   *  @return {String} Oversample can either be 'none', '2x', or '4x'.
+   */
+  getOversample() {
+    return this.waveShaperNode.oversample;
+  }
+
+  dispose() {
+    super.dispose();
+    if (this.waveShaperNode) {
+      this.waveShaperNode.disconnect();
+      this.waveShaperNode = null;
+    }
+  }
+}
+
+export default Distortion;
