@@ -24,141 +24,141 @@ import CrossFade from 'Tone/component/CrossFade.js';
  *                              to the wet signal to this gain node, so that dry and wet
  *                              signals are mixed properly.
  */
-p5.Effect = function () {
-  this.ac = p5sound.audiocontext;
+class Effect {
+  constructor() {
+    this.ac = p5sound.audiocontext;
 
-  this.input = this.ac.createGain();
-  this.output = this.ac.createGain();
+    this.input = this.ac.createGain();
+    this.output = this.ac.createGain();
+
+    /**
+     *	The p5.Effect class is built
+     * 	using Tone.js CrossFade
+     * 	@private
+     */
+
+    this._drywet = new CrossFade(1);
+
+    /**
+     *	In classes that extend
+     *	p5.Effect, connect effect nodes
+     *	to the wet parameter
+     */
+    this.wet = this.ac.createGain();
+
+    this.input.connect(this._drywet.a);
+    this.wet.connect(this._drywet.b);
+    this._drywet.connect(this.output);
+
+    this.connect();
+
+    //Add to the soundArray
+    p5sound.soundArray.push(this);
+  }
 
   /**
-   *	The p5.Effect class is built
-   * 	using Tone.js CrossFade
-   * 	@private
+   *  Set the output volume of the filter.
+   *
+   *  @method  amp
+   *  @for p5.Effect
+   *  @param {Number} [vol] amplitude between 0 and 1.0
+   *  @param {Number} [rampTime] create a fade that lasts until rampTime
+   *  @param {Number} [tFromNow] schedule this event to happen in tFromNow seconds
    */
-
-  this._drywet = new CrossFade(1);
+  amp(vol, rampTime = 0, tFromNow = 0) {
+    const now = p5sound.audiocontext.currentTime;
+    const startTime = now + tFromNow;
+    const endTime = startTime + rampTime + 0.001;
+    const currentVol = this.output.gain.value;
+    this.output.gain.cancelScheduledValues(now);
+    this.output.gain.linearRampToValueAtTime(currentVol, startTime + 0.001);
+    this.output.gain.linearRampToValueAtTime(vol, endTime);
+  }
 
   /**
-   *	In classes that extend
-   *	p5.Effect, connect effect nodes
-   *	to the wet parameter
+   *  Link effects together in a chain
+   *  Example usage: filter.chain(reverb, delay, panner);
+   *  May be used with an open-ended number of arguments
+   *
+   *  @method chain
+   *  @for p5.Effect
+   *  @param {Object} [arguments]  Chain together multiple sound objects
    */
-  this.wet = this.ac.createGain();
+  chain() {
+    if (arguments.length > 0) {
+      this.connect(arguments[0]);
+      for (var i = 1; i < arguments.length; i += 1) {
+        arguments[i - 1].connect(arguments[i]);
+      }
+    }
+    return this;
+  }
 
-  this.input.connect(this._drywet.a);
-  this.wet.connect(this._drywet.b);
-  this._drywet.connect(this.output);
+  /**
+   *  Adjust the dry/wet value.
+   *
+   *  @method drywet
+   *  @for p5.Effect
+   *  @param {Number} [fade] The desired drywet value (0 - 1.0)
+   */
+  drywet() {
+    if (typeof fade !== 'undefined') {
+      this._drywet.fade.value = fade;
+    }
+    return this._drywet.fade.value;
+  }
 
-  this.connect();
+  /**
+   *  Send output to a p5.js-sound, Web Audio Node, or use signal to
+   *  control an AudioParam
+   *
+   *  @method connect
+   *  @for p5.Effect
+   *  @param {Object} unit
+   */
+  connect(unit) {
+    var u = unit || p5.soundOut.input;
+    this.output.connect(u.input ? u.input : u);
+  }
 
-  //Add to the soundArray
-  p5sound.soundArray.push(this);
-};
-
-/**
- *  Set the output volume of the filter.
- *
- *  @method  amp
- *  @for p5.Effect
- *  @param {Number} [vol] amplitude between 0 and 1.0
- *  @param {Number} [rampTime] create a fade that lasts until rampTime
- *  @param {Number} [tFromNow] schedule this event to happen in tFromNow seconds
- */
-p5.Effect.prototype.amp = function (vol, rampTime = 0, tFromNow = 0) {
-  const now = p5sound.audiocontext.currentTime;
-  const startTime = now + tFromNow;
-  const endTime = startTime + rampTime + 0.001;
-  const currentVol = this.output.gain.value;
-  this.output.gain.cancelScheduledValues(now);
-  this.output.gain.linearRampToValueAtTime(currentVol, startTime + 0.001);
-  this.output.gain.linearRampToValueAtTime(vol, endTime);
-};
-
-/**
- *  Link effects together in a chain
- *  Example usage: filter.chain(reverb, delay, panner);
- *  May be used with an open-ended number of arguments
- *
- *  @method chain
- *  @for p5.Effect
- *  @param {Object} [arguments]  Chain together multiple sound objects
- */
-p5.Effect.prototype.chain = function () {
-  if (arguments.length > 0) {
-    this.connect(arguments[0]);
-    for (var i = 1; i < arguments.length; i += 1) {
-      arguments[i - 1].connect(arguments[i]);
+  /**
+   * Disconnect all output.
+   * @method disconnect
+   * @for p5.Effect
+   */
+  disconnect() {
+    if (this.output) {
+      this.output.disconnect();
     }
   }
-  return this;
-};
 
-/**
- *  Adjust the dry/wet value.
- *
- *  @method drywet
- *  @for p5.Effect
- *  @param {Number} [fade] The desired drywet value (0 - 1.0)
- */
-p5.Effect.prototype.drywet = function (fade) {
-  if (typeof fade !== 'undefined') {
-    this._drywet.fade.value = fade;
+  dispose() {
+    // remove refernce form soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+
+    if (this.input) {
+      this.input.disconnect();
+      delete this.input;
+    }
+
+    if (this.output) {
+      this.output.disconnect();
+      delete this.output;
+    }
+
+    if (this._drywet) {
+      this._drywet.disconnect();
+      delete this._drywet;
+    }
+
+    if (this.wet) {
+      this.wet.disconnect();
+      delete this.wet;
+    }
+
+    this.ac = undefined;
   }
-  return this._drywet.fade.value;
-};
-
-/**
- *  Send output to a p5.js-sound, Web Audio Node, or use signal to
- *  control an AudioParam
- *
- *  @method connect
- *  @for p5.Effect
- *  @param {Object} unit
- */
-p5.Effect.prototype.connect = function (unit) {
-  var u = unit || p5.soundOut.input;
-  this.output.connect(u.input ? u.input : u);
-};
-
-/**
- * Disconnect all output.
- * @method disconnect
- * @for p5.Effect
- */
-p5.Effect.prototype.disconnect = function () {
-  if (this.output) {
-    this.output.disconnect();
-  }
-};
-
-p5.Effect.prototype.dispose = function () {
-  // remove refernce form soundArray
-  var index = p5sound.soundArray.indexOf(this);
-  p5sound.soundArray.splice(index, 1);
-
-  if (this.input) {
-    this.input.disconnect();
-    delete this.input;
-  }
-
-  if (this.output) {
-    this.output.disconnect();
-    delete this.output;
-  }
-
-  if (this._drywet) {
-    this._drywet.disconnect();
-    delete this._drywet;
-  }
-
-  if (this.wet) {
-    this.wet.disconnect();
-    delete this.wet;
-  }
-
-  this.ac = undefined;
-};
-
-const Effect = p5.Effect;
+}
 
 export default Effect;
