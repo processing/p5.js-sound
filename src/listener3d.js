@@ -24,7 +24,8 @@ import p5sound from './master';
 //   * @param {String} [type] [Specify construction of a spatial panner or listener]
 //   */
 
-p5.Listener3D = function (type) {
+class Listener3D {
+  constructor(type) {
   this.ac = p5sound.audiocontext;
   this.listener = this.ac.listener;
 };
@@ -33,7 +34,7 @@ p5.Listener3D = function (type) {
 //   * Connect an audio sorce
 //   * @param  {Object} src Input source
 //   */
-p5.Listener3D.prototype.process = function (src) {
+process (src) {
   src.connect(this.input);
 };
 //  /**
@@ -44,7 +45,7 @@ p5.Listener3D.prototype.process = function (src) {
 //   * @param  {[Number]} time
 //   * @return {[Array]}      [Updated x, y, z values as an array]
 //   */
-p5.Listener3D.prototype.position = function (xVal, yVal, zVal, time) {
+position(xVal, yVal, zVal, time) {
   this.positionX(xVal, time);
   this.positionY(yVal, time);
   this.positionZ(zVal, time);
@@ -59,7 +60,7 @@ p5.Listener3D.prototype.position = function (xVal, yVal, zVal, time) {
 //   * Getter and setter methods for position coordinates
 //   * @return {Number}      [updated coordinate value]
 //   */
-p5.Listener3D.prototype.positionX = function (xVal, time) {
+positionX(xVal, time) {
   var t = time || 0;
   if (typeof xVal === 'number') {
     this.listener.positionX.value = xVal;
@@ -75,7 +76,7 @@ p5.Listener3D.prototype.positionX = function (xVal, time) {
   }
   return this.listener.positionX.value;
 };
-p5.Listener3D.prototype.positionY = function (yVal, time) {
+positionY (yVal, time) {
   var t = time || 0;
   if (typeof yVal === 'number') {
     this.listener.positionY.value = yVal;
@@ -91,7 +92,7 @@ p5.Listener3D.prototype.positionY = function (yVal, time) {
   }
   return this.listener.positionY.value;
 };
-p5.Listener3D.prototype.positionZ = function (zVal, time) {
+positionZ (zVal, time) {
   var t = time || 0;
   if (typeof zVal === 'number') {
     this.listener.positionZ.value = zVal;
@@ -124,7 +125,7 @@ p5.Listener3D.prototype.positionZ = function (zVal, time) {
 //   * @param  {Number} time
 //   * @return {Array}       All orienation params
 //   */
-p5.Listener3D.prototype.orient = function (
+orient (
   xValF,
   yValF,
   zValF,
@@ -151,7 +152,7 @@ p5.Listener3D.prototype.orient = function (
   ];
 };
 
-p5.Listener3D.prototype.orientForward = function (xValF, yValF, zValF, time) {
+orientForward (xValF, yValF, zValF, time) {
   this.forwardX(xValF, time);
   this.forwardY(yValF, time);
   this.forwardZ(zValF, time);
@@ -163,7 +164,7 @@ p5.Listener3D.prototype.orientForward = function (xValF, yValF, zValF, time) {
   ];
 };
 
-p5.Listener3D.prototype.orientUp = function (xValU, yValU, zValU, time) {
+orientUp (xValU, yValU, zValU, time) {
   this.upX(xValU, time);
   this.upY(yValU, time);
   this.upZ(zValU, time);
@@ -174,7 +175,7 @@ p5.Listener3D.prototype.orientUp = function (xValU, yValU, zValU, time) {
 //   * Getter and setter methods for orient coordinates
 //   * @return {Number}      [updated coordinate value]
 //   */
-p5.Listener3D.prototype.forwardX = function (xVal, time) {
+forwardX (xVal, time) {
   var t = time || 0;
   if (typeof xVal === 'number') {
     this.listener.forwardX.value = xVal;
@@ -190,7 +191,7 @@ p5.Listener3D.prototype.forwardX = function (xVal, time) {
   }
   return this.listener.forwardX.value;
 };
-p5.Listener3D.prototype.forwardY = function (yVal, time) {
+forwardY (yVal, time) {
   var t = time || 0;
   if (typeof yVal === 'number') {
     this.listener.forwardY.value = yVal;
@@ -206,7 +207,7 @@ p5.Listener3D.prototype.forwardY = function (yVal, time) {
   }
   return this.listener.forwardY.value;
 };
-p5.Listener3D.prototype.forwardZ = function (zVal, time) {
+forwardZ (zVal, time) {
   var t = time || 0;
   if (typeof zVal === 'number') {
     this.listener.forwardZ.value = zVal;
@@ -222,7 +223,7 @@ p5.Listener3D.prototype.forwardZ = function (zVal, time) {
   }
   return this.listener.forwardZ.value;
 };
-p5.Listener3D.prototype.upX = function (xVal, time) {
+upX (xVal, time) {
   var t = time || 0;
   if (typeof xVal === 'number') {
     this.listener.upX.value = xVal;
@@ -236,7 +237,7 @@ p5.Listener3D.prototype.upX = function (xVal, time) {
   }
   return this.listener.upX.value;
 };
-p5.Listener3D.prototype.upY = function (yVal, time) {
+upY (yVal, time) {
   var t = time || 0;
   if (typeof yVal === 'number') {
     this.listener.upY.value = yVal;
@@ -250,7 +251,7 @@ p5.Listener3D.prototype.upY = function (yVal, time) {
   }
   return this.listener.upY.value;
 };
-p5.Listener3D.prototype.upZ = function (zVal, time) {
+upZ (zVal, time) {
   var t = time || 0;
   if (typeof zVal === 'number') {
     this.listener.upZ.value = zVal;
@@ -263,6 +264,7 @@ p5.Listener3D.prototype.upZ = function (zVal, time) {
     zVal.connect(this.listener.upZ);
   }
   return this.listener.upZ.value;
+}
 };
 
-export default p5.Listener3D;
+export default Listener3D;
