@@ -40,8 +40,8 @@ p5.EQ = EQ;
 
 import './panner3d';
 
-import listener3D from'./listener3d';
-p5.listener3D = listener3D; 
+import listener3D from './listener3d';
+p5.listener3D = listener3D;
 
 import './delay';
 import './reverb';
