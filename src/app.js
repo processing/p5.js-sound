@@ -27,10 +27,14 @@ import './noise';
 import AudioIn from './audioin';
 p5.AudioIn = AudioIn;
 
-import Effect from './effect' ;
+import Effect from './effect';
 p5.Effect = Effect;
 
-import './filter';
+import { Filter, LowPass, HighPass, BandPass } from './filter';
+p5.Filter = Filter;
+p5.LowPass = LowPass;
+p5.HighPass = HighPass;
+p5.BandPass = BandPass;
 
 import EQ from './eq';
 p5.EQ = EQ;
@@ -49,17 +53,11 @@ p5.Compressor = Compressor;
 import './soundRecorder';
 import './peakDetect';
 
-
-
 import Distortion from './distortion';
 p5.Distortion = Distortion;
 
-
 import Gain from './gain';
 p5.Gain = Gain;
-
-
-
 
 import AudioVoice from './audioVoice';
 p5.AudioVoice = AudioVoice;

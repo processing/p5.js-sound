@@ -79,183 +79,189 @@ import Effect from './effect';
  *
  *  </code></div>
  */
-p5.Filter = function (type) {
-  Effect.call(this);
-  //add extend Effect by adding a Biquad Filter
+class Filter extends Effect {
+  constructor(type) {
+    super();
+    //add extend Effect by adding a Biquad Filter
+
+    /**
+     *  The p5.Filter is built with a
+     *  <a href="http://www.w3.org/TR/webaudio/#BiquadFilterNode">
+     *  Web Audio BiquadFilter Node</a>.
+     *
+     *  @property {DelayNode} biquadFilter
+     */
+
+    this.biquad = this.ac.createBiquadFilter();
+
+    this.input.connect(this.biquad);
+
+    this.biquad.connect(this.wet);
+
+    if (type) {
+      this.setType(type);
+    }
+
+    //Properties useful for the toggle method.
+    this._on = true;
+    this._untoggledType = this.biquad.type;
+  }
 
   /**
-   *  The p5.Filter is built with a
-   *  <a href="http://www.w3.org/TR/webaudio/#BiquadFilterNode">
-   *  Web Audio BiquadFilter Node</a>.
+   *  Filter an audio signal according to a set
+   *  of filter parameters.
    *
-   *  @property {DelayNode} biquadFilter
+   *  @method  process
+   *  @param  {Object} Signal  An object that outputs audio
+   *  @param {Number} [freq] Frequency in Hz, from 10 to 22050
+   *  @param {Number} [res] Resonance/Width of the filter frequency
+   *                        from 0.001 to 1000
    */
-
-  this.biquad = this.ac.createBiquadFilter();
-
-  this.input.connect(this.biquad);
-
-  this.biquad.connect(this.wet);
-
-  if (type) {
-    this.setType(type);
+  process(src, freq, res, time) {
+    src.connect(this.input);
+    this.set(freq, res, time);
   }
 
-  //Properties useful for the toggle method.
-  this._on = true;
-  this._untoggledType = this.biquad.type;
-};
-p5.Filter.prototype = Object.create(Effect.prototype);
-
-/**
- *  Filter an audio signal according to a set
- *  of filter parameters.
- *
- *  @method  process
- *  @param  {Object} Signal  An object that outputs audio
- *  @param {Number} [freq] Frequency in Hz, from 10 to 22050
- *  @param {Number} [res] Resonance/Width of the filter frequency
- *                        from 0.001 to 1000
- */
-p5.Filter.prototype.process = function (src, freq, res, time) {
-  src.connect(this.input);
-  this.set(freq, res, time);
-};
-
-/**
- *  Set the frequency and the resonance of the filter.
- *
- *  @method  set
- *  @param {Number} [freq] Frequency in Hz, from 10 to 22050
- *  @param {Number} [res]  Resonance (Q) from 0.001 to 1000
- *  @param {Number} [timeFromNow] schedule this event to happen
- *                                seconds from now
- */
-p5.Filter.prototype.set = function (freq, res, time) {
-  if (freq) {
-    this.freq(freq, time);
-  }
-  if (res) {
-    this.res(res, time);
-  }
-};
-
-/**
- *  Set the filter frequency, in Hz, from 10 to 22050 (the range of
- *  human hearing, although in reality most people hear in a narrower
- *  range).
- *
- *  @method  freq
- *  @param  {Number} freq Filter Frequency
- *  @param {Number} [timeFromNow] schedule this event to happen
- *                                seconds from now
- *  @return {Number} value  Returns the current frequency value
- */
-p5.Filter.prototype.freq = function (freq, time) {
-  var t = time || 0;
-  if (freq <= 0) {
-    freq = 1;
-  }
-  if (typeof freq === 'number') {
-    this.biquad.frequency.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-    this.biquad.frequency.exponentialRampToValueAtTime(
-      freq,
-      this.ac.currentTime + 0.02 + t
-    );
-  } else if (freq) {
-    freq.connect(this.biquad.frequency);
-  }
-  return this.biquad.frequency.value;
-};
-
-/**
- *  Controls either width of a bandpass frequency,
- *  or the resonance of a low/highpass cutoff frequency.
- *
- *  @method  res
- *  @param {Number} res  Resonance/Width of filter freq
- *                       from 0.001 to 1000
- *  @param {Number} [timeFromNow] schedule this event to happen
- *                                seconds from now
- *  @return {Number} value Returns the current res value
- */
-p5.Filter.prototype.res = function (res, time) {
-  var t = time || 0;
-  if (typeof res === 'number') {
-    this.biquad.Q.value = res;
-    this.biquad.Q.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-    this.biquad.Q.linearRampToValueAtTime(res, this.ac.currentTime + 0.02 + t);
-  } else if (res) {
-    res.connect(this.biquad.Q);
-  }
-  return this.biquad.Q.value;
-};
-
-/**
- * Controls the gain attribute of a Biquad Filter.
- * This is distinctly different from .amp() which is inherited from p5.Effect
- * .amp() controls the volume via the output gain node
- * p5.Filter.gain() controls the gain parameter of a Biquad Filter node.
- *
- * @method gain
- * @param  {Number} gain
- * @return {Number} Returns the current or updated gain value
- */
-p5.Filter.prototype.gain = function (gain, time) {
-  var t = time || 0;
-  if (typeof gain === 'number') {
-    this.biquad.gain.value = gain;
-    this.biquad.gain.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
-    this.biquad.gain.linearRampToValueAtTime(
-      gain,
-      this.ac.currentTime + 0.02 + t
-    );
-  } else if (gain) {
-    gain.connect(this.biquad.gain);
-  }
-  return this.biquad.gain.value;
-};
-
-/**
- * Toggle function. Switches between the specified type and allpass
- *
- * @method toggle
- * @return {boolean} [Toggle value]
- */
-p5.Filter.prototype.toggle = function () {
-  this._on = !this._on;
-
-  if (this._on === true) {
-    this.biquad.type = this._untoggledType;
-  } else if (this._on === false) {
-    this.biquad.type = 'allpass';
+  /**
+   *  Set the frequency and the resonance of the filter.
+   *
+   *  @method  set
+   *  @param {Number} [freq] Frequency in Hz, from 10 to 22050
+   *  @param {Number} [res]  Resonance (Q) from 0.001 to 1000
+   *  @param {Number} [timeFromNow] schedule this event to happen
+   *                                seconds from now
+   */
+  set(freq, res, time) {
+    if (freq) {
+      this.freq(freq, time);
+    }
+    if (res) {
+      this.res(res, time);
+    }
   }
 
-  return this._on;
-};
-
-/**
- *  Set the type of a p5.Filter. Possible types include:
- *  "lowpass" (default), "highpass", "bandpass",
- *  "lowshelf", "highshelf", "peaking", "notch",
- *  "allpass".
- *
- *  @method  setType
- *  @param {String} t
- */
-p5.Filter.prototype.setType = function (t) {
-  this.biquad.type = t;
-  this._untoggledType = this.biquad.type;
-};
-
-p5.Filter.prototype.dispose = function () {
-  // remove reference from soundArray
-  Effect.prototype.dispose.apply(this);
-  if (this.biquad) {
-    this.biquad.disconnect();
-    delete this.biquad;
+  /**
+   *  Set the filter frequency, in Hz, from 10 to 22050 (the range of
+   *  human hearing, although in reality most people hear in a narrower
+   *  range).
+   *
+   *  @method  freq
+   *  @param  {Number} freq Filter Frequency
+   *  @param {Number} [timeFromNow] schedule this event to happen
+   *                                seconds from now
+   *  @return {Number} value  Returns the current frequency value
+   */
+  freq(freq, time) {
+    var t = time || 0;
+    if (freq <= 0) {
+      freq = 1;
+    }
+    if (typeof freq === 'number') {
+      this.biquad.frequency.cancelScheduledValues(
+        this.ac.currentTime + 0.01 + t
+      );
+      this.biquad.frequency.exponentialRampToValueAtTime(
+        freq,
+        this.ac.currentTime + 0.02 + t
+      );
+    } else if (freq) {
+      freq.connect(this.biquad.frequency);
+    }
+    return this.biquad.frequency.value;
   }
-};
+
+  /**
+   *  Controls either width of a bandpass frequency,
+   *  or the resonance of a low/highpass cutoff frequency.
+   *
+   *  @method  res
+   *  @param {Number} res  Resonance/Width of filter freq
+   *                       from 0.001 to 1000
+   *  @param {Number} [timeFromNow] schedule this event to happen
+   *                                seconds from now
+   *  @return {Number} value Returns the current res value
+   */
+  res(res, time) {
+    var t = time || 0;
+    if (typeof res === 'number') {
+      this.biquad.Q.value = res;
+      this.biquad.Q.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      this.biquad.Q.linearRampToValueAtTime(
+        res,
+        this.ac.currentTime + 0.02 + t
+      );
+    } else if (res) {
+      res.connect(this.biquad.Q);
+    }
+    return this.biquad.Q.value;
+  }
+
+  /**
+   * Controls the gain attribute of a Biquad Filter.
+   * This is distinctly different from .amp() which is inherited from p5.Effect
+   * .amp() controls the volume via the output gain node
+   * p5.Filter.gain() controls the gain parameter of a Biquad Filter node.
+   *
+   * @method gain
+   * @param  {Number} gain
+   * @return {Number} Returns the current or updated gain value
+   */
+  gain(gain, time) {
+    var t = time || 0;
+    if (typeof gain === 'number') {
+      this.biquad.gain.value = gain;
+      this.biquad.gain.cancelScheduledValues(this.ac.currentTime + 0.01 + t);
+      this.biquad.gain.linearRampToValueAtTime(
+        gain,
+        this.ac.currentTime + 0.02 + t
+      );
+    } else if (gain) {
+      gain.connect(this.biquad.gain);
+    }
+    return this.biquad.gain.value;
+  }
+
+  /**
+   * Toggle function. Switches between the specified type and allpass
+   *
+   * @method toggle
+   * @return {boolean} [Toggle value]
+   */
+  toggle() {
+    this._on = !this._on;
+
+    if (this._on === true) {
+      this.biquad.type = this._untoggledType;
+    } else if (this._on === false) {
+      this.biquad.type = 'allpass';
+    }
+
+    return this._on;
+  }
+
+  /**
+   *  Set the type of a p5.Filter. Possible types include:
+   *  "lowpass" (default), "highpass", "bandpass",
+   *  "lowshelf", "highshelf", "peaking", "notch",
+   *  "allpass".
+   *
+   *  @method  setType
+   *  @param {String} t
+   */
+  setType(t) {
+    this.biquad.type = t;
+    this._untoggledType = this.biquad.type;
+  }
+
+  dispose() {
+    // remove reference from soundArray
+    super.dispose();
+    if (this.biquad) {
+      this.biquad.disconnect();
+      delete this.biquad;
+    }
+  }
+}
 
 /**
  *  Constructor: <code>new p5.LowPass()</code> Filter.
@@ -267,10 +273,11 @@ p5.Filter.prototype.dispose = function () {
  *  @constructor
  *  @extends p5.Filter
  */
-p5.LowPass = function () {
-  p5.Filter.call(this, 'lowpass');
-};
-p5.LowPass.prototype = Object.create(p5.Filter.prototype);
+class LowPass extends Filter {
+  constructor() {
+    super('lowpass');
+  }
+}
 
 /**
  *  Constructor: <code>new p5.HighPass()</code> Filter.
@@ -282,10 +289,11 @@ p5.LowPass.prototype = Object.create(p5.Filter.prototype);
  *  @constructor
  *  @extends p5.Filter
  */
-p5.HighPass = function () {
-  p5.Filter.call(this, 'highpass');
-};
-p5.HighPass.prototype = Object.create(p5.Filter.prototype);
+class HighPass extends Filter {
+  constructor() {
+    super('highpass');
+  }
+}
 
 /**
  *  Constructor: <code>new p5.BandPass()</code> Filter.
@@ -297,9 +305,10 @@ p5.HighPass.prototype = Object.create(p5.Filter.prototype);
  *  @constructor
  *  @extends p5.Filter
  */
-p5.BandPass = function () {
-  p5.Filter.call(this, 'bandpass');
-};
-p5.BandPass.prototype = Object.create(p5.Filter.prototype);
+class BandPass extends Filter {
+  constructor() {
+    super('bandpass');
+  }
+}
 
-export default p5.Filter;
+export { Filter, LowPass, HighPass, BandPass };
