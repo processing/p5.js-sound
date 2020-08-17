@@ -6,7 +6,10 @@ p5.prototype.getAudioContext = getAudioContext;
 p5.prototype.userStartAudio = userStartAudio;
 
 import './master';
-import './helpers';
+
+import { freqToMidi } from './helpers';
+p5.prototype.freqToMidi = freqToMidi;
+
 import './errorHandler';
 import './audioWorklet';
 import './panner';
@@ -39,7 +42,10 @@ import Panner3D from './panner3d';
 p5.Panner3D = Panner3D;
 
 import './listener3d';
-import './delay';
+
+import Delay from './delay';
+p5.Delay = Delay;
+
 import './reverb';
 import './metro';
 import './looper';
@@ -53,6 +59,7 @@ import './soundRecorder';
 import peakDetect from './peakDetect';
 p5.peakDetect = peakDetect;
 
+
 import Distortion from './distortion';
 p5.Distortion = Distortion;
 
@@ -65,4 +72,5 @@ p5.AudioVoice = AudioVoice;
 import MonoSynth from './monosynth';
 p5.MonoSynth = MonoSynth;
 
-import './polysynth';
+import PolySynth from './polysynth';
+p5.PolySynth = PolySynth;
