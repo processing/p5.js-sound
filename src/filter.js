@@ -310,5 +310,5 @@ class BandPass extends Filter {
     super('bandpass');
   }
 }
-
-export { Filter, LowPass, HighPass, BandPass };
+export default Filter;
+export { LowPass, HighPass, BandPass };

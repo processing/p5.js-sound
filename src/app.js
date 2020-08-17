@@ -30,7 +30,7 @@ p5.AudioIn = AudioIn;
 import Effect from './effect';
 p5.Effect = Effect;
 
-import { Filter, LowPass, HighPass, BandPass } from './filter';
+import Filter, { LowPass, HighPass, BandPass } from './filter';
 p5.Filter = Filter;
 p5.LowPass = LowPass;
 p5.HighPass = HighPass;
