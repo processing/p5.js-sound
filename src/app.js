@@ -6,7 +6,10 @@ p5.prototype.getAudioContext = getAudioContext;
 p5.prototype.userStartAudio = userStartAudio;
 
 import './master';
-import './helpers';
+
+import { freqToMidi } from './helpers';
+p5.prototype.freqToMidi = freqToMidi;
+
 import './errorHandler';
 import './audioWorklet';
 import './panner';
@@ -66,4 +69,5 @@ p5.AudioVoice = AudioVoice;
 import MonoSynth from './monosynth';
 p5.MonoSynth = MonoSynth;
 
-import './polysynth';
+import PolySynth from './polysynth';
+p5.PolySynth = PolySynth;
