@@ -27,7 +27,7 @@ import './noise';
 import AudioIn from './audioin';
 p5.AudioIn = AudioIn;
 
-import Effect from './effect' ;
+import Effect from './effect';
 p5.Effect = Effect;
 
 import './filter';
@@ -35,7 +35,9 @@ import './filter';
 import EQ from './eq';
 p5.EQ = EQ;
 
-import './panner3d';
+import Panner3D from './panner3d';
+p5.Panner3D = Panner3D;
+
 import './listener3d';
 
 import Delay from './delay';
@@ -52,17 +54,11 @@ p5.Compressor = Compressor;
 import './soundRecorder';
 import './peakDetect';
 
-
-
 import Distortion from './distortion';
 p5.Distortion = Distortion;
 
-
 import Gain from './gain';
 p5.Gain = Gain;
-
-
-
 
 import AudioVoice from './audioVoice';
 p5.AudioVoice = AudioVoice;
