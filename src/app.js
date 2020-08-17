@@ -55,7 +55,10 @@ import Compressor from './compressor';
 p5.Compressor = Compressor;
 
 import './soundRecorder';
-import './peakDetect';
+
+import peakDetect from './peakDetect';
+p5.peakDetect = peakDetect;
+
 
 import Distortion from './distortion';
 p5.Distortion = Distortion;
