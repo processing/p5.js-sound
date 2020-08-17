@@ -89,142 +89,146 @@
  *  }
  *  </code></div>
  */
-p5.PeakDetect = function (freq1, freq2, threshold, _framesPerPeak) {
+class PeakDetect {
   // framesPerPeak determines how often to look for a beat.
   // If a beat is provided, try to look for a beat based on bpm
-  this.framesPerPeak = _framesPerPeak || 20;
-  this.framesSinceLastPeak = 0;
-  this.decayRate = 0.95;
-
-  this.threshold = threshold || 0.35;
-  this.cutoff = 0;
-
-  // how much to increase the cutoff
-  // TO DO: document this / figure out how to make it accessible
-  this.cutoffMult = 1.5;
-
-  this.energy = 0;
-  this.penergy = 0;
-
-  // TO DO: document this property / figure out how to make it accessible
-  this.currentValue = 0;
-
-  /**
-   *  isDetected is set to true when a peak is detected.
-   *
-   *  @attribute isDetected {Boolean}
-   *  @default  false
-   */
-  this.isDetected = false;
-
-  this.f1 = freq1 || 40;
-  this.f2 = freq2 || 20000;
-
-  // function to call when a peak is detected
-  this._onPeak = function () {};
-};
-
-/**
- *  The update method is run in the draw loop.
- *
- *  Accepts an FFT object. You must call .analyze()
- *  on the FFT object prior to updating the peakDetect
- *  because it relies on a completed FFT analysis.
- *
- *  @method  update
- *  @param  {p5.FFT} fftObject A p5.FFT object
- */
-p5.PeakDetect.prototype.update = function (fftObject) {
-  var nrg = (this.energy = fftObject.getEnergy(this.f1, this.f2) / 255);
-  if (nrg > this.cutoff && nrg > this.threshold && nrg - this.penergy > 0) {
-    // trigger callback
-    this._onPeak();
-    this.isDetected = true;
-
-    // debounce
-    this.cutoff = nrg * this.cutoffMult;
+  constructor(freq1, freq2, threshold, _framesPerPeak) {
+    this.framesPerPeak = _framesPerPeak || 20;
     this.framesSinceLastPeak = 0;
-  } else {
+    this.decayRate = 0.95;
+
+    this.threshold = threshold || 0.35;
+    this.cutoff = 0;
+
+    // how much to increase the cutoff
+    // TO DO: document this / figure out how to make it accessible
+    this.cutoffMult = 1.5;
+
+    this.energy = 0;
+    this.penergy = 0;
+
+    // TO DO: document this property / figure out how to make it accessible
+    this.currentValue = 0;
+
+    /**
+     *  isDetected is set to true when a peak is detected.
+     *
+     *  @attribute isDetected {Boolean}
+     *  @default  false
+     */
     this.isDetected = false;
-    if (this.framesSinceLastPeak <= this.framesPerPeak) {
-      this.framesSinceLastPeak++;
-    } else {
-      this.cutoff *= this.decayRate;
-      this.cutoff = Math.max(this.cutoff, this.threshold);
-    }
+
+    this.f1 = freq1 || 40;
+    this.f2 = freq2 || 20000;
+
+    // function to call when a peak is detected
+    this._onPeak = function () {};
   }
 
-  this.currentValue = nrg;
-  this.penergy = nrg;
-};
+  /**
+   *  The update method is run in the draw loop.
+   *
+   *  Accepts an FFT object. You must call .analyze()
+   *  on the FFT object prior to updating the peakDetect
+   *  because it relies on a completed FFT analysis.
+   *
+   *  @method  update
+   *  @param  {p5.FFT} fftObject A p5.FFT object
+   */
+  update(fftObject) {
+    var nrg = (this.energy = fftObject.getEnergy(this.f1, this.f2) / 255);
+    if (nrg > this.cutoff && nrg > this.threshold && nrg - this.penergy > 0) {
+      // trigger callback
+      this._onPeak();
+      this.isDetected = true;
 
-/**
- *  onPeak accepts two arguments: a function to call when
- *  a peak is detected. The value of the peak,
- *  between 0.0 and 1.0, is passed to the callback.
- *
- *  @method  onPeak
- *  @param  {Function} callback Name of a function that will
- *                              be called when a peak is
- *                              detected.
- *  @param  {Object}   [val]    Optional value to pass
- *                              into the function when
- *                              a peak is detected.
- *  @example
- *  <div><code>
- *  var cnv, soundFile, fft, peakDetect;
- *  var ellipseWidth = 0;
- *
- *  function preload() {
- *    soundFile = loadSound('assets/beat.mp3');
- *  }
- *
- *  function setup() {
- *    cnv = createCanvas(100,100);
- *    textAlign(CENTER);
- *
- *    fft = new p5.FFT();
- *    peakDetect = new p5.PeakDetect();
- *
- *    setupSound();
- *
- *    // when a beat is detected, call triggerBeat()
- *    peakDetect.onPeak(triggerBeat);
- *  }
- *
- *  function draw() {
- *    background(0);
- *    fill(255);
- *    text('click to play', width/2, height/2);
- *
- *    fft.analyze();
- *    peakDetect.update(fft);
- *
- *    ellipseWidth *= 0.95;
- *    ellipse(width/2, height/2, ellipseWidth, ellipseWidth);
- *  }
- *
- *  // this function is called by peakDetect.onPeak
- *  function triggerBeat() {
- *    ellipseWidth = 50;
- *  }
- *
- *  // mouseclick starts/stops sound
- *  function setupSound() {
- *    cnv.mouseClicked( function() {
- *      if (soundFile.isPlaying() ) {
- *        soundFile.stop();
- *      } else {
- *        soundFile.play();
- *      }
- *    });
- *  }
- *  </code></div>
- */
-p5.PeakDetect.prototype.onPeak = function (callback, val) {
-  var self = this;
+      // debounce
+      this.cutoff = nrg * this.cutoffMult;
+      this.framesSinceLastPeak = 0;
+    } else {
+      this.isDetected = false;
+      if (this.framesSinceLastPeak <= this.framesPerPeak) {
+        this.framesSinceLastPeak++;
+      } else {
+        this.cutoff *= this.decayRate;
+        this.cutoff = Math.max(this.cutoff, this.threshold);
+      }
+    }
 
-  self._onPeak = function () {
-    callback(self.energy, val);
-  };
-};
+    this.currentValue = nrg;
+    this.penergy = nrg;
+  }
+
+  /**
+   *  onPeak accepts two arguments: a function to call when
+   *  a peak is detected. The value of the peak,
+   *  between 0.0 and 1.0, is passed to the callback.
+   *
+   *  @method  onPeak
+   *  @param  {Function} callback Name of a function that will
+   *                              be called when a peak is
+   *                              detected.
+   *  @param  {Object}   [val]    Optional value to pass
+   *                              into the function when
+   *                              a peak is detected.
+   *  @example
+   *  <div><code>
+   *  var cnv, soundFile, fft, peakDetect;
+   *  var ellipseWidth = 0;
+   *
+   *  function preload() {
+   *    soundFile = loadSound('assets/beat.mp3');
+   *  }
+   *
+   *  function setup() {
+   *    cnv = createCanvas(100,100);
+   *    textAlign(CENTER);
+   *
+   *    fft = new p5.FFT();
+   *    peakDetect = new p5.PeakDetect();
+   *
+   *    setupSound();
+   *
+   *    // when a beat is detected, call triggerBeat()
+   *    peakDetect.onPeak(triggerBeat);
+   *  }
+   *
+   *  function draw() {
+   *    background(0);
+   *    fill(255);
+   *    text('click to play', width/2, height/2);
+   *
+   *    fft.analyze();
+   *    peakDetect.update(fft);
+   *
+   *    ellipseWidth *= 0.95;
+   *    ellipse(width/2, height/2, ellipseWidth, ellipseWidth);
+   *  }
+   *
+   *  // this function is called by peakDetect.onPeak
+   *  function triggerBeat() {
+   *    ellipseWidth = 50;
+   *  }
+   *
+   *  // mouseclick starts/stops sound
+   *  function setupSound() {
+   *    cnv.mouseClicked( function() {
+   *      if (soundFile.isPlaying() ) {
+   *        soundFile.stop();
+   *      } else {
+   *        soundFile.play();
+   *      }
+   *    });
+   *  }
+   *  </code></div>
+   */
+  onPeak(callback, val) {
+    var self = this;
+
+    self._onPeak = function () {
+      callback(self.energy, val);
+    };
+  }
+}
+
+export default PeakDetect;

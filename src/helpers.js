@@ -27,7 +27,7 @@ p5.prototype.sampleRate = function () {
  *                             above Middle C is 440Hz
  *  @return {Number}   MIDI note value
  */
-p5.prototype.freqToMidi = function (f) {
+export const freqToMidi = function (f) {
   var mathlog2 = Math.log(f / 440) / Math.log(2);
   var m = Math.round(12 * mathlog2) + 69;
   return m;
