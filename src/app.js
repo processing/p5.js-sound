@@ -38,12 +38,22 @@ import './filter';
 import EQ from './eq';
 p5.EQ = EQ;
 
-import './panner3d';
+
 
 import listener3D from './listener3d';
 p5.listener3D = listener3D;
 
-import './delay';
+
+
+import Panner3D from './panner3d';
+p5.Panner3D = Panner3D;
+
+
+
+import Delay from './delay';
+p5.Delay = Delay;
+
+
 import './reverb';
 import './metro';
 import './looper';
@@ -53,7 +63,12 @@ import Compressor from './compressor';
 p5.Compressor = Compressor;
 
 import './soundRecorder';
-import './peakDetect';
+
+
+import peakDetect from './peakDetect';
+p5.peakDetect = peakDetect;
+
+
 
 import Distortion from './distortion';
 p5.Distortion = Distortion;
