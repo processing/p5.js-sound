@@ -3,93 +3,96 @@ import p5sound from './master';
 // https://github.com/TONEnoTONE/Tone.js/
 import Clock from 'Tone/core/Clock';
 
-p5.Metro = function () {
-  this.clock = new Clock({
-    callback: this.ontick.bind(this),
-  });
-  this.syncedParts = [];
-  this.bpm = 120; // gets overridden by p5.Part
-  this._init();
-
-  this.prevTick = 0;
-  this.tatumTime = 0;
-
-  this.tickCallback = function () {};
-};
-
-p5.Metro.prototype.ontick = function (tickTime) {
-  var elapsedTime = tickTime - this.prevTick;
-  var secondsFromNow = tickTime - p5sound.audiocontext.currentTime;
-  if (elapsedTime - this.tatumTime <= -0.02) {
-    return;
-  } else {
-    // console.log('ok', this.syncedParts[0].phrases[0].name);
-    this.prevTick = tickTime;
-
-    // for all of the active things on the metro:
-    var self = this;
-    this.syncedParts.forEach(function (thisPart) {
-      if (!thisPart.isPlaying) return;
-      thisPart.incrementStep(secondsFromNow);
-      // each synced source keeps track of its own beat number
-      thisPart.phrases.forEach(function (thisPhrase) {
-        var phraseArray = thisPhrase.sequence;
-        var bNum = self.metroTicks % phraseArray.length;
-        if (
-          phraseArray[bNum] !== 0 &&
-          (self.metroTicks < phraseArray.length || !thisPhrase.looping)
-        ) {
-          thisPhrase.callback(secondsFromNow, phraseArray[bNum]);
-        }
-      });
+class Metro {
+  constructor() {
+    this.clock = new Clock({
+      callback: this.ontick.bind(this),
     });
-    this.metroTicks += 1;
-    this.tickCallback(secondsFromNow);
+    this.syncedParts = [];
+    this.bpm = 120; // gets overridden by p5.Part
+    this._init();
+
+    this.prevTick = 0;
+    this.tatumTime = 0;
+
+    this.tickCallback = function () {};
   }
-};
 
-p5.Metro.prototype.setBPM = function (bpm, rampTime = 0) {
-  var beatTime = 60 / (bpm * this.tatums);
-  var now = p5sound.audiocontext.currentTime;
-  this.tatumTime = beatTime;
+  ontick(tickTime) {
+    var elapsedTime = tickTime - this.prevTick;
+    var secondsFromNow = tickTime - p5sound.audiocontext.currentTime;
+    if (elapsedTime - this.tatumTime <= -0.02) {
+      return;
+    } else {
+      // console.log('ok', this.syncedParts[0].phrases[0].name);
+      this.prevTick = tickTime;
 
-  this.clock.frequency.setValueAtTime(this.clock.frequency.value, now);
-  this.clock.frequency.linearRampToValueAtTime(bpm, now + rampTime);
-  this.bpm = bpm;
-};
+      // for all of the active things on the metro:
+      var self = this;
+      this.syncedParts.forEach(function (thisPart) {
+        if (!thisPart.isPlaying) return;
+        thisPart.incrementStep(secondsFromNow);
+        // each synced source keeps track of its own beat number
+        thisPart.phrases.forEach(function (thisPhrase) {
+          var phraseArray = thisPhrase.sequence;
+          var bNum = self.metroTicks % phraseArray.length;
+          if (
+            phraseArray[bNum] !== 0 &&
+            (self.metroTicks < phraseArray.length || !thisPhrase.looping)
+          ) {
+            thisPhrase.callback(secondsFromNow, phraseArray[bNum]);
+          }
+        });
+      });
+      this.metroTicks += 1;
+      this.tickCallback(secondsFromNow);
+    }
+  }
 
-p5.Metro.prototype.getBPM = function () {
-  return (this.clock.getRate() / this.tatums) * 60;
-};
+  setBPM(bpm, rampTime = 0) {
+    var beatTime = 60 / (bpm * this.tatums);
+    var now = p5sound.audiocontext.currentTime;
+    this.tatumTime = beatTime;
 
-p5.Metro.prototype._init = function () {
-  this.metroTicks = 0;
-  // this.setBPM(120);
-};
+    this.clock.frequency.setValueAtTime(this.clock.frequency.value, now);
+    this.clock.frequency.linearRampToValueAtTime(bpm, now + rampTime);
+    this.bpm = bpm;
+  }
 
-// clear existing synced parts, add only this one
-p5.Metro.prototype.resetSync = function (part) {
-  this.syncedParts = [part];
-};
+  getBPM() {
+    return (this.clock.getRate() / this.tatums) * 60;
+  }
 
-// push a new synced part to the array
-p5.Metro.prototype.pushSync = function (part) {
-  this.syncedParts.push(part);
-};
+  _init() {
+    this.metroTicks = 0;
+    // this.setBPM(120);
+  }
 
-p5.Metro.prototype.start = function (timeFromNow) {
-  var t = timeFromNow || 0;
-  var now = p5sound.audiocontext.currentTime;
-  this.clock.start(now + t);
-  this.setBPM(this.bpm);
-};
+  // clear existing synced parts, add only this one
+  resetSync(part) {
+    this.syncedParts = [part];
+  }
 
-p5.Metro.prototype.stop = function (timeFromNow) {
-  var t = timeFromNow || 0;
-  var now = p5sound.audiocontext.currentTime;
-  this.clock.stop(now + t);
-};
+  // push a new synced part to the array
+  pushSync(part) {
+    this.syncedParts.push(part);
+  }
 
-p5.Metro.prototype.beatLength = function (tatums) {
-  this.tatums = 1 / tatums / 4; // lowest possible division of a beat
-};
+  start(timeFromNow) {
+    var t = timeFromNow || 0;
+    var now = p5sound.audiocontext.currentTime;
+    this.clock.start(now + t);
+    this.setBPM(this.bpm);
+  }
+
+  stop(timeFromNow) {
+    var t = timeFromNow || 0;
+    var now = p5sound.audiocontext.currentTime;
+    this.clock.stop(now + t);
+  }
+
+  beatLength(tatums) {
+    this.tatums = 1 / tatums / 4; // lowest possible division of a beat
+  }
+}
+export default Metro;
