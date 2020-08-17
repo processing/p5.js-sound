@@ -37,7 +37,10 @@ p5.EQ = EQ;
 
 import './panner3d';
 import './listener3d';
-import './delay';
+
+import Delay from './delay';
+p5.Delay = Delay;
+
 import './reverb';
 import './metro';
 import './looper';
