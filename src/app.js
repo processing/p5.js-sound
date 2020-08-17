@@ -55,7 +55,10 @@ p5.Delay = Delay;
 
 
 import './reverb';
-import './metro';
+
+import Metro from './metro';
+p5.Metro = Metro;
+
 import './looper';
 import './soundLoop';
 
@@ -64,9 +67,9 @@ p5.Compressor = Compressor;
 
 import './soundRecorder';
 
-
 import peakDetect from './peakDetect';
 p5.peakDetect = peakDetect;
+
 
 import Distortion from './distortion';
 p5.Distortion = Distortion;
