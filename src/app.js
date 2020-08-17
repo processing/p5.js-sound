@@ -68,8 +68,6 @@ import './soundRecorder';
 import peakDetect from './peakDetect';
 p5.peakDetect = peakDetect;
 
-
-
 import Distortion from './distortion';
 p5.Distortion = Distortion;
 
@@ -82,5 +80,11 @@ p5.AudioVoice = AudioVoice;
 import MonoSynth from './monosynth';
 p5.MonoSynth = MonoSynth;
 
+
+
+import OnsetDetect from './onsetDetect';
+p5.OnsetDetect = OnsetDetect;
+
 import PolySynth from './polysynth';
 p5.PolySynth = PolySynth;
+
