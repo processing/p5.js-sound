@@ -65,6 +65,3 @@ import MonoSynth from './monosynth';
 p5.MonoSynth = MonoSynth;
 
 import './polysynth';
-
-import OnsetDetect from './onsetDetect';
-p5.OnsetDetect = OnsetDetect;
