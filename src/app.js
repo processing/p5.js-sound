@@ -27,7 +27,7 @@ import './noise';
 import AudioIn from './audioin';
 p5.AudioIn = AudioIn;
 
-import Effect from './effect' ;
+import Effect from './effect';
 p5.Effect = Effect;
 
 import './filter';
@@ -46,20 +46,15 @@ import './soundLoop';
 import Compressor from './compressor';
 p5.Compressor = Compressor;
 
-import './soundRecorder';
+import SoundRecorder from './soundRecorder';
+p5.SoundRecorder = SoundRecorder;
 import './peakDetect';
-
-
 
 import Distortion from './distortion';
 p5.Distortion = Distortion;
 
-
 import Gain from './gain';
 p5.Gain = Gain;
-
-
-
 
 import AudioVoice from './audioVoice';
 p5.AudioVoice = AudioVoice;
