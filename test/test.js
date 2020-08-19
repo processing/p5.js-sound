@@ -1,8 +1,8 @@
 require.config({
-  baseUrl:'./',
-  paths : {
-    'lib' : '../lib',
-    'chai' : './testDeps/chai',
+  baseUrl: './',
+  paths: {
+    'lib': '../lib',
+    'chai': './testDeps/chai',
     'sinon': './testDeps/sinon'
   }
 });
@@ -13,7 +13,7 @@ var allTests = [
   'tests/p5.Amplitude',
   'tests/p5.Oscillator',
   'tests/p5.Distortion',
-  'tests/p5.Effect',      
+  'tests/p5.Effect',
   'tests/p5.Filter',
   'tests/p5.FFT',
   'tests/p5.Compressor',
@@ -27,6 +27,21 @@ var allTests = [
 
 p5.prototype.masterVolume(0);
 
-require(allTests, function(){
-  mocha.run();
+var test_has_run = false;
+
+require(allTests, function () {
+  document.getElementById('mocha').innerHTML = 'click to begin tests';
+
+  // chromes autoplay policy requires a user interaction
+  // before the audiocontext can activate
+  function mousePressed() {
+    if (!test_has_run) {
+      document.getElementById('mocha').innerHTML = '';
+      p5.prototype.userStartAudio();
+      mocha.run();
+      test_has_run = true;
+    }
+  }
+
+  document.addEventListener('click', mousePressed, false);
 });
