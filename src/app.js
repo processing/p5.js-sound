@@ -7,8 +7,9 @@ p5.prototype.userStartAudio = userStartAudio;
 
 import './master';
 
-import { freqToMidi } from './helpers';
+import { freqToMidi, saveSound } from './helpers';
 p5.prototype.freqToMidi = freqToMidi;
+p5.prototype.saveSound = saveSound;
 
 import './errorHandler';
 import './audioWorklet';

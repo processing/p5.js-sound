@@ -1,7 +1,7 @@
 // inspiration: recorder.js, Tone.js & typedarray.org
 
 import p5sound from './master';
-import { convertToWav, safeBufferSize } from './helpers';
+import { safeBufferSize } from './helpers';
 import processorNames from './audioWorklet/processorNames';
 
 const ac = p5sound.audiocontext;
@@ -205,23 +205,6 @@ class SoundRecorder {
     }
     this.input = null;
     this._workletNode = null;
-  }
-
-  /**
-   * Save a p5.SoundFile as a .wav file. The browser will prompt the user
-   * to download the file to their device.
-   * For uploading audio to a server, use
-   * <a href="/docs/reference/#/p5.SoundFile/saveBlob">`p5.SoundFile.saveBlob`</a>.
-   *
-   *  @for p5
-   *  @method saveSound
-   *  @param  {p5.SoundFile} soundFile p5.SoundFile that you wish to save
-   *  @param  {String} fileName      name of the resulting .wav file.
-   */
-  // add to p5.prototype as this is used by the p5 `save()` method.
-  saveSound(soundFile, fileName) {
-    const dataView = convertToWav(soundFile.buffer);
-    p5.prototype.writeFile([dataView], fileName, 'wav');
   }
 }
 
