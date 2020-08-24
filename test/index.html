@@ -8,14 +8,18 @@
 		window.setup = function setup() {};
 		new p5();
 	</script>
-	<script src="./testDeps/mocha.js"></script>
-	<script data-main="test.js" src="./testDeps/require.js"></script>
-	<link rel="stylesheet" href="./testDeps/mocha.css" />
+	 <link rel="stylesheet" href="../node_modules/mocha/mocha.css">
+	 <script src="../node_modules/mocha/mocha.js"></script>
+	 <script src="../node_modules/chai/chai.js"></script>
+
+	
 </head>
 <body>
 	<div id="mocha"></div>
 	<script>
-		mocha.setup('bdd')
+	  	mocha.setup('bdd')
+
 	</script>
+	<script src="./test.js" type="module"></script>
 </body>
 </html>

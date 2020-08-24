@@ -1,6 +1,5 @@
 'use strict';
 
-define(['chai'], function (chai) {
   var expect = chai.expect;
 
   describe('p5.Compressor', function () {
@@ -24,4 +23,3 @@ define(['chai'], function (chai) {
       expect(compressor.release()).to.equal(0.75);
     });
   });
-});

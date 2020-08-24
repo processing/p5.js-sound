@@ -1,6 +1,5 @@
 'use strict';
 
-define(['chai'], function (chai) {
   const expect = chai.expect;
   describe('P5.master', function () {
     it('can set and return master volume', function (done) {
@@ -31,4 +30,3 @@ define(['chai'], function (chai) {
       }, 500);
     });
   });
-});

@@ -1,6 +1,5 @@
 'use strict';
 
-define(['chai'], function (chai) {
   var expect = chai.expect;
 
   describe('p5.FFT', function () {
@@ -59,4 +58,3 @@ define(['chai'], function (chai) {
       expect(fft.smooth()).to.equal(0.8);
     });
   });
-});

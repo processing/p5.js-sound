@@ -1,6 +1,5 @@
 'use strict';
 
-define(['chai'], function (chai) {
   var expect = chai.expect;
 
   describe('p5.Oscillator', function () {
@@ -86,4 +85,3 @@ define(['chai'], function (chai) {
       }, 55);
     });
   });
-});

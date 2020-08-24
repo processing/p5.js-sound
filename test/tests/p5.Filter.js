@@ -1,6 +1,5 @@
 'use strict';
 
-define(['chai'], function (chai) {
   var expect = chai.expect;
 
   describe('p5.Filter', function () {
@@ -20,4 +19,3 @@ define(['chai'], function (chai) {
       filter.process(sound, 500, 5);
     });
   });
-});

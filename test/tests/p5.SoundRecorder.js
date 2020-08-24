@@ -1,6 +1,5 @@
 'use strict';
 
-define(['chai', 'sinon'], function (chai, sinon) {
   var expect = chai.expect;
 
   describe('p5.SoundRecorder', function () {
@@ -140,4 +139,3 @@ define(['chai', 'sinon'], function (chai, sinon) {
       });
     });
   });
-});

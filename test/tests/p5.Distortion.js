@@ -1,6 +1,5 @@
 'use strict';
 
-define(['chai'], function (chai) {
   var expect = chai.expect;
 
   describe('p5.Distortion', function () {
@@ -21,4 +20,3 @@ define(['chai'], function (chai) {
       expect(dist.getOversample()).not.equal(initialOS);
     });
   });
-});

@@ -1,35 +1,27 @@
-require.config({
-  baseUrl: './',
-  paths: {
-    'lib': '../lib',
-    'chai': './testDeps/chai',
-    'sinon': './testDeps/sinon'
-  }
-});
 
-var allTests = [
-  'tests/p5.Master',
-  'tests/p5.SoundFile',
-  'tests/p5.Amplitude',
-  'tests/p5.Oscillator',
-  'tests/p5.Distortion',
-  'tests/p5.Effect',
-  'tests/p5.Filter',
-  'tests/p5.FFT',
-  'tests/p5.Compressor',
-  'tests/p5.EQ',
-  'tests/p5.AudioIn',
-  'tests/p5.AudioVoice',
-  'tests/p5.MonoSynth',
-  'tests/p5.PolySynth',
-  'tests/p5.SoundRecorder'
-];
+    
+  import  './tests/p5.Master.js'
+  import  './tests/p5.SoundFile.js'
+  import  './tests/p5.Amplitude.js'
+  import  './tests/p5.Oscillator.js'
+  import  './tests/p5.Distortion.js'
+  import  './tests/p5.Effect.js'
+  import  './tests/p5.Filter.js'
+  import  './tests/p5.FFT.js'
+  import  './tests/p5.Compressor.js'
+  import  './tests/p5.EQ.js'
+  import  './tests/p5.AudioIn.js'
+  import  './tests/p5.AudioVoice.js'
+  import  './tests/p5.MonoSynth.js'
+  import  './tests/p5.PolySynth.js'
+  import  './tests/p5.SoundRecorder.js'
+
 
 p5.prototype.masterVolume(0);
 
 var test_has_run = false;
 
-require(allTests, function () {
+
   document.getElementById('mocha').innerHTML = 'click to begin tests';
 
   // chromes autoplay policy requires a user interaction
@@ -44,4 +36,3 @@ require(allTests, function () {
   }
 
   document.addEventListener('click', mousePressed, false);
-});
