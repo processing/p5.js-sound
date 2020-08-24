@@ -42,21 +42,14 @@ p5.BandPass = BandPass;
 import EQ from './eq';
 p5.EQ = EQ;
 
-
-
 import listener3D from './listener3d';
 p5.listener3D = listener3D;
-
-
 
 import Panner3D from './panner3d';
 p5.Panner3D = Panner3D;
 
-
-
 import Delay from './delay';
 p5.Delay = Delay;
-
 
 import './reverb';
 
@@ -64,17 +57,17 @@ import Metro from './metro';
 p5.Metro = Metro;
 
 import './looper';
-import './soundLoop';
+
+import SoundLoop from './soundLoop';
+p5.SoundLoop = SoundLoop;
 
 import Compressor from './compressor';
 p5.Compressor = Compressor;
 
 import './soundRecorder';
 
-
 import peakDetect from './peakDetect';
 p5.peakDetect = peakDetect;
-
 
 import Distortion from './distortion';
 p5.Distortion = Distortion;
@@ -88,11 +81,8 @@ p5.AudioVoice = AudioVoice;
 import MonoSynth from './monosynth';
 p5.MonoSynth = MonoSynth;
 
-
-
 import OnsetDetect from './onsetDetect';
 p5.OnsetDetect = OnsetDetect;
 
 import PolySynth from './polysynth';
 p5.PolySynth = PolySynth;
-
