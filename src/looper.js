@@ -380,19 +380,17 @@ p5.Part.prototype.onStep = function (callback) {
  */
 p5.Score = function () {
   // for all of the arguments
-  this.parts = [];
+  this.parts = new Array(arguments.length);
   this.currentPart = 0;
 
   var thisScore = this;
-  for (var i in arguments) {
-    if (arguments[i] && this.parts[i]) {
-      this.parts[i] = arguments[i];
-      this.parts[i].nextPart = this.parts[i + 1];
-      this.parts[i].onended = function () {
-        thisScore.resetPart(i);
-        playNextPart(thisScore);
-      };
-    }
+  for (var i in arguments) {    
+    this.parts[i] = arguments[i];
+    this.parts[i].nextPart = this.parts[i + 1];
+    this.parts[i].onended = function () {
+      thisScore.resetPart(i);
+      playNextPart(thisScore);
+    };    
   }
   this.looping = false;
 };
