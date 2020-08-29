@@ -100,3 +100,5 @@ if (typeof ac.createStereoPanner !== 'undefined') {
     }
   };
 }
+
+export default p5.Panner;
