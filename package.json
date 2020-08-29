@@ -37,6 +37,7 @@
   "dependencies": {
     "audioworklet-polyfill": "^1.1.2",
     "p5": "1.0.0",
+    "sinon": "^9.0.3",
     "startaudiocontext": "^1.2.1",
     "tone": "0.10.0"
   },
