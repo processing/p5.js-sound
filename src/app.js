@@ -69,18 +69,24 @@ import './reverb';
 import Metro from './metro';
 p5.Metro = Metro;
 
-import './looper';
+
+import { Phrase, Part, Score } from './looper';
+p5.Phrase = Phrase;
+p5.Part = Part;
+p5.Score = Score;
+
 
 import SoundLoop from './soundLoop';
 p5.SoundLoop = SoundLoop;
+
 
 import Compressor from './compressor';
 p5.Compressor = Compressor;
 
 
-
 import peakDetect from './peakDetect';
 p5.peakDetect = peakDetect;
+
 
 
 import SoundRecorder from './soundRecorder';
