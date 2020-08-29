@@ -64,7 +64,13 @@ p5.Panner3D = Panner3D;
 import Delay from './delay';
 p5.Delay = Delay;
 
-import './reverb';
+
+import { Reverb, Convolver, createConvolver } from './reverb';
+p5.Reverb = Reverb;
+p5.Convolver = Convolver;
+p5.prototype.createConvolver = createConvolver;
+p5.prototype.registerPreloadMethod('createConvolver', p5.prototype);
+
 
 import Metro from './metro';
 p5.Metro = Metro;
@@ -84,8 +90,10 @@ import Compressor from './compressor';
 p5.Compressor = Compressor;
 
 
+
 import peakDetect from './peakDetect';
 p5.peakDetect = peakDetect;
+
 
 
 
