@@ -24,7 +24,6 @@ p5.FFT = FFT;
 import './signal';
 
 import Oscillator, { SinOsc, TriOsc, SawOsc, SqrOsc } from './oscillator';
-console.log(Oscillator);
 p5.Oscillator = Oscillator;
 p5.SinOsc = SinOsc;
 p5.TriOsc = TriOsc;

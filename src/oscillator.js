@@ -2,40 +2,38 @@ import p5sound from './master';
 import Add from 'Tone/signal/Add';
 import Mult from 'Tone/signal/Multiply';
 import Scale from 'Tone/signal/Scale';
-
+import Panner from './panner';
 // ========================== //
 // SIGNAL MATH FOR MODULATION //
 // ========================== //
 
 // return sigChain(this, scale, thisChain, nextChain, Scale);
-class sigChain {
-  constructor(o, mathObj, thisChain, nextChain, type) {
-    var chainSource = o.oscillator;
-    // if this type of math already exists in the chain, replace it
-    for (var i in o.mathOps) {
-      if (o.mathOps[i] instanceof type) {
-        chainSource.disconnect();
-        o.mathOps[i].dispose();
-        thisChain = i;
-        // assume nextChain is output gain node unless...
-        if (thisChain < o.mathOps.length - 2) {
-          nextChain = o.mathOps[i + 1];
-        }
+function sigChain(o, mathObj, thisChain, nextChain, type) {
+  var chainSource = o.oscillator;
+  // if this type of math already exists in the chain, replace it
+  for (var i in o.mathOps) {
+    if (o.mathOps[i] instanceof type) {
+      chainSource.disconnect();
+      o.mathOps[i].dispose();
+      thisChain = i;
+      // assume nextChain is output gain node unless...
+      if (thisChain < o.mathOps.length - 2) {
+        nextChain = o.mathOps[i + 1];
       }
     }
-    if (thisChain === o.mathOps.length - 1) {
-      o.mathOps.push(nextChain);
-    }
-    // assume source is the oscillator unless i > 0
-    if (i > 0) {
-      chainSource = o.mathOps[i - 1];
-    }
-    chainSource.disconnect();
-    chainSource.connect(mathObj);
-    mathObj.connect(nextChain);
-    o.mathOps[thisChain] = mathObj;
-    return o;
   }
+  if (thisChain === o.mathOps.length - 1) {
+    o.mathOps.push(nextChain);
+  }
+  // assume source is the oscillator unless i > 0
+  if (i > 0) {
+    chainSource = o.mathOps[i - 1];
+  }
+  chainSource.disconnect();
+  chainSource.connect(mathObj);
+  mathObj.connect(nextChain);
+  o.mathOps[thisChain] = mathObj;
+  return o;
 }
 
 /**
@@ -137,7 +135,7 @@ class Oscillator {
     // stereo panning
     this.panPosition = 0.0;
     this.connection = p5sound.input; // connect to p5sound by default
-    this.panner = new p5.Panner(this.output, this.connection, 1);
+    this.panner = new Panner(this.output, this.connection, 1);
 
     //array of math operation signal chaining
     this.mathOps = [this.output];
