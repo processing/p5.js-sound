@@ -7,13 +7,19 @@ p5.prototype.userStartAudio = userStartAudio;
 
 import './master';
 
-import { freqToMidi } from './helpers';
+import { freqToMidi, saveSound } from './helpers';
 p5.prototype.freqToMidi = freqToMidi;
+p5.prototype.saveSound = saveSound;
 
 import './errorHandler';
 import './audioWorklet';
 import './panner';
-import './soundfile';
+
+import SoundFile, { loadSound } from './soundfile';
+p5.SoundFile = SoundFile;
+p5.prototype.loadSound = loadSound;
+// register preload handling of loadSound
+p5.prototype.registerPreloadMethod('loadSound', p5.prototype);
 
 import Amplitude from './amplitude';
 p5.Amplitude = Amplitude;
@@ -24,8 +30,15 @@ p5.FFT = FFT;
 import './signal';
 import './oscillator';
 import './envelope';
-import './pulse';
-import './noise';
+
+
+import Noise from './noise';
+p5.Noise = Noise;
+
+import Pulse from './pulse';
+p5.Pulse = Pulse;
+
+
 
 import AudioIn from './audioin';
 p5.AudioIn = AudioIn;
@@ -51,25 +64,41 @@ p5.Panner3D = Panner3D;
 import Delay from './delay';
 p5.Delay = Delay;
 
+
 import { Reverb, Convolver, createConvolver } from './reverb';
 p5.Reverb = Reverb;
 p5.Convolver = Convolver;
 p5.prototype.createConvolver = createConvolver;
 p5.prototype.registerPreloadMethod('createConvolver', p5.prototype);
 
+
 import Metro from './metro';
 p5.Metro = Metro;
 
-import './looper';
-import './soundLoop';
+
+import { Phrase, Part, Score } from './looper';
+p5.Phrase = Phrase;
+p5.Part = Part;
+p5.Score = Score;
+
+
+import SoundLoop from './soundLoop';
+p5.SoundLoop = SoundLoop;
+
 
 import Compressor from './compressor';
 p5.Compressor = Compressor;
 
-import './soundRecorder';
+
 
 import peakDetect from './peakDetect';
 p5.peakDetect = peakDetect;
+
+
+
+
+import SoundRecorder from './soundRecorder';
+p5.SoundRecorder = SoundRecorder;
 
 import Distortion from './distortion';
 p5.Distortion = Distortion;
