@@ -30,7 +30,8 @@ p5.FFT = FFT;
 import './signal';
 import './oscillator';
 import './envelope';
-import './pulse';
+import Pulse from './pulse';
+p5.Pulse = Pulse;
 import './noise';
 
 import AudioIn from './audioin';
@@ -71,8 +72,10 @@ import Compressor from './compressor';
 p5.Compressor = Compressor;
 
 
+
 import peakDetect from './peakDetect';
 p5.peakDetect = peakDetect;
+
 
 import SoundRecorder from './soundRecorder';
 p5.SoundRecorder = SoundRecorder;
