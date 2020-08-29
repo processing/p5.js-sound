@@ -13,7 +13,12 @@ p5.prototype.freqToMidi = freqToMidi;
 import './errorHandler';
 import './audioWorklet';
 import './panner';
-import './soundfile';
+
+import SoundFile, { loadSound } from './soundfile';
+p5.SoundFile = SoundFile;
+p5.prototype.loadSound = loadSound;
+// register preload handling of loadSound
+p5.prototype.registerPreloadMethod('loadSound', p5.prototype);
 
 import Amplitude from './amplitude';
 p5.Amplitude = Amplitude;
