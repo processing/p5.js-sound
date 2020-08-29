@@ -1,7 +1,7 @@
 // inspiration: recorder.js, Tone.js & typedarray.org
 
 import p5sound from './master';
-import { convertToWav, safeBufferSize } from './helpers';
+import { safeBufferSize } from './helpers';
 import processorNames from './audioWorklet/processorNames';
 
 const ac = p5sound.audiocontext;
@@ -80,145 +80,132 @@ const ac = p5sound.audiocontext;
  *  }
  *  </div></code>
  */
-p5.SoundRecorder = function () {
-  this.input = ac.createGain();
-  this.output = ac.createGain();
+class SoundRecorder {
+  constructor() {
+    this.input = ac.createGain();
+    this.output = ac.createGain();
 
-  this._inputChannels = 2;
-  this._outputChannels = 2; // stereo output, even if input is mono
+    this._inputChannels = 2;
+    this._outputChannels = 2; // stereo output, even if input is mono
 
-  const workletBufferSize = safeBufferSize(1024);
+    const workletBufferSize = safeBufferSize(1024);
 
-  this._workletNode = new AudioWorkletNode(
-    ac,
-    processorNames.recorderProcessor,
-    {
-      outputChannelCount: [this._outputChannels],
-      processorOptions: {
-        numInputChannels: this._inputChannels,
-        bufferSize: workletBufferSize,
-      },
-    }
-  );
+    this._workletNode = new AudioWorkletNode(
+      ac,
+      processorNames.recorderProcessor,
+      {
+        outputChannelCount: [this._outputChannels],
+        processorOptions: {
+          numInputChannels: this._inputChannels,
+          bufferSize: workletBufferSize,
+        },
+      }
+    );
 
-  this._workletNode.port.onmessage = function (event) {
-    if (event.data.name === 'buffers') {
-      const buffers = [
-        new Float32Array(event.data.leftBuffer),
-        new Float32Array(event.data.rightBuffer),
-      ];
-      this._callback(buffers);
-    }
-  }.bind(this);
+    this._workletNode.port.onmessage = function (event) {
+      if (event.data.name === 'buffers') {
+        const buffers = [
+          new Float32Array(event.data.leftBuffer),
+          new Float32Array(event.data.rightBuffer),
+        ];
+        this._callback(buffers);
+      }
+    }.bind(this);
+
+    /**
+     *  callback invoked when the recording is over
+     *  @private
+     *  @type Function(Float32Array)
+     */
+    this._callback = function () {};
+
+    // connections
+    this._workletNode.connect(p5.soundOut._silentNode);
+    this.setInput();
+
+    // add this p5.SoundFile to the soundArray
+    p5sound.soundArray.push(this);
+  }
 
   /**
-   *  callback invoked when the recording is over
-   *  @private
-   *  @type Function(Float32Array)
+   *  Connect a specific device to the p5.SoundRecorder.
+   *  If no parameter is given, p5.SoundRecorer will record
+   *  all audible p5.sound from your sketch.
+   *
+   *  @method  setInput
+   *  @for p5.SoundRecorder
+   *  @param {Object} [unit] p5.sound object or a web audio unit
+   *                         that outputs sound
    */
-  this._callback = function () {};
-
-  // connections
-  this._workletNode.connect(p5.soundOut._silentNode);
-  this.setInput();
-
-  // add this p5.SoundFile to the soundArray
-  p5sound.soundArray.push(this);
-};
-
-/**
- *  Connect a specific device to the p5.SoundRecorder.
- *  If no parameter is given, p5.SoundRecorer will record
- *  all audible p5.sound from your sketch.
- *
- *  @method  setInput
- *  @for p5.SoundRecorder
- *  @param {Object} [unit] p5.sound object or a web audio unit
- *                         that outputs sound
- */
-p5.SoundRecorder.prototype.setInput = function (unit) {
-  this.input.disconnect();
-  this.input = null;
-  this.input = ac.createGain();
-  this.input.connect(this._workletNode);
-  this.input.connect(this.output);
-  if (unit) {
-    unit.connect(this.input);
-  } else {
-    p5.soundOut.output.connect(this.input);
-  }
-};
-
-/**
- *  Start recording. To access the recording, provide
- *  a p5.SoundFile as the first parameter. The p5.SoundRecorder
- *  will send its recording to that p5.SoundFile for playback once
- *  recording is complete. Optional parameters include duration
- *  (in seconds) of the recording, and a callback function that
- *  will be called once the complete recording has been
- *  transfered to the p5.SoundFile.
- *
- *  @method  record
- *  @for p5.SoundRecorder
- *  @param  {p5.SoundFile}   soundFile    p5.SoundFile
- *  @param  {Number}   [duration] Time (in seconds)
- *  @param  {Function} [callback] The name of a function that will be
- *                                called once the recording completes
- */
-p5.SoundRecorder.prototype.record = function (sFile, duration, callback) {
-  this._workletNode.port.postMessage({ name: 'start', duration: duration });
-
-  if (sFile && callback) {
-    this._callback = function (buffer) {
-      sFile.setBuffer(buffer);
-      callback();
-    };
-  } else if (sFile) {
-    this._callback = function (buffer) {
-      sFile.setBuffer(buffer);
-    };
-  }
-};
-
-/**
- *  Stop the recording. Once the recording is stopped,
- *  the results will be sent to the p5.SoundFile that
- *  was given on .record(), and if a callback function
- *  was provided on record, that function will be called.
- *
- *  @method  stop
- *  @for p5.SoundRecorder
- */
-p5.SoundRecorder.prototype.stop = function () {
-  this._workletNode.port.postMessage({ name: 'stop' });
-};
-
-p5.SoundRecorder.prototype.dispose = function () {
-  // remove reference from soundArray
-  var index = p5sound.soundArray.indexOf(this);
-  p5sound.soundArray.splice(index, 1);
-
-  this._callback = function () {};
-  if (this.input) {
+  setInput(unit) {
     this.input.disconnect();
+    this.input = null;
+    this.input = ac.createGain();
+    this.input.connect(this._workletNode);
+    this.input.connect(this.output);
+    if (unit) {
+      unit.connect(this.input);
+    } else {
+      p5.soundOut.output.connect(this.input);
+    }
   }
-  this.input = null;
-  this._workletNode = null;
-};
 
-/**
- * Save a p5.SoundFile as a .wav file. The browser will prompt the user
- * to download the file to their device.
- * For uploading audio to a server, use
- * <a href="/docs/reference/#/p5.SoundFile/saveBlob">`p5.SoundFile.saveBlob`</a>.
- *
- *  @for p5
- *  @method saveSound
- *  @param  {p5.SoundFile} soundFile p5.SoundFile that you wish to save
- *  @param  {String} fileName      name of the resulting .wav file.
- */
-// add to p5.prototype as this is used by the p5 `save()` method.
-p5.prototype.saveSound = function (soundFile, fileName) {
-  const dataView = convertToWav(soundFile.buffer);
-  p5.prototype.writeFile([dataView], fileName, 'wav');
-};
+  /**
+   *  Start recording. To access the recording, provide
+   *  a p5.SoundFile as the first parameter. The p5.SoundRecorder
+   *  will send its recording to that p5.SoundFile for playback once
+   *  recording is complete. Optional parameters include duration
+   *  (in seconds) of the recording, and a callback function that
+   *  will be called once the complete recording has been
+   *  transfered to the p5.SoundFile.
+   *
+   *  @method  record
+   *  @for p5.SoundRecorder
+   *  @param  {p5.SoundFile}   soundFile    p5.SoundFile
+   *  @param  {Number}   [duration] Time (in seconds)
+   *  @param  {Function} [callback] The name of a function that will be
+   *                                called once the recording completes
+   */
+  record(sFile, duration, callback) {
+    this._workletNode.port.postMessage({ name: 'start', duration: duration });
+
+    if (sFile && callback) {
+      this._callback = function (buffer) {
+        sFile.setBuffer(buffer);
+        callback();
+      };
+    } else if (sFile) {
+      this._callback = function (buffer) {
+        sFile.setBuffer(buffer);
+      };
+    }
+  }
+
+  /**
+   *  Stop the recording. Once the recording is stopped,
+   *  the results will be sent to the p5.SoundFile that
+   *  was given on .record(), and if a callback function
+   *  was provided on record, that function will be called.
+   *
+   *  @method  stop
+   *  @for p5.SoundRecorder
+   */
+  stop() {
+    this._workletNode.port.postMessage({ name: 'stop' });
+  }
+
+  dispose() {
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
+
+    this._callback = function () {};
+    if (this.input) {
+      this.input.disconnect();
+    }
+    this.input = null;
+    this._workletNode = null;
+  }
+}
+
+export default SoundRecorder;
