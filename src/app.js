@@ -78,13 +78,13 @@ import Compressor from './compressor';
 p5.Compressor = Compressor;
 
 
+
 import peakDetect from './peakDetect';
 p5.peakDetect = peakDetect;
 
+
 import SoundRecorder from './soundRecorder';
 p5.SoundRecorder = SoundRecorder;
-
-
 
 import Distortion from './distortion';
 p5.Distortion = Distortion;
