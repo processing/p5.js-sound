@@ -7,8 +7,9 @@ p5.prototype.userStartAudio = userStartAudio;
 
 import './master';
 
-import { freqToMidi } from './helpers';
+import { freqToMidi, saveSound } from './helpers';
 p5.prototype.freqToMidi = freqToMidi;
+p5.prototype.saveSound = saveSound;
 
 import './errorHandler';
 import './audioWorklet';
@@ -69,10 +70,13 @@ p5.SoundLoop = SoundLoop;
 import Compressor from './compressor';
 p5.Compressor = Compressor;
 
-import './soundRecorder';
 
 import peakDetect from './peakDetect';
 p5.peakDetect = peakDetect;
+
+import SoundRecorder from './soundRecorder';
+p5.SoundRecorder = SoundRecorder;
+
 
 import Distortion from './distortion';
 p5.Distortion = Distortion;
