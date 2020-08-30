@@ -37,8 +37,15 @@ p5.SawOsc = SawOsc;
 p5.SqrOsc = SqrOsc;
 
 import './envelope';
-import './pulse';
-import './noise';
+
+
+import Noise from './noise';
+p5.Noise = Noise;
+
+import Pulse from './pulse';
+p5.Pulse = Pulse;
+
+
 
 import AudioIn from './audioin';
 p5.AudioIn = AudioIn;
@@ -64,15 +71,27 @@ p5.Panner3D = Panner3D;
 import Delay from './delay';
 p5.Delay = Delay;
 
-import './reverb';
+
+import { Reverb, Convolver, createConvolver } from './reverb';
+p5.Reverb = Reverb;
+p5.Convolver = Convolver;
+p5.prototype.createConvolver = createConvolver;
+p5.prototype.registerPreloadMethod('createConvolver', p5.prototype);
+
 
 import Metro from './metro';
 p5.Metro = Metro;
 
-import './looper';
+
+import { Phrase, Part, Score } from './looper';
+p5.Phrase = Phrase;
+p5.Part = Part;
+p5.Score = Score;
+
 
 import SoundLoop from './soundLoop';
 p5.SoundLoop = SoundLoop;
+
 
 import Compressor from './compressor';
 p5.Compressor = Compressor;
@@ -85,7 +104,6 @@ p5.peakDetect = peakDetect;
 
 import SoundRecorder from './soundRecorder';
 p5.SoundRecorder = SoundRecorder;
-
 
 import Distortion from './distortion';
 p5.Distortion = Distortion;

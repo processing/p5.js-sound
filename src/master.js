@@ -1,46 +1,47 @@
 import audiocontext from './audiocontext.js';
 // Master contains the master sound output.
-var Master = function () {
-  this.input = audiocontext.createGain();
-  this.output = audiocontext.createGain();
+class Master {
+  constructor() {
+    this.input = audiocontext.createGain();
+    this.output = audiocontext.createGain();
 
-  //put a hard limiter on the output
-  this.limiter = audiocontext.createDynamicsCompressor();
-  this.limiter.threshold.value = -3;
-  this.limiter.ratio.value = 20;
-  this.limiter.knee.value = 1;
+    //put a hard limiter on the output
+    this.limiter = audiocontext.createDynamicsCompressor();
+    this.limiter.threshold.value = -3;
+    this.limiter.ratio.value = 20;
+    this.limiter.knee.value = 1;
 
-  this.audiocontext = audiocontext;
+    this.audiocontext = audiocontext;
 
-  this.output.disconnect();
+    this.output.disconnect();
 
-  // connect input to limiter
-  this.input.connect(this.limiter);
+    // connect input to limiter
+    this.input.connect(this.limiter);
 
-  // connect limiter to output
-  this.limiter.connect(this.output);
+    // connect limiter to output
+    this.limiter.connect(this.output);
 
-  // meter is just for global Amplitude / FFT analysis
-  this.meter = audiocontext.createGain();
-  this.fftMeter = audiocontext.createGain();
-  this.output.connect(this.meter);
-  this.output.connect(this.fftMeter);
+    // meter is just for global Amplitude / FFT analysis
+    this.meter = audiocontext.createGain();
+    this.fftMeter = audiocontext.createGain();
+    this.output.connect(this.meter);
+    this.output.connect(this.fftMeter);
 
-  // connect output to destination
-  this.output.connect(this.audiocontext.destination);
+    // connect output to destination
+    this.output.connect(this.audiocontext.destination);
 
-  // an array of all sounds in the sketch
-  this.soundArray = [];
-  // an array of all musical parts in the sketch
-  this.parts = [];
+    // an array of all sounds in the sketch
+    this.soundArray = [];
+    // an array of all musical parts in the sketch
+    this.parts = [];
 
-  // file extensions to search for
-  this.extensions = [];
-};
+    // file extensions to search for
+    this.extensions = [];
+  }
+}
 
 // create a single instance of the p5Sound / master output for use within this sketch
 const p5sound = new Master();
-// console.log(p5sound.audiocontext)
 
 /**
  * Returns a number representing the master amplitude (volume) for sound
