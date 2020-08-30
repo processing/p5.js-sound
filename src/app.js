@@ -28,7 +28,14 @@ import FFT from './fft';
 p5.FFT = FFT;
 
 import './signal';
-import './oscillator';
+
+import Oscillator, { SinOsc, TriOsc, SawOsc, SqrOsc } from './oscillator';
+p5.Oscillator = Oscillator;
+p5.SinOsc = SinOsc;
+p5.TriOsc = TriOsc;
+p5.SawOsc = SawOsc;
+p5.SqrOsc = SqrOsc;
+
 import './envelope';
 
 
@@ -93,8 +100,6 @@ p5.Compressor = Compressor;
 
 import peakDetect from './peakDetect';
 p5.peakDetect = peakDetect;
-
-
 
 
 import SoundRecorder from './soundRecorder';
