@@ -344,7 +344,7 @@ function safeBufferSize(idealBufferSize) {
  *  @param  {String} fileName      name of the resulting .wav file.
  */
 // add to p5.prototype as this is used by the p5 `save()` method.
-export function saveSound(soundFile, fileName) {
+function saveSound(soundFile, fileName) {
   const dataView = convertToWav(soundFile.buffer);
   p5.prototype.writeFile([dataView], fileName, 'wav');
 }
