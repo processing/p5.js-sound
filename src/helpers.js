@@ -331,6 +331,25 @@ function safeBufferSize(idealBufferSize) {
   return bufferSize;
 }
 
+
+/**
+ * Save a p5.SoundFile as a .wav file. The browser will prompt the user
+ * to download the file to their device.
+ * For uploading audio to a server, use
+ * <a href="/docs/reference/#/p5.SoundFile/saveBlob">`p5.SoundFile.saveBlob`</a>.
+ *
+ *  @for p5
+ *  @method saveSound
+ *  @param  {p5.SoundFile} soundFile p5.SoundFile that you wish to save
+ *  @param  {String} fileName      name of the resulting .wav file.
+ */
+// add to p5.prototype as this is used by the p5 `save()` method.
+export function saveSound(soundFile, fileName) {
+  const dataView = convertToWav(soundFile.buffer);
+  p5.prototype.writeFile([dataView], fileName, 'wav');
+}
+
+
 export {
   sampleRate,
   freqToMidi,
@@ -344,4 +363,5 @@ export {
   interleave,
   writeUTFBytes,
   safeBufferSize,
+  saveSound
 };
