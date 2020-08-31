@@ -21,6 +21,10 @@ import {
   interleave,
   writeUTFBytes,
   safeBufferSize,
+
+  saveSound
+
+
 } from './helpers';
 p5.prototype.sampleRate = sampleRate;
 p5.prototype.freqToMidi = freqToMidi;
