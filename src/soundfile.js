@@ -486,6 +486,9 @@ class SoundFile {
           onerror(e);
         }
       };
+      reader.addEventListener('progress', function (evt) {
+        self._updateProgress(evt);
+      });
       reader.readAsArrayBuffer(this.file);
     }
   }
