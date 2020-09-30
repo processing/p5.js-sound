@@ -14,9 +14,9 @@ import processorNames from './audioWorklet/processorNames';
  * @method sampleRate
  * @return {Number} samplerate samples per second
  */
-p5.prototype.sampleRate = function () {
+function sampleRate() {
   return p5sound.audiocontext.sampleRate;
-};
+}
 
 /**
  *  Returns the closest MIDI note value for
@@ -27,11 +27,11 @@ p5.prototype.sampleRate = function () {
  *                             above Middle C is 440Hz
  *  @return {Number}   MIDI note value
  */
-export const freqToMidi = function (f) {
+function freqToMidi(f) {
   var mathlog2 = Math.log(f / 440) / Math.log(2);
   var m = Math.round(12 * mathlog2) + 69;
   return m;
-};
+}
 
 /**
  *  Returns the frequency value of a MIDI note value.
@@ -77,12 +77,12 @@ export const freqToMidi = function (f) {
  *  }
  *  </code></div>
  */
-export var midiToFreq = (p5.prototype.midiToFreq = function (m) {
+function midiToFreq(m) {
   return 440 * Math.pow(2, (m - 69) / 12.0);
-});
+}
 
 // This method converts ANSI notes specified as a string "C4", "Eb3" to a frequency
-export var noteToFreq = function (note) {
+function noteToFreq(note) {
   if (typeof note !== 'string') {
     return note;
   }
@@ -102,7 +102,7 @@ export var noteToFreq = function (note) {
       break;
   }
   return midiToFreq(value);
-};
+}
 
 /**
  *  List the SoundFile formats that you will include. LoadSound
@@ -133,7 +133,8 @@ export var noteToFreq = function (note) {
  *     }
  *  </code></div>
  */
-p5.prototype.soundFormats = function () {
+
+function soundFormats() {
   // reset extensions array
   p5sound.extensions = [];
   // add extensions
@@ -145,19 +146,15 @@ p5.prototype.soundFormats = function () {
       throw arguments[i] + ' is not a valid sound format!';
     }
   }
-};
+}
 
-p5.prototype.disposeSound = function () {
+function disposeSound() {
   for (var i = 0; i < p5sound.soundArray.length; i++) {
     p5sound.soundArray[i].dispose();
   }
-};
+}
 
-// register removeSound to dispose of p5sound SoundFiles, Convolvers,
-// Oscillators etc when sketch ends
-p5.prototype.registerMethod('remove', p5.prototype.disposeSound);
-
-p5.prototype._checkFileFormats = function (paths) {
+function _checkFileFormats(paths) {
   var path;
   // if path is a single string, check to see if extension is provided
   if (typeof paths === 'string') {
@@ -215,12 +212,12 @@ p5.prototype._checkFileFormats = function (paths) {
     }
   }
   return path;
-};
+}
 
 /**
  *  Used by Osc and Envelope to chain signal math
  */
-p5.prototype._mathChain = function (o, math, thisChain, nextChain, type) {
+function _mathChain(o, math, thisChain, nextChain, type) {
   // if this type of math already exists in the chain, replace it
   for (var i in o.mathOps) {
     if (o.mathOps[i] instanceof type) {
@@ -236,13 +233,13 @@ p5.prototype._mathChain = function (o, math, thisChain, nextChain, type) {
   math.connect(nextChain);
   o.mathOps[thisChain] = math;
   return o;
-};
+}
 
 // helper methods to convert audio file as .wav format,
 // will use as saving .wav file and saving blob object
 // Thank you to Matt Diamond's RecorderJS (MIT License)
 // https://github.com/mattdiamond/Recorderjs
-export function convertToWav(audioBuffer) {
+function convertToWav(audioBuffer) {
   var leftChannel, rightChannel;
   leftChannel = audioBuffer.getChannelData(0);
 
@@ -314,7 +311,7 @@ function writeUTFBytes(view, offset, string) {
   }
 }
 
-export function safeBufferSize(idealBufferSize) {
+function safeBufferSize(idealBufferSize) {
   let bufferSize = idealBufferSize;
 
   // if the AudioWorkletNode is actually a ScriptProcessorNode created via polyfill,
@@ -334,9 +331,37 @@ export function safeBufferSize(idealBufferSize) {
   return bufferSize;
 }
 
-// export default {
-//   // convertToWav: convertToWav,
-//   // midiToFreq: midiToFreq,
-//   // noteToFreq: noteToFreq,
-//   // safeBufferSize: safeBufferSize
-// };
+
+/**
+ * Save a p5.SoundFile as a .wav file. The browser will prompt the user
+ * to download the file to their device.
+ * For uploading audio to a server, use
+ * <a href="/docs/reference/#/p5.SoundFile/saveBlob">`p5.SoundFile.saveBlob`</a>.
+ *
+ *  @for p5
+ *  @method saveSound
+ *  @param  {p5.SoundFile} soundFile p5.SoundFile that you wish to save
+ *  @param  {String} fileName      name of the resulting .wav file.
+ */
+// add to p5.prototype as this is used by the p5 `save()` method.
+function saveSound(soundFile, fileName) {
+  const dataView = convertToWav(soundFile.buffer);
+  p5.prototype.writeFile([dataView], fileName, 'wav');
+}
+
+
+export {
+  sampleRate,
+  freqToMidi,
+  midiToFreq,
+  noteToFreq,
+  soundFormats,
+  disposeSound,
+  _checkFileFormats,
+  _mathChain,
+  convertToWav,
+  interleave,
+  writeUTFBytes,
+  safeBufferSize,
+  saveSound
+};
