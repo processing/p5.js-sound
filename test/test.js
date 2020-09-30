@@ -1,8 +1,5 @@
 
   import  './tests/p5.Master.js'
-  import  './tests/p5.SoundFile.js'
-  import  './tests/p5.Amplitude.js'
-  import  './tests/p5.Oscillator.js'
   import  './tests/p5.Distortion.js'
   import  './tests/p5.Effect.js'
   import  './tests/p5.Filter.js'
@@ -15,6 +12,12 @@
   import  './tests/p5.PolySynth.js'
   import  './tests/p5.SoundRecorder.js'
 
+  //this is dynamic export , it will ensure all threee AudioWorklet Processor have been loaded brfore using them
+  p5.audioWorkletInitilized.then(()=>{
+    import('./tests/p5.SoundFile.js')
+    import('./tests/p5.Amplitude.js')
+    import('./tests/p5.Oscillator.js')
+  })
 
 p5.prototype.masterVolume(0);
 
