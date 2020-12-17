@@ -34,11 +34,13 @@ import processorNames from './audioWorklet/processorNames';
  *    ellipse(width/2, height/2, size, size);
  *  }
  *
- *  function toggleSound() {
+ *  function togglePlay() {
  *    if (sound.isPlaying() ){
- *      sound.stop();
+ *      sound.pause();
  *    } else {
- *      sound.play();
+ *      sound.loop();
+ *		amplitude = new p5.Amplitude();
+ *		amplitude.setInput(sound);
  *    }
  *  }
  *
