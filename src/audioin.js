@@ -270,10 +270,10 @@ class AudioIn {
   }
 
   /**
-   * Returns a list of available input sources. This is a wrapper
-   * for <a href="https://developer.mozilla.org/
-   * en-US/docs/Web/API/MediaDevices/enumerateDevices" target="_blank">
-   * MediaDevices.enumerateDevices() - Web APIs | MDN</a>
+   * Returns a list of available input sources. This is a wrapper for
+   *  <a title="MediaDevices.enumerateDevices() - Web APIs | MDN" target="_blank" href=
+   *  "https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/enumerateDevices"
+   *  >navigator.mediaDevices.enumerateDevices()</a>.<br/>
    * and it returns a Promise.
    * @method  getSources
    * @for p5.AudioIn
