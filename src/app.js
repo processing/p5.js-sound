@@ -47,12 +47,6 @@ p5.prototype.registerMethod('remove', p5.prototype.disposeSound);
 
 import './errorHandler';
 
-import { audioWorkletInitilized } from './audioWorklet';
-p5.audioWorkletInitilized = audioWorkletInitilized;
-
-
-
-
 import Panner from './panner';
 p5.Panner = Panner;
 
@@ -61,7 +55,6 @@ p5.SoundFile = SoundFile;
 p5.prototype.loadSound = loadSound;
 // register preload handling of loadSound
 p5.prototype.registerPreloadMethod('loadSound', p5.prototype);
-
 
 
 import Amplitude from './amplitude';
