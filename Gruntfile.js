@@ -28,6 +28,13 @@ module.exports = function(grunt) {
           fix: true
         },
         src: ['src/**/*.js', 'test/tests/**/*.js']
+      },
+      sourceNofix: {
+        options: {
+          configFile: './.eslintrc',
+          fix: false
+        },
+        src: ['src/**/*.js', 'test/tests/**/*.js']
       }
     },
     webpack: {
@@ -59,7 +66,10 @@ module.exports = function(grunt) {
     },
     githooks: {
       all: {
-      'pre-commit':'lint' //runs linting test  before every git commit 
+        options:{
+          template:"templates/pre-commit-hook.js"
+        },
+      'pre-commit':'lint-nofix' //runs linting test  before every git commit 
       }
       }
   });
@@ -73,6 +83,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-githooks');
 
   grunt.registerTask('lint', ['eslint:source']);
+  grunt.registerTask('lint-nofix', ['eslint:sourceNofix']);
   grunt.registerTask('default', ['webpack:prod', 'decomment']);
   grunt.registerTask('dev', ['eslint','connect','webpack:dev', 'decomment']);
   grunt.registerTask('serve', 'connect:server:keepalive');
