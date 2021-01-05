@@ -46,6 +46,7 @@ p5.prototype.registerMethod('remove', p5.prototype.disposeSound);
 
 
 import './errorHandler';
+import './audioWorklet';
 
 import Panner from './panner';
 p5.Panner = Panner;
