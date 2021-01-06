@@ -1435,14 +1435,6 @@ class SoundFile {
     this.panner.inputChannels(numChannels);
   }
 
-  //////////////////////////////////////////////////
-  // script processor node with an empty buffer to help
-  // keep a sample-accurate position in playback buffer.
-  // Inspired by Chinmay Pendharkar's technique for Sonoport --> http://bit.ly/1HwdCsV
-  // Copyright [2015] [Sonoport (Asia) Pte. Ltd.],
-  // Licensed under the Apache License http://apache.org/licenses/LICENSE-2.0
-  ////////////////////////////////////////////////////////////////////////////////////
-
   // initialize counterNode, set its initial buffer and playbackRate
   _initCounterNode() {
     var self = this;
