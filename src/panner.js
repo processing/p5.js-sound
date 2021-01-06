@@ -108,6 +108,4 @@ if (typeof ac.createStereoPanner !== 'undefined') {
   panner = Panner;
 }
 
-
 export default panner;
-
