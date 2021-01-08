@@ -69,7 +69,7 @@ module.exports = function(grunt) {
         options:{
           template:"templates/pre-commit-hook.js"
         },
-      'pre-commit':'lint-nofix' //runs linting test  before every git commit 
+      'pre-commit':'lint-nofix' //runs elint in -nofix mode  before every git commit 
       }
       }
   });
