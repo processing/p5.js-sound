@@ -1,8 +1,8 @@
  // hooks/pre-commit.js
 
- var exec = require('child_process').exec;
+ const exec = require('child_process').exec;
  // Executes shell commands synchronously
- var sh = require('child_process').execSync;
+ const sh = require('child_process').execSync;
  
  exec('git diff --cached --quiet', function (err, stdout, stderr) {
  
@@ -20,7 +20,7 @@
   // restore stashed changes
   sh('git stash pop --quiet');
  
-  var exitCode = 0;
+  let exitCode = 0;
   if (err) {
   console.log(stderr);
   exitCode = -1;
