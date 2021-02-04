@@ -331,7 +331,6 @@ function safeBufferSize(idealBufferSize) {
   return bufferSize;
 }
 
-
 /**
  * Save a p5.SoundFile as a .wav file. The browser will prompt the user
  * to download the file to their device.
@@ -349,7 +348,6 @@ function saveSound(soundFile, fileName) {
   p5.prototype.writeFile([dataView], fileName, 'wav');
 }
 
-
 export {
   sampleRate,
   freqToMidi,
@@ -363,5 +361,5 @@ export {
   interleave,
   writeUTFBytes,
   safeBufferSize,
-  saveSound
+  saveSound,
 };

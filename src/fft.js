@@ -300,13 +300,13 @@ class FFT {
    *  <a href="https://en.wikipedia.org/wiki/Audio_frequency" target="_blank">
    *  frequency</a>, or the average amount of energy between two
    *  frequencies. Accepts Number(s) corresponding
-   *  to frequency (in Hz), or a String corresponding to predefined
+   *  to frequency (in Hz), or a "string" corresponding to predefined
    *  frequency ranges ("bass", "lowMid", "mid", "highMid", "treble").
    *  Returns a range between 0 (no energy/volume at that frequency) and
    *  255 (maximum energy).
-   *  <em>NOTE: analyze() must be called prior to getEnergy(). Analyze()
+   *  <em>NOTE: analyze() must be called prior to getEnergy(). analyze()
    *  tells the FFT to analyze frequency data, and getEnergy() uses
-   *  the results determine the value at a specific frequency or
+   *  the results to determine the value at a specific frequency or
    *  range of frequencies.</em></p>
    *
    *  @method  getEnergy
