@@ -800,9 +800,7 @@ p5.Envelope.prototype.connect = function (unit) {
     //set the initial value
     unit.setValueAtTime(0, p5sound.audiocontext.currentTime);
   }
-  if (unit instanceof p5.Signal) {
-    unit.setValue(0);
-  }
+
   this.output.connect(unit);
 };
 
