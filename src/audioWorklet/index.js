@@ -6,7 +6,6 @@ const moduleSources = [
 ];
 const ac = p5sound.audiocontext;
 
-
 function loadAudioWorkletModules() {
   return Promise.all(
     moduleSources.map(function (moduleSrc) {

@@ -1,3 +1,6 @@
+import Signal from 'Tone/signal/Signal';
+import Multiply from 'Tone/signal/Multiply';
+
 import p5sound from './master';
 import Oscillator, { SawOsc } from './oscillator';
 
@@ -102,10 +105,11 @@ class Pulse extends Oscillator {
       this.dcGain.gain.value = 1.7 * (0.5 - this.w);
     } else {
       w.connect(this.dNode.delayTime);
-      var sig = new p5.SignalAdd(-0.5); //repalce it with tones Signals Method
-      sig.setInput(w);
-      sig = sig.mult(-1);
-      sig = sig.mult(1.7);
+      let sig = new Signal(-0.5); //repalce it with tones Signals Method
+      w.connect(sig);
+      let mult1 = new Multiply(-1);
+      let mult2 = new Multiply(1.7);
+      sig = sig.connect(mult1).connect(mult2);
       sig.connect(this.dcGain.gain);
     }
   }
