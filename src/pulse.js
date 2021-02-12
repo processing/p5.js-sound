@@ -1,4 +1,6 @@
 import Signal from 'Tone/signal/Signal';
+import Multiply from 'Tone/signal/Multiply';
+
 import p5sound from './master';
 import Oscillator, { SawOsc } from './oscillator';
 
