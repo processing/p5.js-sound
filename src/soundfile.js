@@ -1506,6 +1506,7 @@ class SoundFile {
    *  @return {Array}                  Array of timestamped peaks
    */
   processPeaks(callback, _initThreshold, _minThreshold, _minPeaks) {
+    var self = this;
     var bufLen = this.buffer.length;
     var sampleRate = this.buffer.sampleRate;
     var buffer = this.buffer;
