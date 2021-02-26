@@ -4,3 +4,4 @@ examples/__test
 p5soundnotes
 *.DS_Store
 .vscode
+lib/p5.*

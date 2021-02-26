@@ -34,11 +34,13 @@ import processorNames from './audioWorklet/processorNames';
  *    ellipse(width/2, height/2, size, size);
  *  }
  *
- *  function toggleSound() {
+ *  function togglePlay() {
  *    if (sound.isPlaying() ){
- *      sound.stop();
+ *      sound.pause();
  *    } else {
- *      sound.play();
+ *      sound.loop();
+ *		amplitude = new p5.Amplitude();
+ *		amplitude.setInput(sound);
  *    }
  *  }
  *
@@ -162,10 +164,6 @@ class Amplitude {
       p5sound.meter.connect(this._workletNode);
     }
 
-    // if it is a p5.Signal
-    else if (source instanceof p5.Signal) {
-      source.output.connect(this._workletNode);
-    }
     // connect to the sound if it is available
     else if (source) {
       source.connect(this._workletNode);

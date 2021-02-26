@@ -1,5 +1,8 @@
+import Signal from 'Tone/signal/Signal';
+import Multiply from 'Tone/signal/Multiply';
+
 import p5sound from './master';
-import './oscillator';
+import Oscillator, { SawOsc } from './oscillator';
 
 /**
  *  Creates a Pulse object, an oscillator that implements
@@ -45,150 +48,157 @@ import './oscillator';
  *  }
  *  </code></div>
  */
-p5.Pulse = function (freq, w) {
-  p5.Oscillator.call(this, freq, 'sawtooth');
+class Pulse extends Oscillator {
+  constructor(freq, w) {
+    super(freq, 'sawtooth');
 
-  // width of PWM, should be betw 0 to 1.0
-  this.w = w || 0;
+    // width of PWM, should be betw 0 to 1.0
+    this.w = w || 0;
 
-  // create a second oscillator with inverse frequency
-  this.osc2 = new p5.SawOsc(freq);
+    // create a second oscillator with inverse frequency
+    this.osc2 = new SawOsc(freq);
 
-  // create a delay node
-  this.dNode = p5sound.audiocontext.createDelay();
+    // create a delay node
+    this.dNode = p5sound.audiocontext.createDelay();
 
-  // dc offset
-  this.dcOffset = createDCOffset();
-  this.dcGain = p5sound.audiocontext.createGain();
-  this.dcOffset.connect(this.dcGain);
-  this.dcGain.connect(this.output);
-  // set delay time based on PWM width
-  this.f = freq || 440;
-  var mW = this.w / this.oscillator.frequency.value;
-  this.dNode.delayTime.value = mW;
-  this.dcGain.gain.value = 1.7 * (0.5 - this.w);
-
-  // disconnect osc2 and connect it to delay, which is connected to output
-  this.osc2.disconnect();
-  this.osc2.panner.disconnect();
-  this.osc2.amp(-1); // inverted amplitude
-  this.osc2.output.connect(this.dNode);
-  this.dNode.connect(this.output);
-
-  this.output.gain.value = 1;
-  this.output.connect(this.panner);
-};
-
-p5.Pulse.prototype = Object.create(p5.Oscillator.prototype);
-
-/**
- *  Set the width of a Pulse object (an oscillator that implements
- *  Pulse Width Modulation).
- *
- *  @method  width
- *  @param {Number} [width]    Width between the pulses (0 to 1.0,
- *                         defaults to 0)
- */
-p5.Pulse.prototype.width = function (w) {
-  if (typeof w === 'number') {
-    if (w <= 1.0 && w >= 0.0) {
-      this.w = w;
-      // set delay time based on PWM width
-
-      // var mW = map(this.w, 0, 1.0, 0, 1/this.f);
-      var mW = this.w / this.oscillator.frequency.value;
-      this.dNode.delayTime.value = mW;
-    }
-
-    this.dcGain.gain.value = 1.7 * (0.5 - this.w);
-  } else {
-    w.connect(this.dNode.delayTime);
-    var sig = new p5.SignalAdd(-0.5);
-    sig.setInput(w);
-    sig = sig.mult(-1);
-    sig = sig.mult(1.7);
-    sig.connect(this.dcGain.gain);
-  }
-};
-
-p5.Pulse.prototype.start = function (f, time) {
-  var now = p5sound.audiocontext.currentTime;
-  var t = time || 0;
-  if (!this.started) {
-    var freq = f || this.f;
-    var type = this.oscillator.type;
-    this.oscillator = p5sound.audiocontext.createOscillator();
-    this.oscillator.frequency.setValueAtTime(freq, now);
-    this.oscillator.type = type;
-    this.oscillator.connect(this.output);
-    this.oscillator.start(t + now);
-
-    // set up osc2
-    this.osc2.oscillator = p5sound.audiocontext.createOscillator();
-    this.osc2.oscillator.frequency.setValueAtTime(freq, t + now);
-    this.osc2.oscillator.type = type;
-    this.osc2.oscillator.connect(this.osc2.output);
-    this.osc2.start(t + now);
-    this.freqNode = [this.oscillator.frequency, this.osc2.oscillator.frequency];
-
-    // start dcOffset, too
+    // dc offset
     this.dcOffset = createDCOffset();
+    this.dcGain = p5sound.audiocontext.createGain();
     this.dcOffset.connect(this.dcGain);
-    this.dcOffset.start(t + now);
+    this.dcGain.connect(this.output);
+    // set delay time based on PWM width
+    this.f = freq || 440;
+    var mW = this.w / this.oscillator.frequency.value;
+    this.dNode.delayTime.value = mW;
+    this.dcGain.gain.value = 1.7 * (0.5 - this.w);
 
-    // if LFO connections depend on these oscillators
-    if (this.mods !== undefined && this.mods.frequency !== undefined) {
-      this.mods.frequency.connect(this.freqNode[0]);
-      this.mods.frequency.connect(this.freqNode[1]);
-    }
-    this.started = true;
-    this.osc2.started = true;
+    // disconnect osc2 and connect it to delay, which is connected to output
+    this.osc2.disconnect();
+    this.osc2.panner.disconnect();
+    this.osc2.amp(-1); // inverted amplitude
+    this.osc2.output.connect(this.dNode);
+    this.dNode.connect(this.output);
+
+    this.output.gain.value = 1;
+    this.output.connect(this.panner);
   }
-};
 
-p5.Pulse.prototype.stop = function (time) {
-  if (this.started) {
+  /**
+   *  Set the width of a Pulse object (an oscillator that implements
+   *  Pulse Width Modulation).
+   *
+   *  @method  width
+   *  @param {Number} [width]    Width between the pulses (0 to 1.0,
+   *                         defaults to 0)
+   */
+  width(w) {
+    if (typeof w === 'number') {
+      if (w <= 1.0 && w >= 0.0) {
+        this.w = w;
+        // set delay time based on PWM width
+
+        // var mW = map(this.w, 0, 1.0, 0, 1/this.f);
+        var mW = this.w / this.oscillator.frequency.value;
+        this.dNode.delayTime.value = mW;
+      }
+
+      this.dcGain.gain.value = 1.7 * (0.5 - this.w);
+    } else {
+      w.connect(this.dNode.delayTime);
+      let sig = new Signal(-0.5); //repalce it with tones Signals Method
+      w.connect(sig);
+      let mult1 = new Multiply(-1);
+      let mult2 = new Multiply(1.7);
+      sig = sig.connect(mult1).connect(mult2);
+      sig.connect(this.dcGain.gain);
+    }
+  }
+
+  start(f, time) {
+    var now = p5sound.audiocontext.currentTime;
     var t = time || 0;
-    var now = p5sound.audiocontext.currentTime;
-    this.oscillator.stop(t + now);
-    if (this.osc2.oscillator) {
-      this.osc2.oscillator.stop(t + now);
-    }
-    this.dcOffset.stop(t + now);
-    this.started = false;
-    this.osc2.started = false;
-  }
-};
+    if (!this.started) {
+      var freq = f || this.f;
+      var type = this.oscillator.type;
+      this.oscillator = p5sound.audiocontext.createOscillator();
+      this.oscillator.frequency.setValueAtTime(freq, now);
+      this.oscillator.type = type;
+      this.oscillator.connect(this.output);
+      this.oscillator.start(t + now);
 
-p5.Pulse.prototype.freq = function (val, rampTime = 0, tFromNow = 0) {
-  if (typeof val === 'number') {
-    this.f = val;
-    var now = p5sound.audiocontext.currentTime;
-    var currentFreq = this.oscillator.frequency.value;
-    this.oscillator.frequency.cancelScheduledValues(now);
-    this.oscillator.frequency.setValueAtTime(currentFreq, now + tFromNow);
-    this.oscillator.frequency.exponentialRampToValueAtTime(
-      val,
-      tFromNow + rampTime + now
-    );
-    this.osc2.oscillator.frequency.cancelScheduledValues(now);
-    this.osc2.oscillator.frequency.setValueAtTime(currentFreq, now + tFromNow);
-    this.osc2.oscillator.frequency.exponentialRampToValueAtTime(
-      val,
-      tFromNow + rampTime + now
-    );
+      // set up osc2
+      this.osc2.oscillator = p5sound.audiocontext.createOscillator();
+      this.osc2.oscillator.frequency.setValueAtTime(freq, t + now);
+      this.osc2.oscillator.type = type;
+      this.osc2.oscillator.connect(this.osc2.output);
+      this.osc2.start(t + now);
+      this.freqNode = [
+        this.oscillator.frequency,
+        this.osc2.oscillator.frequency,
+      ];
 
-    if (this.freqMod) {
-      this.freqMod.output.disconnect();
-      this.freqMod = null;
+      // start dcOffset, too
+      this.dcOffset = createDCOffset();
+      this.dcOffset.connect(this.dcGain);
+      this.dcOffset.start(t + now);
+
+      // if LFO connections depend on these oscillators
+      if (this.mods !== undefined && this.mods.frequency !== undefined) {
+        this.mods.frequency.connect(this.freqNode[0]);
+        this.mods.frequency.connect(this.freqNode[1]);
+      }
+      this.started = true;
+      this.osc2.started = true;
     }
-  } else if (val.output) {
-    val.output.disconnect();
-    val.output.connect(this.oscillator.frequency);
-    val.output.connect(this.osc2.oscillator.frequency);
-    this.freqMod = val;
   }
-};
+
+  stop(time) {
+    if (this.started) {
+      var t = time || 0;
+      var now = p5sound.audiocontext.currentTime;
+      this.oscillator.stop(t + now);
+      if (this.osc2.oscillator) {
+        this.osc2.oscillator.stop(t + now);
+      }
+      this.dcOffset.stop(t + now);
+      this.started = false;
+      this.osc2.started = false;
+    }
+  }
+
+  freq(val, rampTime = 0, tFromNow = 0) {
+    if (typeof val === 'number') {
+      this.f = val;
+      var now = p5sound.audiocontext.currentTime;
+      var currentFreq = this.oscillator.frequency.value;
+      this.oscillator.frequency.cancelScheduledValues(now);
+      this.oscillator.frequency.setValueAtTime(currentFreq, now + tFromNow);
+      this.oscillator.frequency.exponentialRampToValueAtTime(
+        val,
+        tFromNow + rampTime + now
+      );
+      this.osc2.oscillator.frequency.cancelScheduledValues(now);
+      this.osc2.oscillator.frequency.setValueAtTime(
+        currentFreq,
+        now + tFromNow
+      );
+      this.osc2.oscillator.frequency.exponentialRampToValueAtTime(
+        val,
+        tFromNow + rampTime + now
+      );
+
+      if (this.freqMod) {
+        this.freqMod.output.disconnect();
+        this.freqMod = null;
+      }
+    } else if (val.output) {
+      val.output.disconnect();
+      val.output.connect(this.oscillator.frequency);
+      val.output.connect(this.osc2.oscillator.frequency);
+      this.freqMod = val;
+    }
+  }
+}
 
 // inspiration: http://webaudiodemos.appspot.com/oscilloscope/
 function createDCOffset() {
@@ -201,3 +211,5 @@ function createDCOffset() {
   bufferSource.loop = true;
   return bufferSource;
 }
+
+export default Pulse;

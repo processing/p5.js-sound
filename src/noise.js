@@ -1,4 +1,5 @@
 import p5sound from './master';
+import Oscillator from './oscillator';
 
 // generate noise buffers
 const _whiteNoiseBuffer = (function () {
@@ -70,97 +71,98 @@ const _brownNoiseBuffer = (function () {
  *  @param {String} type Type of noise can be 'white' (default),
  *                       'brown' or 'pink'.
  */
-p5.Noise = function (type) {
-  var assignType;
-  p5.Oscillator.call(this);
-  delete this.f;
-  delete this.freq;
-  delete this.oscillator;
+class Noise extends Oscillator {
+  constructor(type) {
+    super();
+    var assignType;
+    delete this.f;
+    delete this.freq;
+    delete this.oscillator;
 
-  if (type === 'brown') {
-    assignType = _brownNoiseBuffer;
-  } else if (type === 'pink') {
-    assignType = _pinkNoiseBuffer;
-  } else {
-    assignType = _whiteNoiseBuffer;
+    if (type === 'brown') {
+      assignType = _brownNoiseBuffer;
+    } else if (type === 'pink') {
+      assignType = _pinkNoiseBuffer;
+    } else {
+      assignType = _whiteNoiseBuffer;
+    }
+    this.buffer = assignType;
   }
-  this.buffer = assignType;
-};
 
-p5.Noise.prototype = Object.create(p5.Oscillator.prototype);
-
-/**
- *  Set type of noise to 'white', 'pink' or 'brown'.
- *  White is the default.
- *
- *  @method setType
- *  @param {String} [type] 'white', 'pink' or 'brown'
- */
-p5.Noise.prototype.setType = function (type) {
-  switch (type) {
-    case 'white':
-      this.buffer = _whiteNoiseBuffer;
-      break;
-    case 'pink':
-      this.buffer = _pinkNoiseBuffer;
-      break;
-    case 'brown':
-      this.buffer = _brownNoiseBuffer;
-      break;
-    default:
-      this.buffer = _whiteNoiseBuffer;
+  /**
+   *  Set type of noise to 'white', 'pink' or 'brown'.
+   *  White is the default.
+   *
+   *  @method setType
+   *  @param {String} [type] 'white', 'pink' or 'brown'
+   */
+  setType(type) {
+    switch (type) {
+      case 'white':
+        this.buffer = _whiteNoiseBuffer;
+        break;
+      case 'pink':
+        this.buffer = _pinkNoiseBuffer;
+        break;
+      case 'brown':
+        this.buffer = _brownNoiseBuffer;
+        break;
+      default:
+        this.buffer = _whiteNoiseBuffer;
+    }
+    if (this.started) {
+      var now = p5sound.audiocontext.currentTime;
+      this.stop(now);
+      this.start(now + 0.01);
+    }
   }
-  if (this.started) {
+
+  getType() {
+    return this.buffer.type;
+  }
+  start() {
+    if (this.started) {
+      this.stop();
+    }
+    this.noise = p5sound.audiocontext.createBufferSource();
+    this.noise.buffer = this.buffer;
+    this.noise.loop = true;
+    this.noise.connect(this.output);
     var now = p5sound.audiocontext.currentTime;
-    this.stop(now);
-    this.start(now + 0.01);
+    this.noise.start(now);
+    this.started = true;
   }
-};
 
-p5.Noise.prototype.getType = function () {
-  return this.buffer.type;
-};
-
-p5.Noise.prototype.start = function () {
-  if (this.started) {
-    this.stop();
+  stop() {
+    var now = p5sound.audiocontext.currentTime;
+    if (this.noise) {
+      this.noise.stop(now);
+      this.started = false;
+    }
   }
-  this.noise = p5sound.audiocontext.createBufferSource();
-  this.noise.buffer = this.buffer;
-  this.noise.loop = true;
-  this.noise.connect(this.output);
-  var now = p5sound.audiocontext.currentTime;
-  this.noise.start(now);
-  this.started = true;
-};
 
-p5.Noise.prototype.stop = function () {
-  var now = p5sound.audiocontext.currentTime;
-  if (this.noise) {
-    this.noise.stop(now);
-    this.started = false;
-  }
-};
+  dispose() {
+    var now = p5sound.audiocontext.currentTime;
 
-p5.Noise.prototype.dispose = function () {
-  var now = p5sound.audiocontext.currentTime;
+    // remove reference from soundArray
+    var index = p5sound.soundArray.indexOf(this);
+    p5sound.soundArray.splice(index, 1);
 
-  // remove reference from soundArray
-  var index = p5sound.soundArray.indexOf(this);
-  p5sound.soundArray.splice(index, 1);
+    if (this.noise) {
+      this.noise.disconnect();
+      this.stop(now);
+    }
+    if (this.output) {
+      this.output.disconnect();
+    }
+    if (this.panner) {
+      this.panner.disconnect();
+    }
+    this.output = null;
+    this.panner = null;
+    this.buffer = null;
+    this.noise = null;
+  }
+}
 
-  if (this.noise) {
-    this.noise.disconnect();
-    this.stop(now);
-  }
-  if (this.output) {
-    this.output.disconnect();
-  }
-  if (this.panner) {
-    this.panner.disconnect();
-  }
-  this.output = null;
-  this.panner = null;
-  this.buffer = null;
-  this.noise = null;
-};
+export default Noise;
