@@ -743,7 +743,6 @@ class SoundFile {
         }
       }
       this._counterNode.stop(now + time);
-      this._onended(this);
     }
   }
 
