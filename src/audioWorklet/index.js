@@ -17,6 +17,7 @@ function loadAudioWorkletModules() {
 }
 
 p5.prototype.registerMethod('init', function () {
+  if (initializedAudioWorklets) return;
   // ensure that a preload function exists so that p5 will wait for preloads to finish
   if (!this.preload && !window.preload) {
     this.preload = function () {};
