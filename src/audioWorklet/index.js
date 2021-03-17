@@ -5,6 +5,7 @@ const moduleSources = [
   require('raw-loader!./amplitudeProcessor').default,
 ];
 const ac = p5sound.audiocontext;
+let initializedAudioWorklets = false;
 
 function loadAudioWorkletModules() {
   return Promise.all(
@@ -26,6 +27,7 @@ p5.prototype.registerMethod('init', function () {
   // use p5's preload system to load necessary AudioWorklet modules before setup()
   this._incrementPreload();
   const onWorkletModulesLoad = function () {
+    initializedAudioWorklets = true;
     this._decrementPreload();
   }.bind(this);
   loadAudioWorkletModules().then(onWorkletModulesLoad);
