@@ -1,4 +1,5 @@
 import('./tests/p5.Master.js');
+import('./tests/p5.Envelope.js');
 import('./tests/p5.Distortion.js');
 import('./tests/p5.Effect.js');
 import('./tests/p5.Filter.js');
@@ -10,6 +11,6 @@ import('./tests/p5.AudioVoice.js');
 import('./tests/p5.MonoSynth.js');
 import('./tests/p5.PolySynth.js');
 import('./tests/p5.SoundRecorder.js');
-import('./tests/p5.SoundFile.js')
-import('./tests/p5.Amplitude.js')
-import('./tests/p5.Oscillator.js')
+import('./tests/p5.SoundFile.js');
+import('./tests/p5.Amplitude.js');
+import('./tests/p5.Oscillator.js');
