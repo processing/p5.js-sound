@@ -6,17 +6,17 @@ describe('Testing helpers function', function () {
     expect(midi).to.equal(81);
   });
 
-  it('p5.prototype.midiToFreq  helper function', function () {
+  it('p5.prototype.midiToFreq helper function', function () {
     const freq = p5.prototype.midiToFreq(720);
     expect(freq).to.equal(9426054387186970000);
   });
 
-  it('p5.prototype.noteToFreq  helper function', function () {
+  it('p5.prototype.noteToFreq helper function', function () {
     const freq = p5.prototype.noteToFreq('C4');
     expect(freq).to.equal(261.6255653005986);
   });
 
-  it('p5.prototype.soundFormats  helper function', function () {
+  it('p5.prototype.soundFormats helper function', function () {
     // setting file format so that if we don't provide extension
     // our file will be loaded because _checkFileFormats add it for us.
 
