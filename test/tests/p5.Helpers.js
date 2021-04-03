@@ -7,8 +7,8 @@ describe('Testing helpers function', function () {
   });
 
   it('p5.prototype.midiToFreq helper function', function () {
-    const freq = p5.prototype.midiToFreq(720);
-    expect(freq).to.equal(9426054387186970000);
+    const freq = p5.prototype.midiToFreq(100);
+    expect(freq).to.equal(2637.0204553029594);
   });
 
   it('p5.prototype.noteToFreq helper function', function () {
