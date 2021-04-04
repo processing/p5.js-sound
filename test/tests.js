@@ -1,5 +1,6 @@
 import('./tests/p5.Master.js');
 import('./tests/p5.Envelope.js');
+import('./tests/p5.Helpers.js');
 import('./tests/p5.Distortion.js');
 import('./tests/p5.Effect.js');
 import('./tests/p5.Filter.js');
