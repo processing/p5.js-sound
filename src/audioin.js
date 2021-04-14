@@ -31,7 +31,7 @@ p5sound.inputSources = [];
  *
  *   function setup(){
  *    let cnv = createCanvas(100, 100);
- *    cnv.mousePressed(useraudiocontextStartAudio);
+ *    cnv.mousePressed(userStartAudio);
  *    textAlign(CENTER);
  *    mic = new p5.AudioIn();
  *    mic.start();
