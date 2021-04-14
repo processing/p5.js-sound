@@ -149,7 +149,7 @@ class PolySynth {
    *  }
    *  </code></div>
    */
-  play(note, velocity, secondsFromNow, susTime = 1) {
+  play(note, velocity = 0.1, secondsFromNow = 0, susTime = 1) {
     this.noteAttack(note, velocity, secondsFromNow);
     this.noteRelease(note, secondsFromNow + susTime);
   }
