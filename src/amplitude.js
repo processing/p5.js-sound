@@ -21,7 +21,7 @@ import processorNames from './audioWorklet/processorNames';
  *  }
  *  function setup() {
  *    let cnv = createCanvas(100,100);
- *    cnv.mouseClicked(toggleSound);
+ *    cnv.mouseClicked(togglePlay);
  *    amplitude = new p5.Amplitude();
  *  }
  *
