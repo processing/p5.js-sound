@@ -1,20 +1,20 @@
-var expect = chai.expect;
+const expect = chai.expect;
 
 describe('p5.PolySynth', function () {
-  var audioContext = p5.prototype.getAudioContext();
+  const audioContext = p5.prototype.getAudioContext();
 
   it('can be created and disposed', function () {
-    var polySynth = new p5.PolySynth();
+    const polySynth = new p5.PolySynth();
     polySynth.dispose();
   });
 
   it('keeps track of the number of voicesInUse', function () {
-    var polySynth = new p5.PolySynth();
-    var noteDuration = 0.01;
+    const polySynth = new p5.PolySynth();
+    const noteDuration = 0.01;
 
-    var noteTriggerTime = audioContext.currentTime;
-    var noteActiveTime = noteTriggerTime + noteDuration / 2;
-    var noteDoneTime = noteTriggerTime + noteDuration;
+    const noteTriggerTime = audioContext.currentTime;
+    const noteActiveTime = noteTriggerTime + noteDuration / 2;
+    const noteDoneTime = noteTriggerTime + noteDuration;
 
     expect(polySynth._voicesInUse.getValueAtTime(noteTriggerTime)).to.equal(0);
 

@@ -1,7 +1,7 @@
-var expect = chai.expect;
+const expect = chai.expect;
 
 describe('p5.FFT', function () {
-  var fft;
+  let fft;
 
   beforeEach(function () {
     fft = new p5.FFT();

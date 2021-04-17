@@ -1,9 +1,9 @@
-var expect = chai.expect;
+const expect = chai.expect;
 
 describe('p5.Amplitude', function () {
   this.timeout(1000);
 
-  var sf, amp, osc, oAmp;
+  let sf, amp, osc, oAmp;
 
   it('can be created', function () {
     amp = new p5.Amplitude();
