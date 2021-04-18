@@ -12,7 +12,7 @@ describe('p5.MonoSynth', function () {
 
     // wait for scheduled value to complete
     setTimeout(function () {
-      expect(monoSynth.oscillator.freq().value).to.equal(110);
+      expect(monoSynth.oscillator.freq().value).to.equal(55);
       monoSynth.dispose();
       done();
     }, 1);
