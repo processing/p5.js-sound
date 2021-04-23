@@ -129,6 +129,10 @@ p5.Distortion = Distortion;
 import Gain from './gain';
 p5.Gain = Gain;
 
+import Envelope, { Env } from './envelope';
+p5.Envelope = Envelope;
+p5.Env = Env;
+
 import AudioVoice from './audioVoice';
 p5.AudioVoice = AudioVoice;
 
