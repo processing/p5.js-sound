@@ -10,7 +10,7 @@ function setup() {
   noStroke();
   fill(255);
   textAlign(CENTER);
-  masterVolume(0.1);
+  outputVolume(0.1);
   
   myPhrase = new p5.Phrase('bbox', makeSound, pattern);
   myPart = new p5.Part();

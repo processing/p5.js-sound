@@ -5,7 +5,7 @@ import { getAudioContext, userStartAudio } from './audiocontext';
 p5.prototype.getAudioContext = getAudioContext;
 p5.prototype.userStartAudio = userStartAudio;
 
-import './master';
+import './main';
 
 import {
   sampleRate,

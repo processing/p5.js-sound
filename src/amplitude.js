@@ -1,4 +1,4 @@
-import p5sound from './master';
+import p5sound from './main';
 import { safeBufferSize } from './helpers';
 import processorNames from './audioWorklet/processorNames';
 
@@ -97,7 +97,7 @@ class Amplitude {
     // this may only be necessary because of a Chrome bug
     this.output.connect(this.audiocontext.destination);
 
-    // connect to p5sound master output by default, unless set by input()
+    // connect to p5sound main output by default, unless set by input()
     p5sound.meter.connect(this._workletNode);
 
     // add this p5.SoundFile to the soundArray
@@ -105,14 +105,14 @@ class Amplitude {
   }
 
   /**
-   *  Connects to the p5sound instance (master output) by default.
+   *  Connects to the p5sound instance (main output) by default.
    *  Optionally, you can pass in a specific source (i.e. a soundfile).
    *
    *  @method setInput
    *  @for p5.Amplitude
    *  @param {soundObject|undefined} [snd] set the sound source
    *                                       (optional, defaults to
-   *                                       master output)
+   *                                       main output)
    *  @param {Number|undefined} [smoothing] a range between 0.0 and 1.0
    *                                        to smooth amplitude readings
    *  @example
@@ -159,7 +159,7 @@ class Amplitude {
     // connect to the master out of p5s instance if no snd is provided
     if (source == null) {
       console.log(
-        'Amplitude input source is not ready! Connecting to master output instead'
+        'Amplitude input source is not ready! Connecting to main output instead'
       );
       p5sound.meter.connect(this._workletNode);
     }

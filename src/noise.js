@@ -1,4 +1,4 @@
-import p5sound from './master';
+import p5sound from './main';
 import Oscillator from './oscillator';
 
 // generate noise buffers

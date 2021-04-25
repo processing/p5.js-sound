@@ -8,7 +8,7 @@ import Effect from './effect';
  * Compression can be used to avoid clipping (sound distortion due to
  * peaks in volume) and is especially useful when many sounds are played
  * at once. Compression can be used on indivudal sound sources in addition
- * to the master output.
+ * to the main output.
  *
  * This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.
  * Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>,

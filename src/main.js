@@ -1,6 +1,7 @@
 import audiocontext from './audiocontext.js';
-// Master contains the master sound output.
-class Master {
+
+// P5Sound contains the final sound output bus.
+class Main {
   constructor() {
     this.input = audiocontext.createGain();
     this.output = audiocontext.createGain();
@@ -40,18 +41,18 @@ class Master {
   }
 }
 
-// create a single instance of the p5Sound / master output for use within this sketch
-const p5sound = new Master();
+// create a single instance of the p5Sound main output for use within this sketch
+const p5sound = new Main();
 
 /**
  * Returns a number representing the master amplitude (volume) for sound
  * in this sketch.
  *
- * @method getMasterVolume
+ * @method outputVolume
  * @return {Number} Master amplitude (volume) for sound in this sketch.
  *                  Should be between 0.0 (silence) and 1.0.
  */
-p5.prototype.getMasterVolume = function () {
+p5.prototype.getOutputVolume = function () {
   return p5sound.output.gain.value;
 };
 
@@ -74,14 +75,14 @@ p5.prototype.getMasterVolume = function () {
  *
  *  <p>If no value is provided, returns a Web Audio API Gain Node</p>
  *
- *  @method  masterVolume
+ *  @method  outputVolume
  *  @param {Number|Object} volume  Volume (amplitude) between 0.0
  *                                     and 1.0 or modulating signal/oscillator
  *  @param {Number} [rampTime]  Fade for t seconds
  *  @param {Number} [timeFromNow]  Schedule this event to happen at
  *                                 t seconds in the future
  */
-p5.prototype.masterVolume = function (vol, rampTime = 0, tFromNow = 0) {
+p5.prototype.outputVolume = function (vol, rampTime = 0, tFromNow = 0) {
   if (typeof vol === 'number') {
     var now = p5sound.audiocontext.currentTime;
     var currentVol = p5sound.output.gain.value;
@@ -97,7 +98,7 @@ p5.prototype.masterVolume = function (vol, rampTime = 0, tFromNow = 0) {
 };
 
 /**
- *  `p5.soundOut` is the p5.sound master output. It sends output to
+ *  `p5.soundOut` is the p5.sound final output bus. It sends output to
  *  the destination of this window's web audio context. It contains
  *  Web Audio API nodes including a dyanmicsCompressor (<code>.limiter</code>),
  *  and Gain Nodes for <code>.input</code> and <code>.output</code>.

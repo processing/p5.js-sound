@@ -1,4 +1,4 @@
-import p5sound from './master';
+import p5sound from './main';
 import TimelineSignal from 'Tone/signal/TimelineSignal.js';
 import { noteToFreq, freqToMidi } from './helpers';
 

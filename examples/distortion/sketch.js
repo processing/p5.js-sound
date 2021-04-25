@@ -17,7 +17,7 @@ function setup() {
   env.setADSR(0.01, 0.2, 0.1, 0.3);
   env.setRange(1.0, 0.0);
 
-  osc = new p5.SawOsc(); // connects to master output by default
+  osc = new p5.SawOsc(); // connects to main output by default
   osc.start(0);
   osc.freq(220);
   osc.amp(env);

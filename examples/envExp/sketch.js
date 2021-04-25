@@ -47,7 +47,7 @@ function setup() {
   myPart.start();
   fft = new p5.FFT();
   fft.setInput(osc);
-  masterVolume(0);
+  outputVolume(0);
   endPoint = width / numWaveforms;
   noStroke();
   background(20);

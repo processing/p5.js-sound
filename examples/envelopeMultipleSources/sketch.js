@@ -43,7 +43,7 @@ function setup(){
 
   trigger = millis();
 
-  masterVolume(0.3);
+  outputVolume(0.3);
 
   triOsc = new p5.TriOsc();
   triOsc.amp(0);
@@ -92,10 +92,10 @@ function draw(){
 
 function mouseClicked() {
   if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-    if ( getMasterVolume() == 0) {
-      masterVolume(0.3, 0.5);
+    if ( getoutputVolume() == 0) {
+      outputVolume(0.3, 0.5);
     } else {
-      masterVolume(0, 0.5);
+      outputVolume(0, 0.5);
     }
   }
 }

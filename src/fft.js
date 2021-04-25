@@ -1,4 +1,4 @@
-import p5sound from './master';
+import p5sound from './main';
 
 /**
  *  <p>FFT (Fast Fourier Transform) is an analysis algorithm that

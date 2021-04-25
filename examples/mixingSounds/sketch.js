@@ -12,9 +12,9 @@ function preload(){
 function setup() {
   createCanvas(400,200);
 
-  // create a 'master' gain to which we will connect both soundfiles
-  gain3 = new p5.Gain();
-  gain3.connect();
+  // create a 'mix bus' gain to which we will connect both soundfiles
+  mixBus = new p5.Gain();
+  mixBus.connect();
 
   // setup first sound for playing
   sound1.rate(1);
@@ -23,7 +23,7 @@ function setup() {
 
   gain1 = new p5.Gain(); // setup a gain node
   gain1.setInput(sound1); // connect the first sound to its input
-  gain1.connect(gain3); // connect its output to the 'master'
+  gain1.connect(mixBus); // connect its output to the 'mix bus'
 
   sound2.rate(1);
   sound2.disconnect();
@@ -31,7 +31,7 @@ function setup() {
 
   gain2 = new p5.Gain();
   gain2.setInput(sound2);
-  gain2.connect(gain3);
+  gain2.connect(mixBus);
 
 }
 
@@ -49,9 +49,9 @@ function draw(){
   gain1.amp(vol1,0.5,0);
   gain2.amp(vol2,0.5,0);
 
-  // map the vertical position of the mouse to values useable for 'master volume control'
+  // map the vertical position of the mouse to values useable for 'output volume control'
   var vol3 = map(mouseY,0,height,0,1); 
-  gain3.amp(vol3,0.5,0);
+  mixBus.amp(vol3,0.5,0);
 }
 
 

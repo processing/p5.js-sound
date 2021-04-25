@@ -1,4 +1,4 @@
-import p5sound from './master';
+import p5sound from './main';
 import Metro from './metro';
 
 var BPM = 120;

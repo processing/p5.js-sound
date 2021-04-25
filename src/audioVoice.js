@@ -1,4 +1,4 @@
-import p5sound from './master';
+import p5sound from './main';
 
 /**
  * Base class for monophonic synthesizers. Any extensions of this class
