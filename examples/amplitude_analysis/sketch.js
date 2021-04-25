@@ -79,7 +79,7 @@ function keyPressed(e) {
 
 function mouseClicked() {
   if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-    if ( getoutputVolume() == 0) {
+    if ( getOutputVolume() == 0) {
       outputVolume(0, 1);
     } else {
       outputVolume(0.1),1;

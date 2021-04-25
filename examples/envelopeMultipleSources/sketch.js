@@ -92,7 +92,7 @@ function draw(){
 
 function mouseClicked() {
   if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
-    if ( getoutputVolume() == 0) {
+    if ( getOutputVolume() == 0) {
       outputVolume(0.3, 0.5);
     } else {
       outputVolume(0, 0.5);
