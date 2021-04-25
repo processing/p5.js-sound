@@ -1,8 +1,8 @@
-var expect = chai.expect;
+const expect = chai.expect;
 
 describe('p5.Effect', function () {
   it('can be created and disposed', function () {
-    var effect = new p5.Effect();
+    const effect = new p5.Effect();
     effect.dispose();
     expect(effect.wet).to.equal(undefined);
     expect(effect._drywet).to.equal(undefined);
@@ -11,21 +11,21 @@ describe('p5.Effect', function () {
   });
 
   it('drywet value can be changed', function () {
-    var effect = new p5.Effect();
+    const effect = new p5.Effect();
     expect(effect.drywet(0.5)).to.equal(0.5);
   });
 
   it('drywet value can be used as getter and setter', function () {
-    var effect = new p5.Effect();
+    const effect = new p5.Effect();
     expect(effect.drywet(0.5)).to.equal(0.5);
     expect(effect.drywet()).to.equal(0.5);
   });
 
   it('effects can be chained together', function () {
-    var filter = new p5.Filter();
-    var delay = new p5.Delay();
-    var reverb = new p5.Reverb();
-    var distortion = new p5.Distortion();
+    const filter = new p5.Filter();
+    const delay = new p5.Delay();
+    const reverb = new p5.Reverb();
+    const distortion = new p5.Distortion();
     filter.chain(delay, reverb, distortion);
   });
 

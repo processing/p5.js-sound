@@ -1,10 +1,10 @@
-var expect = chai.expect;
+const expect = chai.expect;
 
 describe('p5.SoundFile', function () {
   this.timeout(1000);
 
-  var sf;
-  var a = new p5.Amplitude();
+  let sf;
+  const a = new p5.Amplitude();
 
   after(function (done) {
     sf.dispose();
@@ -19,7 +19,7 @@ describe('p5.SoundFile', function () {
   });
 
   it('can be created and disposed', function () {
-    var p = new p5.SoundFile('./testAudio/drum', function () {
+    const p = new p5.SoundFile('./testAudio/drum', function () {
       p.dispose();
     });
   });
@@ -65,7 +65,7 @@ describe('p5.SoundFile', function () {
     }, 100);
   });
 
-  var peaks, firstPeak;
+  let peaks, firstPeak;
   it('can get peaks', function () {
     peaks = sf.getPeaks(sf.buffer.length);
     expect(peaks.length).to.equal(sf.buffer.length);
@@ -74,13 +74,13 @@ describe('p5.SoundFile', function () {
 
   it('can reverse buffer with playbackRate', function () {
     sf.rate(-1);
-    var reversePeaks = sf.getPeaks(sf.buffer.length);
+    const reversePeaks = sf.getPeaks(sf.buffer.length);
     expect(reversePeaks[reversePeaks.length - 1]).to.equal(firstPeak);
   });
 
   it('can revert buffer to normal with positive playbackRate', function () {
     sf.rate(1);
-    var revertPeaks = sf.getPeaks(sf.buffer.length);
+    const revertPeaks = sf.getPeaks(sf.buffer.length);
     expect(revertPeaks[0]).to.equal(firstPeak);
   });
 

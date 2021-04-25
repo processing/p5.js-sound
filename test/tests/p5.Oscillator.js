@@ -1,17 +1,17 @@
-var expect = chai.expect;
+const expect = chai.expect;
 
 describe('p5.Oscillator', function () {
   this.timeout(1000);
 
-  var osc = new p5.Oscillator();
-  var amp = new p5.Amplitude();
+  const osc = new p5.Oscillator();
+  const amp = new p5.Amplitude();
 
   after(function () {
     osc.dispose();
   });
 
   it('can be created and disposed', function () {
-    var o = new p5.Oscillator();
+    const o = new p5.Oscillator();
     o.dispose();
   });
 
