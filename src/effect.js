@@ -101,7 +101,7 @@ class Effect {
    *  @for p5.Effect
    *  @param {Number} [fade] The desired drywet value (0 - 1.0)
    */
-  drywet() {
+  drywet(fade) {
     if (typeof fade !== 'undefined') {
       this._drywet.fade.value = fade;
     }
