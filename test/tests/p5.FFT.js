@@ -56,54 +56,60 @@ describe('p5.FFT', function () {
     expect(fft.smooth()).to.equal(0.8);
   });
 
-  describe('can set input correctly', function () {
-    let fft;
-
-    beforeEach(function () {
-      fft = new p5.FFT();
-    });
-
-    afterEach(function () {
-      fft.dispose();
-    });
-
-    let soundFile, oscillator;
-    it('can set Oscillator as input', function (done) {
-      this.timeout(1000);
-      oscillator = new p5.Oscillator();
+  let soundFile, oscillator;
+  it('can set Oscillator as input', function (done) {
+    oscillator = new p5.Oscillator();
+    try {
       fft.setInput(oscillator);
-      oscillator.start();
+    } catch (err) {
+      return expect.fail();
+    }
+    oscillator.start();
 
+    setTimeout(() => {
+      let spectrum = fft.analyze();
+      const someFrequencyIsNotZero = spectrum.some(
+        (frequency) => frequency !== 0
+      );
+      expect(someFrequencyIsNotZero).to.equal(true);
+      oscillator.dispose();
+      done();
+    }, 500);
+  });
+  it('can set soundFile  as input', function (done) {
+    soundFile = p5.prototype.loadSound('./testAudio/drum.mp3', () => {
+      soundFile.disconnect();
+      try {
+        fft.setInput(soundFile);
+      } catch (err) {
+        return done(err);
+      }
+      soundFile.play();
       setTimeout(() => {
         let spectrum = fft.analyze();
         const someFrequencyIsNotZero = spectrum.some(
           (frequency) => frequency !== 0
         );
         expect(someFrequencyIsNotZero).to.equal(true);
-        oscillator.dispose();
+        soundFile.dispose();
         done();
       }, 500);
     });
-    it('can set soundFile  as input', function () {
-      soundFile = p5.prototype.loadSound('./testAudio/drum.mp3', () => {
-        fft.setInput(soundFile);
-        soundFile.play();
-        let spectrum = fft.analyze();
-        const someFrequencyIsNotZero = spectrum.some(
-          (frequency) => frequency !== 0
-        );
-        expect(someFrequencyIsNotZero).to.equal(true);
-        done();
-      });
-    });
-    it('can handle any Unknown sources', function () {
-      let UnknownSource = { UnknownSource: 'this is a unknown object' };
+  });
+  it('can handle any Unknown sources', function (done) {
+    let UnknownSource = { UnknownSource: 'this is a unknown object' };
+    try {
       fft.setInput(UnknownSource);
+    } catch (err) {
+      return done(err);
+    }
+    setTimeout(() => {
       let spectrum = fft.analyze();
       const someFrequencyIsNotZero = spectrum.some(
         (frequency) => frequency !== 0
       );
       expect(someFrequencyIsNotZero).to.equal(false);
-    });
+      done();
+    }, 500);
   });
 });
