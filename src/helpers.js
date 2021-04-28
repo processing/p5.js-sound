@@ -86,7 +86,7 @@ function noteToFreq(note) {
   if (typeof note !== 'string') {
     return note;
   }
-  var wholeNotes = { A: 21, B: 23, C: 24, D: 26, E: 28, F: 29, G: 31 };
+  var wholeNotes = { A: 33, B: 35, C: 24, D: 26, E: 28, F: 29, G: 31 };
   var value = wholeNotes[note[0].toUpperCase()];
   var octave = ~~note.slice(-1);
   value += 12 * (octave - 1);
