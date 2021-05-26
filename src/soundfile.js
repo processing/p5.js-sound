@@ -1,5 +1,5 @@
 import CustomError from './errorHandler';
-import p5sound from './master';
+import p5sound from './main';
 import { midiToFreq, convertToWav, safeBufferSize } from './helpers';
 import processorNames from './audioWorklet/processorNames';
 import Panner from './panner';
@@ -1196,7 +1196,7 @@ class SoundFile {
    * Connects the output of a p5sound object to input of another
    * p5.sound object. For example, you may connect a p5.SoundFile to an
    * FFT or an Effect. If no parameter is given, it will connect to
-   * the master output. Most p5sound objects connect to the master
+   * the main output. Most p5sound objects connect to the master
    * output when they are created.
    *
    * @method connect

@@ -1,4 +1,4 @@
-import p5sound from './master';
+import p5sound from './main';
 // requires the Tone.js library's Clock (MIT license, Yotam Mann)
 // https://github.com/TONEnoTONE/Tone.js/
 import Clock from 'Tone/core/Clock';

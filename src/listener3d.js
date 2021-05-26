@@ -1,4 +1,4 @@
-import p5sound from './master';
+import p5sound from './main';
 
 //  /**
 //   * listener is a class that can construct both a Spatial Panner

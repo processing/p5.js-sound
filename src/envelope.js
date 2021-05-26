@@ -1,4 +1,4 @@
-import p5sound from './master';
+import p5sound from './main';
 import Add from 'Tone/signal/Add';
 import Mult from 'Tone/signal/Multiply';
 import Scale from 'Tone/signal/Scale';

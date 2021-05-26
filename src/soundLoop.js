@@ -1,4 +1,4 @@
-import p5sound from './master';
+import p5sound from './main';
 import Clock from 'Tone/core/Clock';
 
 /**

@@ -1,5 +1,5 @@
 import Filter from './filter';
-import p5sound from './master';
+import p5sound from './main';
 
 /**
  *  EQFilter extends p5.Filter with constraints

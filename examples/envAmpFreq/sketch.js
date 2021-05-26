@@ -16,7 +16,7 @@ function setup() {
   freqEnv.setRange(300, 5000);
 
 
-  osc = new p5.Oscillator(); // connects to master output by default
+  osc = new p5.Oscillator(); // connects to main output by default
   osc.start(0);
   osc.freq(220);
   // osc.freq(env.scale(0,1,800,300));

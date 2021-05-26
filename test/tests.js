@@ -1,4 +1,4 @@
-import('./tests/p5.Master.js');
+import('./tests/main.js');
 import('./tests/p5.Helpers.js');
 import('./tests/p5.Distortion.js');
 import('./tests/p5.Effect.js');

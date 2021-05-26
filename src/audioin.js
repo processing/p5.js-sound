@@ -1,4 +1,4 @@
-import p5sound from './master';
+import p5sound from './main';
 import Amplitude from './amplitude';
 
 // an array of input sources
@@ -185,7 +185,7 @@ class AudioIn {
 
   /**
    *  Connect to an audio unit. If no parameter is provided, will
-   *  connect to the master output (i.e. your speakers).<br/>
+   *  connect to the main output (i.e. your speakers).<br/>
    *
    *  @method  connect
    *  @for p5.AudioIn

@@ -11,7 +11,7 @@ const startTest = () => {
   const mousePressed = () => {
     if (!test_has_run) {
       document.getElementById('mocha').innerHTML = '';
-      p5.prototype.masterVolume(0);
+      p5.prototype.outputVolume(0);
       p5.prototype.userStartAudio();
       mocha.run();
       test_has_run = true;

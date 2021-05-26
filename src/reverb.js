@@ -255,7 +255,7 @@ class Reverb extends Effect {
  *    background(220);
  *    text('tap to play', 20, 20);
  *
- *    // disconnect from master output...
+ *    // disconnect from main output...
  *    sound.disconnect();
  *
  *    // ...and process with cVerb
@@ -429,7 +429,7 @@ class Convolver extends Reverb {
    *    background(220);
    *    text('tap to play', 20, 20);
    *
-   *    // disconnect from master output...
+   *    // disconnect from main output...
    *    sound.disconnect();
    *
    *    // ...and process with cVerb
@@ -579,7 +579,7 @@ class Convolver extends Reverb {
  *    background(220);
  *    text('tap to play', 20, 20);
  *
- *    // disconnect from master output...
+ *    // disconnect from main output...
  *    sound.disconnect();
  *
  *    // ...and process with cVerb

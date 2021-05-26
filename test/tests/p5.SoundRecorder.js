@@ -48,8 +48,8 @@ describe('p5.SoundRecorder', function () {
     const recordingDuration =
       recorder.bufferSize / p5.soundOut.audiocontext.sampleRate;
 
-    // need to enable master volume to test recording from the microphone
-    p5.prototype.masterVolume(1);
+    // need to enable output volume to test recording from the microphone
+    p5.prototype.outputVolume(1);
 
     const mic = new p5.AudioIn();
     mic.start(function () {
@@ -62,7 +62,7 @@ describe('p5.SoundRecorder', function () {
 
         outputSoundFile.dispose();
         mic.dispose();
-        p5.prototype.masterVolume(0);
+        p5.prototype.outputVolume(0);
         done();
       });
     });
@@ -91,7 +91,7 @@ describe('p5.SoundRecorder', function () {
     });
   });
 
-  it('can record the master output of a sketch', function (done) {
+  it('can record the main output of a sketch', function (done) {
     // this is the shortest possible recording duration
     const recordingDuration =
       recorder.bufferSize / p5.soundOut.audiocontext.sampleRate;
@@ -99,8 +99,8 @@ describe('p5.SoundRecorder', function () {
     // input SoundFile should contain all 1s
     expect(inputChannel[0]).to.eq(1);
 
-    // need to enable master volume to test recording from master output
-    p5.prototype.masterVolume(1);
+    // need to enable output volume to test recording from main output
+    p5.prototype.outputVolume(1);
 
     const outputSoundFile = new p5.SoundFile();
     inputSoundFile.connect();
@@ -113,7 +113,7 @@ describe('p5.SoundRecorder', function () {
       expect(outputChannel[0]).to.not.eq(0);
 
       outputSoundFile.dispose();
-      p5.prototype.masterVolume(0);
+      p5.prototype.outputVolume(0);
       done();
     });
   });

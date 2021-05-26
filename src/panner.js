@@ -1,4 +1,4 @@
-import p5sound from './master';
+import p5sound from './main';
 var ac = p5sound.audiocontext;
 var panner;
 // Stereo panner
