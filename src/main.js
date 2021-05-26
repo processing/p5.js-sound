@@ -45,11 +45,11 @@ class Main {
 const p5sound = new Main();
 
 /**
- * Returns a number representing the master amplitude (volume) for sound
+ * Returns a number representing the output volume for sound
  * in this sketch.
  *
- * @method outputVolume
- * @return {Number} Master amplitude (volume) for sound in this sketch.
+ * @method getOutputVolume
+ * @return {Number} Output volume for sound in this sketch.
  *                  Should be between 0.0 (silence) and 1.0.
  */
 p5.prototype.getOutputVolume = function () {
