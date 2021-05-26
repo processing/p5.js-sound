@@ -141,6 +141,9 @@ p5.OnsetDetect = OnsetDetect;
 import PolySynth from './polysynth';
 p5.PolySynth = PolySynth;
 
+import PeakDetect from './peakDetect';
+p5.PeakDetect = PeakDetect;
+
 // Following are the deprecated classes
 import Signal from './deprecations/Signal';
 p5.Signal = Signal;
