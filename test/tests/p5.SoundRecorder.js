@@ -53,18 +53,21 @@ describe('p5.SoundRecorder', function () {
 
     const mic = new p5.AudioIn();
     mic.start(function () {
+      recorder.setInput(mic);
       const outputSoundFile = new p5.SoundFile();
-      recorder.record(outputSoundFile, recordingDuration, function () {
-        expect(outputSoundFile.duration()).to.eq(recordingDuration);
+      setTimeout(() => {
+        recorder.record(outputSoundFile, recordingDuration, function () {
+          expect(outputSoundFile.duration()).to.eq(recordingDuration);
 
-        const outputChannel = outputSoundFile.buffer.getChannelData(0);
-        expect(outputChannel[0]).to.not.eq(0);
+          const outputChannel = outputSoundFile.buffer.getChannelData(0);
+          expect(outputChannel[0]).to.not.eq(0);
 
-        outputSoundFile.dispose();
-        mic.dispose();
-        p5.prototype.outputVolume(0);
-        done();
-      });
+          outputSoundFile.dispose();
+          mic.dispose();
+          p5.prototype.outputVolume(0);
+          done();
+        });
+      }, 100);
     });
   });
 
@@ -106,16 +109,18 @@ describe('p5.SoundRecorder', function () {
     inputSoundFile.connect();
     inputSoundFile.loop();
     recorder.setInput();
-    recorder.record(outputSoundFile, recordingDuration, function () {
-      expect(outputSoundFile.duration()).to.eq(recordingDuration);
+    setTimeout(() => {
+      recorder.record(outputSoundFile, recordingDuration, function () {
+        expect(outputSoundFile.duration()).to.eq(recordingDuration);
 
-      const outputChannel = outputSoundFile.buffer.getChannelData(0);
-      expect(outputChannel[0]).to.not.eq(0);
+        const outputChannel = outputSoundFile.buffer.getChannelData(0);
+        expect(outputChannel[0]).to.not.eq(0);
 
-      outputSoundFile.dispose();
-      p5.prototype.outputVolume(0);
-      done();
-    });
+        outputSoundFile.dispose();
+        p5.prototype.outputVolume(0);
+        done();
+      });
+    }, 10);
   });
 
   it('can save a recorded buffer to a .wav file', function (done) {
