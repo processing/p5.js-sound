@@ -8,7 +8,7 @@ describe('p5.PolySynth', function () {
     polySynth.dispose();
   });
 
-  it('keeps track of the number of voicesInUse', function () {
+  it('keeps track of the number of voicesInUse', async function () {
     const polySynth = new p5.PolySynth();
     const noteDuration = 0.01;
 
@@ -18,15 +18,21 @@ describe('p5.PolySynth', function () {
 
     expect(polySynth._voicesInUse.getValueAtTime(noteTriggerTime)).to.equal(0);
 
-    polySynth.play('A2', 0, 0, noteDuration);
+    await polySynth.play('A2', 0, 0, noteDuration);
     expect(polySynth._voicesInUse.getValueAtTime(noteActiveTime)).to.equal(1);
-    polySynth.play('A3', 0, 0, noteDuration);
-    expect(polySynth._voicesInUse.getValueAtTime(noteActiveTime)).to.equal(2);
-    polySynth.play('A4', 0, 0, noteDuration);
-    expect(polySynth._voicesInUse.getValueAtTime(noteActiveTime)).to.equal(3);
+    await polySynth.play('A3', 0, 0, noteDuration);
+    expect(
+      await polySynth._voicesInUse.getValueAtTime(noteActiveTime)
+    ).to.equal(2);
+    await polySynth.play('A4', 0, 0, noteDuration);
+    expect(
+      await polySynth._voicesInUse.getValueAtTime(noteActiveTime)
+    ).to.equal(3);
 
-    expect(polySynth._voicesInUse.getValueAtTime(noteDoneTime)).to.equal(0);
+    expect(await polySynth._voicesInUse.getValueAtTime(noteDoneTime)).to.equal(
+      0
+    );
 
-    polySynth.dispose();
+    await polySynth.dispose();
   });
 });
