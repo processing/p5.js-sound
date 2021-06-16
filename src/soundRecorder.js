@@ -31,9 +31,6 @@ const ac = p5sound.audiocontext;
  *    // create an audio in
  *    mic = new p5.AudioIn();
  *
- *    // prompts user to enable their browser mic
- *    mic.start();
- *
  *    // create a sound recorder
  *    recorder = new p5.SoundRecorder();
  *
@@ -51,15 +48,17 @@ const ac = p5sound.audiocontext;
  *    // ensure audio is enabled
  *    userStartAudio();
  *
- *    // make sure user enabled the mic
- *    if (state === 0 && mic.enabled) {
+ *    if (state === 0) {
+ *    // make sure user enabled the mic by prompting to enable their browser mic
+ *    // start recording after the mic is enabled
+ *      mic.start(function() {
+ *        // record to our p5.SoundFile
+ *        recorder.record(soundFile);
  *
- *      // record to our p5.SoundFile
- *      recorder.record(soundFile);
- *
- *      background(255,0,0);
- *      text('Recording!', width/2, height/2);
- *      state++;
+ *        background(255,0,0);
+ *        text('Recording!', width/2, height/2);
+ *        state++;
+ *      });
  *    }
  *    else if (state === 1) {
  *      background(0,255,0);
@@ -67,6 +66,8 @@ const ac = p5sound.audiocontext;
  *      // stop recorder and
  *      // send result to soundFile
  *      recorder.stop();
+ *      // stop browser from accessing the mic
+ *      mic.dispose();
  *
  *      text('Done! Tap to play and download', width/2, height/2, width - 20);
  *      state++;
