@@ -67,7 +67,7 @@ describe('p5.SoundRecorder', function () {
           p5.prototype.outputVolume(0);
           done();
         });
-      }, 100);
+      }, 130);
     });
   });
 
@@ -77,8 +77,9 @@ describe('p5.SoundRecorder', function () {
     const recordingDuration =
       recorder.bufferSize / p5.soundOut.audiocontext.sampleRate;
     const inputChannel = inputSoundFile.buffer.getChannelData(0);
+    const inputChannelSampleValue = inputChannel[sampleIndex];
     // input SoundFile should contain all 1s
-    expect(inputChannel[sampleIndex]).to.eq(1);
+    expect(inputChannelSampleValue).to.eq(1);
 
     const outputSoundFile = new p5.SoundFile();
     inputSoundFile.loop();
@@ -87,7 +88,7 @@ describe('p5.SoundRecorder', function () {
       expect(outputSoundFile.duration()).to.eq(recordingDuration);
 
       var outputChannel = outputSoundFile.buffer.getChannelData(0);
-      expect(outputChannel[sampleIndex]).to.eq(inputChannel[sampleIndex]);
+      expect(outputChannel[sampleIndex]).to.eq(inputChannelSampleValue);
 
       outputSoundFile.dispose();
       done();
@@ -120,7 +121,7 @@ describe('p5.SoundRecorder', function () {
         p5.prototype.outputVolume(0);
         done();
       });
-    }, 10);
+    }, 20);
   });
 
   it('can save a recorded buffer to a .wav file', function (done) {
