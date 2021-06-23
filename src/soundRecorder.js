@@ -20,6 +20,7 @@ const ac = p5sound.audiocontext;
  *  @example
  *  <div><code>
  *  let mic, recorder, soundFile;
+ *  // mousePress will increment from state = 0 (Record), to 1(Stop), to 2(Play)
  *  let state = 0;
  *
  *  function setup() {
@@ -76,7 +77,6 @@ const ac = p5sound.audiocontext;
  *    else if (state === 2) {
  *      soundFile.play(); // play the result!
  *      save(soundFile, 'mySound.wav');
- *      state++;
  *    }
  *  }
  *  </div></code>

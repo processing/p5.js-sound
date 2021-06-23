@@ -2,9 +2,10 @@
 // We need p5.AudioIn (mic / sound source), p5.SoundRecorder
 // (records the sound), and a p5.SoundFile (play back).
 
-var mic, recorder, soundFile;
+let mic, recorder, soundFile;
 
-var state = 0; // mousePress will increment from Record, to Stop, to Play
+let state = 0; // mousePress will increment from state = 0 (Record), to 1(Stop), to 2(Play)
+
 
 function setup() {
   createCanvas(400, 400);
@@ -26,10 +27,11 @@ function setup() {
 }
 
 function mousePressed() {
+  userStartAudio();
   // use the '.enabled' boolean to make sure user enabled the mic (otherwise we'd record silence)
   if (state === 0) {
     // users must manually enable their browser microphone for recording to work properly!
-    mic.start(function() {
+    mic.start(function () {
       // Tell recorder to record to a p5.SoundFile which we will use for playback
       recorder.record(soundFile);
 
