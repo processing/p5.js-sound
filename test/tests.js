@@ -2,6 +2,7 @@ import('./tests/main.js');
 import('./tests/p5.Helpers.js');
 import('./tests/p5.Distortion.js');
 import('./tests/p5.AudioContext.js');
+import('./tests/p5.Metro.js')
 import('./tests/p5.Effect.js');
 import('./tests/p5.Filter.js');
 import('./tests/p5.Gain.js');
