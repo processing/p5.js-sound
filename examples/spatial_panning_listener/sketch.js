@@ -84,11 +84,11 @@ function draw() {
 
   
     //Position the sound in 3 dimensions
-    panner3d.position( flock.boids[0].position.x, 
+    panner3d.set( flock.boids[0].position.x, 
                     flock.boids[0].position.y, 
                     flock.boids[0].position.z);
 
-    listener3d.spatializer.setPosition(0,0,cam_z_pos)
+    listener3d.position(0,0,cam_z_pos)
     //listener3d.orientX(cam_y_rot)
     //listener3d.spatializer.orientY(cam_x_rot)
   //  listener3d.spatializer.setOrientation(cam_x_rot,cam_y_rot,0)
