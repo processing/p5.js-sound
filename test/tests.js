@@ -20,3 +20,5 @@ import('./tests/p5.SoundFile.js');
 import('./tests/p5.Amplitude.js');
 import('./tests/p5.Oscillator.js');
 import('./tests/p5.Panner.js');
+import('./tests/p5.Panner3d.js');
+import('./tests/p5.Listener3d.js');
