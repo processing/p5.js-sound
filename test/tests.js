@@ -1,10 +1,10 @@
 import('./tests/main.js');
 import('./tests/p5.Helpers.js');
-import('./tests/p5.PeakDetect.js')
-import('./tests/p5.OnsetDetect.js')
+import('./tests/p5.PeakDetect.js');
+import('./tests/p5.OnsetDetect.js');
 import('./tests/p5.Distortion.js');
 import('./tests/p5.AudioContext.js');
-import('./tests/p5.Metro.js')
+import('./tests/p5.Metro.js');
 import('./tests/p5.Effect.js');
 import('./tests/p5.Filter.js');
 import('./tests/p5.Gain.js');
@@ -19,3 +19,4 @@ import('./tests/p5.SoundRecorder.js');
 import('./tests/p5.SoundFile.js');
 import('./tests/p5.Amplitude.js');
 import('./tests/p5.Oscillator.js');
+import('./tests/p5.Panner.js');
