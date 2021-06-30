@@ -88,8 +88,8 @@ p5.BandPass = BandPass;
 import EQ from './eq';
 p5.EQ = EQ;
 
-import listener3D from './listener3d';
-p5.listener3D = listener3D;
+import Listener3D from './listener3d';
+p5.Listener3D = Listener3D;
 
 import Panner3D from './panner3d';
 p5.Panner3D = Panner3D;
