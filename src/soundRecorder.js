@@ -20,7 +20,10 @@ const ac = p5sound.audiocontext;
  *  @example
  *  <div><code>
  *  let mic, recorder, soundFile;
- *  let state = 0;
+ *  // keeps record if recording is started
+ *  let isRecordingStarted = false;
+ *  // keeps record if the recorded result is played
+ *  let isResultPlayed = false;
  *
  *  function setup() {
  *    let cnv = createCanvas(100, 100);
@@ -30,9 +33,6 @@ const ac = p5sound.audiocontext;
  *
  *    // create an audio in
  *    mic = new p5.AudioIn();
- *
- *    // prompts user to enable their browser mic
- *    mic.start();
  *
  *    // create a sound recorder
  *    recorder = new p5.SoundRecorder();
@@ -51,31 +51,34 @@ const ac = p5sound.audiocontext;
  *    // ensure audio is enabled
  *    userStartAudio();
  *
- *    // make sure user enabled the mic
- *    if (state === 0 && mic.enabled) {
+ *    if (!isRecordingStarted && !isResultPlayed) {
+ *    // make sure user enabled the mic by prompting to enable their browser mic
+ *    // start recording after the mic is enabled
+ *      mic.start(function() {
+ *        // record to our p5.SoundFile
+ *        recorder.record(soundFile);
  *
- *      // record to our p5.SoundFile
- *      recorder.record(soundFile);
- *
- *      background(255,0,0);
- *      text('Recording!', width/2, height/2);
- *      state++;
+ *        background(255,0,0);
+ *        text('Recording!', width/2, height/2);
+ *        isRecordingStarted = true;
+ *      });
  *    }
- *    else if (state === 1) {
+ *    else if (isRecordingStarted && !isResultPlayed) {
  *      background(0,255,0);
  *
  *      // stop recorder and
  *      // send result to soundFile
  *      recorder.stop();
+ *      // stop browser from accessing the mic
+ *      mic.dispose();
  *
  *      text('Done! Tap to play and download', width/2, height/2, width - 20);
- *      state++;
+ *      isResultPlayed = true;
  *    }
  *
- *    else if (state === 2) {
+ *    else if (isRecordingStarted && isResultPlayed) {
  *      soundFile.play(); // play the result!
  *      save(soundFile, 'mySound.wav');
- *      state++;
  *    }
  *  }
  *  </div></code>
