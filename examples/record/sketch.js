@@ -4,7 +4,6 @@
 
 let mic, recorder, soundFile;
 
-let state = 0; // mousePress will increment from state = 0 (Record), to 1(Stop), to 2(Play)
 let isRecordingStarted = false;
 let isResultPlayed = false;
 
