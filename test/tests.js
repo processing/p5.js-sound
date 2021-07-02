@@ -4,6 +4,7 @@ import('./tests/p5.PeakDetect.js');
 import('./tests/p5.OnsetDetect.js');
 import('./tests/p5.Distortion.js');
 import('./tests/p5.AudioContext.js');
+import('./tests/p5.Looper.js')
 import('./tests/p5.Metro.js');
 import('./tests/p5.Effect.js');
 import('./tests/p5.Filter.js');
