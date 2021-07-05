@@ -129,6 +129,12 @@ p5.Distortion = Distortion;
 import Gain from './gain';
 p5.Gain = Gain;
 
+import Envelope from './envelope';
+p5.Envelope = Envelope;
+
+import Env from './deprecations/Env';
+p5.Env = Env;
+
 import AudioVoice from './audioVoice';
 p5.AudioVoice = AudioVoice;
 
