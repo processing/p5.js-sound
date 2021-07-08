@@ -10,6 +10,7 @@ import('./tests/p5.Effect.js');
 import('./tests/p5.Filter.js');
 import('./tests/p5.Gain.js');
 import('./tests/p5.FFT.js');
+import('./tests/p5.SoundLoop.js');
 import('./tests/p5.Compressor.js');
 import('./tests/p5.EQ.js');
 import('./tests/p5.AudioIn.js');
