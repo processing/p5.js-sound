@@ -21,6 +21,7 @@ import('./tests/p5.SoundRecorder.js');
 import('./tests/p5.SoundFile.js');
 import('./tests/p5.Amplitude.js');
 import('./tests/p5.Oscillator.js');
+import('./tests/p5.Envelope.js');
 import('./tests/p5.Pulse.js');
 import('./tests/p5.Noise.js');
 import('./tests/p5.Panner.js');
