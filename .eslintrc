@@ -31,10 +31,10 @@
     "no-unused-vars": ["error", { "args": "none" }],
     "no-empty": ["error", { "allowEmptyCatch": true }],
     "no-console": "off"
-   
+
   },
   "parserOptions": {
-    "ecmaVersion": 6,
+    "ecmaVersion": 8,
     "sourceType": "module",
     "allowImportExportEverywhere": true
     }
