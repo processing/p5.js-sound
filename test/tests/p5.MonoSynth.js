@@ -15,6 +15,6 @@ describe('p5.MonoSynth', function () {
       expect(monoSynth.oscillator.freq().value).to.equal(110);
       monoSynth.dispose();
       done();
-    }, 1);
+    }, 10);
   });
 });

@@ -8,12 +8,12 @@ describe('Testing helpers function', function () {
 
   it('p5.prototype.midiToFreq helper function', function () {
     const freq = p5.prototype.midiToFreq(100);
-    expect(freq).to.equal(2637.0204553029594);
+    expect(freq).to.be.approximately(2637.0204553029594, 0.00000000001);
   });
 
   it('p5.prototype.noteToFreq helper function', function () {
     const freq = p5.prototype.noteToFreq('C4');
-    expect(freq).to.equal(261.6255653005986);
+    expect(freq).to.be.approximately(261.6255653005986, 0.00000000001);
   });
 
   it('p5.prototype.soundFormats helper function', function () {

@@ -91,7 +91,7 @@ class SoundRecorder {
     this._inputChannels = 2;
     this._outputChannels = 2; // stereo output, even if input is mono
 
-    const workletBufferSize = safeBufferSize(1024);
+    const workletBufferSize = (this.bufferSize = safeBufferSize(1024));
 
     this._workletNode = new AudioWorkletNode(
       ac,
