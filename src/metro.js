@@ -60,7 +60,8 @@ class Metro {
   }
 
   getBPM() {
-    return (this.clock.getRate() / this.tatums) * 60;
+    return this.bpm;
+    // return (this.clock.getRate() / this.tatums) * 60;
   }
 
   _init() {
@@ -78,6 +79,7 @@ class Metro {
     this.syncedParts.push(part);
   }
 
+  //timeFromNow is in seconds
   start(timeFromNow) {
     var t = timeFromNow || 0;
     var now = p5sound.audiocontext.currentTime;

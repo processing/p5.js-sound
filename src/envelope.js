@@ -141,7 +141,7 @@ p5.Envelope.prototype._init = function () {
  *  let l1 = 0.7; // attack level 0.0 to 1.0
  *  let t2 = 0.3; // decay time in seconds
  *  let l2 = 0.1; // decay level  0.0 to 1.0
- *  let l3 = 0.2; // release time in seconds
+ *  let t3 = 0.2; // release time in seconds
  *
  *  let env, triOsc;
  *
@@ -163,7 +163,7 @@ p5.Envelope.prototype._init = function () {
  *
  *  // mouseClick triggers envelope if over canvas
  *  function playSound() {
- *    env.set(attackTime, l1, t2, l2, l3);
+ *    env.set(attackTime, l1, t2, l2, t3);
  *
  *    triOsc.start();
  *    env.play(triOsc);
