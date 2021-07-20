@@ -149,7 +149,9 @@ function soundFormats() {
 }
 
 function disposeSound() {
-  for (var i = 0; i < p5sound.soundArray.length; i++) {
+  //looping backwards as looping forward may cause the
+  //index of an element to change while the loop runs
+  for (var i = p5sound.soundArray.length - 1; i >= 0; i--) {
     p5sound.soundArray[i].dispose();
   }
 }
