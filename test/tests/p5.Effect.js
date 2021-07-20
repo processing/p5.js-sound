@@ -4,7 +4,6 @@ describe('p5.Effect', function () {
   it('can be created and disposed', function () {
     const effect = new p5.Effect();
 
-    console.log(effect);
     expect(effect.input).to.have.property('gain');
     expect(effect.input).to.have.property('context');
     expect(effect.output).to.have.property('gain');
