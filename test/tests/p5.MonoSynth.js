@@ -12,7 +12,7 @@ describe('p5.MonoSynth', function () {
     expect(monoSynth.env.rLevel).to.equal(0);
     expect(monoSynth.env.isExponential).to.be.true;
     expect(monoSynth.oscillator.output.gain.value).to.equal(1);
-    expect(p5.soundOut.soundArray.indexOf(monoSynth)).to.be.greaterThan(-1);
+    expect(p5.soundOut.soundArray).to.include(monoSynth);
 
     monoSynth.dispose();
     expect(monoSynth).to.not.have.property('output');
