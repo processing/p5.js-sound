@@ -103,20 +103,7 @@ class Reverb extends Effect {
    */
   process(src, seconds, decayRate, reverse) {
     src.connect(this.input);
-    var rebuild = false;
-    if (seconds) {
-      this._seconds = seconds;
-      rebuild = true;
-    }
-    if (decayRate) {
-      this._decay = decayRate;
-    }
-    if (reverse) {
-      this._reverse = reverse;
-    }
-    if (rebuild) {
-      this._buildImpulse();
-    }
+    this.set(seconds, decayRate, reverse);
   }
 
   /**

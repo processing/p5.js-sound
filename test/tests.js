@@ -27,4 +27,5 @@ import('./tests/p5.Noise.js');
 import('./tests/p5.Panner.js');
 import('./tests/p5.Panner3d.js');
 import('./tests/p5.Delay.js');
+import('./tests/p5.Reverb.js');
 import('./tests/p5.Listener3d.js');
