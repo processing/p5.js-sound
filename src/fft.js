@@ -171,13 +171,12 @@ class FFT {
    *
    */
   waveform() {
-    var bins, mode;
+    var mode;
     var normalArray = new Array();
 
     for (var i = 0; i < arguments.length; i++) {
       if (typeof arguments[i] === 'number') {
-        bins = arguments[i];
-        this.analyser.fftSize = bins * 2;
+        this.bins = arguments[i];
       }
       if (typeof arguments[i] === 'string') {
         mode = arguments[i];
@@ -275,7 +274,6 @@ class FFT {
     for (var i = 0; i < arguments.length; i++) {
       if (typeof arguments[i] === 'number') {
         this.bins = arguments[i];
-        this.analyser.fftSize = this.bins * 2;
       }
       if (typeof arguments[i] === 'string') {
         mode = arguments[i];
