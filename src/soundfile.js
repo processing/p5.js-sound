@@ -515,11 +515,11 @@ class SoundFile {
    * </code></div>
    */
   playMode(str) {
-    var s = str.toLowerCase();
+    var s = str.toLowerCase().trim();
 
     // if restart, stop all other sounds from playing
     if (s === 'restart' && this.buffer && this.bufferSourceNode) {
-      for (var i = 0; i < this.bufferSourceNodes.length - 1; i++) {
+      for (var i = 0; i < this.bufferSourceNodes.length; i++) {
         var now = p5sound.audiocontext.currentTime;
         this.bufferSourceNodes[i].stop(now);
       }
@@ -715,10 +715,9 @@ class SoundFile {
       this._paused = false;
     } else if (this.buffer && this.bufferSourceNode) {
       var now = p5sound.audiocontext.currentTime;
-      var t = time || 0;
       this.pauseTime = 0;
-      this.bufferSourceNode.stop(now + t);
-      this._counterNode.stop(now + t);
+      this.bufferSourceNode.stop(now + time);
+      this._counterNode.stop(now + time);
       this._playing = false;
       this._paused = false;
     }
@@ -999,7 +998,7 @@ class SoundFile {
    * @return {Number} [channels]
    */
   channels() {
-    return this.buffer.numberOfChannels;
+    if (this.buffer) return this.buffer.numberOfChannels;
   }
 
   /**
@@ -1010,7 +1009,7 @@ class SoundFile {
    * @return {Number} [sampleRate]
    */
   sampleRate() {
-    return this.buffer.sampleRate;
+    if (this.buffer) return this.buffer.sampleRate;
   }
 
   /**
@@ -1022,7 +1021,7 @@ class SoundFile {
    * @return {Number} [sampleCount]
    */
   frames() {
-    return this.buffer.length;
+    if (this.buffer) return this.buffer.length;
   }
 
   /**
@@ -1045,7 +1044,7 @@ class SoundFile {
     if (this.buffer) {
       // set length to window's width if no length is provided
       if (!length) {
-        length = window.width * 5;
+        length = window.innerWidth * 5;
       }
       if (this.buffer) {
         var buffer = this.buffer;
