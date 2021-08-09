@@ -14,3 +14,4 @@ import('./tests/p5.SoundRecorder.js');
 import('./tests/p5.SoundFile.js');
 import('./tests/p5.Amplitude.js');
 import('./tests/p5.Oscillator.js');
+import('./tests/p5.Reverb.js');
