@@ -388,6 +388,7 @@ class PolySynth {
         delete this.notes[n];
       }
       this._newest = 0;
+      this._oldest = 0;
       return;
     }
 

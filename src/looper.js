@@ -392,7 +392,9 @@ class Score {
     var thisScore = this;
     for (var i in arguments) {
       this.parts[i] = arguments[i];
-      if (i > 0) this.parts[i - 1].nextPart = this.parts[i];
+      if (i > 0) {
+        this.parts[i - 1].nextPart = this.parts[i];
+      }
       this.parts[i].onended = function () {
         thisScore.resetPart(i);
         playNextPart(thisScore);
