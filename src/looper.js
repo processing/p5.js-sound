@@ -387,12 +387,14 @@ class Score {
   constructor() {
     // for all of the arguments
     this.parts = [];
-    this.currentPart = new Array(arguments.length);
+    this.currentPart = 0;
 
     var thisScore = this;
     for (var i in arguments) {
       this.parts[i] = arguments[i];
-      this.parts[i].nextPart = this.parts[i + 1];
+      if (i > 0) {
+        this.parts[i - 1].nextPart = this.parts[i];
+      }
       this.parts[i].onended = function () {
         thisScore.resetPart(i);
         playNextPart(thisScore);
