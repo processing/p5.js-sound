@@ -36,22 +36,30 @@ describe('p5.EQ', function () {
     expect(eq.bands[2].biquad.type).to.equal('peaking');
   });
 
-  it('a bands gain value can be changed', function () {
+  it("a band's gain value can be changed", function () {
     const eq = new p5.EQ(8);
     expect(eq.bands[2].gain()).to.equal(0);
     eq.bands[2].gain(30);
     expect(eq.bands[2].gain()).to.equal(30);
   });
 
-  it('a bands freq value can be changed', function () {
+  it('a band has correct default value', function () {
     const eq = new p5.EQ(8);
-    expect(eq.bands[0].freq()).to.equal(100);
-    eq.bands[0].freq(200);
-    expect(eq.bands[0].gain()).to.equal(0);
-    expect(eq.bands[0].freq()).to.equal(200);
+    setTimeout(() => {
+      expect(eq.bands[0].freq()).to.equal(100);
+    }, 100);
   });
 
-  it('a bands type can be changed', function () {
+  it("a band's freq value can be changed", function () {
+    const eq = new p5.EQ(8);
+    eq.bands[0].freq(200);
+    setTimeout(() => {
+      expect(eq.bands[0].gain()).to.equal(0);
+      expect(eq.bands[0].freq()).to.equal(200);
+    }, 100);
+  });
+
+  it("a band's type can be changed", function () {
     const eq = new p5.EQ();
     expect(eq.bands[2]._untoggledType).to.equal('peaking');
     eq.bands[2].setType('highshelf');

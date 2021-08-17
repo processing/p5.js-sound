@@ -1,6 +1,6 @@
 import p5sound from './main';
 import TimelineSignal from 'Tone/signal/TimelineSignal.js';
-import { noteToFreq, freqToMidi } from './helpers';
+import { noteToFreq } from './helpers';
 
 /**
  *  An AudioVoice is used as a single voice for sound synthesis.
@@ -274,9 +274,7 @@ class PolySynth {
     else {
       currentVoice = this._oldest;
 
-      oldestNote = freqToMidi(
-        this.audiovoices[this._oldest].oscillator.freq().value
-      );
+      let oldestNote = this.audiovoices[this._oldest].oscillator.freq().value;
       this.noteRelease(oldestNote);
       this._oldest = (this._oldest + 1) % (this.maxVoices - 1);
     }
@@ -389,6 +387,8 @@ class PolySynth {
         this.notes[n].dispose();
         delete this.notes[n];
       }
+      this._newest = 0;
+      this._oldest = 0;
       return;
     }
 
@@ -400,10 +400,7 @@ class PolySynth {
     } else {
       //Find the scheduled change in this._voicesInUse that will be previous to this new note
       //subtract 1 and schedule this value at time 't', when this note will stop playing
-      var previousVal = Math.max(
-        ~~this._voicesInUse.getValueAtTime(t).value,
-        1
-      );
+      var previousVal = Math.max(~~this._voicesInUse.getValueAtTime(t), 1);
       this._voicesInUse.setValueAtTime(previousVal - 1, t);
       //Then update all scheduled values that follow to decrease by 1 but never go below 0
       if (previousVal > 0) {
