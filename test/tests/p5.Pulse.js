@@ -18,7 +18,6 @@ describe('p5.Pulse', function () {
     let pulse = new p5.Pulse(220, 0.4);
     expect(pulse.w).to.equal(0.4);
     expect(pulse.f).to.equal(220);
-    console.log(pulse);
     expect(pulse.dNode.delayTime.value).to.be.approximately(0.0009, 0.00001);
     expect(pulse.dcGain.gain.value).to.be.approximately(0.17, 0.001);
   });

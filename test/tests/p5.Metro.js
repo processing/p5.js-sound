@@ -36,7 +36,7 @@ describe('p5.Metro', function () {
     }, 1000);
   });
 
-  it('can be started and stopped with dealy', function (done) {
+  it('can be started and stopped with delay', function (done) {
     let ticks;
     metro.setBPM(600);
     metro.start(0.1);

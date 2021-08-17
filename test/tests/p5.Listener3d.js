@@ -4,7 +4,6 @@ describe('p5.Listener3D', function () {
   let listener3d;
   it('can be created', function () {
     listener3d = new p5.Listener3D();
-    console.log(listener3d);
     expect(listener3d).to.have.property('ac');
     expect(listener3d.listener).to.have.property('forwardX');
     expect(listener3d.listener).to.have.property('positionY');
