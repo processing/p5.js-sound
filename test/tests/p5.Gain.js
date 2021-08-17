@@ -28,7 +28,7 @@ describe('p5.Gain', function () {
       });
     });
     describe('connect, disconnect', function () {
-      it('can connect to empty node', function () {
+      it('connects to p5.soundOut when no arguments are provided', function () {
         gain.connect();
       });
       it('can connect with or without input property', function () {
