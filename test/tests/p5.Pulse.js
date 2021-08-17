@@ -45,7 +45,7 @@ describe('p5.Pulse', function () {
       }, 500);
       expect(pulse.started).to.be.true;
       expect(pulse.osc2.started).to.be.true;
-      pulse.stop(221, 0.1);
+      pulse.stop();
       expect(pulse.started).to.be.false;
       expect(pulse.osc2.started).to.be.false;
     });

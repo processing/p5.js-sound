@@ -45,7 +45,7 @@ describe('p5.Metro', function () {
       metro.stop(0.2);
       expect(ticks).to.not.equal(0);
       setTimeout(() => {
-        expect(metro.metroTicks).to.not.equal(ticks);
+        expect(metro.metroTicks).to.be.above(ticks);
       }, 100);
       setTimeout(() => {
         ticks = metro.metroTicks;
