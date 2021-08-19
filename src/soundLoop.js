@@ -165,7 +165,11 @@ class SoundLoop {
          *
          * The callback should only be called until maxIterations is reached
          */
-        if (timeFromNow > 0 && self.iterations <= self.maxIterations) {
+        if (
+          timeFromNow > 0 &&
+          self.iterations <= self.maxIterations &&
+          self.callback
+        ) {
           self.callback(timeFromNow);
         }
       },
