@@ -48,7 +48,7 @@ describe('p5.SoundLoop', function () {
         done();
       }, 1000);
     });
-    it('can be started and stopped with dealy', function (done) {
+    it('can be started and stopped with delay', function (done) {
       let count = 0;
       let ticks;
       let sloop = new p5.SoundLoop(() => count++, '6n');
