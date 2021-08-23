@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.EQ', function () {
   it('can be created and disposed', function () {
     const origSoundArrayLength = p5.soundOut.soundArray.length;

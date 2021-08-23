@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.Envelope', function () {
   it('can be created and disposed without any arguments', function () {
     let envelope = new p5.Envelope();

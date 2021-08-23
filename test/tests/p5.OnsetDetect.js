@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.OnsetDetect', function () {
   it('can be initalized ', function () {
     const onsetDetect = new p5.OnsetDetect(40, 120, 0.8, () => {});

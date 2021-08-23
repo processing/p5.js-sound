@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.Compressor', function () {
   it('can be created and disposed', function () {
     let compressor = new p5.Compressor();

@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.Listener3D', function () {
   let listener3d;
   it('can be created', function () {

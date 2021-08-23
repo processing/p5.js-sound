@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.SoundFile', function () {
   it('can be created and disposed', function () {
     let sf = new p5.SoundFile();

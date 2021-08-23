@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.PeakDetect', function () {
   it('can be initialized without any arguments', function () {
     const peakDetect = new p5.PeakDetect();
