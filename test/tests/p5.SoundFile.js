@@ -58,7 +58,7 @@ describe('p5.SoundFile', function () {
       () => done(),
       () => {},
       (progress) => {
-        if (progress) {
+        if (progress && progress !== 'size unknown') {
           expect(progress)
             .to.be.a('number')
             .to.be.greaterThan(0)
@@ -69,6 +69,8 @@ describe('p5.SoundFile', function () {
   });
 
   describe('methods', function () {
+    this.retries(2);
+
     p5.prototype.soundFormats('ogg', 'mp3');
     it('can load a file with a url', function (done) {
       let sf = new p5.SoundFile();
@@ -82,6 +84,7 @@ describe('p5.SoundFile', function () {
       });
     });
     it('load can throw', function (done) {
+      this.retries(0);
       let sf = new p5.SoundFile();
       sf.url = p5.prototype._checkFileFormats('http://badURL.mp3');
       try {
@@ -102,7 +105,7 @@ describe('p5.SoundFile', function () {
         () => done(),
         () => {},
         (progress) => {
-          if (progress) {
+          if (progress && progress !== 'size unknown') {
             expect(progress)
               .to.be.a('number')
               .to.be.greaterThan(0)
@@ -141,13 +144,21 @@ describe('p5.SoundFile', function () {
         sf.play(0.5);
         expect(sf.bufferSourceNodes.length).to.equal(1);
         setTimeout(() => {
-          expect(sf.bufferSourceNode._playing).to.not.be.false;
-          expect(sf.bufferSourceNodes.length).to.equal(1); //_clearOnEnd is not yet called
-          setTimeout(() => {
-            expect(sf.bufferSourceNode._playing).to.be.false;
-            expect(sf.bufferSourceNodes.length).to.equal(0); //_clearOnEnd is called
-            done();
-          }, 500);
+          try {
+            expect(sf.bufferSourceNode._playing).to.not.be.false;
+            expect(sf.bufferSourceNodes.length).to.equal(1); //_clearOnEnd is not yet called
+            setTimeout(() => {
+              try {
+                expect(sf.bufferSourceNode._playing).to.be.false;
+                expect(sf.bufferSourceNodes.length).to.equal(0); //_clearOnEnd is called
+                done();
+              } catch (error) {
+                done(error);
+              }
+            }, 500);
+          } catch (error) {
+            done(error);
+          }
         }, 1100);
       });
     });
@@ -476,17 +487,29 @@ describe('p5.SoundFile', function () {
         setTimeout(() => {
           sf.play();
           setTimeout(() => {
-            expect(sf.bufferSourceNodes.length).to.equal(2);
-            sf.stopAll(0.1);
-            setTimeout(() => {
+            try {
               expect(sf.bufferSourceNodes.length).to.equal(2);
-              expect(sf._playing).to.be.true;
+              sf.stopAll(0.1);
               setTimeout(() => {
-                expect(sf.bufferSourceNodes.length).to.equal(0);
-                expect(sf._playing).to.be.false;
-                done();
-              }, 20);
-            }, 90);
+                try {
+                  expect(sf.bufferSourceNodes.length).to.equal(2);
+                  expect(sf._playing).to.be.true;
+                  setTimeout(() => {
+                    try {
+                      expect(sf.bufferSourceNodes.length).to.equal(0);
+                      expect(sf._playing).to.be.false;
+                      done();
+                    } catch (error) {
+                      done(error);
+                    }
+                  }, 20);
+                } catch (error) {
+                  done(error);
+                }
+              }, 90);
+            } catch (error) {
+              done(error);
+            }
           }, 50);
         }, 100);
       });
@@ -605,23 +628,40 @@ describe('p5.SoundFile', function () {
       let sf = new p5.SoundFile();
       sf.setVolume(0.74, 0.6);
       setTimeout(() => {
-        expect(sf.setVolume().value).to.be.greaterThan(0.74);
-        expect(sf.setVolume().value).to.be.lessThan(1);
-        setTimeout(() => {
-          expect(sf.setVolume().value).to.be.approximately(0.74, 0.01);
-          done();
-        }, 200);
+        try {
+          expect(sf.setVolume().value).to.be.greaterThan(0.74);
+          expect(sf.setVolume().value).to.be.lessThan(1);
+          setTimeout(() => {
+            try {
+              expect(sf.setVolume().value).to.be.approximately(0.74, 0.01);
+              done();
+            } catch (error) {
+              done(error);
+            }
+          }, 200);
+        } catch (error) {
+          done(error);
+        }
       }, 500);
     });
     it('can set volume with delay time', function (done) {
       let sf = new p5.SoundFile();
       sf.setVolume(0.4, 0.5, 0.5);
       setTimeout(() => {
-        expect(sf.setVolume().value).to.be.approximately(1, 0.01);
-        setTimeout(() => {
-          expect(sf.setVolume().value).to.be.approximately(0.4, 0.1);
-          done();
-        }, 550);
+        try {
+          expect(sf.setVolume().value).to.be.approximately(1, 0.01);
+          setTimeout(() => {
+            try {
+              expect(sf.setVolume().value).to.be.approximately(0.4, 0.1);
+              done();
+            } catch (error) {
+              done(error);
+            }
+          }, 550);
+        } catch (error) {
+          done(error);
+          g;
+        }
       }, 500);
     });
 

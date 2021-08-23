@@ -2,6 +2,8 @@ describe('p5.SoundRecorder', function () {
   let inputSoundFile;
   let writeFileSub;
 
+  this.retries(2);
+
   before(function (done) {
     this.timeout(10000);
 
@@ -114,14 +116,18 @@ describe('p5.SoundRecorder', function () {
     inputSoundFile.loop();
     recorder.setInput(inputSoundFile);
     recorder.record(outputSoundFile, recordingDuration, function () {
-      expect(outputSoundFile.duration()).to.eq(recordingDuration);
+      try {
+        expect(outputSoundFile.duration()).to.eq(recordingDuration);
 
-      var outputChannel = outputSoundFile.buffer.getChannelData(0);
-      expect(outputChannel[sampleIndex]).to.eq(inputChannelSampleValue);
+        var outputChannel = outputSoundFile.buffer.getChannelData(0);
+        expect(outputChannel[sampleIndex]).to.eq(inputChannelSampleValue);
 
-      outputSoundFile.dispose();
-      recorder.dispose();
-      done();
+        outputSoundFile.dispose();
+        recorder.dispose();
+        done();
+      } catch (error) {
+        done(error);
+      }
     });
   });
 

@@ -129,15 +129,24 @@ describe('p5.Envelope', function () {
       expect(envelope.lastAttack).to.not.be.zero;
       expect(envelope.wasTriggered).to.be.true;
 
-      expect(envelope.control.getValueAtTime(now + 0.65)).to.equal(0.75);
+      expect(envelope.control.getValueAtTime(now + 0.65)).to.be.approximately(
+        0.75,
+        0.1
+      );
 
-      expect(envelope.control.getValueAtTime(now + 1.5)).to.equal(0.55);
+      expect(envelope.control.getValueAtTime(now + 1.5)).to.be.approximately(
+        0.55,
+        0.1
+      );
 
       expect(envelope.control.getValueAtTime(now + 0.5)).to.not.be.zero;
       expect(envelope.control.getValueAtTime(now + 0.5)).to.be.below(0.75);
       expect(envelope.control.getValueAtTime(now + 1)).to.be.above(0.55);
       expect(envelope.control.getValueAtTime(now + 1)).to.be.below(0.75);
-      expect(envelope.control.getValueAtTime(now + 2)).to.equal(0.55);
+      expect(envelope.control.getValueAtTime(now + 2)).to.be.approximately(
+        0.55,
+        0.1
+      );
     });
     it('can trigger an attack few seconds from the present moment', function () {
       let envelope = new p5.Envelope(0.65, 0.75, 0.85, 0.55, 0.95, 0.9);
@@ -146,7 +155,10 @@ describe('p5.Envelope', function () {
       envelope.setExp(true);
       envelope.triggerAttack(osc, 0.3);
 
-      expect(envelope.control.getValueAtTime(now + 0.1)).to.equal(0.00001); // from checkExpInput
+      expect(envelope.control.getValueAtTime(now + 0.1)).to.be.approximately(
+        0.00001,
+        0.000001
+      ); // from checkExpInput
 
       expect(envelope.control.getValueAtTime(now + 0.95)).to.be.approximately(
         0.75,
@@ -162,7 +174,10 @@ describe('p5.Envelope', function () {
       expect(envelope.control.getValueAtTime(now + 0.5)).to.be.below(0.75);
       expect(envelope.control.getValueAtTime(now + 1.3)).to.be.above(0.55);
       expect(envelope.control.getValueAtTime(now + 1.3)).to.be.below(0.75);
-      expect(envelope.control.getValueAtTime(now + 2)).to.equal(0.55);
+      expect(envelope.control.getValueAtTime(now + 2)).to.be.approximately(
+        0.55,
+        0.01
+      );
     });
     it('can return if trigger is released before the attack', function () {
       let envelope = new p5.Envelope(0.85, 0.75, 0.65, 0.55, 0.45, 0.8);
@@ -180,10 +195,16 @@ describe('p5.Envelope', function () {
       envelope.triggerRelease(osc);
       expect(envelope.wasTriggered).to.be.false;
 
-      expect(envelope.control.getValueAtTime(now + 0.95)).to.equal(0.9);
+      expect(envelope.control.getValueAtTime(now + 0.95)).to.be.approximately(
+        0.9,
+        0.01
+      );
 
       expect(envelope.control.getValueAtTime(now + 0.5)).to.not.be.zero;
-      expect(envelope.control.getValueAtTime(now + 1)).to.equal(0.9);
+      expect(envelope.control.getValueAtTime(now + 1)).to.be.approximately(
+        0.9,
+        0.01
+      );
     });
     it('can trigger a release few seconds from the present moment', function () {
       let envelope = new p5.Envelope(0.65, 0.75, 0.85, 0.55, 0.95, 0.9);
@@ -264,7 +285,10 @@ describe('p5.Envelope', function () {
       expect(envelope.control.getValueAtTime(now + 1)).to.be.below(0.65);
       expect(envelope.control.getValueAtTime(now + 1.4)).to.above(0.4);
       expect(envelope.control.getValueAtTime(now + 1.4)).to.below(0.5);
-      expect(envelope.control.getValueAtTime(now + 1.75)).to.equal(0.4);
+      expect(envelope.control.getValueAtTime(now + 1.75)).to.be.approximately(
+        0.4,
+        0.01
+      );
     });
     it('can ramp to one/two value', function () {
       //todo
