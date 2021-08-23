@@ -84,7 +84,7 @@ describe('p5.SoundFile', function () {
       });
     });
     it('load can throw', function (done) {
-      this.retries(0);
+      // this.retries(0);
       let sf = new p5.SoundFile();
       sf.url = p5.prototype._checkFileFormats('http://badURL.mp3');
       try {
@@ -660,7 +660,6 @@ describe('p5.SoundFile', function () {
           }, 550);
         } catch (error) {
           done(error);
-          g;
         }
       }, 500);
     });

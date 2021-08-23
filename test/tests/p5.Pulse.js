@@ -43,9 +43,11 @@ describe('p5.Pulse', function () {
       }, 500);
       expect(pulse.started).to.be.true;
       expect(pulse.osc2.started).to.be.true;
-      pulse.stop();
-      expect(pulse.started).to.be.false;
-      expect(pulse.osc2.started).to.be.false;
+      let pulse2 = new p5.Pulse(444, 0.1);
+      pulse2.start(221, 0.1);
+      pulse2.stop();
+      expect(pulse2.started).to.be.false;
+      expect(pulse2.osc2.started).to.be.false;
     });
     it('can set frequency', function () {
       //TODO
