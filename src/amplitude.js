@@ -184,9 +184,10 @@ class Amplitude {
       } else {
         this.output.connect(unit);
       }
-    } else {
-      this.output.connect(this.panner.connect(p5sound.input));
     }
+    // else {
+    //   this.output.connect(this.panner.connect(p5sound.input));
+    // }
   }
 
   disconnect() {

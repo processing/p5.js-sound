@@ -237,7 +237,7 @@ class AudioIn {
    */
   getLevel(smoothing) {
     if (smoothing) {
-      this.amplitude.smoothing = smoothing;
+      this.amplitude.smooth(smoothing);
     }
     return this.amplitude.getLevel();
   }

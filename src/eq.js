@@ -166,7 +166,7 @@ class EQ extends Effect {
         this.bands[i / 2].gain(arguments[i + 1]);
       }
     } else {
-      console.error(
+      throw new Error(
         'Argument mismatch. .set() should be called with ' +
           this.bands.length * 2 +
           ' arguments. (one frequency and gain value pair for each band of the eq)'

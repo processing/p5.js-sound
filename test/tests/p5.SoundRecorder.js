@@ -1,7 +1,6 @@
 const expect = chai.expect;
 
 describe('p5.SoundRecorder', function () {
-  let recorder;
   let inputSoundFile;
   let writeFileSub;
 
@@ -33,17 +32,34 @@ describe('p5.SoundRecorder', function () {
   });
 
   beforeEach(function () {
-    recorder = new p5.SoundRecorder();
     inputSoundFile.disconnect();
     inputSoundFile.stop();
     writeFileSub.reset();
   });
 
-  afterEach(function () {
+  afterEach(function () {});
+
+  it('can be created and disposed', function () {
+    let recorder = new p5.SoundRecorder();
+    expect(recorder.input).to.have.property('context');
+    expect(recorder.input).to.have.property('gain');
+    expect(recorder.output).to.have.property('context');
+    expect(recorder.output).to.have.property('gain');
+    expect(recorder._inputChannels).to.equal(2);
+    expect(recorder._outputChannels).to.equal(2);
+    expect(recorder._workletNode).to.have.property('context');
+    expect(recorder._workletNode).to.have.property('parameters');
+
+    expect(p5.soundOut.soundArray).to.include(recorder);
+
     recorder.dispose();
+    expect(p5.soundOut.soundArray).to.not.include(recorder);
+    expect(recorder.input).to.be.null;
+    expect(recorder._workletNode).to.be.null;
   });
 
   it('can record input from a microphone', function (done) {
+    let recorder = new p5.SoundRecorder();
     // this is the shortest possible recording duration
     const recordingDuration =
       recorder.bufferSize / p5.soundOut.audiocontext.sampleRate;
@@ -65,13 +81,15 @@ describe('p5.SoundRecorder', function () {
           outputSoundFile.dispose();
           mic.dispose();
           p5.prototype.outputVolume(0);
+          recorder.dispose();
           done();
         });
-      }, 130);
+      }, 500);
     });
   });
 
   it('can record input from a sound file', function (done) {
+    let recorder = new p5.SoundRecorder();
     const sampleIndex = 0;
     // this is the shortest possible recording duration
     const recordingDuration =
@@ -91,11 +109,13 @@ describe('p5.SoundRecorder', function () {
       expect(outputChannel[sampleIndex]).to.eq(inputChannelSampleValue);
 
       outputSoundFile.dispose();
+      recorder.dispose();
       done();
     });
   });
 
   it('can record the main output of a sketch', function (done) {
+    let recorder = new p5.SoundRecorder();
     // this is the shortest possible recording duration
     const recordingDuration =
       recorder.bufferSize / p5.soundOut.audiocontext.sampleRate;
@@ -119,12 +139,14 @@ describe('p5.SoundRecorder', function () {
 
         outputSoundFile.dispose();
         p5.prototype.outputVolume(0);
+        recorder.dispose();
         done();
       });
     }, 20);
   });
 
-  it('can save a recorded buffer to a .wav file', function (done) {
+  it('can save a recorded buffer to a .wav file and be stopped', function (done) {
+    let recorder = new p5.SoundRecorder();
     // this is the shortest possible recording duration
     const recordingDuration =
       recorder.bufferSize / p5.soundOut.audiocontext.sampleRate;
@@ -139,6 +161,8 @@ describe('p5.SoundRecorder', function () {
       expect(writeFileSub.called).to.be.true;
 
       outputSoundFile.dispose();
+      recorder.stop();
+      recorder.dispose();
       done();
     });
   });
