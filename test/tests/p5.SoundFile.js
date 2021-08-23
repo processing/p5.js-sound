@@ -183,7 +183,7 @@ describe('p5.SoundFile', function () {
         setTimeout(() => {
           expect(sf._playing).to.be.false;
           done();
-        }, 500); // as play back is 2 & cued 500ms , 500ms is enough to complete playing
+        }, 550); // as play back is 2 & cued 500ms , 500ms is enough to complete playing
       });
     });
     it('can play with some given duration', function (done) {
@@ -286,7 +286,7 @@ describe('p5.SoundFile', function () {
               expect(sf.bufferSourceNode._playing).to.be.false;
               done();
             }, 50);
-          }, 50);
+          }, 100);
         }, 100);
       });
     });

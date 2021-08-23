@@ -60,7 +60,7 @@ describe('p5.Amplitude', function () {
       expect(amp.normalize).to.be.false;
     });
 
-    it('gets oscillator level', function () {
+    it('gets oscillator level', function (done) {
       let osc = new p5.Oscillator('square');
       let amp = new p5.Amplitude();
       osc.amp(1);
@@ -69,6 +69,7 @@ describe('p5.Amplitude', function () {
       amp.setInput(osc);
       setTimeout(function () {
         expect(amp.getLevel()).to.be.closeTo(0.55, 0.25);
+        done();
       }, 100);
     });
 
