@@ -1,17 +1,8 @@
 describe('p5.Amplitude', function () {
   this.timeout(1000);
 
-  let amp;
-  let osc = new p5.Oscillator('square');
-  osc.amp(1);
-  osc.start();
-  osc.disconnect();
-
-  beforeEach(function () {
-    amp = new p5.Amplitude();
-  });
-
   it('can be created', function () {
+    let amp = new p5.Amplitude();
     expect(amp).to.have.property('audiocontext').not.be.null;
     expect(amp).to.have.property('_workletNode').not.be.null;
     expect(amp.bufferSize).to.equal(2048);
@@ -23,23 +14,26 @@ describe('p5.Amplitude', function () {
     expect(amp.stereoVolNorm).to.deep.equal([0, 0]);
   });
 
-  after(function (done) {
-    osc.dispose();
-    done();
-  });
   it('can be created with smoothing', function () {
     new p5.Amplitude(0.02);
   });
 
   describe('methods', function () {
     it('accepts oscillator input', function () {
+      let osc = new p5.Oscillator('square');
+      let amp = new p5.Amplitude();
+      osc.amp(1);
+      osc.start();
+      osc.disconnect();
       amp.setInput(osc);
     });
     it('setInput connects to main output if no argument is passed', function () {
+      let amp = new p5.Amplitude();
       amp.setInput();
     });
 
     it('can be connected and disconnected from a unit', function () {
+      let amp = new p5.Amplitude();
       let filter = new p5.Filter();
 
       //if unit has input property
@@ -55,6 +49,7 @@ describe('p5.Amplitude', function () {
     });
 
     it('can toggle normalization', function () {
+      let amp = new p5.Amplitude();
       expect(amp.normalize).to.be.false;
       amp.toggleNormalize();
       expect(amp.normalize).to.be.true;
@@ -65,15 +60,24 @@ describe('p5.Amplitude', function () {
       expect(amp.normalize).to.be.false;
     });
 
-    it('gets oscillator level', function (done) {
+    it('gets oscillator level', function () {
+      let osc = new p5.Oscillator('square');
+      let amp = new p5.Amplitude();
+      osc.amp(1);
+      osc.start();
+      osc.disconnect();
       amp.setInput(osc);
       setTimeout(function () {
         expect(amp.getLevel()).to.be.closeTo(0.55, 0.25);
-        done();
       }, 100);
     });
 
     it('gets normalized osc level', function (done) {
+      let osc = new p5.Oscillator('square');
+      let amp = new p5.Amplitude();
+      osc.amp(1);
+      osc.start();
+      osc.disconnect();
       amp.setInput(osc);
       setTimeout(function () {
         amp.toggleNormalize(true);
@@ -82,6 +86,11 @@ describe('p5.Amplitude', function () {
       }, 200);
     });
     it('gets stereo osc level', function (done) {
+      let osc = new p5.Oscillator('square');
+      let amp = new p5.Amplitude();
+      osc.amp(1);
+      osc.start();
+      osc.disconnect();
       amp.setInput(osc);
       setTimeout(function () {
         expect(amp.getLevel(0)).to.be.closeTo(0.55, 0.25);
@@ -94,6 +103,7 @@ describe('p5.Amplitude', function () {
     });
 
     it('can be connected to a soundFile', function (done) {
+      let amp = new p5.Amplitude();
       p5.prototype.soundFormats('ogg', 'mp3');
       let sf = p5.prototype.loadSound('./testAudio/drum', function () {
         sf.disconnect();
@@ -108,10 +118,12 @@ describe('p5.Amplitude', function () {
     });
 
     it('can apply smoothing', function () {
+      let amp = new p5.Amplitude();
       amp.smooth(0.5);
     });
 
     it('can be disposed', function () {
+      let amp = new p5.Amplitude();
       amp.dispose();
       expect(amp).to.not.have.property('input');
       expect(amp).to.not.have.property('output');

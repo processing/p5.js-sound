@@ -250,7 +250,7 @@ describe('p5.Oscillator', function () {
               0.01
             );
             done();
-          }, 50);
+          }, 150);
         }, 50);
       } else {
         setTimeout(() => {
