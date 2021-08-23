@@ -20,8 +20,6 @@ describe('main output', function () {
     expect(p5.soundOut._silentNode).to.have.property('gain');
     expect(p5.soundOut._silentNode).to.have.property('context');
     expect(p5.soundOut._silentNode.gain.value).to.equal(0);
-
-    console.log(p5.soundOut);
   });
 
   it('can set and return output volume', function (done) {
