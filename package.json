@@ -55,7 +55,7 @@
   "scripts": {
     "build": "grunt",
     "test": "grunt run-tests",
-    "karma": "karma start karma.conf.js",
+    "karma": "grunt; karma start karma.conf.js",
     "lint": "grunt lint",
     "dev": "grunt dev",
     "postinstall": "cp ./node_modules/p5/lib/p5.js ./node_modules/p5/lib/p5.min.js  ./lib   &&   grunt githooks"
