@@ -77,8 +77,37 @@ describe('p5.Listener3D', function () {
         expect(listener3d.upZ()).to.equal(0);
         expect(listener3d.upZ(-100)).to.equal(-100);
       });
-      it('can set upX, forwardY, upZ with a delay', function () {
-        //TODO
+      it('can set upX, forwardY, upZ with a delay', function (done) {
+        expect(listener3d.upX()).to.equal(0);
+        expect(listener3d.upY()).to.equal(1);
+        expect(listener3d.upZ()).to.equal(0);
+
+        listener3d.upX(900, 0.2);
+        setTimeout(() => {
+          expect(listener3d.upX()).to.not.be.approximately(900, 1);
+          setTimeout(() => {
+            expect(listener3d.upX()).to.be.approximately(900, 1);
+            done();
+          }, 200);
+        }, 50);
+
+        listener3d.upY(900, 0.2);
+        setTimeout(() => {
+          expect(listener3d.upY()).to.not.be.approximately(900, 1);
+          setTimeout(() => {
+            expect(listener3d.upY()).to.be.approximately(900, 1);
+            done();
+          }, 200);
+        }, 50);
+
+        listener3d.upZ(900, 0.2);
+        setTimeout(() => {
+          expect(listener3d.upZ()).to.not.be.approximately(900, 1);
+          setTimeout(() => {
+            expect(listener3d.upZ()).to.be.approximately(900, 1);
+            done();
+          }, 200);
+        }, 50);
       });
       it('can set upX, forwardY, upZ using orientup function without a delay', function () {
         listener3d = new p5.Listener3D();
