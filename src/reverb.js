@@ -78,6 +78,7 @@ class Reverb extends Effect {
 
   _teardownConvolverNode() {
     if (this.convolverNode) {
+      this.input.disconnect(this.convolverNode);
       this.convolverNode.disconnect();
       delete this.convolverNode;
     }
