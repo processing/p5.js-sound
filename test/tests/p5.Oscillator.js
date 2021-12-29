@@ -294,8 +294,26 @@ describe('p5.Oscillator', function () {
       osc.amp(1);
       osc.freq(4);
       osc.start();
-      osc.add(3).mult(5);
-      osc.scale(0, 1, 0, 4);
+      osc.add(3).mult(5).scale(0, 1, 0, 4);
+      expect(osc.mathOps).to.be.an('array').of.length(3);
+      expect(osc.mathOps[0].toString()).to.include('Add');
+      expect(osc.mathOps[0]).to.have.property('value', 3);
+      expect(osc.mathOps[1].toString()).to.include('Mult');
+      expect(osc.mathOps[1]).to.have.property('value', 5);
+      expect(osc.mathOps[2].toString()).to.include('Scale');
+      expect(osc.mathOps[2]).to.have.property('min', 0);
+      expect(osc.mathOps[2]).to.have.property('max', 4);
+      osc.scale(-0.5, 1.5, 2, 6).mult(6).add(4);
+      expect(osc.mathOps).to.be.an('array').of.length(3);
+      expect(osc.mathOps[0].toString()).to.include('Add');
+      expect(osc.mathOps[0]).to.have.property('value', 4);
+      expect(osc.mathOps[1].toString()).to.include('Mult');
+      expect(osc.mathOps[1]).to.have.property('value', 6);
+      expect(osc.mathOps[2].toString()).to.include('Scale');
+      expect(osc.mathOps[2]).to.have.property('min', 3);
+      expect(osc.mathOps[2]).to.have.property('max', 5);
+      // TODO: Assert using the name property rather than using toString
+      // after upgrading Tone.js.
     });
   });
 });
