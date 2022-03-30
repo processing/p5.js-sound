@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('Helpers functions', function () {
   it('sampleRate can get sample rate', function () {
     expect(p5.prototype.sampleRate()).to.be.a('number');

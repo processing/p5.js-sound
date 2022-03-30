@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.SoundFile', function () {
   it('can be created and disposed', function () {
     let sf = new p5.SoundFile();
@@ -60,7 +58,7 @@ describe('p5.SoundFile', function () {
       () => done(),
       () => {},
       (progress) => {
-        if (progress) {
+        if (progress && progress !== 'size unknown') {
           expect(progress)
             .to.be.a('number')
             .to.be.greaterThan(0)
@@ -71,6 +69,8 @@ describe('p5.SoundFile', function () {
   });
 
   describe('methods', function () {
+    this.retries(2);
+
     p5.prototype.soundFormats('ogg', 'mp3');
     it('can load a file with a url', function (done) {
       let sf = new p5.SoundFile();
@@ -84,6 +84,7 @@ describe('p5.SoundFile', function () {
       });
     });
     it('load can throw', function (done) {
+      // this.retries(0);
       let sf = new p5.SoundFile();
       sf.url = p5.prototype._checkFileFormats('http://badURL.mp3');
       try {
@@ -104,7 +105,7 @@ describe('p5.SoundFile', function () {
         () => done(),
         () => {},
         (progress) => {
-          if (progress) {
+          if (progress && progress !== 'size unknown') {
             expect(progress)
               .to.be.a('number')
               .to.be.greaterThan(0)
@@ -143,13 +144,21 @@ describe('p5.SoundFile', function () {
         sf.play(0.5);
         expect(sf.bufferSourceNodes.length).to.equal(1);
         setTimeout(() => {
-          expect(sf.bufferSourceNode._playing).to.not.be.false;
-          expect(sf.bufferSourceNodes.length).to.equal(1); //_clearOnEnd is not yet called
-          setTimeout(() => {
-            expect(sf.bufferSourceNode._playing).to.be.false;
-            expect(sf.bufferSourceNodes.length).to.equal(0); //_clearOnEnd is called
-            done();
-          }, 500);
+          try {
+            expect(sf.bufferSourceNode._playing).to.not.be.false;
+            expect(sf.bufferSourceNodes.length).to.equal(1); //_clearOnEnd is not yet called
+            setTimeout(() => {
+              try {
+                expect(sf.bufferSourceNode._playing).to.be.false;
+                expect(sf.bufferSourceNodes.length).to.equal(0); //_clearOnEnd is called
+                done();
+              } catch (error) {
+                done(error);
+              }
+            }, 500);
+          } catch (error) {
+            done(error);
+          }
         }, 1100);
       });
     });
@@ -185,7 +194,7 @@ describe('p5.SoundFile', function () {
         setTimeout(() => {
           expect(sf._playing).to.be.false;
           done();
-        }, 500); // as play back is 2 & cued 500ms , 500ms is enough to complete playing
+        }, 550); // as play back is 2 & cued 500ms , 500ms is enough to complete playing
       });
     });
     it('can play with some given duration', function (done) {
@@ -218,7 +227,7 @@ describe('p5.SoundFile', function () {
         setTimeout(() => {
           expect(sf.bufferSourceNodes.length).to.equal(1); // other play is not added
           done();
-        }, 10);
+        }, 50);
       });
     });
     it('handles multiple play calls', function (done) {
@@ -276,17 +285,19 @@ describe('p5.SoundFile', function () {
         sf.play();
         setTimeout(() => {
           sf.pause();
-          expect(sf._playing).to.be.false;
-          expect(sf._paused).to.be.true;
-          expect(sf._pauseTime).to.be.approximately(0.1, 0.01);
-          expect(sf.pauseTime).to.be.approximately(0.1, 0.01);
           setTimeout(() => {
-            sf.pause();
-            expect(sf._pauseTime).to.be.approximately(0, 0.01); // pause on stopped node resets time
-            expect(sf.bufferSourceNodes.length).to.equal(0);
-            expect(sf.bufferSourceNode._playing).to.be.false;
-            done();
-          }, 10);
+            expect(sf._playing).to.be.false;
+            expect(sf._paused).to.be.true;
+            expect(sf._pauseTime).to.be.approximately(0.1, 0.015);
+            expect(sf.pauseTime).to.be.approximately(0.1, 0.015);
+            setTimeout(() => {
+              sf.pause();
+              expect(sf._pauseTime).to.be.approximately(0, 0.01); // pause on stopped node resets time
+              expect(sf.bufferSourceNodes.length).to.equal(0);
+              expect(sf.bufferSourceNode._playing).to.be.false;
+              done();
+            }, 50);
+          }, 100);
         }, 100);
       });
     });
@@ -301,7 +312,7 @@ describe('p5.SoundFile', function () {
               expect(sf.bufferSourceNodes.length).to.equal(0);
               expect(sf._playing).to.be.false;
               done();
-            }, 300);
+            }, 400);
           }, 100);
         }, 200);
       });
@@ -381,7 +392,7 @@ describe('p5.SoundFile', function () {
         setTimeout(() => {
           expect(sf.bufferSourceNodes.length).to.equal(0); //_clearOnEnd is called
           done();
-        }, 10);
+        }, 50);
       });
     });
     it('can be stopped after a pause', function (done) {
@@ -434,7 +445,7 @@ describe('p5.SoundFile', function () {
         setTimeout(() => {
           expect(sf.bufferSourceNodes.length).to.equal(0);
           expect(sf._playing).to.be.false;
-        }, 10);
+        }, 50);
       });
 
       let sf2 = new p5.SoundFile('./testAudio/drum', function () {
@@ -449,7 +460,7 @@ describe('p5.SoundFile', function () {
             expect(sf2._playing).to.be.false;
             done();
           }, 20);
-        }, 10);
+        }, 50);
       });
     });
 
@@ -465,8 +476,8 @@ describe('p5.SoundFile', function () {
               expect(sf.bufferSourceNodes.length).to.equal(0);
               expect(sf._playing).to.be.false;
               done();
-            }, 10);
-          }, 10);
+            }, 50);
+          }, 50);
         }, 100);
       });
     });
@@ -476,18 +487,30 @@ describe('p5.SoundFile', function () {
         setTimeout(() => {
           sf.play();
           setTimeout(() => {
-            expect(sf.bufferSourceNodes.length).to.equal(2);
-            sf.stopAll(0.1);
-            setTimeout(() => {
+            try {
               expect(sf.bufferSourceNodes.length).to.equal(2);
-              expect(sf._playing).to.be.true;
+              sf.stopAll(0.1);
               setTimeout(() => {
-                expect(sf.bufferSourceNodes.length).to.equal(0);
-                expect(sf._playing).to.be.false;
-                done();
-              }, 20);
-            }, 90);
-          }, 10);
+                try {
+                  expect(sf.bufferSourceNodes.length).to.equal(2);
+                  expect(sf._playing).to.be.true;
+                  setTimeout(() => {
+                    try {
+                      expect(sf.bufferSourceNodes.length).to.equal(0);
+                      expect(sf._playing).to.be.false;
+                      done();
+                    } catch (error) {
+                      done(error);
+                    }
+                  }, 20);
+                } catch (error) {
+                  done(error);
+                }
+              }, 90);
+            } catch (error) {
+              done(error);
+            }
+          }, 50);
         }, 100);
       });
     });
@@ -499,7 +522,7 @@ describe('p5.SoundFile', function () {
           expect(sf.output.gain.value).to.be.approximately(0.73, 0.01);
           expect(sf.getVolume()).to.be.approximately(0.73, 0.01);
           done();
-        }, 10);
+        }, 50);
       });
     });
 
@@ -536,7 +559,7 @@ describe('p5.SoundFile', function () {
             0.92,
             0.01
           );
-        }, 10);
+        }, 50);
       });
     });
     it('can handle zero rate', function (done) {
@@ -556,7 +579,7 @@ describe('p5.SoundFile', function () {
             0.001
           );
           done();
-        }, 10);
+        }, 50);
       });
     });
     it('can handle negative playback rate', function (done) {
@@ -577,8 +600,8 @@ describe('p5.SoundFile', function () {
           setTimeout(() => {
             expect(sf.reversed).to.be.false; // applied +ve rate to reversed buffer
             done();
-          }, 10);
-        }, 10);
+          }, 50);
+        }, 50);
       });
     });
 
@@ -596,32 +619,48 @@ describe('p5.SoundFile', function () {
       setTimeout(() => {
         expect(sf.setVolume().value).to.be.approximately(0.22, 0.01);
         expect(sf.output.gain.value).to.be.approximately(0.22, 0.01);
-      }, 10);
+      }, 50);
 
       let amp = new p5.Amplitude();
       sf.setVolume(amp); //connect to audio node
     });
     it('can set volume with ramp time', function (done) {
       let sf = new p5.SoundFile();
-      sf.setVolume(0.74, 1);
+      sf.setVolume(0.74, 0.6);
       setTimeout(() => {
-        expect(sf.setVolume().value).to.be.greaterThan(0.74);
-        expect(sf.setVolume().value).to.be.lessThan(1);
-        setTimeout(() => {
-          expect(sf.setVolume().value).to.be.approximately(0.74, 0.01);
-          done();
-        }, 500);
+        try {
+          expect(sf.setVolume().value).to.be.greaterThan(0.74);
+          expect(sf.setVolume().value).to.be.lessThan(1);
+          setTimeout(() => {
+            try {
+              expect(sf.setVolume().value).to.be.approximately(0.74, 0.01);
+              done();
+            } catch (error) {
+              done(error);
+            }
+          }, 200);
+        } catch (error) {
+          done(error);
+        }
       }, 500);
     });
     it('can set volume with delay time', function (done) {
       let sf = new p5.SoundFile();
-      sf.setVolume(0.492, 0.5, 0.5);
+      sf.setVolume(0.4, 0.5, 0.5);
       setTimeout(() => {
-        expect(sf.setVolume().value).to.be.approximately(1, 0.01);
-        setTimeout(() => {
-          expect(sf.setVolume().value).to.be.approximately(0.492, 0.01);
-          done();
-        }, 500);
+        try {
+          expect(sf.setVolume().value).to.be.approximately(1, 0.01);
+          setTimeout(() => {
+            try {
+              expect(sf.setVolume().value).to.be.approximately(0.4, 0.1);
+              done();
+            } catch (error) {
+              done(error);
+            }
+          }, 550);
+        } catch (error) {
+          done(error);
+        }
       }, 500);
     });
 
@@ -641,7 +680,7 @@ describe('p5.SoundFile', function () {
         expect(sf.currentTime()).to.equal(0); // last pos is zero
         sf.play();
         setTimeout(() => {
-          expect(sf.currentTime()).to.be.approximately(0.5, 0.01);
+          expect(sf.currentTime()).to.be.approximately(0.5, 0.1);
           sf.stop();
           done();
         }, 500);
@@ -650,12 +689,18 @@ describe('p5.SoundFile', function () {
     it('can preserve current time', function (done) {
       let sf = new p5.SoundFile('./testAudio/bx-spring', () => {
         sf.play();
+        let time1 = sf.currentTime();
         setTimeout(() => {
+          let time2 = sf.currentTime();
           sf.pause();
-          expect(sf.currentTime()).to.be.approximately(0.2, 0.01);
+          expect(sf.currentTime()).to.be.approximately(0.2, 0.1);
+          expect(time2).to.be.approximately(time1 + 0.2, 0.05);
           sf.play();
           setTimeout(() => {
-            expect(sf.currentTime()).to.be.approximately(0.4, 0.01);
+            let time3 = sf.currentTime();
+            expect(sf.currentTime()).to.be.approximately(0.4, 0.1);
+            expect(time3).to.be.approximately(time2 + 0.2, 0.05);
+            expect(time3).to.be.approximately(time1 + 0.4, 0.05);
             sf.stop();
             done();
           }, 200);
@@ -674,7 +719,7 @@ describe('p5.SoundFile', function () {
       //           expect(sf.currentTime()).to.be.approximately(0.1, 0.01);
       //           done();
       //         }, 300);
-      //       }, 10);
+      //       }, 50);
       //     }, 400);
       //   });
     });
@@ -758,7 +803,7 @@ describe('p5.SoundFile', function () {
           setTimeout(() => {
             expect(isCalled).to.be.true;
             done();
-          }, 10);
+          }, 50);
         }, 100);
       });
     });

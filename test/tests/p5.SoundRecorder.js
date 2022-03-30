@@ -1,8 +1,8 @@
-const expect = chai.expect;
-
 describe('p5.SoundRecorder', function () {
   let inputSoundFile;
   let writeFileSub;
+
+  this.retries(2);
 
   before(function (done) {
     this.timeout(10000);
@@ -72,11 +72,24 @@ describe('p5.SoundRecorder', function () {
       recorder.setInput(mic);
       const outputSoundFile = new p5.SoundFile();
       setTimeout(() => {
-        recorder.record(outputSoundFile, recordingDuration, function () {
-          expect(outputSoundFile.duration()).to.eq(recordingDuration);
+        recorder.record(outputSoundFile, 5 * recordingDuration, function () {
+          expect(outputSoundFile.duration()).to.be.approximately(
+            5 * recordingDuration,
+            0.01
+          );
 
           const outputChannel = outputSoundFile.buffer.getChannelData(0);
-          expect(outputChannel[0]).to.not.eq(0);
+
+          let isAllZero = true;
+
+          for (let i = 0; i < outputChannel.length; i++) {
+            if (outputChannel[i] !== 0) {
+              isAllZero = false;
+              break;
+            }
+          }
+
+          expect(isAllZero).to.be.false;
 
           outputSoundFile.dispose();
           mic.dispose();
@@ -103,14 +116,18 @@ describe('p5.SoundRecorder', function () {
     inputSoundFile.loop();
     recorder.setInput(inputSoundFile);
     recorder.record(outputSoundFile, recordingDuration, function () {
-      expect(outputSoundFile.duration()).to.eq(recordingDuration);
+      try {
+        expect(outputSoundFile.duration()).to.eq(recordingDuration);
 
-      var outputChannel = outputSoundFile.buffer.getChannelData(0);
-      expect(outputChannel[sampleIndex]).to.eq(inputChannelSampleValue);
+        var outputChannel = outputSoundFile.buffer.getChannelData(0);
+        expect(outputChannel[sampleIndex]).to.eq(inputChannelSampleValue);
 
-      outputSoundFile.dispose();
-      recorder.dispose();
-      done();
+        outputSoundFile.dispose();
+        recorder.dispose();
+        done();
+      } catch (error) {
+        done(error);
+      }
     });
   });
 

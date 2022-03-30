@@ -2,15 +2,54 @@
   <head>
     <meta charset="utf-8" />
     <title>TESTS</title>
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
     <script src="../lib/p5.js"></script>
     <script src="../lib/p5.sound.js"></script>
-    <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
-    <script src="../node_modules/mocha/mocha.js"></script>
-    <script src="../node_modules/chai/chai.js"></script>
-    <script src="../node_modules/sinon/pkg/sinon.js"></script>
   </head>
   <body>
     <div id="mocha"></div>
-    <script src="./setup.js" type="module"></script>
+    <script
+      src="../node_modules/mocha/mocha.js"
+      type="text/javascript"
+      charset="utf-8"
+    ></script>
+    <script src="../node_modules/chai/chai.js"></script>
+    <script src="../node_modules/sinon/pkg/sinon.js"></script>
+    <script src="./setup.js"></script>
+
+    <script src="./tests.js" type="text/javascript"></script>
+
+    <script type="text/javascript">
+      const startTest = () => {
+        let test_has_run = false;
+        document.getElementById('mocha').innerHTML = 'click to begin tests';
+
+        // chromes autoplay policy requires a user interaction
+        // before the audiocontext can activate
+        const mousePressed = () => {
+          if (!test_has_run) {
+            document.getElementById('mocha').innerHTML = '';
+            p5._throwValidationErrors = true;
+            p5.prototype.outputVolume(0);
+            p5.prototype.userStartAudio();
+            mocha.run();
+            test_has_run = true;
+          }
+        };
+        document.addEventListener('click', mousePressed, false);
+      };
+
+      //operating p5 in instance mode ( read more about it here -  https://github.com/processing/p5.js/wiki/Global-and-instance-mode )
+      const s = (sketch) => {
+        sketch.setup = () => {
+          mocha.reporter('html');
+          mocha.setup('bdd');
+          const expect = chai.expect;
+          startTest();
+        };
+      };
+
+      new p5(s);
+    </script>
   </body>
 </html>

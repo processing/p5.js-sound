@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.Oscillator', function () {
   this.timeout(1000);
 
@@ -252,7 +250,7 @@ describe('p5.Oscillator', function () {
               0.01
             );
             done();
-          }, 50);
+          }, 150);
         }, 50);
       } else {
         setTimeout(() => {

@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.Distortion', function () {
   it('can be created and disposed', function () {
     let distortion = new p5.Distortion();

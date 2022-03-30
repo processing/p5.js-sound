@@ -1,4 +1,3 @@
-const expect = chai.expect;
 let gain;
 
 describe('p5.Gain', function () {

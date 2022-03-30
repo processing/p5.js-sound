@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.PolySynth', function () {
   const audioContext = p5.prototype.getAudioContext();
 
@@ -108,10 +106,10 @@ describe('p5.PolySynth', function () {
       polySynth.noteAttack('C4', 0.74); //max is (1/4) *2 = 0.5
       let monoSynths = polySynth.audiovoices;
       setTimeout(() => {
-        expect(monoSynths[0].env.control.value).to.be.approximately(0.14, 0.01);
-        expect(monoSynths[1].env.control.value).to.be.approximately(0.24, 0.01);
-        expect(monoSynths[2].env.control.value).to.be.approximately(0.67, 0.01);
-        expect(monoSynths[3].env.control.value).to.be.approximately(0.5, 0.01);
+        expect(monoSynths[0].env.control.value).to.be.approximately(0.14, 0.02);
+        expect(monoSynths[1].env.control.value).to.be.approximately(0.24, 0.02);
+        expect(monoSynths[2].env.control.value).to.be.approximately(0.67, 0.02);
+        expect(monoSynths[3].env.control.value).to.be.approximately(0.5, 0.02);
         done();
       }, 50);
     });
@@ -159,7 +157,7 @@ describe('p5.PolySynth', function () {
         p5.prototype.noteToFreq('B3').toString()
       );
     });
-    it('can trigger a note release with a delay', function () {
+    it('can trigger a note release with a delay', function (done) {
       let polySynth = new p5.PolySynth(p5.MonoSynth, 3);
       polySynth.noteAttack('B2');
       polySynth.noteAttack('B3');
@@ -175,7 +173,8 @@ describe('p5.PolySynth', function () {
         expect(
           polySynth._voicesInUse.getValueAtTime(audioContext.currentTime)
         ).to.equal(1);
-      }, 100);
+        done();
+      }, 150);
     });
     it('can trigger all notes to relase', function () {
       let polySynth = new p5.PolySynth(p5.MonoSynth, 3);
