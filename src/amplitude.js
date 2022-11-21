@@ -190,6 +190,44 @@ class Amplitude {
     // }
   }
 
+  /**
+   *  Disconnects the output of this p5.Amplitude object.
+   *
+   *  @method disconnect
+   *  @for p5.Amplitude
+   *  @example
+   *  <div><code>
+   *  let sound, amplitude;
+   *  function preload(){
+   *    sound = loadSound('assets/beat.mp3');
+   *  }
+   *
+   *  function setup() {
+   *    let cnv = createCanvas(200, 200);
+   *    cnv.mouseClicked(togglePlay);
+   *    amplitude = new p5.Amplitude(); 
+   *    sound.loop();
+   *  }
+   *
+   *  function draw() {
+   *    background(220);
+   *    text('Disconnect:', 20, 20);
+   *    let level = amplitude.getLevel();
+   *    let size = map(level, 0, 1, 0, 400);
+   *    ellipse(width/2, height/2, size, size);
+   *  }
+   *
+   *  function togglePlay() {
+   *    if (sound.isPlaying()){
+   *      sound.pause();
+   *      amplitude.disconnect();
+   *    }
+   *    else{
+   *      sound.play();
+   *        }
+   *    }
+   *  </code></div>
+   */
   disconnect() {
     if (this.output) {
       this.output.disconnect();
