@@ -1342,9 +1342,6 @@ class SoundFile {
    *  Accepts a callback function, a time (in seconds) at which to trigger
    *  the callback, and an optional parameter for the callback.
    *
-   *  Time will be passed as the first parameter to the callback function,
-   *  and param will be the second parameter.
-   *
    *
    *  @method  addCue
    *  @for p5.SoundFile
@@ -1356,10 +1353,10 @@ class SoundFile {
    *                             the callback function.
    *  @param {Function} callback Name of a function that will be
    *                             called at the given time. The callback will
-   *                             receive time and (optionally) param as its
-   *                             two parameters.
+   *                             optionally receive the third argument as its
+   *                             parameter.
    *  @param {Object} [value]    An object to be passed as the
-   *                             second parameter to the
+   *                             optional parameter to the
    *                             callback function.
    *  @return {Number} id ID of this cue,
    *                      useful for removeCue(id)
@@ -1455,7 +1452,6 @@ class SoundFile {
       var leftLimit = this._prevUpdateTime || 0;
       var rightLimit = playbackTime;
       if (leftLimit <= callbackTime && callbackTime <= rightLimit) {
-        // pass the scheduled callbackTime as parameter to the callback
         cue.callback(val);
       }
     }
