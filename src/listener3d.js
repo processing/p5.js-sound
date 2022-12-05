@@ -31,7 +31,7 @@ class Listener3D {
   }
 
   //  /**
-  //   * Connect an audio sorce
+  //   * Connect an audio source
   //   * @param  {Object} src Input source
   //   */
   process(src) {
