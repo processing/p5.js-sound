@@ -42,7 +42,7 @@ class Panner3D extends Effect {
   }
 
   /**
-   * Connect an audio sorce
+   * Connect an audio source
    *
    * @method  process
    * @for p5.Panner3D
