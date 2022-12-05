@@ -730,7 +730,7 @@ p5.Envelope.prototype.triggerRelease = function (unit, secondsFromNow) {
  *  function draw() {
  *    background(20);
  *    text('tap to play', 10, 20);
- *    let h = map(amp.getLevel(), 0, 0.4, 0, height);;
+ *    let h = map(amp.getLevel(), 0, 0.4, 0, height);
  *    rect(0, height, width, -h);
  *  }
  *  </code></div>
