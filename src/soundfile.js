@@ -891,6 +891,14 @@ class SoundFile {
     this.rate(newPlaybackRate);
   }
 
+  /**
+   * Returns the current playback rate of a sound file.
+   *
+   * @method getPlaybackRate
+   * @for p5.SoundFile
+   * @return {Number}  Current playback rate of the SoundFile.
+   *
+   */
   getPlaybackRate() {
     return this.playbackRate;
   }
