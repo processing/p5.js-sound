@@ -177,60 +177,6 @@ class Amplitude {
     }
   }
 
-  /**
-   * Connects the output of a p5.Amplitude object to input of another
-   * p5.sound object. For example, you may connect a p5.Amplitude to an
-   * FFT or an Effect.
-   *
-   * @method connect
-   * @for p5.Amplitude
-   * @param {Object} object Audio object that accepts an input
-   * @example
-   *  <div><code>
-   *  let sound, amplitude, fft, button;
-   *  function preload(){
-   *    sound = loadSound('assets/beat.mp3');
-   *  }
-   *
-   *  function setup() {
-   *    let cnv = createCanvas(100,100);
-   *    cnv.mouseClicked(togglePlay);
-   *    amplitude = new p5.Amplitude();
-   *    button = createButton("tap to disconnect amp");
-   *    button.mouseClicked(amp_disconnect);
-   *    button.position(0,110);
-   *    fft = new p5.FFT();
-   *    sound.loop();
-   *  }
-   *
-   *  function draw() {
-   *    background(220);
-   *    text('tap to play', 20, 20);
-   *    let level = amplitude.getLevel();
-   *    let size = map(level, 0, 1, 0, 200);
-   *    ellipse(width/2, height/2, size, size);
-   *  }
-   *
-   *  function togglePlay() {
-   *    if (sound.isPlaying()){
-   *      sound.pause();
-   *    }
-   *    else{
-   *      sound.play();
-   *        }
-   *    }
-   *  function amp_disconnect(){
-   *     if (button.html()=="tap to disconnect amp"){
-   *      amplitude.disconnect();
-   *      button.html("tap to connect fft");
-   *      }
-   *      else{
-   *          amplitude.connect(fft);
-   *          button.html("tap to disconnect amp");
-   *        }
-   *     }
-   *  </code></div>
-   */
   connect(unit) {
     if (unit) {
       if (unit.hasOwnProperty('input')) {
@@ -244,51 +190,6 @@ class Amplitude {
     // }
   }
 
-  /**
-   *  Disconnects the output of this p5.Amplitude object.
-   *
-   *  @method disconnect
-   *  @for p5.Amplitude
-   *  @example
-   *  <div><code>
-   *  let sound, amplitude, button;
-   *  function preload(){
-   *    sound = loadSound('assets/beat.mp3');
-   *  }
-   *
-   *  function setup() {
-   *    let cnv = createCanvas(100, 100);
-   *    cnv.mouseClicked(togglePlay);
-   *    button = createButton();
-   *    button.mouseClicked(amp_disconnect);
-   *    button.html('tap to disconnect amplitude');
-   *    button.position(0,100);
-   *    amplitude = new p5.Amplitude();
-   *    sound.loop();
-   *  }
-   *
-   *  function draw() {
-   *    background(220);
-   *    text('tap to play', 20, 20);
-   *    let level = amplitude.getLevel();
-   *    let size = map(level, 0, 1, 0, 200);
-   *    ellipse(width/2, height/2, size, size);
-   *  }
-   *
-   *  function togglePlay() {
-   *    if (sound.isPlaying()){
-   *      sound.pause();
-   *    }
-   *    else{
-   *      sound.play();
-   *        }
-   *    }
-   *  function amp_disconnect(){
-   *     amplitude.disconnect();
-   *     button.html('amplitude disconnect now');
-   *     }
-   *  </code></div>
-   */
   disconnect() {
     if (this.output) {
       this.output.disconnect();
