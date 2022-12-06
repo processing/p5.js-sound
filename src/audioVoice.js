@@ -43,6 +43,11 @@ class AudioVoice {
     this.output.disconnect();
   }
 
+  /**
+   * Dispose the output if it exists
+   * @method dispose
+   * @for p5.AudioVoice
+   */
   dispose() {
     if (this.output) {
       this.output.disconnect();
