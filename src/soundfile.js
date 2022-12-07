@@ -886,6 +886,14 @@ class SoundFile {
   }
 
   // TO DO: document this
+  /**
+   *  Set the pitch rate of a sound file. Will change the pitch and the speed also.
+   *
+   *  @method setPitch
+   *  @for p5.SoundFile
+   *  @param {Number} pitchRate     Set the pitch rate.
+   *                                Values ​​less than zero are also accepted.
+   */
   setPitch(num) {
     var newPlaybackRate = midiToFreq(num) / midiToFreq(60);
     this.rate(newPlaybackRate);
