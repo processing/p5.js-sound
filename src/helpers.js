@@ -82,6 +82,16 @@ function midiToFreq(m) {
 }
 
 // This method converts ANSI notes specified as a string "C4", "Eb3" to a frequency
+
+/**
+ *  Returns the frequency value of a note. This
+ *  the method converts ANSI notes specified as a
+ *  string "C4", "Eb3" etc to a frequency.
+ *
+ *  @method  noteToFreq
+ *  @param  {String} ansiNote The string of a ANSI note
+ *  @return {Number} Frequency value of the given ANSI note
+ */
 function noteToFreq(note) {
   if (typeof note !== 'string') {
     return note;
