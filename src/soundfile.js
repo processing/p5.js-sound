@@ -887,11 +887,11 @@ class SoundFile {
 
   // TO DO: document this
   /**
-   *  Set the pitch rate of a sound file by providing ANSI notes
-   *  value. It Will change the pitch and the speed also.
-   *  If input note is 60 (middle C), than frequency and speed is normal.
-   *  And if we increases note input than frequency and speed will increases
-   *  and vice-versa.
+   *  Pitch rate of a sound file can be changed by providing a MIDI note number.
+   *  It will change the pitch and also the speed.
+   *  If the input note is 60 (middle C), then frequency and speed is normal.
+   *  If we increase the note input, then frequency and speed increases,
+   *  and If we decrease the note input, then frequency and speed decreases.
    *
    *  @method setPitch
    *  @for p5.SoundFile
