@@ -123,8 +123,6 @@ class Distortion extends Effect {
      *  @property {AudioNode} WaveShaperNode
      */
     this.waveShaperNode = this.ac.createWaveShaper();
-
-    //this.amount = curveAmount;
     this.amount = amount;
     this.waveShaperNode.curve = makeDistortionCurve(curveAmount);
     this.waveShaperNode.oversample = oversample;
@@ -139,7 +137,7 @@ class Distortion extends Effect {
    *
    * @method process
    * @for p5.Distortion
-   * @param {Object} Signal  An object that outputs audio
+   * @param {Object} src An object that outputs audio
    * @param {Number} [amount] Unbounded distortion amount.
    *                                Normal values range from 0-1.
    * @param {String} [oversample] 'none', '2x', or '4x'.
