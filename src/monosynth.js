@@ -310,7 +310,7 @@ class MonoSynth extends AudioVoice {
   }
 
   /**
-   *  Returns  current type of internal oscillator eg. 'sine', 'triangle', 'sawtooth' or 'square'.
+   *  Returns current type of internal oscillator eg. 'sine', 'triangle', 'sawtooth' or 'square'.
    *
    *  @method  getType
    *  @for p5.MonoSynth
