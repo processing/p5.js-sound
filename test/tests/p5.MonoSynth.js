@@ -162,6 +162,14 @@ describe('p5.MonoSynth', function () {
       expect(monosynth.env.dLevel).to.equal(0.565);
     });
 
+    it('can setType and getType of oscillator', function () {
+      let monosynth = new p5.MonoSynth();
+      //defaults to sine
+      expect(monosynth.getType()).to.equal('sine');
+      monosynth.setType('square');
+      expect(monosynth.getType()).to.equal('square');
+    });
+
     it("can use amp to get and set osc's amp value", function (done) {
       let monosynth = new p5.MonoSynth();
 

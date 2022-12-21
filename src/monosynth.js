@@ -299,6 +299,29 @@ class MonoSynth extends AudioVoice {
   }
 
   /**
+   *  Set type to 'sine', 'triangle', 'sawtooth' or 'square'.
+   *
+   *  @method  setType
+   *  @for p5.MonoSynth
+   *  @param {String} type 'sine', 'triangle', 'sawtooth' or 'square'.
+   */
+  setType(type) {
+    this.oscillator.setType(type);
+  }
+
+  /**
+   *  Returns  current type of internal oscillator eg. 'sine', 'triangle', 'sawtooth' or 'square'.
+   *
+   *  @method  getType
+   *  @for p5.MonoSynth
+   *  @returns {String} type of internal oscillator  eg. 'sine', 'triangle', 'sawtooth' or 'square'.
+   */
+
+  getType() {
+    return this.oscillator.getType();
+  }
+
+  /**
    * MonoSynth amp
    * @method  amp
    * @for p5.MonoSynth
