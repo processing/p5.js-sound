@@ -902,6 +902,10 @@ class SoundFile {
     var newPlaybackRate = midiToFreq(num) / midiToFreq(60);
     this.rate(newPlaybackRate);
   }
+  getPitch() {
+    var freqValue = this.rate() * midiToFreq(60);
+    return freqToMidi(freqValue);
+  }
 
   /**
    * Returns the current playback rate of a sound file.
