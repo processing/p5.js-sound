@@ -902,6 +902,15 @@ class SoundFile {
     var newPlaybackRate = midiToFreq(num) / midiToFreq(60);
     this.rate(newPlaybackRate);
   }
+
+  /**
+   * Returns the current pitch of a sound file in the MIDI note.
+   *
+   * @method getPitch
+   * @for p5.SoundFile
+   * @return {Number}  Current pitch of the SoundFile.
+   *
+   */
   getPitch() {
     var freqValue = this.rate() * midiToFreq(60);
     return freqToMidi(freqValue);
