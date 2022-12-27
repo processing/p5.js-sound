@@ -904,11 +904,12 @@ class SoundFile {
   }
 
   /**
-   * Returns the current pitch of a sound file in the MIDI note.
+   * Returns the current pitch of a sound file as a MIDI note.
    *
    * @method getPitch
    * @for p5.SoundFile
-   * @return {Number}  Current pitch of the SoundFile.
+   * @return {Number}  Current pitch of the SoundFile.The default note is assumed to
+   *                   be 60(middle C).
    *
    */
   getPitch() {
