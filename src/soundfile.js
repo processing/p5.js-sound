@@ -902,14 +902,14 @@ class SoundFile {
    *  let sound,sRate, midiVal;
    *  let midiNotes = [60, 64, 67, 72];
    *  let noteIndex = 0;
-   *  function preload(){
+   *  function preload() {
    *    sound = loadSound('assets/beat.mp3');
    *    }
    *
    *  function setup() {
    *       let cnv = createCanvas(100, 100);
    *       cnv.mousePressed(startSound);
-   *  }
+   *    }
    *  function draw() {
    *      background(220);
    *      sRate = sound.rate();
