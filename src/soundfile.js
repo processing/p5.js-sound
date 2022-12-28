@@ -908,8 +908,8 @@ class SoundFile {
    *
    * @method getPitch
    * @for p5.SoundFile
-   * @return {Number}  Current pitch of the SoundFile.The default note is assumed to
-   *                   be 60(middle C).
+   * @return {Number}  Current pitch of the SoundFile. The default note is assumed to
+   *                   be 60 (middle C).
    *
    */
   getPitch() {
