@@ -756,7 +756,7 @@ class SoundFile {
    *
    * @method pan
    * @for p5.SoundFile
-   * @param {Number} [panValue]     Set the stereo panner
+   * @param {Number} panValue     Set the stereo panner
    * @param {Number} [timeFromNow]  schedule this event to happen
    *                                 seconds from now
    * @example
