@@ -405,12 +405,13 @@ class Oscillator {
   }
 
   /**
-   *  Pan between Left (-1) and Right (1)
+   *  Pan between Left (-1) and Right (1).
+   *  See also: <a href="#/p5.SoundFile/pan">Pan Example</a>
    *
    *  @method  pan
    *  @for p5.Oscillator
    *  @param  {Number} panning Number between -1 and 1
-   *  @param  {Number} timeFromNow schedule this event to happen
+   *  @param  {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
    */
   pan(pval, tFromNow) {
