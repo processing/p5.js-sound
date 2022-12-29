@@ -897,6 +897,42 @@ class SoundFile {
    *  @param {Number} pitchRate     If the MIDI note is increased, then both the
    *                                frequency of the sound and its playback speed
    *                                will increase as a result.
+   *  @example
+   *  <div><code>
+   *  let sound, sRate, midiVal;
+   *  let midiNotes = [60, 64, 67, 72];
+   *  let noteIndex = 0;
+   *
+   *  function preload() {
+   *    sound = loadSound('assets/beat.mp3');
+   *  }
+   *
+   *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(startSound);
+   *  }
+   *
+   *  function draw() {
+   *    background(220);
+   *    sRate = sound.rate();
+   *    text('tap to play', 10, 20);
+   *    if (midiVal) {
+   *      text('MIDI: ' + midiVal, 10, 40);
+   *      text('Rate: ' + sRate, 10, 60);
+   *    }
+   *  }
+   *
+   *  function startSound() {
+   *    if (sound.isPlaying()) {
+   *      sound.stop();
+   *    }
+   *    sound.play();
+   *    midiVal = midiNotes[noteIndex % midiNotes.length];
+   *    sound.setPitch(midiVal);
+   *
+   *    noteIndex++;
+   *  }
+   *  </code></div>
    */
   setPitch(num) {
     var newPlaybackRate = midiToFreq(num) / midiToFreq(60);
