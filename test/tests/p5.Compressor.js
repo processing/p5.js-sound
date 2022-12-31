@@ -110,7 +110,7 @@ describe('p5.Compressor', function () {
     });
     it('can return reduction value', function () {
       let compressor = new p5.Compressor();
-      let reduction = compressor.compressor.reduction.value;
+      let reduction = compressor.reduction();
       expect(reduction).to.not.be.null;
     });
     it('wet dry value can be changed', function () {

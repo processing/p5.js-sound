@@ -235,7 +235,7 @@ class Compressor extends Effect {
    * @return {Number} Value of the amount of gain reduction that is applied to the signal
    */
   reduction() {
-    return this.compressor.reduction.value;
+    return this.compressor.reduction;
   }
 
   dispose() {
