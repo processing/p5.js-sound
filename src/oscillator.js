@@ -152,7 +152,7 @@ class Oscillator {
    *
    *  Starting an oscillator on a user gesture will enable audio in browsers
    *  that have a strict autoplay policy, including Chrome and most mobile
-   *  devices. See also: `userStartAudio()`.
+   *  devices. See also: <a href="#/p5/userStartAudio">userStartAudio()</a>.
    *
    *  @method  start
    *  @for p5.Oscillator
@@ -202,7 +202,7 @@ class Oscillator {
    *
    *  @method  stop
    *  @for p5.Oscillator
-   *  @param  {Number} secondsFromNow Time, in seconds from now.
+   *  @param  {Number} [secondsFromNow] Time, in seconds from now.
    */
   stop(time) {
     if (this.started) {
