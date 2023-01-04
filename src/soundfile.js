@@ -746,7 +746,8 @@ class SoundFile {
   }
 
   /**
-   * It returns the volume of a sound is how loud or quiet the sound is.
+   * It returns the volume of a sound, which is a measure
+   * of how loud or quiet the sound is.
    *
    * @method getVolume
    * @for p5.SoundFile
