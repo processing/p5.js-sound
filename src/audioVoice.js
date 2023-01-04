@@ -23,6 +23,8 @@ class AudioVoice {
 
   amp(vol, rampTime) {}
 
+  setADSR(attack, decay, sustain, release) {}
+
   /**
    * Connect to p5 objects or Web Audio Nodes
    * @method  connect
