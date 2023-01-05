@@ -157,7 +157,7 @@ class Noise extends Oscillator {
    *  White is the default.
    *
    *  @method setType
-   *  @param {String} [type] 'white', 'pink' or 'brown'
+   *  @param {String} type 'white', 'pink' or 'brown'
    */
   setType(type) {
     switch (type) {
@@ -180,9 +180,23 @@ class Noise extends Oscillator {
     }
   }
 
+  /**
+   *  Returns current type of noise eg. 'white', 'pink' or 'brown'.
+   *
+   *  @method  getType
+   *  @for p5.Noise
+   *  @returns {String} type of noise eg. 'white', 'pink' or 'brown'.
+   */
   getType() {
     return this.buffer.type;
   }
+
+  /**
+   *  Starts playing the noise.
+   *
+   *  @method  start
+   *  @for p5.Noise
+   */
   start() {
     if (this.started) {
       this.stop();
@@ -196,6 +210,12 @@ class Noise extends Oscillator {
     this.started = true;
   }
 
+  /**
+   *  Stops playing the noise.
+   *
+   *  @method  stop
+   *  @for p5.Noise
+   */
   stop() {
     var now = p5sound.audiocontext.currentTime;
     if (this.noise) {
@@ -204,6 +224,12 @@ class Noise extends Oscillator {
     }
   }
 
+  /**
+   *  Get rid of the Noise object and free up its resources / memory.
+   *
+   *  @method  dispose
+   *  @for p5.Noise
+   */
   dispose() {
     var now = p5sound.audiocontext.currentTime;
 
