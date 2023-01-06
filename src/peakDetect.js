@@ -160,9 +160,10 @@ class PeakDetect {
   }
 
   /**
-   *  onPeak accepts two arguments: a function to call when
-   *  a peak is detected. The value of the peak,
-   *  between 0.0 and 1.0, is passed to the callback.
+   *  onPeak accepts one or two arguments: a callback function to call when
+   *  a peak is detected and an optional callback parameter. The value of the
+   *  peak, between 0.0 and 1.0, is always passed to the callback first, with
+   *  the optional parameter provided second.
    *
    *  @method  onPeak
    *  @param  {Function} callback Name of a function that will
