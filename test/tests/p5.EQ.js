@@ -54,13 +54,17 @@ describe('p5.EQ', function () {
           }, 100);
         });
 
-        it("a band's freq value can be changed", function () {
+        it('a bands freq value can be changed', function (done) {
           const eq = new p5.EQ(8);
-          eq.bands[0].freq(200);
           setTimeout(() => {
-            expect(eq.bands[0].gain()).to.equal(0);
-            expect(eq.bands[0].freq()).to.equal(200);
-          }, 100);
+            expect(eq.bands[0].freq()).to.equal(100);
+            eq.bands[0].freq(200);
+            setTimeout(() => {
+              expect(eq.bands[0].gain()).to.equal(0);
+              expect(eq.bands[0].freq()).to.equal(200);
+              done();
+            }, 100);
+          }, 50);
         });
 
         it("a band's type can be changed", function () {
