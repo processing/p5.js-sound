@@ -36,6 +36,24 @@ describe('p5.Gain', function () {
         gain.connect(filter);
         gain.connect(filter.input);
       });
+      it('can set the output level of gain node', (done) => {
+        let osc = new p5.Oscillator('sine');
+        let mainGainNode = new p5.Gain();
+        let amplitude = new p5.Amplitude();
+
+        osc.amp(1);
+        osc.start();
+        osc.disconnect();
+
+        mainGainNode.setInput(osc);
+        amplitude.setInput(mainGainNode);
+
+        mainGainNode.amp(0.5);
+        setTimeout(function () {
+          expect(amplitude.getLevel()).to.be.closeTo(0.25, 0.125);
+          done();
+        }, 100);
+      });
       it('can disconnect', function () {
         let filter = new p5.Filter();
         gain.connect(filter);
