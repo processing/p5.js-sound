@@ -745,6 +745,14 @@ class SoundFile {
     }
   }
 
+  /**
+   * It returns the volume of a sound, which is a measure
+   * of how loud or quiet the sound is.
+   *
+   * @method getVolume
+   * @for p5.SoundFile
+   * @return {Number}
+   */
   getVolume() {
     return this.output.gain.value;
   }
@@ -756,7 +764,7 @@ class SoundFile {
    *
    * @method pan
    * @for p5.SoundFile
-   * @param {Number} [panValue]     Set the stereo panner
+   * @param {Number} panValue     Set the stereo panner
    * @param {Number} [timeFromNow]  schedule this event to happen
    *                                 seconds from now
    * @example
@@ -885,12 +893,82 @@ class SoundFile {
     return this.playbackRate;
   }
 
-  // TO DO: document this
+  /**
+   *  Pitch of a sound file can be changed by providing a MIDI note number.
+   *  It will change the pitch and also the speed.
+   *  If the input note is 60 (middle C), then frequency and speed is normal.
+   *  If we increase the note input, then frequency and speed increases,
+   *  and if we decrease the note input, then frequency and speed decreases.
+   *
+   *  @method setPitch
+   *  @for p5.SoundFile
+   *  @param {Number} pitchRate     If the MIDI note is increased, then both the
+   *                                frequency of the sound and its playback speed
+   *                                will increase as a result.
+   *  @example
+   *  <div><code>
+   *  let sound, sRate, midiVal;
+   *  let midiNotes = [60, 64, 67, 72];
+   *  let noteIndex = 0;
+   *
+   *  function preload() {
+   *    sound = loadSound('assets/beat.mp3');
+   *  }
+   *
+   *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(startSound);
+   *  }
+   *
+   *  function draw() {
+   *    background(220);
+   *    sRate = sound.rate();
+   *    text('tap to play', 10, 20);
+   *    if (midiVal) {
+   *      text('MIDI: ' + midiVal, 10, 40);
+   *      text('Rate: ' + sRate, 10, 60);
+   *    }
+   *  }
+   *
+   *  function startSound() {
+   *    if (sound.isPlaying()) {
+   *      sound.stop();
+   *    }
+   *    sound.play();
+   *    midiVal = midiNotes[noteIndex % midiNotes.length];
+   *    sound.setPitch(midiVal);
+   *
+   *    noteIndex++;
+   *  }
+   *  </code></div>
+   */
   setPitch(num) {
     var newPlaybackRate = midiToFreq(num) / midiToFreq(60);
     this.rate(newPlaybackRate);
   }
 
+  /**
+   * Returns the current pitch of a sound file as a MIDI note.
+   *
+   * @method getPitch
+   * @for p5.SoundFile
+   * @return {Number}  Current pitch of the SoundFile. The default note is assumed to
+   *                   be 60 (middle C).
+   *
+   */
+  getPitch() {
+    var freqValue = this.rate() * midiToFreq(60);
+    return freqToMidi(freqValue);
+  }
+
+  /**
+   * Returns the current playback rate of a sound file.
+   *
+   * @method getPlaybackRate
+   * @for p5.SoundFile
+   * @return {Number}  Current playback rate of the SoundFile.
+   *
+   */
   getPlaybackRate() {
     return this.playbackRate;
   }

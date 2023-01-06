@@ -12,8 +12,13 @@ import Effect from './effect';
  * Audio Context Listener</a>, which can be accessed
  * by <code>p5.soundOut.audiocontext.listener</code>
  *
+ *  This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.
+ *  Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>,
+ *  <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and
+ *  <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
  *
  * @class p5.Panner3D
+ * @extends p5.Effect
  * @constructor
  */
 
@@ -42,7 +47,7 @@ class Panner3D extends Effect {
   }
 
   /**
-   * Connect an audio sorce
+   * Connect an audio source
    *
    * @method  process
    * @for p5.Panner3D

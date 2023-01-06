@@ -114,7 +114,7 @@ class Delay extends Effect {
    *
    *  @method  process
    *  @for p5.Delay
-   *  @param  {Object} Signal  An object that outputs audio
+   *  @param  {Object} src An object that outputs audio
    *  @param  {Number} [delayTime] Time (in seconds) of the delay/echo.
    *                               Some browsers limit delayTime to
    *                               1 second.

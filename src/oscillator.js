@@ -152,7 +152,7 @@ class Oscillator {
    *
    *  Starting an oscillator on a user gesture will enable audio in browsers
    *  that have a strict autoplay policy, including Chrome and most mobile
-   *  devices. See also: `userStartAudio()`.
+   *  devices. See also: <a href="#/p5/userStartAudio">userStartAudio()</a>.
    *
    *  @method  start
    *  @for p5.Oscillator
@@ -202,7 +202,7 @@ class Oscillator {
    *
    *  @method  stop
    *  @for p5.Oscillator
-   *  @param  {Number} secondsFromNow Time, in seconds from now.
+   *  @param  {Number} [secondsFromNow] Time, in seconds from now.
    */
   stop(time) {
     if (this.started) {
@@ -405,12 +405,13 @@ class Oscillator {
   }
 
   /**
-   *  Pan between Left (-1) and Right (1)
+   *  Pan between Left (-1) and Right (1).
+   *  See also: <a href="#/p5.SoundFile/pan">Pan Example</a>
    *
    *  @method  pan
    *  @for p5.Oscillator
    *  @param  {Number} panning Number between -1 and 1
-   *  @param  {Number} timeFromNow schedule this event to happen
+   *  @param  {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
    */
   pan(pval, tFromNow) {

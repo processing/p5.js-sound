@@ -11,7 +11,9 @@ import CrossFade from 'Tone/component/CrossFade.js';
  * <a href="/reference/#/p5.Compressor">p5.Compressor</a>,
  * <a href="/reference/#/p5.Delay">p5.Delay</a>,
  * <a href="/reference/#/p5.Filter">p5.Filter</a>,
- * <a href="/reference/#/p5.Reverb">p5.Reverb</a>.
+ * <a href="/reference/#/p5.Reverb">p5.Reverb</a>,
+ * <a href="/reference/#/p5.EQ">p5.EQ</a>,
+ * <a href="/reference/#/p5.Panner3D">p5.Panner3D</a>.
  *
  * @class  p5.Effect
  * @constructor

@@ -30,10 +30,72 @@ function makeDistortionCurve(amount) {
  * @class p5.Distortion
  * @extends p5.Effect
  * @constructor
- * @param {Number} [amount=0.25] Unbounded distortion amount.
- *                                Normal values range from 0-1.
- * @param {String} [oversample='none'] 'none', '2x', or '4x'.
+ * @param {Number} [amount] Unbounded distortion amount.
+ *                                Normal values range from 0-1 (defaults to 0.25)
+ * @param {String} [oversample] 'none', '2x' (default), or '4x'.
+ *  @example
+ *  <div><code>
+ *  let osc, distortion, fft;
  *
+ *  function setup() {
+ *    let cnv = createCanvas(100, 100);
+ *    fft = new p5.FFT(0, 256);
+ *
+ *    osc = new p5.TriOsc();
+ *    osc.amp(0.3);
+ *    osc.freq(375);
+ *
+ *    distortion = new p5.Distortion();
+ *    distortion.process(osc);
+ *    cnv.mousePressed(oscStart);
+ *  }
+ *
+ *  function draw() {
+ *    background(220);
+ *    // set the amount based on mouseX
+ *    let amount = constrain(map(mouseX, 0, width, 0, 1), 0, 1);
+ *
+ *    // multiply the amount to smooth the value
+ *    distortion.set(amount * amount);
+ *
+ *    noStroke();
+ *    fill(0);
+ *    text('tap to play', 10, 20);
+ *    text('amount: ' + amount, 10, 40);
+ *
+ *    // draw the waveform
+ *    var samples = fft.waveform();
+ *    drawOscilloscope(samples);
+ *  }
+ *
+ *  //function based on distortion example
+ *  function drawOscilloscope(samples) {
+ *    var yTranslateScope = 20;
+ *    var scopeWidth = width;
+ *    var scopeHeight = height;
+ *
+ *    stroke(0);
+ *    strokeWeight(1);
+ *    noFill();
+ *
+ *    beginShape();
+ *    for (var sampleIndex in samples) {
+ *      var x = map(sampleIndex, 0, samples.length, 0, scopeWidth);
+ *      var y = map(samples[sampleIndex], -1, 1, -scopeHeight / 4, scopeHeight / 4);
+ *      vertex(x, y + scopeHeight / 2 + yTranslateScope);
+ *    }
+ *    endShape();
+ *  }
+ *
+ *  function oscStart() {
+ *    osc.start();
+ *  }
+ *
+ *  function mouseReleased() {
+ *    osc.stop();
+ *  }
+ *
+ *  </code></div>
  */
 class Distortion extends Effect {
   constructor(amount, oversample) {
@@ -61,8 +123,7 @@ class Distortion extends Effect {
      *  @property {AudioNode} WaveShaperNode
      */
     this.waveShaperNode = this.ac.createWaveShaper();
-
-    this.amount = curveAmount;
+    this.amount = amount;
     this.waveShaperNode.curve = makeDistortionCurve(curveAmount);
     this.waveShaperNode.oversample = oversample;
 
@@ -76,9 +137,10 @@ class Distortion extends Effect {
    *
    * @method process
    * @for p5.Distortion
-   * @param {Number} [amount=0.25] Unbounded distortion amount.
+   * @param {Object} src An object that outputs audio
+   * @param {Number} [amount] Unbounded distortion amount.
    *                                Normal values range from 0-1.
-   * @param {String} [oversample='none'] 'none', '2x', or '4x'.
+   * @param {String} [oversample] 'none', '2x', or '4x'.
    */
   process(src, amount, oversample) {
     src.connect(this.input);
@@ -90,14 +152,15 @@ class Distortion extends Effect {
    *
    * @method set
    * @for p5.Distortion
-   * @param {Number} [amount=0.25] Unbounded distortion amount.
+   * @param {Number} [amount] Unbounded distortion amount.
    *                                Normal values range from 0-1.
-   * @param {String} [oversample='none'] 'none', '2x', or '4x'.
+   * @param {String} [oversample] 'none', '2x', or '4x'.
    */
   set(amount, oversample) {
-    if (amount) {
+    if (typeof amount === 'number') {
       var curveAmount = p5.prototype.map(amount, 0.0, 1.0, 0, 2000);
-      this.amount = curveAmount;
+      //this.amount = curveAmount;
+      this.amount = amount;
       this.waveShaperNode.curve = makeDistortionCurve(curveAmount);
     }
     if (oversample) {

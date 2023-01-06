@@ -112,7 +112,7 @@ class Filter extends Effect {
    *  of filter parameters.
    *
    *  @method  process
-   *  @param  {Object} Signal  An object that outputs audio
+   *  @param {Object} src An object that outputs audio
    *  @param {Number} [freq] Frequency in Hz, from 10 to 22050
    *  @param {Number} [res] Resonance/Width of the filter frequency
    *                        from 0.001 to 1000

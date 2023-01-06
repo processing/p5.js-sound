@@ -78,6 +78,7 @@ class Reverb extends Effect {
 
   _teardownConvolverNode() {
     if (this.convolverNode) {
+      this.input.disconnect(this.convolverNode);
       this.convolverNode.disconnect();
       delete this.convolverNode;
     }
@@ -210,6 +211,11 @@ class Reverb extends Effect {
  *
  *  <p>Use the method <code>createConvolution(path)</code> to instantiate a
  *  p5.Convolver with a path to your impulse response audio file.</p>
+ *
+ *  This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.
+ *  Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>,
+ *  <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and
+ *  <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
  *
  *  @class p5.Convolver
  *  @extends p5.Effect
