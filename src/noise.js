@@ -70,6 +70,69 @@ const _brownNoiseBuffer = (function () {
  *  @constructor
  *  @param {String} type Type of noise can be 'white' (default),
  *                       'brown' or 'pink'.
+ *  @example
+ *  <div><code>
+ *  let noise,fft;
+ *  let playing = false;
+ *
+ *  function setup() {
+ *    let cnv = createCanvas(100, 100);
+ *    cnv.mousePressed(playNoise);
+ *    cnv.mouseReleased(stopNoise);
+ *    noStroke();
+ *    fill(255,0,255);
+ *
+ *    // Create a new p5.Noise object
+ *    noise = new p5.Noise();
+ *    // Create a new p5.FFT object
+ *    fft = new p5.FFT();
+ *  }
+ *
+ *  function draw() {
+ *    background(220);
+ *    // Display the current type of noise or "Tap to play"
+ *    textAlign(CENTER, CENTER);
+ *    if (playing) {
+ *      text('Noise type: '+noise.getType(), width / 2, 20);
+ *    } else {
+ *      text('Tap to play', width / 2, 20);
+ *    }
+ *    drawSpectrum();
+ *  }
+ *
+ *  function playNoise() {
+ *    noise.start();
+ *    playing = true;
+ *  }
+ *
+ *  function stopNoise() {
+ *    noise.stop();
+ *    playing = false;
+ *
+ *    // Change the type of noise
+ *    if (noise.getType() === 'white') {
+ *      noise.setType('pink');
+ *    } else if (noise.getType() === 'pink'){
+ *      noise.setType('brown');
+ *    } else {
+ *      noise.setType('white');
+ *    }
+ *  }
+ *
+ *  function drawSpectrum() {
+ *    // Get and draw the frequency spectrum of the noise
+ *    let spectrum = fft.analyze();
+ *    beginShape();
+ *    vertex(0, height);
+ *    for (let i = 0; i < spectrum.length; i++) {
+ *      let x = map(i, 0, spectrum.length, 0, width);
+ *      let h = map(spectrum[i], 0, 255, height, 0);
+ *      vertex(x, h);
+ *    }
+ *    vertex(width, height);
+ *    endShape();
+ *  }
+ *  </code> </div>
  */
 class Noise extends Oscillator {
   constructor(type) {
@@ -94,7 +157,7 @@ class Noise extends Oscillator {
    *  White is the default.
    *
    *  @method setType
-   *  @param {String} [type] 'white', 'pink' or 'brown'
+   *  @param {String} type 'white', 'pink' or 'brown'
    */
   setType(type) {
     switch (type) {
@@ -117,9 +180,23 @@ class Noise extends Oscillator {
     }
   }
 
+  /**
+   *  Returns current type of noise eg. 'white', 'pink' or 'brown'.
+   *
+   *  @method  getType
+   *  @for p5.Noise
+   *  @returns {String} type of noise eg. 'white', 'pink' or 'brown'.
+   */
   getType() {
     return this.buffer.type;
   }
+
+  /**
+   *  Starts playing the noise.
+   *
+   *  @method  start
+   *  @for p5.Noise
+   */
   start() {
     if (this.started) {
       this.stop();
@@ -133,6 +210,12 @@ class Noise extends Oscillator {
     this.started = true;
   }
 
+  /**
+   *  Stops playing the noise.
+   *
+   *  @method  stop
+   *  @for p5.Noise
+   */
   stop() {
     var now = p5sound.audiocontext.currentTime;
     if (this.noise) {
@@ -141,6 +224,12 @@ class Noise extends Oscillator {
     }
   }
 
+  /**
+   *  Get rid of the Noise object and free up its resources / memory.
+   *
+   *  @method  dispose
+   *  @for p5.Noise
+   */
   dispose() {
     var now = p5sound.audiocontext.currentTime;
 
