@@ -1,10 +1,16 @@
 [![Build Status](https://travis-ci.com/processing/p5.js-sound.svg?branch=master)](https://travis-ci.com/processing/p5.js-sound) 
+![GitHub contributors](https://img.shields.io/github/contributors/processing/p5.js-sound)
+![GitHub issues](https://img.shields.io/github/issues-raw/processing/p5.js-sound)
+![Twitter Follow](https://img.shields.io/twitter/follow/p5xjs?style=social)
 
 ![](https://cloud.githubusercontent.com/assets/504124/19908328/2cd874ea-a059-11e6-847c-e5da5e957a2f.jpg)
 
 p5.sound
 ========
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/processing/p5.js-sound?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+ <a href="https://discord.gg/HjJCwm5">
+        <img src="https://img.shields.io/discord/836700474425475088?logo=discord"
+            alt="chat on Discord"></a>
 
 p5.sound brings the [Processing](http://processing.org) approach to [Web Audio](http://w3.org/TR/webaudio/) as an addon for [p5.js](http://github.com/lmccart/p5.js). Functionality includes audio input, playback, manipulation, effects, recording, sequencing, analysis and synthesis. The library is designed to be used in tandem with [p5.js](http://p5js.org).
 
