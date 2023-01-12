@@ -350,9 +350,6 @@ class FFT {
       var index = Math.round((frequency1 / nyquist) * this.freqDomain.length);
       return this.freqDomain[index];
     }
-    if (frequency1 < 0 || frequency2 < 0) {
-      throw 'invalid input for getEnergy()';
-    }
 
     // if two parameters:
     // if second is higher than first
