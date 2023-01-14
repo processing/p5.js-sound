@@ -55,7 +55,10 @@ class AudioIn {
      * @property {GainNode} input
      */
     this.input = p5sound.audiocontext.createGain();
+
     /**
+     * Get audio from an input, i.e. your computer's microphone.
+     * 
      * @property {GainNode} output
      */
     this.output = p5sound.audiocontext.createGain();
@@ -64,10 +67,12 @@ class AudioIn {
      * @property {MediaStream|null} stream
      */
     this.stream = null;
+
     /**
      * @property {MediaStreamAudioSourceNode|null} mediaStream
      */
     this.mediaStream = null;
+    
     /**
      * @property {Number|null} currentSource
      */
