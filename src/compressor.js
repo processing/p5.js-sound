@@ -18,8 +18,68 @@ import Effect from './effect';
  * @class p5.Compressor
  * @constructor
  * @extends p5.Effect
+ *  @example
+ * <div><code>
+ * let sound, compressor, playing;
  *
+ * function preload() {
+ *   sound = loadSound('assets/beat.mp3');
+ * }
  *
+ * function setup() {
+ *   let cnv = createCanvas(100, 100);
+ *   cnv.mouseClicked(togglePlay);
+ *   sound.disconnect();
+ *   compressor = new p5.Compressor();
+ *   compressor.process(sound);
+ *
+ *   textAlign(CENTER, CENTER);
+ *   fft = new p5.FFT();
+ * }
+ *
+ * function draw() {
+ *   background(220);
+ *   // Constrain mouse Y position between 0 and -100
+ *   let threshold = -constrain(mouseY, 0, 100);
+ *   compressor.threshold(threshold);
+ *
+ *   // Draw a rectangle based on the compressor reduction
+ *   fill(255, 0, 255, 70);
+ *   rect(0, 0, width, -compressor.reduction());
+ *
+ *   fill(0);
+ *   if (playing) {
+ *     text('Threshold: ' + round(threshold), width / 2, 20);
+ *   } else {
+ *     text('Tap to play', width / 2, 20);
+ *   }
+ *   // Draw a line to indicate the threshold
+ *   stroke(0);
+ *   line(0, mouseY, width, mouseY);
+ *   drawSpectrum();
+ * }
+ *
+ * function togglePlay() {
+ *   if (playing) {
+ *     playing = false;
+ *     sound.pause();
+ *   } else {
+ *     playing = true;
+ *     sound.loop();
+ *   }
+ * }
+ *
+ * function drawSpectrum() {
+ *   let spectrum = fft.analyze();
+ *   noStroke();
+ *   fill(255, 0, 255);
+ *   for (let i = 0; i < spectrum.length; i++){
+ *     let x = map(i, 0, spectrum.length, 0, width);
+ *     let h = -height + map(spectrum[i], 0, 255, height, 0);
+ *     rect(x, height, width / spectrum.length, h);
+ *   }
+ * }
+ * </code></div>
  */
 class Compressor extends Effect {
   constructor() {
