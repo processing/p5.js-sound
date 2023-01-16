@@ -1362,32 +1362,32 @@ class SoundFile {
     var now = ac.currentTime;
     var cNode = ac.createBufferSource();
 
-    const workletBufferSize = safeBufferSize(256);
-
-    // dispose of worklet node if it already exists
-    if (self._workletNode) {
-      self._workletNode.disconnect();
-      delete self._workletNode;
-    }
-    self._workletNode = new AudioWorkletNode(
-      ac,
-      processorNames.soundFileProcessor,
-      {
-        processorOptions: { bufferSize: workletBufferSize },
-      }
-    );
-    self._workletNode.port.onmessage = (event) => {
-      if (event.data.name === 'position') {
-        // event.data.position should only be 0 when paused
-        if (event.data.position === 0) {
-          return;
+    // Reuse the worklet node rather than creating a new one. Even if we
+    // disconnect it, it seems to leak and cause choppy audio after a
+    // while.
+    if (!self._workletNode) {
+      const workletBufferSize = safeBufferSize(256);
+      self._workletNode = new AudioWorkletNode(
+        ac,
+        processorNames.soundFileProcessor,
+        {
+          processorOptions: { bufferSize: workletBufferSize },
         }
-        this._lastPos = event.data.position;
+      );
+      self._workletNode.port.onmessage = (event) => {
+        if (event.data.name === 'position') {
+          // event.data.position should only be 0 when paused
+          if (event.data.position === 0) {
+            return;
+          }
+          this._lastPos = event.data.position;
 
-        // do any callbacks that have been scheduled
-        this._onTimeUpdate(self._lastPos);
-      }
-    };
+          // do any callbacks that have been scheduled
+          this._onTimeUpdate(self._lastPos);
+        }
+      };
+      self._workletNode.connect(p5.soundOut._silentNode);
+    }
 
     // create counter buffer of the same length as self.buffer
     cNode.buffer = _createCounterBuffer(self.buffer);
@@ -1395,7 +1395,6 @@ class SoundFile {
     cNode.playbackRate.setValueAtTime(self.playbackRate, now);
 
     cNode.connect(self._workletNode);
-    self._workletNode.connect(p5.soundOut._silentNode);
 
     return cNode;
   }
