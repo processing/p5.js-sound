@@ -50,30 +50,45 @@ p5sound.inputSources = [];
  */
 class AudioIn {
   constructor(errorCallback) {
-    // set up audio input
     /**
+     * set up audio input
+     *
      * @property {GainNode} input
      */
     this.input = p5sound.audiocontext.createGain();
 
     /**
-     * Get audio from an input, i.e. your computer's microphone.
-     * 
+     * send audio as an output, i.e. your computer's speaker.
+     *
      * @property {GainNode} output
      */
     this.output = p5sound.audiocontext.createGain();
 
     /**
+     * used to store the MediaStream object that is returned from the getUserMedia() API,
+     * which allows access to the user's microphone. The stream is used to create a MediaStreamAudioSourceNode,
+     * which is used as the audio source for the input and output gain nodes.
+     * The stream is also used to check if the browser supports the MediaStreamTrack and mediaDevices API,
+     * and if not, an errorCallback function is called or an alert is displayed.
+     *
      * @property {MediaStream|null} stream
      */
     this.stream = null;
 
     /**
+     * used to access the "audio input" from the user's microphone.
+     * It creates a MediaStream object that can be used to start and stop the mic and measure its volume using the getLevel() method or by connecting it to an FFT object.
+     * MediaStream object can also be use to check if the browser supports MediaStreamTrack and mediaDevices and to add the AudioIn object to the soundArray for disposal on close.
+     *
      * @property {MediaStreamAudioSourceNode|null} mediaStream
      */
     this.mediaStream = null;
-    
+
     /**
+     * use to store the "current source of audio input", such as the user's microphone.
+     * initially set to "null" and can be updated as the user selects different audio sources.
+     * also used in conjunction with the "input" and "mediaStream" properties to control audio input.
+     *
      * @property {Number|null} currentSource
      */
     this.currentSource = null;
