@@ -77,17 +77,21 @@ class MonoSynth extends AudioVoice {
      * @for p5.MonoSynth
      */
     /**
-     * used to set the decay time of the envelope (ADSR) of the MonoSynth class. 
-     * It is a getter and setter that can be used to retrieve or change the decay time. 
-     * It is used in conjunction with the attack, sustain, and release fields/functions to set the full envelope of the synthesizer.
+     * allow user to set the decay time of the envelope (ADSR) of the MonoSynth class.
+     * It is a getter and setter that can be used to retrieve or change the decay time.
+     * used in conjunction with the attack, sustain, and release fields/functions to set the full envelope of the synthesizer.
      * @property {Number} decay
      * @for p5.MonoSynth
      */
     /**
+     * allows the user to retrieve and adjust the sustain level of the envelope,
+     * which controls the level at which the sound is sustained during the sustain phase of the envelope.
+     * The default sustain level is set to 0.15.
      * @property {Number} sustain
      * @for p5.MonoSynth
      */
     /**
+     * allows the user to access and change the release time of the envelope.
      * @property {Number} release
      * @for p5.MonoSynth
      */
