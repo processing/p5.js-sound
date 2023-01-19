@@ -146,7 +146,7 @@ describe('p5.SoundRecorder', function () {
         expect(outputSoundFile.duration()).to.eq(recordingDuration);
 
         const outputChannel = outputSoundFile.buffer.getChannelData(0);
-        let isAllZero = true;
+        expect(outputChannel[0]).to.not.eq(0);
 
         outputSoundFile.dispose();
         p5.prototype.outputVolume(0);
