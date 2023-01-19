@@ -68,8 +68,7 @@ class RingBuffer {
       let writeIndex = (this._writeIndex + i) % this._length;
       for (let channel = 0; channel < this._channelCount; ++channel) {
         if (arraySequence[channel])
-        this._channelData[channel][writeIndex] = arraySequence[channel][i];
-    }
+          this._channelData[channel][writeIndex] = arraySequence[channel][i];
       }
     }
 
