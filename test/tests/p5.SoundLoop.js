@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.SoundLoop', function () {
   it('can be initialized without any arguments', function () {
     let sloop = new p5.SoundLoop();

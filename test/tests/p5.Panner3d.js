@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.Panner3d', function () {
   it('can be created and disposed', function () {
     let panner3d = new p5.Panner3D();

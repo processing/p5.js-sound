@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.Delay', function () {
   let noise = new p5.Noise();
   it('can be created', function (done) {

@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.PolySynth', function () {
   const audioContext = p5.prototype.getAudioContext();
 

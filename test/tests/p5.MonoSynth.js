@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.MonoSynth', function () {
   it('can be created and disposed', function () {
     const monoSynth = new p5.MonoSynth();

@@ -1,5 +1,3 @@
-// const expect = chai.expect;
-
 describe('p5.Panner', function () {
   let ac, output, input;
   beforeEach(function () {

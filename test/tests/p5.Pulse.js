@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.Pulse', function () {
   it('can be created without any arguments', function () {
     let pulse = new p5.Pulse();

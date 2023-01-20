@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.SoundRecorder', function () {
   let inputSoundFile;
   let writeFileSub;

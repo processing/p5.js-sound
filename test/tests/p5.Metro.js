@@ -1,4 +1,3 @@
-const expect = chai.expect;
 let metro;
 
 describe('p5.Metro', function () {

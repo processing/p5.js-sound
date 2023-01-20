@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 p5.prototype.soundFormats('mp3', 'ogg');
 let soundFile = p5.prototype.loadSound('./testAudio/drum');
 

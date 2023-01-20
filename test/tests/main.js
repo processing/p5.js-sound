@@ -1,4 +1,3 @@
-const expect = chai.expect;
 describe('main output', function () {
   it('can initiate main class', function () {
     expect(p5.soundOut.input).to.have.property('gain');

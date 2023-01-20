@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.AudioIn', function () {
   let mic;
   beforeEach(function () {
