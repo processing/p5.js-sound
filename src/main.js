@@ -87,7 +87,8 @@ p5.prototype.outputVolume = function (vol, rampTime = 0, tFromNow = 0) {
     var now = p5sound.audiocontext.currentTime;
     var currentVol = p5sound.output.gain.value;
     p5sound.output.gain.cancelScheduledValues(now + tFromNow);
-    p5sound.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
+    if (rampTime !== 0)
+      p5sound.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
     p5sound.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
   } else if (vol) {
     vol.connect(p5sound.output.gain);
