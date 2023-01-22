@@ -95,7 +95,6 @@ describe('p5.AudioIn', function () {
 
     it('can get sources', function (done) {
       mic.getSources().then(function (sources) {
-        console.log(sources);
         expect(sources).to.be.an('array');
         done();
       });
