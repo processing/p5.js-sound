@@ -298,7 +298,7 @@ class FFT {
    *  <a href="https://en.wikipedia.org/wiki/Audio_frequency" target="_blank">
    *  frequency</a>, or the average amount of energy between two
    *  frequencies. Accepts Number(s) corresponding
-   *  to frequency (in Hz), or a "string" corresponding to predefined
+   *  to frequency (in Hz) (frequency must be >= 0), or a "string" corresponding to predefined
    *  frequency ranges ("bass", "lowMid", "mid", "highMid", "treble").
    *  Returns a range between 0 (no energy/volume at that frequency) and
    *  255 (maximum energy).
@@ -318,8 +318,8 @@ class FFT {
    *                                will return average amount of
    *                                energy that exists between the
    *                                two frequencies.
-   *  @return {Number}   Energy   Energy (volume/amplitude) from
-   *                              0 and 255.
+   *  @return {Number}  Energy (volume/amplitude) from
+   *                    0 and 255.
    *
    */
   getEnergy(frequency1, frequency2) {
@@ -350,7 +350,9 @@ class FFT {
       var index = Math.round((frequency1 / nyquist) * this.freqDomain.length);
       return this.freqDomain[index];
     }
-
+    if (frequency1 < 0 || frequency2 < 0) {
+      throw 'invalid input for getEnergy(), frequency cannot be a negative number';
+    }
     // if two parameters:
     // if second is higher than first
     if (frequency1 > frequency2) {
