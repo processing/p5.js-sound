@@ -133,10 +133,14 @@ class Oscillator {
 
     this.oscillator.connect(this.output);
     // stereo panning
-    this.panPosition = 0.0;
     this.connection = p5sound.input; // connect to p5sound by default
-    this.panner = new Panner(this.output, this.connection, 1);
 
+    if (typeof p5sound.audiocontext.createStereoPanner !== 'undefined') {
+      this.panner = new Panner();
+      this.output.connect(this.panner);
+    } else {
+      this.panner = new Panner(this.output, this.connection, 1);
+    }
     //array of math operation signal chaining
     this.mathOps = [this.output];
 
@@ -415,21 +419,20 @@ class Oscillator {
    *                                seconds from now
    */
   pan(pval, tFromNow) {
-    this.panPosition = pval;
     this.panner.pan(pval, tFromNow);
   }
 
   /**
-   *  Returns the current value of panPosition , between Left (-1) and Right (1)
+   *  Returns the current value of pan position , between Left (-1) and Right (1)
    *
    *  @method  getPan
    *  @for p5.Oscillator
    *
-   *  @returns {number} panPosition of oscillator , between Left (-1) and Right (1)
+   *  @returns {number} pan position of oscillator , between Left (-1) and Right (1)
    */
 
   getPan() {
-    return this.panPosition;
+    return this.panner.getPan();
   }
 
   // get rid of the oscillator
@@ -442,7 +445,7 @@ class Oscillator {
       var now = p5sound.audiocontext.currentTime;
       this.stop(now);
       this.disconnect();
-      this.panner = null;
+      this.panner.dispose();
       this.oscillator = null;
     }
     // if it is a Pulse

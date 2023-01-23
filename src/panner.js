@@ -1,21 +1,42 @@
+import Effect from './effect.js';
+
 import p5sound from './main';
 var ac = p5sound.audiocontext;
 var panner;
 // Stereo panner
 // if there is a stereo panner node use it
 if (typeof ac.createStereoPanner !== 'undefined') {
-  class Panner {
-    constructor(input, output) {
-      this.stereoPanner = this.input = ac.createStereoPanner();
-      input.connect(this.stereoPanner);
-      this.stereoPanner.connect(output);
+  class Panner extends Effect {
+    constructor() {
+      super();
+      this.stereoPanner = this.ac.createStereoPanner();
+
+      this.input.connect(this.stereoPanner);
+      this.stereoPanner.connect(this.wet);
     }
 
     pan(val, tFromNow) {
-      var time = tFromNow || 0;
-      var t = ac.currentTime + time;
+      if (typeof val === 'number') {
+        let time = tFromNow || 0;
+        this.stereoPanner.pan.linearRampToValueAtTime(
+          val,
+          this.ac.currentTime + 0.02 + time
+        );
+      } else if (typeof val !== 'undefined') {
+        val.connect(this.stereoPanner.pan);
+      }
+    }
 
-      this.stereoPanner.pan.linearRampToValueAtTime(val, t);
+    getPan() {
+      return this.stereoPanner.pan.value;
+    }
+
+    dispose() {
+      super.dispose();
+      if (this.stereoPanner) {
+        this.stereoPanner.disconnect();
+        delete this.stereoPanner;
+      }
     }
 
     //not implemented because stereopanner
@@ -23,16 +44,6 @@ if (typeof ac.createStereoPanner !== 'undefined') {
     //convert single channel or multichannel to stereo.
     //tested with single and stereo, not with (>2) multichannel
     inputChannels() {}
-
-    connect(obj) {
-      this.stereoPanner.connect(obj);
-    }
-
-    disconnect() {
-      if (this.stereoPanner) {
-        this.stereoPanner.disconnect();
-      }
-    }
   }
 
   panner = Panner;
