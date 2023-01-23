@@ -111,10 +111,11 @@ class PeakDetect {
     this.currentValue = 0;
 
     /**
-     *  isDetected is set to true when a peak is detected.
-     *
+     *  It returns a boolean indicating whether a peak in the audio frequency spectrum has been detected or not.
      *  @attribute isDetected {Boolean}
      *  @default  false
+     *  @property {Number} isDetected
+     *  @for p5.PeakDetect
      */
     this.isDetected = false;
 
