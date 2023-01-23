@@ -56,6 +56,7 @@ if (typeof ac.createStereoPanner !== 'undefined') {
       this.input = ac.createGain();
       input.connect(this.input);
 
+      this.panValue = 0;
       this.left = ac.createGain();
       this.right = ac.createGain();
       this.left.channelInterpretation = 'discrete';
@@ -81,6 +82,7 @@ if (typeof ac.createStereoPanner !== 'undefined') {
 
     // -1 is left, +1 is right
     pan(val, tFromNow) {
+      this.panValue = val;
       var time = tFromNow || 0;
       var t = ac.currentTime + time;
       var v = (val + 1) / 2;
@@ -88,6 +90,10 @@ if (typeof ac.createStereoPanner !== 'undefined') {
       var leftVal = Math.sin((v * Math.PI) / 2);
       this.left.gain.linearRampToValueAtTime(leftVal, t);
       this.right.gain.linearRampToValueAtTime(rightVal, t);
+    }
+
+    getPan() {
+      return this.panValue;
     }
 
     inputChannels(numChannels) {
