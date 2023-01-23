@@ -6,6 +6,19 @@ var panner;
 // Stereo panner
 // if there is a stereo panner node use it
 if (typeof ac.createStereoPanner !== 'undefined') {
+  /**
+   * The Panner class allows you to control the stereo
+   * panning of a sound source. It uses the [StereoPannerNode](https://developer.mozilla.org/en-US/docs/Web/API/StereoPannerNode),
+   * which allows you to adjust the balance between the left and right channels of a sound source.
+   *
+   * This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.
+   * Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>,
+   * <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and
+   * <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
+   *
+   * @class p5.Panner
+   * @extends p5.Effect
+   */
   class Panner extends Effect {
     constructor() {
       super();
@@ -15,6 +28,16 @@ if (typeof ac.createStereoPanner !== 'undefined') {
       this.stereoPanner.connect(this.wet);
     }
 
+    /**
+     * Set the stereo pan position, a value of -1 means the sound will be fully panned
+     * to the left, a value of 0 means the sound will be centered, and a value of 1 means
+     * the sound will be fully panned to the right.
+     * @method pan
+     * @for p5.Panner
+     * @param {Number} value  A value between -1 and 1 that sets the pan position.
+     *
+     * @param {Number} [time] time in seconds that it will take for the panning to change to the specified value.
+     */
     pan(val, tFromNow) {
       if (typeof val === 'number') {
         let time = tFromNow || 0;
@@ -27,10 +50,23 @@ if (typeof ac.createStereoPanner !== 'undefined') {
       }
     }
 
+    /**
+     *  Return the current panning value.
+     *
+     *  @method  getPan
+     *  @for p5.Panner
+     *  @return {Number} current panning value, number between -1 (left) and 1 (right).
+     */
     getPan() {
       return this.stereoPanner.pan.value;
     }
 
+    /**
+     *  Get rid of the Panner and free up its resources / memory.
+     *
+     *  @method  dispose
+     *  @for p5.Panner
+     */
     dispose() {
       super.dispose();
       if (this.stereoPanner) {
