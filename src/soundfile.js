@@ -182,8 +182,12 @@ class SoundFile {
     this.startMillis = null;
 
     // stereo panning
-    this.panPosition = 0.0;
-    this.panner = new Panner(this.output, p5sound.input, 2);
+    if (typeof p5sound.audiocontext.createStereoPanner !== 'undefined') {
+      this.panner = new Panner();
+      this.output.connect(this.panner);
+    } else {
+      this.panner = new Panner(this.output, p5sound.input, 2);
+    }
 
     // it is possible to instantiate a soundfile with no path
     if (this.url || this.file) {
@@ -795,7 +799,6 @@ class SoundFile {
    *  </div></code>
    */
   pan(pval, tFromNow) {
-    this.panPosition = pval;
     this.panner.pan(pval, tFromNow);
   }
 
@@ -809,7 +812,7 @@ class SoundFile {
    *                          0.0 is center and default.
    */
   getPan() {
-    return this.panPosition;
+    return this.panner.getPan();
   }
 
   /**
@@ -1264,7 +1267,7 @@ class SoundFile {
       this.output = null;
     }
     if (this.panner) {
-      this.panner.disconnect();
+      this.panner.dispose();
       this.panner = null;
     }
   }

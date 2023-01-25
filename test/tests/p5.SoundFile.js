@@ -30,7 +30,7 @@ describe('p5.SoundFile', function () {
     expect(sf.pauseTime).to.equal(0);
     expect(sf.mode).to.equal('sustain');
     expect(sf.startMillis).to.be.null;
-    expect(sf.panPosition).to.equal(0);
+    expect(sf.getPan()).to.equal(0);
     expect(sf.panner).to.have.property('stereoPanner');
     expect(p5.soundOut.soundArray).to.include(sf);
 
@@ -507,13 +507,13 @@ describe('p5.SoundFile', function () {
       let sf = new p5.SoundFile();
       expect(sf.getPan()).to.equal(0);
       sf.pan(0.32);
-      expect(sf.panPosition).to.equal(0.32);
-      expect(sf.getPan()).to.equal(0.32);
+      setTimeout(() => {
+        expect(sf.getPan()).to.equal(0.32);
+      }, 5);
       //with delay
       let sf2 = new p5.SoundFile();
       sf2.pan(-0.89, 0.1);
       setTimeout(() => {
-        expect(sf2.panPosition).to.equal(-0.89);
         expect(sf2.getPan()).to.equal(-0.89);
       }, 100);
     });
