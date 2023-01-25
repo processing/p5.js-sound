@@ -103,12 +103,12 @@ describe('p5.Compressor', function () {
       expect(compressor.release()).to.be.approximately(0.63, 0.01);
 
       //can pass a node to connect
-      let poly = new p5.PolySynth();
-      compressor.release(poly);
+      let gain = new p5.Gain();
+      compressor.release(gain);
     });
     it('can return reduction value', function () {
       let compressor = new p5.Compressor();
-      let reduction = compressor.reduction();
+      let reduction = compressor.compressor.reduction.value;
       expect(reduction).to.not.be.null;
     });
     it('wet dry value can be changed', function () {
