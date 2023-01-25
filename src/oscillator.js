@@ -446,6 +446,7 @@ class Oscillator {
       this.stop(now);
       this.disconnect();
       this.panner.dispose();
+      this.panner = null;
       this.oscillator = null;
     }
     // if it is a Pulse

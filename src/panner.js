@@ -43,7 +43,7 @@ if (typeof ac.createStereoPanner !== 'undefined') {
         let time = tFromNow || 0;
         this.stereoPanner.pan.linearRampToValueAtTime(
           val,
-          this.ac.currentTime + 0.02 + time
+          this.ac.currentTime + time
         );
       } else if (typeof val !== 'undefined') {
         val.connect(this.stereoPanner.pan);
@@ -155,6 +155,29 @@ if (typeof ac.createStereoPanner !== 'undefined') {
     disconnect() {
       if (this.output) {
         this.output.disconnect();
+      }
+    }
+
+    dispose() {
+      if (this.input) {
+        this.input.disconnect();
+        delete this.input;
+      }
+      if (this.output) {
+        this.output.disconnect();
+        delete this.output;
+      }
+      if (this.left) {
+        this.left.disconnect();
+        delete this.left;
+      }
+      if (this.right) {
+        this.right.disconnect();
+        delete this.right;
+      }
+      if (this.splitter) {
+        this.splitter.disconnect();
+        delete this.splitter;
       }
     }
   }
