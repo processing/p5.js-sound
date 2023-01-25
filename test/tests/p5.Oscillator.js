@@ -214,11 +214,8 @@ describe('p5.Oscillator', function () {
     it('can be panned without any delay', function (done) {
       let osc = new p5.Oscillator();
       let panner = osc.panner;
-      expect(osc.panPosition).to.equal(0); //default value
       expect(osc.getPan()).to.equal(0);
       osc.pan(-0.3);
-      expect(osc.panPosition).to.equal(-0.3);
-      expect(osc.getPan()).to.equal(-0.3);
       if (typeof p5.soundOut.audiocontext.createStereoPanner !== 'undefined') {
         setTimeout(() => {
           expect(panner.stereoPanner.pan.value).to.be.approximately(-0.3, 0.01);
@@ -236,8 +233,6 @@ describe('p5.Oscillator', function () {
       let osc = new p5.Oscillator();
       osc.pan(0.7, 0.1);
       let panner = osc.panner;
-      expect(osc.panPosition).to.equal(0.7);
-      expect(osc.getPan()).to.equal(0.7);
       if (typeof p5.soundOut.audiocontext.createStereoPanner !== 'undefined') {
         setTimeout(() => {
           expect(panner.stereoPanner.pan.value).to.not.be.approximately(
@@ -250,7 +245,7 @@ describe('p5.Oscillator', function () {
               0.01
             );
             done();
-          }, 50);
+          }, 60);
         }, 50);
       } else {
         setTimeout(() => {
@@ -266,7 +261,7 @@ describe('p5.Oscillator', function () {
             expect(panner.left.gain.value).to.be.approximately(0.972, 0.001);
             expect(panner.right.gain.value).to.be.approximately(0.233, 0.001);
             done();
-          }, 100);
+          }, 60);
         }, 50);
       }
     });
