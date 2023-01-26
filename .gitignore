@@ -5,3 +5,6 @@ p5soundnotes
 *.DS_Store
 .vscode
 lib/p5.*
+_karma_webpack_
+coverage/
+.nyc_output/*
