@@ -20,6 +20,7 @@ describe('p5.Amplitude', function () {
 
   describe('methods', function () {
     this.retries(2);
+
     it('accepts oscillator input', function () {
       let osc = new p5.Oscillator('square');
       let amp = new p5.Amplitude();
@@ -96,7 +97,7 @@ describe('p5.Amplitude', function () {
       //     done(error);
       //   }
       // }, 500);
-      
+    });
     it('gets stereo osc level', function () {
       //TODO : this test seems to be very inconsistent, to be corrected in the future
       // let osc = new p5.Oscillator('square');
