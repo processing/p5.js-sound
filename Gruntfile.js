@@ -2,6 +2,22 @@ const webpackConfig = require('./webpack.config.js');
 
 module.exports = function(grunt) {
 
+  const mochaConfig = {
+    test: {
+      options: {
+        urls: [
+          'http://localhost:8000/test/headless-test.html',
+        ],
+        // reporter: reporter,
+        run: true,
+        log: true,
+        logErrors: true,
+        timeout: 100000,
+        growlOnSuccess: false
+      }
+    }
+  };
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     decomment: {
@@ -71,8 +87,14 @@ module.exports = function(grunt) {
         },
       'pre-commit':'lint-nofix' //runs elint in -nofix mode  before every git commit 
       }
-      }
+    },
+
+    mocha: mochaConfig,
+
+  mochaChrome: mochaConfig,
   });
+
+  grunt.loadTasks('./test/tasks');
 
   
   grunt.loadNpmTasks('grunt-webpack');
@@ -88,4 +110,10 @@ module.exports = function(grunt) {
   grunt.registerTask('dev', ['eslint','connect','webpack:dev', 'decomment']);
   grunt.registerTask('serve', 'connect:server:keepalive');
   grunt.registerTask('run-tests', ['serve', 'open']);
+  grunt.registerTask('test', [
+    'connect',
+    'webpack:prod',
+    'mochaChrome',
+    // 'nyc:report'
+  ]);
 };
