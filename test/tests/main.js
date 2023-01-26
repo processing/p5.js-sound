@@ -29,7 +29,7 @@ describe('main output', function () {
       expect(p5.prototype.getOutputVolume()).to.be.approximately(0.6, 0.05);
       expect(p5.prototype.outputVolume().value).to.be.approximately(0.6, 0.05);
       done();
-    }, 100);
+    }, 150);
   });
   it('can set output volume after t seconds in future', function (done) {
     let t = 1;

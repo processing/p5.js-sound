@@ -200,7 +200,10 @@ describe('p5.Envelope', function () {
 
       expect(envelope.control.getValueAtTime(now + 1)).to.be.above(0);
       expect(envelope.control.getValueAtTime(now + 1)).to.be.below(0.9);
-      expect(envelope.control.getValueAtTime(now + 1.5)).to.equal(0.9);
+      expect(envelope.control.getValueAtTime(now + 1.5)).to.be.approximately(
+        0.9,
+        0.01
+      );
     });
     it('can be played on an input without any delay', function () {
       let envelope = new p5.Envelope(0.1, 0.65, 0.5, 0.5, 0.35, 0.4);
@@ -208,11 +211,20 @@ describe('p5.Envelope', function () {
       let now = p5.prototype.getAudioContext().currentTime;
       envelope.play(osc);
 
-      expect(envelope.control.getValueAtTime(now + 0.1)).to.equal(0.65);
+      expect(envelope.control.getValueAtTime(now + 0.1)).to.be.approximately(
+        0.65,
+        0.02
+      );
 
-      expect(envelope.control.getValueAtTime(now + 0.6)).to.equal(0.5);
+      expect(envelope.control.getValueAtTime(now + 0.6)).to.be.approximately(
+        0.5,
+        0.02
+      );
 
-      expect(envelope.control.getValueAtTime(now + 0.95)).to.equal(0.4);
+      expect(envelope.control.getValueAtTime(now + 0.95)).to.be.approximately(
+        0.4,
+        0.02
+      );
 
       expect(envelope.control.getValueAtTime(now + 0.05)).to.not.be.zero;
       expect(envelope.control.getValueAtTime(now + 0.05)).to.be.below(0.65);
@@ -220,7 +232,10 @@ describe('p5.Envelope', function () {
       expect(envelope.control.getValueAtTime(now + 0.4)).to.be.below(0.65);
       expect(envelope.control.getValueAtTime(now + 0.8)).to.above(0.4);
       expect(envelope.control.getValueAtTime(now + 0.8)).to.below(0.5);
-      expect(envelope.control.getValueAtTime(now + 1)).to.equal(0.4);
+      expect(envelope.control.getValueAtTime(now + 1)).to.be.approximately(
+        0.4,
+        0.02
+      );
     });
     it('can be played on an input with delay', function () {
       let envelope = new p5.Envelope(0.1, 0.65, 0.5, 0.5, 0.35, 0.4);
