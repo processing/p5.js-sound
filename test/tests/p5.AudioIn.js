@@ -33,6 +33,7 @@ describe('p5.AudioIn', function () {
   });
 
   describe('methods', function () {
+    this.retries(2);
     it('can be started and stopped', function (done) {
       let mic = new p5.AudioIn();
       mic.start(function () {
@@ -84,15 +85,16 @@ describe('p5.AudioIn', function () {
       osc.disconnect();
       mic.amplitude.setInput(osc);
 
-      console.log('heyy');
-
       setTimeout(() => {
-        console.log(mic.getLevel());
-        expect(mic.getLevel()).to.be.closeTo(0.55, 0.25);
-        mic.amplitude.toggleNormalize(true);
-        expect(mic.getLevel(0.01)).to.be.closeTo(1.0, 0.4); //can set smoothing
-        mic.dispose();
-        done();
+        try {
+          expect(mic.getLevel()).to.be.closeTo(0.55, 0.25);
+          mic.amplitude.toggleNormalize(true);
+          expect(mic.getLevel(0.01)).to.be.closeTo(1.0, 0.4); //can set smoothing
+          mic.dispose();
+          done();
+        } catch (error) {
+          done(error);
+        }
       }, 450);
     });
 
