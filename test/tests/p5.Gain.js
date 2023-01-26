@@ -59,6 +59,13 @@ describe('p5.Gain', function () {
         gain.connect(filter);
         gain.disconnect();
       });
+      it('can execute _onNewInput() hook on connected unit', function (done) {
+        const gainToConnect = new p5.Gain();
+        gainToConnect._onNewInput = function () {
+          done();
+        };
+        gain.connect(gainToConnect);
+      });
     });
     describe('amp', function () {
       it('can take only volume as input', function () {

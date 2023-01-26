@@ -106,6 +106,9 @@ class Gain {
   connect(unit) {
     var u = unit || p5.soundOut.input;
     this.output.connect(u.input ? u.input : u);
+    if (unit && unit._onNewInput) {
+      unit._onNewInput(this);
+    }
   }
 
   /**

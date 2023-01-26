@@ -25,4 +25,12 @@ describe('p5.AudioVoice', function () {
     av.connect(filter.input);
     av.disconnect();
   });
+  it('can execute _onNewInput() hook on connected unit', function (done) {
+    let av = new p5.AudioVoice();
+    const gain = new p5.Gain();
+    gain._onNewInput = function () {
+      done();
+    };
+    av.connect(gain);
+  });
 });

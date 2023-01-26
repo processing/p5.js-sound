@@ -150,6 +150,9 @@ if (typeof ac.createStereoPanner !== 'undefined') {
 
     connect(obj) {
       this.output.connect(obj);
+      if (obj && obj._onNewInput) {
+        obj._onNewInput(this);
+      }
     }
 
     disconnect() {
