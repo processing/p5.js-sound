@@ -810,6 +810,9 @@ class Envelope {
     }
 
     this.output.connect(unit);
+    if (unit && unit._onNewInput) {
+      unit._onNewInput(this);
+    }
   }
 
   disconnect() {

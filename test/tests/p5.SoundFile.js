@@ -882,5 +882,14 @@ describe('p5.SoundFile', function () {
         expect(sf.getBlob().type).to.equal('audio/wav');
       });
     });
+
+    it('can execute _onNewInput() hook on connected unit', function (done) {
+      let sf = new p5.SoundFile();
+      const gain = new p5.Gain();
+      gain._onNewInput = function () {
+        done();
+      };
+      sf.connect(gain);
+    });
   });
 });

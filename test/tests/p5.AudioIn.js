@@ -109,5 +109,13 @@ describe('p5.AudioIn', function () {
         done();
       });
     });
+
+    it('can execute _onNewInput() hook on connected unit', function (done) {
+      const gain = new p5.Gain();
+      gain._onNewInput = function () {
+        done();
+      };
+      mic.connect(gain);
+    });
   });
 });

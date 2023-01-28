@@ -264,6 +264,14 @@ describe('p5.Envelope', function () {
       envelope.connect(reverb.output.gain);
       envelope.disconnect();
     });
+    it('can execute _onNewInput() hook on connected unit', function (done) {
+      let envelope = new p5.Envelope(0.1, 0.65, 0.5, 0.5, 0.35, 0.4);
+      const gain = new p5.Gain();
+      gain._onNewInput = function () {
+        done();
+      };
+      envelope.connect(gain);
+    });
 
     //todo: signal math
   });

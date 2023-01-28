@@ -387,6 +387,9 @@ class Oscillator {
       this.panner.connect(unit);
       this.connection = unit;
     }
+    if (unit && unit._onNewInput) {
+      unit._onNewInput(this);
+    }
   }
 
   /**

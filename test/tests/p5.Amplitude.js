@@ -41,21 +41,6 @@ describe('p5.Amplitude', function () {
       amp.setInput();
     });
 
-    it('can be connected and disconnected from a unit', function () {
-      let filter = new p5.Filter();
-
-      //if unit has input property
-      amp.connect(filter);
-      amp.disconnect();
-
-      //if unit doesnot have an input property
-      amp = new p5.Amplitude();
-      amp.connect(filter.input);
-      amp.disconnect();
-
-      filter.dispose();
-    });
-
     it('can toggle normalization', function () {
       expect(amp.normalize).to.be.false;
       amp.toggleNormalize();

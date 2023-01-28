@@ -36,4 +36,12 @@ describe('p5.Panner', function () {
     panner.inputChannels(1);
     panner.inputChannels(2);
   });
+  it('can execute _onNewInput() hook on connected unit', function (done) {
+    let panner = new p5.Panner(input, output);
+    const gain = new p5.Gain();
+    gain._onNewInput = function () {
+      done();
+    };
+    panner.connect(gain);
+  });
 });
