@@ -64,11 +64,11 @@ module.exports = function (config) {
     exclude: [],
 
     plugins: [
-      'karma-chai',
-      'karma-mocha',
-      'karma-sinon',
-      'karma-webpack',
-      'karma-chrome-launcher',
+      require('karma-mocha'),
+      require('karma-chai'),
+      require('karma-sinon'),
+      require('karma-webpack'),
+      require('karma-chrome-launcher'),
     ],
 
     // preprocess matching files before serving them to the browser
