@@ -79,5 +79,13 @@ describe('p5.Effect', function () {
       expect(effect._drywet.fade.value).to.equal(0.5);
       expect(effect.drywet()).to.equal(0.5);
     });
+    it('can execute _onNewInput() hook on connected unit', function (done) {
+      const effect = new p5.Effect();
+      const gain = new p5.Gain();
+      gain._onNewInput = function () {
+        done();
+      };
+      effect.connect(gain);
+    });
   });
 });

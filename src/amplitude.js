@@ -177,25 +177,6 @@ class Amplitude {
     }
   }
 
-  connect(unit) {
-    if (unit) {
-      if (unit.hasOwnProperty('input')) {
-        this.output.connect(unit.input);
-      } else {
-        this.output.connect(unit);
-      }
-    }
-    // else {
-    //   this.output.connect(this.panner.connect(p5sound.input));
-    // }
-  }
-
-  disconnect() {
-    if (this.output) {
-      this.output.disconnect();
-    }
-  }
-
   /**
    *  Returns a single Amplitude reading at the moment it is called.
    *  For continuous readings, run in the draw loop.

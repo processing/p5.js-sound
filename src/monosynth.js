@@ -355,6 +355,9 @@ class MonoSynth extends AudioVoice {
   connect(unit) {
     var u = unit || p5sound.input;
     this.output.connect(u.input ? u.input : u);
+    if (unit && unit._onNewInput) {
+      unit._onNewInput(this);
+    }
   }
 
   /**

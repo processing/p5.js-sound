@@ -34,6 +34,7 @@ describe('p5.Amplitude', function () {
       amp.setInput();
     });
 
+
     it('can be connected and disconnected from a unit', function () {
       let amp = new p5.Amplitude();
       let filter = new p5.Filter();

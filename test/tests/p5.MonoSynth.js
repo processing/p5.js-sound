@@ -190,5 +190,13 @@ describe('p5.MonoSynth', function () {
       monosynth.connect(compressor);
       monosynth.disconnect();
     });
+    it('can execute _onNewInput() hook on connected unit', function (done) {
+      let monosynth = new p5.MonoSynth();
+      const gain = new p5.Gain();
+      gain._onNewInput = function () {
+        done();
+      };
+      monosynth.connect(gain);
+    });
   });
 });

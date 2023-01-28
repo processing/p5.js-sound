@@ -1293,6 +1293,9 @@ class SoundFile {
         this.panner.connect(unit);
       }
     }
+    if (unit && unit._onNewInput) {
+      unit._onNewInput(this);
+    }
   }
 
   /**

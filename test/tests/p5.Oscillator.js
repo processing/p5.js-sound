@@ -290,5 +290,13 @@ describe('p5.Oscillator', function () {
       osc.add(3).mult(5);
       osc.scale(0, 1, 0, 4);
     });
+    it('can execute _onNewInput() hook on connected unit', function (done) {
+      let osc = new p5.Oscillator();
+      const gain = new p5.Gain();
+      gain._onNewInput = function () {
+        done();
+      };
+      osc.connect(gain);
+    });
   });
 });

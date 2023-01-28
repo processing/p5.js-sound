@@ -614,6 +614,11 @@ class FFT {
 
     return octaveBands;
   }
+
+  _onNewInput() {
+    //  disconnect FFT from sketch when something is connected
+    p5sound.fftMeter.disconnect();
+  }
 }
 
 // helper methods to convert type from float (dB) to int (0-255)

@@ -211,6 +211,9 @@ class AudioIn {
     } else {
       this.output.connect(p5sound.input);
     }
+    if (unit && unit._onNewInput) {
+      unit._onNewInput(this);
+    }
   }
 
   /**
@@ -395,7 +398,7 @@ class AudioIn {
       this.output.disconnect();
     }
     if (this.amplitude) {
-      this.amplitude.disconnect();
+      this.amplitude.dispose();
     }
     delete this.amplitude;
     delete this.output;

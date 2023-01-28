@@ -293,5 +293,13 @@ describe('p5.PolySynth', function () {
       polySynth.connect(compressor);
       polySynth.disconnect();
     });
+    it('can execute _onNewInput() hook on connected unit', function (done) {
+      let polySynth = new p5.PolySynth(p5.MonoSynth, 4);
+      const gain = new p5.Gain();
+      gain._onNewInput = function () {
+        done();
+      };
+      polySynth.connect(gain);
+    });
   });
 });
