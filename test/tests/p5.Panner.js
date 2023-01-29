@@ -1,10 +1,9 @@
 const expect = chai.expect;
 
 describe('p5.Panner', function () {
-  let ac, output, input;
+  let ac, input;
   beforeEach(function () {
     ac = p5.prototype.getAudioContext();
-    output = ac.createGain();
     input = ac.createGain();
   });
   it('can be created', function () {
@@ -24,24 +23,11 @@ describe('p5.Panner', function () {
     }, 25);
   });
   it('can be panned with a delay', function (done) {
-    let panner = new p5.Panner(input, output);
+    let panner = new p5.Panner();
     panner.pan(-0.7, 0.1);
     setTimeout(() => {
       expect(panner.getPan()).to.be.approximately(-0.7, 0.01);
       done();
     }, 125);
-  });
-  it('can take inputChannels as 1 or 2', function () {
-    let panner = new p5.Panner(input, output);
-    panner.inputChannels(1);
-    panner.inputChannels(2);
-  });
-  it('can execute _onNewInput() hook on connected unit', function (done) {
-    let panner = new p5.Panner(input, output);
-    const gain = new p5.Gain();
-    gain._onNewInput = function () {
-      done();
-    };
-    panner.connect(gain);
   });
 });

@@ -74,12 +74,6 @@ if (typeof ac.createStereoPanner !== 'undefined') {
         delete this.stereoPanner;
       }
     }
-
-    //not implemented because stereopanner
-    //node does not require this and will automatically
-    //convert single channel or multichannel to stereo.
-    //tested with single and stereo, not with (>2) multichannel
-    inputChannels() {}
   }
 
   panner = Panner;
@@ -87,10 +81,12 @@ if (typeof ac.createStereoPanner !== 'undefined') {
   // if there is no createStereoPanner object
   // such as in safari 7.1.7 at the time of writing this
   // use this method to create the effect
-  class Panner {
-    constructor(input, output, numInputChannels) {
-      this.input = ac.createGain();
-      input.connect(this.input);
+  class Panner extends Effect {
+    constructor() {
+      super();
+
+      // 'explicit' channelCountMode will convert any number of channels to stereo
+      this.input.channelCountMode = 'explicit';
 
       this.panValue = 0;
       this.left = ac.createGain();
@@ -98,22 +94,18 @@ if (typeof ac.createStereoPanner !== 'undefined') {
       this.left.channelInterpretation = 'discrete';
       this.right.channelInterpretation = 'discrete';
 
-      // if input is stereo
-      if (numInputChannels > 1) {
-        this.splitter = ac.createChannelSplitter(2);
-        this.input.connect(this.splitter);
+      this.splitter = ac.createChannelSplitter(2);
+      this.merger = ac.createChannelMerger(2);
 
-        this.splitter.connect(this.left, 1);
-        this.splitter.connect(this.right, 0);
-      } else {
-        this.input.connect(this.left);
-        this.input.connect(this.right);
-      }
+      this.input.connect(this.splitter);
 
-      this.output = ac.createChannelMerger(2);
-      this.left.connect(this.output, 0, 1);
-      this.right.connect(this.output, 0, 0);
-      this.output.connect(output);
+      this.splitter.connect(this.left, 1);
+      this.splitter.connect(this.right, 0);
+
+      this.left.connect(this.merger, 0, 1);
+      this.right.connect(this.merger, 0, 0);
+
+      this.merger.connect(this.wet);
     }
 
     // -1 is left, +1 is right
@@ -132,44 +124,8 @@ if (typeof ac.createStereoPanner !== 'undefined') {
       return this.panValue;
     }
 
-    inputChannels(numChannels) {
-      if (numChannels === 1) {
-        this.input.disconnect();
-        this.input.connect(this.left);
-        this.input.connect(this.right);
-      } else if (numChannels === 2) {
-        if (typeof this.splitter === 'undefined') {
-          this.splitter = ac.createChannelSplitter(2);
-        }
-        this.input.disconnect();
-        this.input.connect(this.splitter);
-        this.splitter.connect(this.left, 1);
-        this.splitter.connect(this.right, 0);
-      }
-    }
-
-    connect(obj) {
-      this.output.connect(obj);
-      if (obj && obj._onNewInput) {
-        obj._onNewInput(this);
-      }
-    }
-
-    disconnect() {
-      if (this.output) {
-        this.output.disconnect();
-      }
-    }
-
     dispose() {
-      if (this.input) {
-        this.input.disconnect();
-        delete this.input;
-      }
-      if (this.output) {
-        this.output.disconnect();
-        delete this.output;
-      }
+      super.dispose();
       if (this.left) {
         this.left.disconnect();
         delete this.left;
@@ -181,6 +137,10 @@ if (typeof ac.createStereoPanner !== 'undefined') {
       if (this.splitter) {
         this.splitter.disconnect();
         delete this.splitter;
+      }
+      if (this.merger) {
+        this.merger.disconnect();
+        delete this.merger;
       }
     }
   }

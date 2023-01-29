@@ -135,12 +135,8 @@ class Oscillator {
     // stereo panning
     this.connection = p5sound.input; // connect to p5sound by default
 
-    if (typeof p5sound.audiocontext.createStereoPanner !== 'undefined') {
-      this.panner = new Panner();
-      this.output.connect(this.panner);
-    } else {
-      this.panner = new Panner(this.output, this.connection, 1);
-    }
+    this.panner = new Panner();
+    this.output.connect(this.panner);
     //array of math operation signal chaining
     this.mathOps = [this.output];
 
