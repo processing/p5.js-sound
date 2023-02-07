@@ -7,33 +7,35 @@ import Panner from './panner';
 // SIGNAL MATH FOR MODULATION //
 // ========================== //
 
-// return sigChain(this, scale, thisChain, nextChain, Scale);
-function sigChain(o, mathObj, thisChain, nextChain, type) {
-  var chainSource = o.oscillator;
-  // if this type of math already exists in the chain, replace it
-  for (var i in o.mathOps) {
-    if (o.mathOps[i] instanceof type) {
-      chainSource.disconnect();
-      o.mathOps[i].dispose();
-      thisChain = i;
-      // assume nextChain is output gain node unless...
-      if (thisChain < o.mathOps.length - 2) {
-        nextChain = o.mathOps[i + 1];
-      }
+function sigChain(nodes, newNode, nodeType, input, output) {
+  var prevNode = null;
+  var nextNode = null;
+  var replacedNode = null;
+  // If nodes already contains an node of type nodeType, replace that node
+  // with newNode.
+  for (var i = 0; i < nodes.length; i++) {
+    if (nodes[i] instanceof nodeType) {
+      prevNode = i === 0 ? input : nodes[i - 1];
+      nextNode = i === nodes.length - 1 ? output : nodes[i + 1];
+      replacedNode = nodes[i];
+      nodes[i] = newNode;
+      break;
     }
   }
-  if (thisChain === o.mathOps.length - 1) {
-    o.mathOps.push(nextChain);
+  // Otherwise, add newMathOp to the end of mathOps.
+  if (replacedNode === null) {
+    prevNode = nodes.length === 0 ? input : nodes[nodes.length - 1];
+    nextNode = output;
+    nodes.push(newNode);
   }
-  // assume source is the oscillator unless i > 0
-  if (i > 0) {
-    chainSource = o.mathOps[i - 1];
+  // Connect the newMathOp to the previous and next nodes.
+  prevNode.disconnect();
+  if (replacedNode !== null) {
+    replacedNode.disconnect();
+    replacedNode.dispose();
   }
-  chainSource.disconnect();
-  chainSource.connect(mathObj);
-  mathObj.connect(nextChain);
-  o.mathOps[thisChain] = mathObj;
-  return o;
+  prevNode.connect(newNode);
+  newNode.connect(nextNode);
 }
 
 /**
@@ -137,8 +139,9 @@ class Oscillator {
 
     this.panner = new Panner();
     this.output.connect(this.panner);
-    //array of math operation signal chaining
-    this.mathOps = [this.output];
+
+    // array of math operation signal chaining
+    this.mathOps = [];
 
     // add to the soundArray so we can dispose of the osc later
     p5sound.soundArray.push(this);
@@ -496,9 +499,8 @@ class Oscillator {
    */
   add(num) {
     var add = new Add(num);
-    var thisChain = this.mathOps.length - 1;
-    var nextChain = this.output;
-    return sigChain(this, add, thisChain, nextChain, Add);
+    sigChain(this.mathOps, add, Add, this.oscillator, this.output);
+    return this;
   }
   /**
    *  Multiply the p5.Oscillator's output amplitude
@@ -513,9 +515,8 @@ class Oscillator {
    */
   mult(num) {
     var mult = new Mult(num);
-    var thisChain = this.mathOps.length - 1;
-    var nextChain = this.output;
-    return sigChain(this, mult, thisChain, nextChain, Mult);
+    sigChain(this.mathOps, mult, Mult, this.oscillator, this.output);
+    return this;
   }
 
   /**
@@ -535,19 +536,15 @@ class Oscillator {
   scale(inMin, inMax, outMin, outMax) {
     var mapOutMin, mapOutMax;
     if (arguments.length === 4) {
-      mapOutMin = p5.prototype.map(outMin, inMin, inMax, 0, 1) - 0.5; //find a way to get rid of p5.prototype ?
-      mapOutMax = p5.prototype.map(outMax, inMin, inMax, 0, 1) - 0.5; //find a way to get rid of p5.prototype ?
+      mapOutMin = p5.prototype.map(0, inMin, inMax, outMin, outMax);
+      mapOutMax = p5.prototype.map(1, inMin, inMax, outMin, outMax);
     } else {
       mapOutMin = arguments[0];
       mapOutMax = arguments[1];
     }
     var scale = new Scale(mapOutMin, mapOutMax);
-    var thisChain = this.mathOps.length - 1;
-    var nextChain = this.output;
-    return sigChain(this, scale, thisChain, nextChain, Scale);
-
-    // this.output.disconnect();
-    // this.output.connect(scale)
+    sigChain(this.mathOps, scale, Scale, this.oscillator, this.output);
+    return this;
   }
 }
 
