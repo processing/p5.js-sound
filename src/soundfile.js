@@ -182,12 +182,8 @@ class SoundFile {
     this.startMillis = null;
 
     // stereo panning
-    if (typeof p5sound.audiocontext.createStereoPanner !== 'undefined') {
-      this.panner = new Panner();
-      this.output.connect(this.panner);
-    } else {
-      this.panner = new Panner(this.output, p5sound.input, 2);
-    }
+    this.panner = new Panner();
+    this.output.connect(this.panner);
 
     // it is possible to instantiate a soundfile with no path
     if (this.url || this.file) {
@@ -248,7 +244,6 @@ class SoundFile {
             function (buff) {
               if (!self.panner) return;
               self.buffer = buff;
-              self.panner.inputChannels(buff.numberOfChannels);
               if (callback) {
                 callback(self);
               }
@@ -323,7 +318,6 @@ class SoundFile {
         ac.decodeAudioData(reader.result, function (buff) {
           if (!self.panner) return;
           self.buffer = buff;
-          self.panner.inputChannels(buff.numberOfChannels);
           if (callback) {
             callback(self);
           }
@@ -1357,9 +1351,6 @@ class SoundFile {
     }
 
     this.buffer = newBuffer;
-
-    // set numbers of channels on input to the panner
-    this.panner.inputChannels(numChannels);
   }
 
   // initialize counterNode, set its initial buffer and playbackRate

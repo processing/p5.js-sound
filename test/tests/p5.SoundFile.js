@@ -31,7 +31,7 @@ describe('p5.SoundFile', function () {
     expect(sf.mode).to.equal('sustain');
     expect(sf.startMillis).to.be.null;
     expect(sf.getPan()).to.equal(0);
-    expect(sf.panner).to.have.property('stereoPanner');
+    expect(sf).to.have.property('panner');
     expect(p5.soundOut.soundArray).to.include(sf);
 
     expect(sf._whileLoading).to.not.throw();
