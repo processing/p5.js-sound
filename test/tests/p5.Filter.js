@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.Filter', function () {
   it('can be created and disposed', function () {
     let filter = new p5.Filter();

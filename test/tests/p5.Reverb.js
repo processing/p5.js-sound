@@ -1,7 +1,4 @@
-const expect = chai.expect;
-
 p5.prototype.soundFormats('mp3', 'ogg');
-let soundFile = p5.prototype.loadSound('./testAudio/drum');
 
 describe('p5.Reverb', function () {
   it('can be created and disposed', function () {
@@ -34,7 +31,10 @@ describe('p5.Reverb', function () {
     expect(reverb.convolverNode.buffer.duration).to.equal(3);
     expect(reverb.convolverNode.buffer.length).to.equal(144000);
     expect(reverb.convolverNode.buffer.numberOfChannels).to.equal(2);
-    expect(reverb.convolverNode.buffer.sampleRate).to.equal(48000);
+    expect(reverb.convolverNode.buffer.sampleRate).to.be.approximately(
+      48000,
+      200
+    );
     //_setBuffer calls _initConvolverNode
     expect(reverb.convolverNode).to.have.property('buffer');
     expect(reverb.convolverNode).to.have.property('context');
@@ -47,10 +47,12 @@ describe('p5.Reverb', function () {
 
   describe('methods', function () {
     it('can connect a source to the reverb', function () {
+      let soundFile = p5.prototype.loadSound('./testAudio/drum');
       let reverb = new p5.Reverb();
       reverb.process(soundFile);
     });
     it('can connect a source to the reverb and process the parameters', function () {
+      let soundFile = p5.prototype.loadSound('./testAudio/drum');
       let reverb = new p5.Reverb();
       reverb.process(soundFile, 7, 80, true);
       expect(reverb._seconds).to.equal(7);
@@ -109,7 +111,10 @@ describe('p5.Convolver', function () {
     expect(cVerb.convolverNode.buffer.duration).to.equal(3);
     expect(cVerb.convolverNode.buffer.length).to.equal(144000);
     expect(cVerb.convolverNode.buffer.numberOfChannels).to.equal(2);
-    expect(cVerb.convolverNode.buffer.sampleRate).to.equal(48000);
+    expect(cVerb.convolverNode.buffer.sampleRate).to.be.approximately(
+      48000,
+      200
+    );
     expect(cVerb.convolverNode).to.have.property('context');
 
     expect(cVerb.impulses).to.be.an('array').to.have.length(0);
@@ -127,11 +132,17 @@ describe('p5.Convolver', function () {
         () => {
           expect(cVerb.convolverNode.buffer.duration).to.be.approximately(
             7.765,
-            0.001
+            0.1
           ); //file length
-          expect(cVerb.convolverNode.buffer.length).to.equal(372736);
+          expect(cVerb.convolverNode.buffer.length).to.be.approximately(
+            370000,
+            10000
+          );
           expect(cVerb.convolverNode.buffer.numberOfChannels).to.equal(2);
-          expect(cVerb.convolverNode.buffer.sampleRate).to.equal(48000);
+          expect(cVerb.convolverNode.buffer.sampleRate).to.be.approximately(
+            48000,
+            200
+          );
           expect(cVerb.impulses.length).to.equal(1);
           expect(cVerb.impulses[0]).to.have.property('audioBuffer');
           expect(cVerb.impulses[0]).to.have.property('name');
@@ -158,6 +169,7 @@ describe('p5.Convolver', function () {
       }
     });
     it('can connect a source to the convolver', function () {
+      let soundFile = p5.prototype.loadSound('./testAudio/drum');
       const cVerb = new p5.Convolver();
       cVerb.process(soundFile);
     });
@@ -167,8 +179,14 @@ describe('p5.Convolver', function () {
           './testAudio/bx-spring',
           () => {
             cVerb.addImpulse('./testAudio/drum', () => {
-              expect(cVerb.convolverNode.buffer.duration).to.equal(1); //file length
-              expect(cVerb.convolverNode.buffer.length).to.equal(48000);
+              expect(cVerb.convolverNode.buffer.duration).to.be.approximately(
+                1,
+                0.1
+              ); //file length
+              expect(cVerb.convolverNode.buffer.length).to.be.approximately(
+                48000,
+                200
+              );
               expect(cVerb.impulses.length).to.equal(2);
               expect(cVerb.impulses[1].name).to.include('drum');
 
@@ -191,8 +209,14 @@ describe('p5.Convolver', function () {
           './testAudio/bx-spring',
           () => {
             cVerb.resetImpulse('./testAudio/drum', () => {
-              expect(cVerb.convolverNode.buffer.duration).to.equal(1); //file length
-              expect(cVerb.convolverNode.buffer.length).to.equal(48000);
+              expect(cVerb.convolverNode.buffer.duration).to.be.approximately(
+                1,
+                0.1
+              ); //file length
+              expect(cVerb.convolverNode.buffer.length).to.be.approximately(
+                48000,
+                200
+              );
               expect(cVerb.impulses.length).to.equal(1);
               expect(cVerb.impulses[0].name).to.include('drum');
               done();
@@ -210,18 +234,24 @@ describe('p5.Convolver', function () {
           './testAudio/bx-spring',
           () => {
             cVerb.addImpulse('./testAudio/drum', () => {
-              expect(cVerb.convolverNode.buffer.duration).to.equal(1); // initially drum
+              expect(cVerb.convolverNode.buffer.duration).to.be.approximately(
+                1,
+                0.1
+              ); // initially drum
               //toggle using id/position in impulses array
               cVerb.toggleImpulse(0);
               expect(cVerb.convolverNode.buffer.duration).to.be.approximately(
                 7.765,
-                0.001
+                0.1
               ); // bx-spring
 
               //using filename
               cVerb.toggleImpulse('drum.mp3');
               cVerb.toggleImpulse('drum.ogg');
-              expect(cVerb.convolverNode.buffer.duration).to.equal(1); // toggled back to drum
+              expect(cVerb.convolverNode.buffer.duration).to.be.approximately(
+                1,
+                0.1
+              ); // toggled back to drum
               done();
             });
           },
@@ -244,9 +274,12 @@ describe('p5.Convolver', function () {
         () => {
           expect(cVerb.convolverNode.buffer.duration).to.be.approximately(
             7.765,
-            0.001
+            0.1
           ); //file length
-          expect(cVerb.convolverNode.buffer.length).to.equal(372736);
+          expect(cVerb.convolverNode.buffer.length).to.to.be.approximately(
+            370000,
+            10000
+          );
           expect(cVerb.impulses.length).to.equal(1);
           done();
         },

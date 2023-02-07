@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.AudioContext', function () {
   describe('getAudioContext', function () {
     it('returns a audioContext', function () {

@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.Looper', function () {
   it('setBPM sets the BPM for all parts', function () {
     let part1 = new p5.Part();

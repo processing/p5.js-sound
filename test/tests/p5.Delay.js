@@ -1,7 +1,4 @@
-const expect = chai.expect;
-
 describe('p5.Delay', function () {
-  let noise = new p5.Noise();
   it('can be created', function (done) {
     let delay = new p5.Delay();
 
@@ -44,11 +41,13 @@ describe('p5.Delay', function () {
 
     describe('process', function () {
       it('can process a source without any properties', function () {
+        let noise = new p5.Noise();
         let delay = new p5.Delay();
         delay.process(noise);
       });
 
       it('can add delay to an audio signal with only delay as a parameter', function (done) {
+        let noise = new p5.Noise();
         let delay = new p5.Delay();
         delay.process(noise, 0.45);
         setTimeout(() => {
@@ -64,23 +63,27 @@ describe('p5.Delay', function () {
         }, 50);
       });
       it('can rejcet a delay greater than the maximum delay', function () {
+        let noise = new p5.Noise();
         let delay = new p5.Delay();
         let delayTime = delay._maxDelay + 0.01;
         expect(() => delay.process(noise, delayTime)).to.throw();
       });
 
       it('can add feedback to an audio signal with only feedback as a parameter', function () {
+        let noise = new p5.Noise();
         let delay = new p5.Delay();
         delay.process(noise, undefined, 0.78);
         expect(delay._leftGain.gain.value).to.be.approximately(0.78, 0.01);
         expect(delay._rightGain.gain.value).to.be.approximately(0.78, 0.01);
       });
       it('can rejcet a feedback greater than 1', function () {
+        let noise = new p5.Noise();
         let delay = new p5.Delay();
         expect(() => delay.process(noise, undefined, 1.69)).to.throw();
       });
 
       it('can set frequency with only frequency as a parameter', function (done) {
+        let noise = new p5.Noise();
         let delay = new p5.Delay();
         delay.process(noise, undefined, undefined, 14525);
         setTimeout(() => {
@@ -91,6 +94,7 @@ describe('p5.Delay', function () {
       });
 
       it('can process a source with all properties given', function (done) {
+        let noise = new p5.Noise();
         let delay = new p5.Delay();
         delay.process(noise, 0.31, 0.415, 926);
 
@@ -115,6 +119,7 @@ describe('p5.Delay', function () {
     });
 
     it('can add delay to an audio signal using delayTime', function (done) {
+      let noise = new p5.Noise();
       let delay = new p5.Delay();
       //non-numerical value
       delay.delayTime(noise);
@@ -129,6 +134,7 @@ describe('p5.Delay', function () {
       }, 50);
     });
     it('can add feedback to an audio signal using feedback function', function () {
+      let noise = new p5.Noise();
       let delay = new p5.Delay();
       //non-numerical value
       delay.feedback(noise);
@@ -144,6 +150,7 @@ describe('p5.Delay', function () {
       expect(() => delay.process(noise, undefined, 1)).to.throw();
     });
     it('can set frequency using filter function', function (done) {
+      let noise = new p5.Noise();
       let delay = new p5.Delay();
       //non-numerical value
       delay.filter(noise);

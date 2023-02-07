@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.Effect', function () {
   it('can be created and disposed', function () {
     const effect = new p5.Effect();

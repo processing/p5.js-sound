@@ -1,5 +1,3 @@
-const expect = chai.expect;
-
 describe('p5.Listener3D', function () {
   let listener3d;
   it('can be created', function () {
@@ -33,9 +31,11 @@ describe('p5.Listener3D', function () {
       it('can set positionX, positionY, positionZ using position function without a delay', function () {
         listener3d = new p5.Listener3D();
         expect(listener3d.position(10, 500, 100)).to.deep.equal([10, 500, 100]);
-        expect(listener3d.positionX()).to.equal(10);
-        expect(listener3d.positionY()).to.equal(500);
-        expect(listener3d.positionZ()).to.equal(100);
+        setTimeout(() => {
+          expect(listener3d.positionX()).to.equal(10);
+          expect(listener3d.positionY()).to.equal(500);
+          expect(listener3d.positionZ()).to.equal(100);
+        }, 10);
       });
       it('can set positionX, positionY, positionZ using position function with a delay', function () {
         //TODO

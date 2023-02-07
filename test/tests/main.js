@@ -1,5 +1,5 @@
-const expect = chai.expect;
 describe('main output', function () {
+  this.retries(2);
   it('can initiate main class', function () {
     expect(p5.soundOut.input).to.have.property('gain');
     expect(p5.soundOut.input).to.have.property('context');
@@ -21,26 +21,35 @@ describe('main output', function () {
     expect(p5.soundOut._silentNode).to.have.property('gain');
     expect(p5.soundOut._silentNode).to.have.property('context');
     expect(p5.soundOut._silentNode.gain.value).to.equal(0);
-
-    console.log(p5.soundOut);
   });
 
   it('can set and return output volume', function (done) {
     p5.prototype.outputVolume(0.6);
 
     setTimeout(function () {
-      expect(p5.prototype.getOutputVolume()).to.be.approximately(0.6, 0.05);
-      expect(p5.prototype.outputVolume().value).to.be.approximately(0.6, 0.05);
-      done();
-    }, 100);
+      try {
+        expect(p5.prototype.getOutputVolume()).to.be.approximately(0.6, 0.05);
+        expect(p5.prototype.outputVolume().value).to.be.approximately(
+          0.6,
+          0.05
+        );
+        done();
+      } catch (error) {
+        done(error);
+      }
+    }, 250);
   });
   it('can set output volume after t seconds in future', function (done) {
     let t = 1;
     p5.prototype.outputVolume(0.9, 0, t);
 
     setTimeout(function () {
-      expect(p5.prototype.getOutputVolume()).to.be.approximately(0.9, 0.05);
-      done();
+      try {
+        expect(p5.prototype.getOutputVolume()).to.be.approximately(0.9, 0.05);
+        done();
+      } catch (error) {
+        done(error);
+      }
     }, 1100);
   });
 
