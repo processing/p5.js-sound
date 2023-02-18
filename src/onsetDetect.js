@@ -1,19 +1,16 @@
-'use strict';
-
-define(function () {
-
-  /**
-   *  Listen for onsets (a sharp increase in volume) within a given
-   *  frequency range.
-   *
-   *  @class p5.OnsetDetect
-   *  @constructor
-   *  @param {Number} freqLow     Low frequency
-   *  @param {Number} freqHigh     High frequency
-   *  @param {Number} threshold   Amplitude threshold between 0 (no energy) and 1 (maximum)
-   *  @param {Function} callback  Function to call when an onset is detected
-   */
-  p5.OnsetDetect = function(freqLow, freqHigh, threshold, callback) {
+/**
+ *  Listen for onsets (a sharp increase in volume) within a given
+ *  frequency range.
+ *
+ *  @class p5.OnsetDetect
+ *  @constructor
+ *  @param {Number} freqLow     Low frequency
+ *  @param {Number} freqHigh     High frequency
+ *  @param {Number} threshold   Amplitude threshold between 0 (no energy) and 1 (maximum)
+ *  @param {Function} callback  Function to call when an onset is detected
+ */
+class OnsetDetect {
+  constructor(freqLow, freqHigh, threshold, callback) {
     this.isDetected = false;
     this.freqLow = freqLow;
     this.freqHigh = freqHigh;
@@ -25,14 +22,14 @@ define(function () {
     this.sensitivity = 500;
 
     this.callback = callback;
-  };
+  }
 
   // callback here too?
-  p5.OnsetDetect.prototype.update = function(fftObject, callback) {
-    this.energy = fftObject.getEnergy(this.freqLow,this.freqHigh)/255;
+  update(fftObject, callback) {
+    this.energy = fftObject.getEnergy(this.freqLow, this.freqHigh) / 255;
 
-    if(this.isDetected === false) {
-      if (this.energy-this.penergy > this.treshold) {
+    if (this.isDetected === false) {
+      if (this.energy - this.penergy > this.treshold) {
         this.isDetected = true;
 
         if (this.callback) {
@@ -44,11 +41,12 @@ define(function () {
         var self = this;
         setTimeout(function () {
           self.isDetected = false;
-        },this.sensitivity);
+        }, this.sensitivity);
       }
     }
 
     this.penergy = this.energy;
-  };
+  }
+}
 
-});
+export default OnsetDetect;

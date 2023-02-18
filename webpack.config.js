@@ -2,6 +2,24 @@ const webpack = require('webpack');
 const path = require('path');
 const fs = require('fs');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const WebpackAutoInject = require('webpack-auto-inject-version');
+
+const autoInjectVersionConfig = {
+  SILENT: true,
+  SHORT: 'p5.sound',
+  components: {
+    AutoIncreaseVersion: false,
+    InjectAsComment: true,
+    InjectByTag: false
+  },
+  componentsOptions: {
+    InjectAsComment: {
+      tag: 'Version: {version} - {date}',
+      dateFormat: 'yyyy-mm-dd',
+      multiLineCommentType: true,
+    },
+  }
+};
 
 module.exports = {
   context: __dirname + '/src',
@@ -15,7 +33,9 @@ module.exports = {
   },
   mode: 'production',
   devtool: 'source-map',
-  // devtool: production ? false : "eval",
+  optimization: {
+    runtimeChunk: true,
+  },
   plugins: [
     new webpack.NormalModuleReplacementPlugin(/Tone(\.*)/, function(resource) {
       resource.request = path.join(__dirname, './node_modules/tone/', resource.request);
@@ -23,12 +43,13 @@ module.exports = {
     new webpack.BannerPlugin({
       banner: fs.readFileSync('./fragments/before.frag').toString(),
       raw: true,
-    })
+    }),
+    new WebpackAutoInject(autoInjectVersionConfig)
   ],
   module: {
     rules: [
       {
-        test: /Tone(\.*)/,
+        test: /node_modules(\.*)/,
         use: {
           loader: 'uglify-loader'
         }

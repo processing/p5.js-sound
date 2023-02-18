@@ -1,70 +1,108 @@
-'use strict';
+const expect = chai.expect;
 
-define(['chai'], function(chai) {
-  var expect = chai.expect;
+describe('p5.Amplitude', function () {
+  this.timeout(1000);
 
-  describe('p5.Amplitude', function() {
-    this.timeout(1000);
+  let amp;
+  let osc = new p5.Oscillator('square');
+  osc.amp(1);
+  osc.start();
+  osc.disconnect();
 
-    var sf, amp;
+  beforeEach(function () {
+    amp = new p5.Amplitude();
+  });
 
-    it('can be created', function() {
-      amp = new p5.Amplitude();
+  it('can be created', function () {
+    expect(amp).to.have.property('audiocontext').not.be.null;
+    expect(amp).to.have.property('_workletNode').not.be.null;
+    expect(amp.bufferSize).to.equal(2048);
+    expect(amp).to.have.property('input');
+    expect(amp).to.have.property('output');
+    expect(amp.volume).to.equal(0);
+    expect(amp.volNorm).to.equal(0);
+    expect(amp.stereoVol).to.deep.equal([0, 0]);
+    expect(amp.stereoVolNorm).to.deep.equal([0, 0]);
+  });
+
+  after(function (done) {
+    osc.dispose();
+    done();
+  });
+  it('can be created with smoothing', function () {
+    new p5.Amplitude(0.02);
+  });
+
+  describe('methods', function () {
+    it('accepts oscillator input', function () {
+      amp.setInput(osc);
+    });
+    it('setInput connects to main output if no argument is passed', function () {
+      amp.setInput();
     });
 
-    after(function(done) {
-      expect( amp.getLevel() ).to.not.equal(1.0);
-      osc.dispose();
-      sf.dispose();
-      done();
+    it('can toggle normalization', function () {
+      expect(amp.normalize).to.be.false;
+      amp.toggleNormalize();
+      expect(amp.normalize).to.be.true;
+
+      amp.toggleNormalize(true);
+      expect(amp.normalize).to.be.true;
+      amp.toggleNormalize(false);
+      expect(amp.normalize).to.be.false;
     });
 
-    var osc, oAmp;
-    it('accepts oscillator input', function() {
-      osc = new p5.Oscillator('square');
-      osc.amp(1);
-      osc.start();
-      osc.disconnect();
-      oAmp = new p5.Amplitude();
-      oAmp.setInput(osc);
-    });
-
-    it('gets oscillator level', function() {
-      setTimeout(function() {
-        // console.log( 'unnormalized: ' + oAmp.getLevel() );
-        expect( oAmp.getLevel() ).to.be.closeTo(0.55, 0.25);
+    it('gets oscillator level', function (done) {
+      amp.setInput(osc);
+      setTimeout(function () {
+        expect(amp.getLevel()).to.be.closeTo(0.55, 0.25);
+        done();
       }, 100);
     });
 
-    it('gets normalized osc level', function(done) {
-      setTimeout(function() {
-        oAmp.toggleNormalize(true);
-        // console.log( 'normalized: ' + oAmp.getLevel() );
-        expect( oAmp.getLevel() ).to.be.closeTo(1.0, 0.4);
+    it('gets normalized osc level', function (done) {
+      amp.setInput(osc);
+      setTimeout(function () {
+        amp.toggleNormalize(true);
+        expect(amp.getLevel()).to.be.closeTo(1.0, 0.4);
+        done();
+      }, 200);
+    });
+    it('gets stereo osc level', function (done) {
+      amp.setInput(osc);
+      setTimeout(function () {
+        expect(amp.getLevel(0)).to.be.closeTo(0.55, 0.25);
+        expect(amp.getLevel(1)).to.be.closeTo(0.55, 0.25);
+        amp.toggleNormalize(true);
+        expect(amp.getLevel(0)).to.be.closeTo(1, 0.4);
+        expect(amp.getLevel(1)).to.be.closeTo(1, 0.4);
         done();
       }, 200);
     });
 
-
-    it('loop a SoundFile with params, disconnected from master, setInput()', function(done) {
+    it('can be connected to a soundFile', function (done) {
       p5.prototype.soundFormats('ogg', 'mp3');
-      sf = p5.prototype.loadSound('./testAudio/drum', function() {
+      let sf = p5.prototype.loadSound('./testAudio/drum', function () {
         sf.disconnect();
-        sf.loop(1,1,0.0, 0.05);
+        sf.loop(1, 1, 0.0, 0.05);
         sf.connect(amp);
-        setTimeout(function() {
+        sf.dispose();
+        setTimeout(function () {
+          sf.stop();
           done();
         }, 100);
       });
     });
 
-    it('stop getting level', function(done) {
-      sf.stop();
-      setTimeout(function() {
-        // console.log( amp.getLevel() );
-        done();
-      }, 10);
+    it('can apply smoothing', function () {
+      amp.smooth(0.5);
     });
 
+    it('can be disposed', function () {
+      amp.dispose();
+      expect(amp).to.not.have.property('input');
+      expect(amp).to.not.have.property('output');
+      expect(amp).to.not.have.property('_workletNode');
+    });
   });
 });

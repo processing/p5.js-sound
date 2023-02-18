@@ -19,14 +19,14 @@ p5.sound to do list
 - Log a message to the console if a user calls FFT methods like getEnergy without first calling .analyze() in either the draw loop, or in the method in which they call getEnergy. Maybe log the time that .analyze was last called, and compare it to the current time, and if it is a big gap, then log the message?
 
 
-- SoundFile.playMode('untilDone') would play a sound if not already playing, but if it is already playing, it would not play again until it is done. Feel free to re-open this [Github Issue](https://github.com/therewasaguy/p5.sound/issues/5) if you want to work on this.
+- SoundFile.playMode('untilDone') would play a sound if not already playing, but if it is already playing, it would not play again until it is done. Feel free to re-open this [Github Issue](https://github.com/processing/p5.js-sound/issues/5) if you want to work on this.
 
 
 - Improve p5.Pulse (PWM)
 
 
 - What additional features/analysis would be useful for visualization / analysis? Look into handling these with an offline audio context, and/or scripts that could analyze a file and then save the result to JSON.
-  * Peak Detect https://github.com/therewasaguy/p5.sound/issues/12
+  * Peak Detect https://github.com/processing/p5.js-sound/issues/12
   * Beat Detect -- [here's an example](http://tech.beatport.com/2014/web-audio/beat-detection-using-web-audio/) handled by an offline audio context
   * Pitch detect -- [here's an example](https://webaudiodemos.appspot.com/pitchdetect/index.html).
 
@@ -78,7 +78,7 @@ p5.sound to do list
 - p5.Envelope takes no action on triggerRelease unless currently playing
 
 - Add a logarithmic scaling option for p5.FFT
-- p5.SoundFile.getPeaks should be able to return stereo peaks. Like [this](https://github.com/olosmusic/olos-soundfile/blob/master/olos-soundfile.html#L379) 
+- p5.SoundFile.getPeaks should be able to return stereo peaks. Like [this](https://github.com/olosmusic/olos-soundfile/blob/master/olos-soundfile.html#L379)
 - Add the ability to decode audio buffer data from a FileReader and add it to a p5.SoundFile buffer, like [this](https://github.com/olosmusic/olos-soundfile/blob/master/olos-soundfile.html#L227)
 - Add ability to map a soundfile playback rate to a pitch ratio, like [this](https://github.com/ericrosenbaum/MK-1/blob/gh-pages/sketch.js#L488)
 - when a soundFile is reversed, reverse currentTime as well for accurate playback position

@@ -1,49 +1,62 @@
-'use strict';
+import { getAudioContext } from './audiocontext';
+import CustomError from './errorHandler';
+import Effect from './effect';
 
-define(function (require) {
-  var CustomError = require('errorHandler');
-  var Effect = require('effect');
+/**
+ *  Reverb adds depth to a sound through a large number of decaying
+ *  echoes. It creates the perception that sound is occurring in a
+ *  physical space. The p5.Reverb has paramters for Time (how long does the
+ *  reverb last) and decayRate (how much the sound decays with each echo)
+ *  that can be set with the .set() or .process() methods. The p5.Convolver
+ *  extends p5.Reverb allowing you to recreate the sound of actual physical
+ *  spaces through convolution.
+ *
+ *  This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.
+ *  Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>,
+ *  <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and
+ *  <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
+ *
+ *  @class p5.Reverb
+ *  @extends p5.Effect
+ *  @constructor
+ *  @example
+ *  <div><code>
+ *  let soundFile, reverb;
+ *  function preload() {
+ *    soundFile = loadSound('assets/Damscray_DancingTiger.mp3');
+ *  }
+ *
+ *  function setup() {
+ *    let cnv = createCanvas(100, 100);
+ *    cnv.mousePressed(playSound);
+ *
+ *    reverb = new p5.Reverb();
+ *    soundFile.disconnect(); // so we'll only hear reverb...
+ *
+ *    // connect soundFile to reverb, process w/
+ *    // 3 second reverbTime, decayRate of 2%
+ *    reverb.process(soundFile, 3, 2);
+ *  }
+ *
+ *  function draw() {
+ *    let dryWet = constrain(map(mouseX, 0, width, 0, 1), 0, 1);
+ *    // 1 = all reverb, 0 = no reverb
+ *    reverb.drywet(dryWet);
+ *
+ *    background(220);
+ *    text('tap to play', 10, 20);
+ *    text('dry/wet: ' + round(dryWet * 100) + '%', 10, height - 20);
+ *  }
+ *
+ *  function playSound() {
+ *    soundFile.play();
+ *  }
+ *  </code></div>
+ */
 
-  /**
-   *  Reverb adds depth to a sound through a large number of decaying
-   *  echoes. It creates the perception that sound is occurring in a
-   *  physical space. The p5.Reverb has paramters for Time (how long does the
-   *  reverb last) and decayRate (how much the sound decays with each echo)
-   *  that can be set with the .set() or .process() methods. The p5.Convolver
-   *  extends p5.Reverb allowing you to recreate the sound of actual physical
-   *  spaces through convolution.
-   *
-   *  This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.
-   *  Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>,
-   *  <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and
-   *  <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
-   *
-   *  @class p5.Reverb
-   *  @extends p5.Effect
-   *  @constructor
-   *  @example
-   *  <div><code>
-   *  var soundFile, reverb;
-   *  function preload() {
-   *    soundFile = loadSound('assets/Damscray_DancingTiger.mp3');
-   *  }
-   *
-   *  function setup() {
-   *    reverb = new p5.Reverb();
-   *    soundFile.disconnect(); // so we'll only hear reverb...
-   *
-   *    // connect soundFile to reverb, process w/
-   *    // 3 second reverbTime, decayRate of 2%
-   *    reverb.process(soundFile, 3, 2);
-   *    soundFile.play();
-   *  }
-   *  </code></div>
-   */
-
-
-  p5.Reverb = function() {
-    Effect.call(this);
-
+class Reverb extends Effect {
+  constructor() {
+    super();
     this._initConvolverNode();
 
     // otherwise, Safari distorts
@@ -55,29 +68,27 @@ define(function (require) {
     this._reverse = false;
 
     this._buildImpulse();
+  }
 
-  };
-
-  p5.Reverb.prototype = Object.create(Effect.prototype);
-
-  p5.Reverb.prototype._initConvolverNode = function() {
+  _initConvolverNode() {
     this.convolverNode = this.ac.createConvolver();
     this.input.connect(this.convolverNode);
     this.convolverNode.connect(this.wet);
-  };
+  }
 
-  p5.Reverb.prototype._teardownConvolverNode = function() {
+  _teardownConvolverNode() {
     if (this.convolverNode) {
+      this.input.disconnect(this.convolverNode);
       this.convolverNode.disconnect();
       delete this.convolverNode;
     }
-  };
+  }
 
-  p5.Reverb.prototype._setBuffer = function(audioBuffer) {
+  _setBuffer(audioBuffer) {
     this._teardownConvolverNode();
     this._initConvolverNode();
     this.convolverNode.buffer = audioBuffer;
-  };
+  }
   /**
    *  Connect a source to the reverb, and assign reverb parameters.
    *
@@ -91,23 +102,10 @@ define(function (require) {
    *                            Min: 0, Max: 100. Defaults to 2.
    *  @param  {Boolean} [reverse] Play the reverb backwards or forwards.
    */
-  p5.Reverb.prototype.process = function(src, seconds, decayRate, reverse) {
+  process(src, seconds, decayRate, reverse) {
     src.connect(this.input);
-    var rebuild = false;
-    if (seconds) {
-      this._seconds = seconds;
-      rebuild = true;
-    }
-    if (decayRate) {
-      this._decay = decayRate;
-    }
-    if (reverse) {
-      this._reverse = reverse;
-    }
-    if (rebuild) {
-      this._buildImpulse();
-    }
-  };
+    this.set(seconds, decayRate, reverse);
+  }
 
   /**
    *  Set the reverb settings. Similar to .process(), but without
@@ -121,7 +119,7 @@ define(function (require) {
    *                            Min: 0, Max: 100. Defaults to 2.
    *  @param  {Boolean} [reverse] Play the reverb backwards or forwards.
    */
-  p5.Reverb.prototype.set = function(seconds, decayRate, reverse) {
+  set(seconds, decayRate, reverse) {
     var rebuild = false;
     if (seconds) {
       this._seconds = seconds;
@@ -136,7 +134,7 @@ define(function (require) {
     if (rebuild) {
       this._buildImpulse();
     }
-  };
+  }
 
   // DocBlocks for methods inherited from p5.Effect
   /**
@@ -172,9 +170,9 @@ define(function (require) {
    *
    *  @private
    */
-  p5.Reverb.prototype._buildImpulse = function() {
+  _buildImpulse() {
     var rate = this.ac.sampleRate;
-    var length = rate*this._seconds;
+    var length = rate * this._seconds;
     var decay = this._decay;
     var impulse = this.ac.createBuffer(2, length, rate);
     var impulseL = impulse.getChannelData(0);
@@ -186,73 +184,86 @@ define(function (require) {
       impulseR[i] = (Math.random() * 2 - 1) * Math.pow(1 - n / length, decay);
     }
     this._setBuffer(impulse);
-  };
+  }
 
-  p5.Reverb.prototype.dispose = function() {
-    Effect.prototype.dispose.apply(this);
+  dispose() {
+    super.dispose();
     this._teardownConvolverNode();
-  };
+  }
+}
 
-  // =======================================================================
-  //                          *** p5.Convolver ***
-  // =======================================================================
+// =======================================================================
+//                          *** p5.Convolver ***
+// =======================================================================
 
-  /**
-   *  <p>p5.Convolver extends p5.Reverb. It can emulate the sound of real
-   *  physical spaces through a process called <a href="
-   *  https://en.wikipedia.org/wiki/Convolution_reverb#Real_space_simulation">
-   *  convolution</a>.</p>
-   *
-   *  <p>Convolution multiplies any audio input by an "impulse response"
-   *  to simulate the dispersion of sound over time. The impulse response is
-   *  generated from an audio file that you provide. One way to
-   *  generate an impulse response is to pop a balloon in a reverberant space
-   *  and record the echo. Convolution can also be used to experiment with
-   *  sound.</p>
-   *
-   *  <p>Use the method <code>createConvolution(path)</code> to instantiate a
-   *  p5.Convolver with a path to your impulse response audio file.</p>
-   *
-   *  @class p5.Convolver
-   *  @extends p5.Effect
-   *  @constructor
-   *  @param  {String}   path     path to a sound file
-   *  @param  {Function} [callback] function to call when loading succeeds
-   *  @param  {Function} [errorCallback] function to call if loading fails.
-   *                                     This function will receive an error or
-   *                                     XMLHttpRequest object with information
-   *                                     about what went wrong.
-   *  @example
-   *  <div><code>
-   *  var cVerb, sound;
-   *  function preload() {
-   *    // We have both MP3 and OGG versions of all sound assets
-   *    soundFormats('ogg', 'mp3');
-   *
-   *    // Try replacing 'bx-spring' with other soundfiles like
-   *    // 'concrete-tunnel' 'small-plate' 'drum' 'beatbox'
-   *    cVerb = createConvolver('assets/bx-spring.mp3');
-   *
-   *    // Try replacing 'Damscray_DancingTiger' with
-   *    // 'beat', 'doorbell', lucky_dragons_-_power_melody'
-   *    sound = loadSound('assets/Damscray_DancingTiger.mp3');
-   *  }
-   *
-   *  function setup() {
-   *    // disconnect from master output...
-   *    sound.disconnect();
-   *
-   *    // ...and process with cVerb
-   *    // so that we only hear the convolution
-   *    cVerb.process(sound);
-   *
-   *    sound.play();
-   *  }
-   *  </code></div>
-   */
-  p5.Convolver = function(path, callback, errorCallback) {
- 	  p5.Reverb.call(this);
-
+/**
+ *  <p>p5.Convolver extends p5.Reverb. It can emulate the sound of real
+ *  physical spaces through a process called <a href="
+ *  https://en.wikipedia.org/wiki/Convolution_reverb#Real_space_simulation">
+ *  convolution</a>.</p>
+ *
+ *  <p>Convolution multiplies any audio input by an "impulse response"
+ *  to simulate the dispersion of sound over time. The impulse response is
+ *  generated from an audio file that you provide. One way to
+ *  generate an impulse response is to pop a balloon in a reverberant space
+ *  and record the echo. Convolution can also be used to experiment with
+ *  sound.</p>
+ *
+ *  <p>Use the method <code>createConvolution(path)</code> to instantiate a
+ *  p5.Convolver with a path to your impulse response audio file.</p>
+ *
+ *  This class extends <a href = "/reference/#/p5.Effect">p5.Effect</a>.
+ *  Methods <a href = "/reference/#/p5.Effect/amp">amp()</a>, <a href = "/reference/#/p5.Effect/chain">chain()</a>,
+ *  <a href = "/reference/#/p5.Effect/drywet">drywet()</a>, <a href = "/reference/#/p5.Effect/connect">connect()</a>, and
+ *  <a href = "/reference/#/p5.Effect/disconnect">disconnect()</a> are available.
+ *
+ *  @class p5.Convolver
+ *  @extends p5.Effect
+ *  @constructor
+ *  @param  {String}   path     path to a sound file
+ *  @param  {Function} [callback] function to call when loading succeeds
+ *  @param  {Function} [errorCallback] function to call if loading fails.
+ *                                     This function will receive an error or
+ *                                     XMLHttpRequest object with information
+ *                                     about what went wrong.
+ *  @example
+ *  <div><code>
+ *  let cVerb, sound;
+ *  function preload() {
+ *    // We have both MP3 and OGG versions of all sound assets
+ *    soundFormats('ogg', 'mp3');
+ *
+ *    // Try replacing 'bx-spring' with other soundfiles like
+ *    // 'concrete-tunnel' 'small-plate' 'drum' 'beatbox'
+ *    cVerb = createConvolver('assets/bx-spring.mp3');
+ *
+ *    // Try replacing 'Damscray_DancingTiger' with
+ *    // 'beat', 'doorbell', lucky_dragons_-_power_melody'
+ *    sound = loadSound('assets/Damscray_DancingTiger.mp3');
+ *  }
+ *
+ *  function setup() {
+ *    let cnv = createCanvas(100, 100);
+ *    cnv.mousePressed(playSound);
+ *    background(220);
+ *    text('tap to play', 20, 20);
+ *
+ *    // disconnect from main output...
+ *    sound.disconnect();
+ *
+ *    // ...and process with cVerb
+ *    // so that we only hear the convolution
+ *    cVerb.process(sound);
+ *  }
+ *
+ *  function playSound() {
+ *    sound.play();
+ *  }
+ *  </code></div>
+ */
+class Convolver extends Reverb {
+  constructor(path, callback, errorCallback) {
+    super();
     /**
      *  Internally, the p5.Convolver uses the a
      *  <a href="http://www.w3.org/TR/webaudio/#ConvolverNode">
@@ -268,8 +279,7 @@ define(function (require) {
     if (path) {
       this.impulses = [];
       this._loadBuffer(path, callback, errorCallback);
-    }
-    else {
+    } else {
       // parameters
       this._seconds = 3;
       this._decay = 2;
@@ -278,29 +288,121 @@ define(function (require) {
       this._buildImpulse();
     }
 
-  };
-
-  p5.Convolver.prototype = Object.create(p5.Reverb.prototype);
-
-  p5.prototype.registerPreloadMethod('createConvolver', p5.prototype);
+    /**
+     *  If you load multiple impulse files using the .addImpulse method,
+     *  they will be stored as Objects in this Array. Toggle between them
+     *  with the <code>toggleImpulse(id)</code> method.
+     *
+     *  @property {Array} impulses
+     *  @for p5.Convolver
+     */
+    this.impulses = [];
+    this.set = null;
+  }
 
   /**
-   *  Create a p5.Convolver. Accepts a path to a soundfile
-   *  that will be used to generate an impulse response.
+   *  Private method to load a buffer as an Impulse Response,
+   *  assign it to the convolverNode, and add to the Array of .impulses.
    *
-   *  @method  createConvolver
-   *  @for p5
-   *  @param  {String}   path     path to a sound file
-   *  @param  {Function} [callback] function to call if loading is successful.
-   *                                The object will be passed in as the argument
-   *                                to the callback function.
-   *  @param  {Function} [errorCallback] function to call if loading is not successful.
-   *                                A custom error will be passed in as the argument
-   *                                to the callback function.
-   *  @return {p5.Convolver}
+   *  @param   {String}   path
+   *  @param   {Function} callback
+   *  @param   {Function} errorCallback
+   *  @private
+   */
+  _loadBuffer(_path, callback, errorCallback) {
+    var path = p5.prototype._checkFileFormats(_path);
+    var self = this;
+    var errorTrace = new Error().stack;
+    var ac = getAudioContext();
+
+    var request = new XMLHttpRequest();
+    request.open('GET', path, true);
+    request.responseType = 'arraybuffer';
+
+    request.onload = function () {
+      if (request.status === 200) {
+        // on success loading file:
+        ac.decodeAudioData(
+          request.response,
+          function (buff) {
+            var buffer = {};
+            var chunks = path.split('/');
+            buffer.name = chunks[chunks.length - 1];
+            buffer.audioBuffer = buff;
+            self.impulses.push(buffer);
+            self._setBuffer(buffer.audioBuffer);
+            if (callback) {
+              callback(buffer);
+            }
+          },
+          // error decoding buffer. "e" is undefined in Chrome 11/22/2015
+          function () {
+            var err = new CustomError('decodeAudioData', errorTrace, self.url);
+            var msg = 'AudioContext error at decodeAudioData for ' + self.url;
+            if (errorCallback) {
+              err.msg = msg;
+              errorCallback(err);
+            } else {
+              console.error(
+                msg + '\n The error stack trace includes: \n' + err.stack
+              );
+            }
+          }
+        );
+      }
+      // if request status != 200, it failed
+      else {
+        var err = new CustomError('loadConvolver', errorTrace, self.url);
+        var msg =
+          'Unable to load ' +
+          self.url +
+          '. The request status was: ' +
+          request.status +
+          ' (' +
+          request.statusText +
+          ')';
+
+        if (errorCallback) {
+          err.message = msg;
+          errorCallback(err);
+        } else {
+          console.error(
+            msg + '\n The error stack trace includes: \n' + err.stack
+          );
+        }
+      }
+    };
+
+    // if there is another error, aside from 404...
+    request.onerror = function () {
+      var err = new CustomError('loadConvolver', errorTrace, self.url);
+      var msg =
+        'There was no response from the server at ' +
+        self.url +
+        '. Check the url and internet connectivity.';
+
+      if (errorCallback) {
+        err.message = msg;
+        errorCallback(err);
+      } else {
+        console.error(
+          msg + '\n The error stack trace includes: \n' + err.stack
+        );
+      }
+    };
+    request.send();
+  }
+
+  /**
+   *  Connect a source to the convolver.
+   *
+   *  @method  process
+   *  @for p5.Convolver
+   *  @param  {Object} src     p5.sound / Web Audio object with a sound
+   *                           output.
    *  @example
    *  <div><code>
-   *  var cVerb, sound;
+   *  let cVerb, sound;
    *  function preload() {
    *    // We have both MP3 and OGG versions of all sound assets
    *    soundFormats('ogg', 'mp3');
@@ -315,158 +417,28 @@ define(function (require) {
    *  }
    *
    *  function setup() {
-   *    // disconnect from master output...
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mousePressed(playSound);
+   *    background(220);
+   *    text('tap to play', 20, 20);
+   *
+   *    // disconnect from main output...
    *    sound.disconnect();
    *
    *    // ...and process with cVerb
    *    // so that we only hear the convolution
    *    cVerb.process(sound);
+   *  }
    *
+   *  function playSound() {
    *    sound.play();
    *  }
+   *
    *  </code></div>
    */
-  p5.prototype.createConvolver = function(path, callback, errorCallback) {
-    // if loading locally without a server
-    if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined') {
-      alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
-    }
-    var self = this;
-    var cReverb = new p5.Convolver(path, function(buffer) {
-      if (typeof callback === 'function') {
-        callback(buffer);
-      }
-
-      if (typeof self._decrementPreload === 'function') {
-        self._decrementPreload();
-      }
-    }, errorCallback);
-    cReverb.impulses = [];
-    return cReverb;
-  };
-
-  /**
-   *  Private method to load a buffer as an Impulse Response,
-   *  assign it to the convolverNode, and add to the Array of .impulses.
-   *
-   *  @param   {String}   path
-   *  @param   {Function} callback
-   *  @param   {Function} errorCallback
-   *  @private
-   */
-  p5.Convolver.prototype._loadBuffer = function(path, callback, errorCallback) {
-    var path = p5.prototype._checkFileFormats(path);
-    var self = this;
-    var errorTrace = new Error().stack;
-    var ac = p5.prototype.getAudioContext();
-
-    var request = new XMLHttpRequest();
-    request.open('GET', path, true);
-    request.responseType = 'arraybuffer';
-
-    request.onload = function() {
-      if (request.status === 200) {
-        // on success loading file:
-        ac.decodeAudioData(request.response,
-          function(buff) {
-            var buffer = {};
-            var chunks = path.split('/');
-            buffer.name = chunks[chunks.length - 1];
-            buffer.audioBuffer = buff;
-            self.impulses.push(buffer);
-            self._setBuffer(buffer.audioBuffer);
-            if (callback) {
-              callback(buffer);
-            }
-          },
-          // error decoding buffer. "e" is undefined in Chrome 11/22/2015
-          function() {
-            var err = new CustomError('decodeAudioData', errorTrace, self.url);
-            var msg = 'AudioContext error at decodeAudioData for ' + self.url;
-            if (errorCallback) {
-              err.msg = msg;
-              errorCallback(err);
-            } else {
-              console.error(msg +'\n The error stack trace includes: \n' + err.stack);
-            }
-          }
-        );
-      }
-      // if request status != 200, it failed
-      else {
-        var err = new CustomError('loadConvolver', errorTrace, self.url);
-        var msg = 'Unable to load ' + self.url +
-          '. The request status was: ' + request.status + ' (' + request.statusText + ')';
-
-        if (errorCallback) {
-          err.message = msg;
-          errorCallback(err);
-        } else {
-          console.error(msg +'\n The error stack trace includes: \n' + err.stack);
-        }
-      }
-    };
-
-    // if there is another error, aside from 404...
-    request.onerror = function() {
-      var err = new CustomError('loadConvolver', errorTrace, self.url);
-      var msg = 'There was no response from the server at ' + self.url + '. Check the url and internet connectivity.';
-
-      if (errorCallback) {
-        err.message = msg;
-        errorCallback(err);
-      } else {
-        console.error(msg +'\n The error stack trace includes: \n' + err.stack);
-      }
-    };
-    request.send();
-  };
-
-  p5.Convolver.prototype.set = null;
-
-  /**
-   *  Connect a source to the reverb, and assign reverb parameters.
-   *
-   *  @method  process
-   *  @for p5.Convolver
-   *  @param  {Object} src     p5.sound / Web Audio object with a sound
-   *                           output.
-   *  @example
-   *  <div><code>
-   *  var cVerb, sound;
-   *  function preload() {
-   *    soundFormats('ogg', 'mp3');
-   *
-   *    cVerb = createConvolver('assets/concrete-tunnel.mp3');
-   *
-   *    sound = loadSound('assets/beat.mp3');
-   *  }
-   *
-   *  function setup() {
-   *    // disconnect from master output...
-   *    sound.disconnect();
-   *
-   *    // ...and process with (i.e. connect to) cVerb
-   *    // so that we only hear the convolution
-   *    cVerb.process(sound);
-   *
-   *    sound.play();
-   *  }
-   *  </code></div>
-   */
-  p5.Convolver.prototype.process = function(src) {
+  process(src) {
     src.connect(this.input);
-  };
-
-  /**
-   *  If you load multiple impulse files using the .addImpulse method,
-   *  they will be stored as Objects in this Array. Toggle between them
-   *  with the <code>toggleImpulse(id)</code> method.
-   *
-   *  @property {Array} impulses
-   *  @for p5.Convolver
-   */
-  p5.Convolver.prototype.impulses = [];
+  }
 
   /**
    *  Load and assign a new Impulse Response to the p5.Convolver.
@@ -480,13 +452,18 @@ define(function (require) {
    *  @param  {Function} callback function (optional)
    *  @param  {Function} errorCallback function (optional)
    */
-  p5.Convolver.prototype.addImpulse = function(path, callback, errorCallback) {
+  addImpulse(path, callback, errorCallback) {
     // if loading locally without a server
-    if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined') {
-      alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
+    if (
+      window.location.origin.indexOf('file://') > -1 &&
+      window.cordova === 'undefined'
+    ) {
+      alert(
+        'This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS'
+      );
     }
     this._loadBuffer(path, callback, errorCallback);
-  };
+  }
 
   /**
    *  Similar to .addImpulse, except that the <code>.impulses</code>
@@ -499,14 +476,19 @@ define(function (require) {
    *  @param  {Function} callback function (optional)
    *  @param  {Function} errorCallback function (optional)
    */
-  p5.Convolver.prototype.resetImpulse = function(path, callback, errorCallback) {
+  resetImpulse(path, callback, errorCallback) {
     // if loading locally without a server
-    if (window.location.origin.indexOf('file://') > -1 && window.cordova === 'undefined') {
-      alert('This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS');
+    if (
+      window.location.origin.indexOf('file://') > -1 &&
+      window.cordova === 'undefined'
+    ) {
+      alert(
+        'This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS'
+      );
     }
     this.impulses = [];
     this._loadBuffer(path, callback, errorCallback);
-  };
+  }
 
   /**
    *  If you have used <code>.addImpulse()</code> to add multiple impulses
@@ -528,7 +510,7 @@ define(function (require) {
    *                            (String), or by its position in the
    *                            <code>.impulses</code> Array (Number).
    */
-  p5.Convolver.prototype.toggleImpulse = function(id) {
+  toggleImpulse(id) {
     if (typeof id === 'number' && id < this.impulses.length) {
       this._setBuffer(this.impulses[id].audioBuffer);
     }
@@ -540,10 +522,10 @@ define(function (require) {
         }
       }
     }
-  };
+  }
 
-  p5.Convolver.prototype.dispose = function() {
-    p5.Reverb.prototype.dispose.apply(this);
+  dispose() {
+    super.dispose();
 
     // remove all the Impulse Response buffers
     for (var i in this.impulses) {
@@ -551,6 +533,84 @@ define(function (require) {
         this.impulses[i] = null;
       }
     }
-  };
+  }
+}
 
-});
+/**
+ *  Create a p5.Convolver. Accepts a path to a soundfile
+ *  that will be used to generate an impulse response.
+ *
+ *  @method  createConvolver
+ *  @for p5
+ *  @param  {String}   path     path to a sound file
+ *  @param  {Function} [callback] function to call if loading is successful.
+ *                                The object will be passed in as the argument
+ *                                to the callback function.
+ *  @param  {Function} [errorCallback] function to call if loading is not successful.
+ *                                A custom error will be passed in as the argument
+ *                                to the callback function.
+ *  @return {p5.Convolver}
+ *  @example
+ *  <div><code>
+ *  let cVerb, sound;
+ *  function preload() {
+ *    // We have both MP3 and OGG versions of all sound assets
+ *    soundFormats('ogg', 'mp3');
+ *
+ *    // Try replacing 'bx-spring' with other soundfiles like
+ *    // 'concrete-tunnel' 'small-plate' 'drum' 'beatbox'
+ *    cVerb = createConvolver('assets/bx-spring.mp3');
+ *
+ *    // Try replacing 'Damscray_DancingTiger' with
+ *    // 'beat', 'doorbell', lucky_dragons_-_power_melody'
+ *    sound = loadSound('assets/Damscray_DancingTiger.mp3');
+ *  }
+ *
+ *  function setup() {
+ *    let cnv = createCanvas(100, 100);
+ *    cnv.mousePressed(playSound);
+ *    background(220);
+ *    text('tap to play', 20, 20);
+ *
+ *    // disconnect from main output...
+ *    sound.disconnect();
+ *
+ *    // ...and process with cVerb
+ *    // so that we only hear the convolution
+ *    cVerb.process(sound);
+ *  }
+ *
+ *  function playSound() {
+ *    sound.play();
+ *  }
+ *  </code></div>
+ */
+function createConvolver(path, callback, errorCallback) {
+  // if loading locally without a server
+  if (
+    window.location.origin.indexOf('file://') > -1 &&
+    window.cordova === 'undefined'
+  ) {
+    alert(
+      'This sketch may require a server to load external files. Please see http://bit.ly/1qcInwS'
+    );
+  }
+  var self = this;
+  var cReverb = new Convolver(
+    path,
+    function (buffer) {
+      if (typeof callback === 'function') {
+        callback(buffer);
+      }
+
+      if (typeof self._decrementPreload === 'function') {
+        self._decrementPreload();
+      }
+    },
+    errorCallback
+  );
+  cReverb.impulses = [];
+  return cReverb;
+}
+
+export { Reverb, Convolver, createConvolver };

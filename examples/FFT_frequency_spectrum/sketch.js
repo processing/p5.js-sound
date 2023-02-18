@@ -44,8 +44,7 @@ function setup() {
   p = createP(description);
   var p2 = createP('Draw the array returned by FFT.analyze( ). This represents the frequency spectrum, from lowest to highest frequencies.');
 
-  // set the master volume;
-  masterVolume(.5);
+  outputVolume(0.5);
 }
 
 function draw() {

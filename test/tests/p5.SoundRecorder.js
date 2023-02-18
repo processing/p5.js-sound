@@ -1,136 +1,180 @@
-'use strict';
+const expect = chai.expect;
 
-define(['chai', 'sinon'], function(chai, sinon) {
-  var expect = chai.expect;
+describe('p5.SoundRecorder', function () {
+  let inputSoundFile;
+  let writeFileSub;
 
-  describe('p5.SoundRecorder', function() {
-    var recorder;
-    var inputSoundFile;
-    var writeFileSub;
+  before(function (done) {
+    this.timeout(10000);
 
-    before(function(done) {
-      this.timeout(10000);
+    writeFileSub = sinon.stub(p5.prototype, 'writeFile');
 
-      writeFileSub = sinon.stub(p5.prototype, 'writeFile');
+    inputSoundFile = new p5.SoundFile();
+    inputSoundFile.setBuffer([[1], [1]]);
 
-      inputSoundFile = new p5.SoundFile();
-      inputSoundFile.setBuffer([[1], [1]]);
-
-      // request microphone access and throw an error if permission is denied
-      var tempMic = new p5.AudioIn();
-      tempMic.start(function() {
+    // request microphone access and throw an error if permission is denied
+    const tempMic = new p5.AudioIn();
+    tempMic.start(
+      function () {
         tempMic.dispose();
         done();
-      }, function() {
+      },
+      function () {
         tempMic.dispose();
         done(new Error('Microphone access denied'));
-      });
-    });
+      }
+    );
+  });
 
-    after(function() {
-      inputSoundFile.dispose();
-      writeFileSub.restore();
-    });
+  after(function () {
+    inputSoundFile.dispose();
+    writeFileSub.restore();
+  });
 
-    beforeEach(function() {
-      recorder = new p5.SoundRecorder();
-      inputSoundFile.disconnect();
-      inputSoundFile.stop();
-      writeFileSub.reset();
-    });
+  beforeEach(function () {
+    inputSoundFile.disconnect();
+    inputSoundFile.stop();
+    writeFileSub.reset();
+  });
 
-    afterEach(function() {
-      recorder.dispose();
-    });
+  afterEach(function () {});
 
-    it('can record input from a microphone', function(done) {
-      // this is the shortest possible recording duration
-      var recordingDuration = recorder.bufferSize / p5.soundOut.audiocontext.sampleRate;
+  it('can be created and disposed', function () {
+    let recorder = new p5.SoundRecorder();
+    expect(recorder.input).to.have.property('context');
+    expect(recorder.input).to.have.property('gain');
+    expect(recorder.output).to.have.property('context');
+    expect(recorder.output).to.have.property('gain');
+    expect(recorder._inputChannels).to.equal(2);
+    expect(recorder._outputChannels).to.equal(2);
+    expect(recorder._workletNode).to.have.property('context');
+    expect(recorder._workletNode).to.have.property('parameters');
 
-      // need to enable master volume to test recording from the microphone
-      p5.prototype.masterVolume(1);
+    expect(p5.soundOut.soundArray).to.include(recorder);
 
-      var mic = new p5.AudioIn();
-      mic.start(function() {
-        var outputSoundFile = new p5.SoundFile();
-        recorder.record(outputSoundFile, recordingDuration, function() {
-          expect(outputSoundFile.duration()).to.eq(recordingDuration);
+    recorder.dispose();
+    expect(p5.soundOut.soundArray).to.not.include(recorder);
+    expect(recorder.input).to.be.null;
+    expect(recorder._workletNode).to.be.null;
+  });
 
-          var outputChannel = outputSoundFile.buffer.getChannelData(0);
-          expect(outputChannel[0]).to.not.eq(0);
+  it('can record input from a microphone', function (done) {
+    let recorder = new p5.SoundRecorder();
+    // this is the shortest possible recording duration
+    const recordingDuration =
+      recorder.bufferSize / p5.soundOut.audiocontext.sampleRate;
 
+    // need to enable output volume to test recording from the microphone
+    p5.prototype.outputVolume(1);
+
+    const mic = new p5.AudioIn();
+    mic.start(function () {
+      recorder.setInput(mic);
+      const outputSoundFile = new p5.SoundFile();
+      setTimeout(() => {
+        recorder.record(outputSoundFile, 5 * recordingDuration, function () {
+          expect(outputSoundFile.duration()).to.be.approximately(
+            5 * recordingDuration,
+            0.01
+          );
+
+          const outputChannel = outputSoundFile.buffer.getChannelData(0);
+          let isAllZero = true;
+
+          for (let i = 0; i < outputChannel.length; i++) {
+            if (outputChannel[i] !== 0) {
+              isAllZero = false;
+              break;
+            }
+          }
+
+          expect(isAllZero).to.be.false;
           outputSoundFile.dispose();
           mic.dispose();
-          p5.prototype.masterVolume(0);
+          p5.prototype.outputVolume(0);
+          recorder.dispose();
           done();
         });
-      });
+      }, 500);
     });
+  });
 
-    it('can record input from a sound file', function(done) {
-      var sampleIndex = 0;
-      // this is the shortest possible recording duration
-      var recordingDuration = recorder.bufferSize / p5.soundOut.audiocontext.sampleRate;
-      var inputChannel = inputSoundFile.buffer.getChannelData(0);
-      // input SoundFile should contain all 1s
-      expect(inputChannel[sampleIndex]).to.eq(1);
+  it('can record input from a sound file', function (done) {
+    let recorder = new p5.SoundRecorder();
+    const sampleIndex = 0;
+    // this is the shortest possible recording duration
+    const recordingDuration =
+      recorder.bufferSize / p5.soundOut.audiocontext.sampleRate;
+    const inputChannel = inputSoundFile.buffer.getChannelData(0);
+    const inputChannelSampleValue = inputChannel[sampleIndex];
+    // input SoundFile should contain all 1s
+    expect(inputChannelSampleValue).to.eq(1);
 
-      var outputSoundFile = new p5.SoundFile();
-      inputSoundFile.loop();
-      recorder.setInput(inputSoundFile);
-      recorder.record(outputSoundFile, recordingDuration, function() {
+    const outputSoundFile = new p5.SoundFile();
+    inputSoundFile.loop();
+    recorder.setInput(inputSoundFile);
+    recorder.record(outputSoundFile, recordingDuration, function () {
+      expect(outputSoundFile.duration()).to.eq(recordingDuration);
+
+      var outputChannel = outputSoundFile.buffer.getChannelData(0);
+      expect(outputChannel[sampleIndex]).to.eq(inputChannelSampleValue);
+
+      outputSoundFile.dispose();
+      recorder.dispose();
+      done();
+    });
+  });
+
+  it('can record the main output of a sketch', function (done) {
+    let recorder = new p5.SoundRecorder();
+    // this is the shortest possible recording duration
+    const recordingDuration =
+      recorder.bufferSize / p5.soundOut.audiocontext.sampleRate;
+    const inputChannel = inputSoundFile.buffer.getChannelData(0);
+    // input SoundFile should contain all 1s
+    expect(inputChannel[0]).to.eq(1);
+
+    // need to enable output volume to test recording from main output
+    p5.prototype.outputVolume(1);
+
+    const outputSoundFile = new p5.SoundFile();
+    inputSoundFile.connect();
+    inputSoundFile.loop();
+    recorder.setInput();
+    setTimeout(() => {
+      recorder.record(outputSoundFile, recordingDuration, function () {
         expect(outputSoundFile.duration()).to.eq(recordingDuration);
 
-        var outputChannel = outputSoundFile.buffer.getChannelData(0);
-        expect(outputChannel[sampleIndex]).to.eq(inputChannel[sampleIndex]);
-
-        outputSoundFile.dispose();
-        done();
-      });
-    });
-
-    it('can record the master output of a sketch', function(done) {
-      // this is the shortest possible recording duration
-      var recordingDuration = recorder.bufferSize / p5.soundOut.audiocontext.sampleRate;
-      var inputChannel = inputSoundFile.buffer.getChannelData(0);
-      // input SoundFile should contain all 1s
-      expect(inputChannel[0]).to.eq(1);
-
-      // need to enable master volume to test recording from master output
-      p5.prototype.masterVolume(1);
-
-      var outputSoundFile = new p5.SoundFile();
-      inputSoundFile.connect();
-      inputSoundFile.loop();
-      recorder.setInput();
-      recorder.record(outputSoundFile, recordingDuration, function() {
-        expect(outputSoundFile.duration()).to.eq(recordingDuration);
-
-        var outputChannel = outputSoundFile.buffer.getChannelData(0);
+        const outputChannel = outputSoundFile.buffer.getChannelData(0);
         expect(outputChannel[0]).to.not.eq(0);
 
         outputSoundFile.dispose();
-        p5.prototype.masterVolume(0);
+        p5.prototype.outputVolume(0);
+        recorder.dispose();
         done();
       });
-    });
+    }, 20);
+  });
 
-    it('can save a recorded buffer to a .wav file', function(done) {
-      // this is the shortest possible recording duration
-      var recordingDuration = recorder.bufferSize / p5.soundOut.audiocontext.sampleRate;
+  it('can save a recorded buffer to a .wav file and be stopped', function (done) {
+    let recorder = new p5.SoundRecorder();
+    // this is the shortest possible recording duration
+    const recordingDuration =
+      recorder.bufferSize / p5.soundOut.audiocontext.sampleRate;
 
-      var outputSoundFile = new p5.SoundFile();
-      inputSoundFile.play();
-      recorder.setInput(inputSoundFile);
-      recorder.record(outputSoundFile, recordingDuration, function() {
-        expect(outputSoundFile.duration()).to.eq(recordingDuration);
+    const outputSoundFile = new p5.SoundFile();
+    inputSoundFile.play();
+    recorder.setInput(inputSoundFile);
+    recorder.record(outputSoundFile, recordingDuration, function () {
+      expect(outputSoundFile.duration()).to.eq(recordingDuration);
 
-        p5.prototype.saveSound(outputSoundFile, 'test.wav');
-        expect(writeFileSub.called).to.be.true;
+      p5.prototype.saveSound(outputSoundFile, 'test.wav');
+      expect(writeFileSub.called).to.be.true;
 
-        outputSoundFile.dispose();
-        done();
-      });
+      outputSoundFile.dispose();
+      recorder.stop();
+      recorder.dispose();
+      done();
     });
   });
 });

@@ -4,11 +4,36 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-
+    decomment: {
+      any: {
+        // remove comments added by webpack from the build
+        files: {
+            "./lib/p5.sound.js": "./lib/p5.sound.js",
+        },
+        options: {
+          ignore: [
+            // keep JSDoc comments (p5.js repo's YUIDoc task parses those for documentation)
+            /\/\*\*\s*\n([^\*]|(\*(?!\/)))*\*\//g,
+            // keep the version number
+            /.*Version.*/
+          ]
+        }
+      }
+    },
     // Configure style consistency
     eslint: {
       source: {
-        options: {configFile: './.eslintrc'},
+        options: {
+          configFile: './.eslintrc',
+          fix: true
+        },
+        src: ['src/**/*.js', 'test/tests/**/*.js']
+      },
+      sourceNofix: {
+        options: {
+          configFile: './.eslintrc',
+          fix: false
+        },
         src: ['src/**/*.js', 'test/tests/**/*.js']
       }
     },
@@ -38,18 +63,29 @@ module.exports = function(grunt) {
           hostname: '*'
         }
       }
-    }
+    },
+    githooks: {
+      all: {
+        options:{
+          template:"templates/pre-commit-hook.js"
+        },
+      'pre-commit':'lint-nofix' //runs elint in -nofix mode  before every git commit 
+      }
+      }
   });
 
-
+  
   grunt.loadNpmTasks('grunt-webpack');
   grunt.loadNpmTasks('grunt-eslint');
   grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-open');
+  grunt.loadNpmTasks('grunt-decomment');
+  grunt.loadNpmTasks('grunt-githooks');
 
   grunt.registerTask('lint', ['eslint:source']);
-  grunt.registerTask('default', ['webpack:prod']);
-  grunt.registerTask('dev', ['connect','webpack:dev']);
+  grunt.registerTask('lint-nofix', ['eslint:sourceNofix']);
+  grunt.registerTask('default', ['webpack:prod', 'decomment']);
+  grunt.registerTask('dev', ['eslint','connect','webpack:dev', 'decomment']);
   grunt.registerTask('serve', 'connect:server:keepalive');
   grunt.registerTask('run-tests', ['serve', 'open']);
 };

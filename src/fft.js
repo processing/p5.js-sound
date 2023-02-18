@@ -1,118 +1,114 @@
-'use strict';
+import p5sound from './main';
 
-define(function(require) {
-  var p5sound = require('master');
-
-  /**
-   *  <p>FFT (Fast Fourier Transform) is an analysis algorithm that
-   *  isolates individual
-   *  <a href="https://en.wikipedia.org/wiki/Audio_frequency">
-   *  audio frequencies</a> within a waveform.</p>
-   *
-   *  <p>Once instantiated, a p5.FFT object can return an array based on
-   *  two types of analyses: <br> • <code>FFT.waveform()</code> computes
-   *  amplitude values along the time domain. The array indices correspond
-   *  to samples across a brief moment in time. Each value represents
-   *  amplitude of the waveform at that sample of time.<br>
-   *  • <code>FFT.analyze() </code> computes amplitude values along the
-   *  frequency domain. The array indices correspond to frequencies (i.e.
-   *  pitches), from the lowest to the highest that humans can hear. Each
-   *  value represents amplitude at that slice of the frequency spectrum.
-   *  Use with <code>getEnergy()</code> to measure amplitude at specific
-   *  frequencies, or within a range of frequencies. </p>
-   *
-   *  <p>FFT analyzes a very short snapshot of sound called a sample
-   *  buffer. It returns an array of amplitude measurements, referred
-   *  to as <code>bins</code>. The array is 1024 bins long by default.
-   *  You can change the bin array length, but it must be a power of 2
-   *  between 16 and 1024 in order for the FFT algorithm to function
-   *  correctly. The actual size of the FFT buffer is twice the
-   *  number of bins, so given a standard sample rate, the buffer is
-   *  2048/44100 seconds long.</p>
-   *
-   *
-   *  @class p5.FFT
-   *  @constructor
-   *  @param {Number} [smoothing]   Smooth results of Freq Spectrum.
-   *                                0.0 < smoothing < 1.0.
-   *                                Defaults to 0.8.
-   *  @param {Number} [bins]    Length of resulting array.
-   *                            Must be a power of two between
-   *                            16 and 1024. Defaults to 1024.
-   *  @example
-   *  <div><code>
-   *  function preload(){
-   *    sound = loadSound('assets/Damscray_DancingTiger.mp3');
-   *  }
-   *
-   *  function setup(){
-   *    var cnv = createCanvas(100,100);
-   *    cnv.mouseClicked(togglePlay);
-   *    fft = new p5.FFT();
-   *    sound.amp(0.2);
-   *  }
-   *
-   *  function draw(){
-   *    background(0);
-   *
-   *    var spectrum = fft.analyze();
-   *    noStroke();
-   *    fill(0,255,0); // spectrum is green
-   *    for (var i = 0; i< spectrum.length; i++){
-   *      var x = map(i, 0, spectrum.length, 0, width);
-   *      var h = -height + map(spectrum[i], 0, 255, height, 0);
-   *      rect(x, height, width / spectrum.length, h )
-   *    }
-   *
-   *    var waveform = fft.waveform();
-   *    noFill();
-   *    beginShape();
-   *    stroke(255,0,0); // waveform is red
-   *    strokeWeight(1);
-   *    for (var i = 0; i< waveform.length; i++){
-   *      var x = map(i, 0, waveform.length, 0, width);
-   *      var y = map( waveform[i], -1, 1, 0, height);
-   *      vertex(x,y);
-   *    }
-   *    endShape();
-   *
-   *    text('click to play/pause', 4, 10);
-   *  }
-   *
-   *  // fade sound if mouse is over canvas
-   *  function togglePlay() {
-   *    if (sound.isPlaying()) {
-   *      sound.pause();
-   *    } else {
-   *      sound.loop();
-   *    }
-   *  }
-   *  </code></div>
-   */
-  p5.FFT = function(smoothing, bins) {
+/**
+ *  <p>FFT (Fast Fourier Transform) is an analysis algorithm that
+ *  isolates individual
+ *  <a href="https://en.wikipedia.org/wiki/Audio_frequency">
+ *  audio frequencies</a> within a waveform.</p>
+ *
+ *  <p>Once instantiated, a p5.FFT object can return an array based on
+ *  two types of analyses: <br> • <code>FFT.waveform()</code> computes
+ *  amplitude values along the time domain. The array indices correspond
+ *  to samples across a brief moment in time. Each value represents
+ *  amplitude of the waveform at that sample of time.<br>
+ *  • <code>FFT.analyze() </code> computes amplitude values along the
+ *  frequency domain. The array indices correspond to frequencies (i.e.
+ *  pitches), from the lowest to the highest that humans can hear. Each
+ *  value represents amplitude at that slice of the frequency spectrum.
+ *  Use with <code>getEnergy()</code> to measure amplitude at specific
+ *  frequencies, or within a range of frequencies. </p>
+ *
+ *  <p>FFT analyzes a very short snapshot of sound called a sample
+ *  buffer. It returns an array of amplitude measurements, referred
+ *  to as <code>bins</code>. The array is 1024 bins long by default.
+ *  You can change the bin array length, but it must be a power of 2
+ *  between 16 and 1024 in order for the FFT algorithm to function
+ *  correctly. The actual size of the FFT buffer is twice the
+ *  number of bins, so given a standard sample rate, the buffer is
+ *  2048/44100 seconds long.</p>
+ *
+ *
+ *  @class p5.FFT
+ *  @constructor
+ *  @param {Number} [smoothing]   Smooth results of Freq Spectrum.
+ *                                0.0 < smoothing < 1.0.
+ *                                Defaults to 0.8.
+ *  @param {Number} [bins]    Length of resulting array.
+ *                            Must be a power of two between
+ *                            16 and 1024. Defaults to 1024.
+ *  @example
+ *  <div><code>
+ *  function preload(){
+ *    sound = loadSound('assets/Damscray_DancingTiger.mp3');
+ *  }
+ *
+ *  function setup(){
+ *    let cnv = createCanvas(100,100);
+ *    cnv.mouseClicked(togglePlay);
+ *    fft = new p5.FFT();
+ *    sound.amp(0.2);
+ *  }
+ *
+ *  function draw(){
+ *    background(220);
+ *
+ *    let spectrum = fft.analyze();
+ *    noStroke();
+ *    fill(255, 0, 255);
+ *    for (let i = 0; i< spectrum.length; i++){
+ *      let x = map(i, 0, spectrum.length, 0, width);
+ *      let h = -height + map(spectrum[i], 0, 255, height, 0);
+ *      rect(x, height, width / spectrum.length, h )
+ *    }
+ *
+ *    let waveform = fft.waveform();
+ *    noFill();
+ *    beginShape();
+ *    stroke(20);
+ *    for (let i = 0; i < waveform.length; i++){
+ *      let x = map(i, 0, waveform.length, 0, width);
+ *      let y = map( waveform[i], -1, 1, 0, height);
+ *      vertex(x,y);
+ *    }
+ *    endShape();
+ *
+ *    text('tap to play', 20, 20);
+ *  }
+ *
+ *  function togglePlay() {
+ *    if (sound.isPlaying()) {
+ *      sound.pause();
+ *    } else {
+ *      sound.loop();
+ *    }
+ *  }
+ *  </code></div>
+ */
+class FFT {
+  constructor(smoothing, bins) {
     this.input = this.analyser = p5sound.audiocontext.createAnalyser();
 
     Object.defineProperties(this, {
       bins: {
-        get: function() {
+        get: function () {
           return this.analyser.fftSize / 2;
         },
-        set: function(b) {
+        set: function (b) {
           this.analyser.fftSize = b * 2;
         },
         configurable: true,
-        enumerable: true
+        enumerable: true,
       },
       smoothing: {
-        get: function() {
+        get: function () {
           return this.analyser.smoothingTimeConstant;
         },
-        set: function(s) {
+        set: function (s) {
           this.analyser.smoothingTimeConstant = s;
         },
         configurable: true,
-        enumerable: true
-      }
+        enumerable: true,
+      },
     });
 
     // set default smoothing and bins
@@ -134,7 +130,7 @@ define(function(require) {
 
     // add this p5.SoundFile to the soundArray
     p5sound.soundArray.push(this);
-  };
+  }
 
   /**
    *  Set the input source for the FFT analysis. If no source is
@@ -144,7 +140,7 @@ define(function(require) {
    *  @for p5.FFT
    *  @param {Object} [source] p5.sound object (or web audio API source node)
    */
-  p5.FFT.prototype.setInput = function(source) {
+  setInput(source) {
     if (!source) {
       p5sound.fftMeter.connect(this.analyser);
     } else {
@@ -155,7 +151,7 @@ define(function(require) {
       }
       p5sound.fftMeter.disconnect();
     }
-  };
+  }
 
   /**
    *  Returns an array of amplitude values (between -1.0 and +1.0) that represent
@@ -174,13 +170,13 @@ define(function(require) {
    *                            over time. Array length = bins.
    *
    */
-  p5.FFT.prototype.waveform = function() {
-    var bins, mode, normalArray;
+  waveform() {
+    var mode;
+    var normalArray = new Array();
 
     for (var i = 0; i < arguments.length; i++) {
       if (typeof arguments[i] === 'number') {
-        bins = arguments[i];
-        this.analyser.fftSize = bins * 2;
+        this.bins = arguments[i];
       }
       if (typeof arguments[i] === 'string') {
         mode = arguments[i];
@@ -195,14 +191,13 @@ define(function(require) {
     } else {
       timeToInt(this, this.timeDomain);
       this.analyser.getByteTimeDomainData(this.timeDomain);
-      var normalArray = new Array();
       for (var j = 0; j < this.timeDomain.length; j++) {
         var scaled = p5.prototype.map(this.timeDomain[j], 0, 255, -1, 1);
         normalArray.push(scaled);
       }
       return normalArray;
     }
-  };
+  }
 
   /**
    *  Returns an array of amplitude values (between 0 and 255)
@@ -227,59 +222,58 @@ define(function(require) {
    *                              possible is 255.
    *  @example
    *  <div><code>
-   *  var osc;
-   *  var fft;
+   *  let osc, fft;
    *
    *  function setup(){
-   *    createCanvas(100,100);
+   *    let cnv = createCanvas(100,100);
+   *    cnv.mousePressed(startSound);
    *    osc = new p5.Oscillator();
    *    osc.amp(0);
-   *    osc.start();
    *    fft = new p5.FFT();
    *  }
    *
    *  function draw(){
-   *    background(0);
+   *    background(220);
    *
-   *    var freq = map(mouseX, 0, 800, 20, 15000);
+   *    let freq = map(mouseX, 0, windowWidth, 20, 10000);
    *    freq = constrain(freq, 1, 20000);
    *    osc.freq(freq);
    *
-   *    var spectrum = fft.analyze();
+   *    let spectrum = fft.analyze();
    *    noStroke();
-   *    fill(0,255,0); // spectrum is green
-   *    for (var i = 0; i< spectrum.length; i++){
-   *      var x = map(i, 0, spectrum.length, 0, width);
-   *      var h = -height + map(spectrum[i], 0, 255, height, 0);
+   *    fill(255, 0, 255);
+   *    for (let i = 0; i< spectrum.length; i++){
+   *      let x = map(i, 0, spectrum.length, 0, width);
+   *      let h = -height + map(spectrum[i], 0, 255, height, 0);
    *      rect(x, height, width / spectrum.length, h );
    *    }
    *
    *    stroke(255);
-   *    text('Freq: ' + round(freq)+'Hz', 10, 10);
-   *
-   *    isMouseOverCanvas();
+   *    if (!osc.started) {
+   *      text('tap here and drag to change frequency', 10, 20, width - 20);
+   *    } else {
+   *      text(round(freq)+'Hz', 10, 20);
+   *    }
    *  }
    *
-   *  // only play sound when mouse is over canvas
-   *  function isMouseOverCanvas() {
-   *    var mX = mouseX, mY = mouseY;
-   *    if (mX > 0 && mX < width && mY < height && mY > 0) {
-   *      osc.amp(0.5, 0.2);
-   *    } else {
-   *      osc.amp(0, 0.2);
-   *    }
+   *  function startSound() {
+   *    osc.start();
+   *    osc.amp(0.5, 0.2);
+   *  }
+   *
+   *  function mouseReleased() {
+   *    osc.amp(0, 0.2);
    *  }
    *  </code></div>
    *
    *
    */
-  p5.FFT.prototype.analyze = function() {
+  analyze() {
     var mode;
 
     for (var i = 0; i < arguments.length; i++) {
       if (typeof arguments[i] === 'number') {
         this.bins = arguments[i];
-        this.analyser.fftSize = this.bins * 2;
       }
       if (typeof arguments[i] === 'string') {
         mode = arguments[i];
@@ -294,23 +288,23 @@ define(function(require) {
       freqToInt(this, this.freqDomain);
       this.analyser.getByteFrequencyData(this.freqDomain);
       var normalArray = Array.apply([], this.freqDomain);
-      
+
       return normalArray;
     }
-  };
+  }
 
   /**
    *  Returns the amount of energy (volume) at a specific
    *  <a href="https://en.wikipedia.org/wiki/Audio_frequency" target="_blank">
    *  frequency</a>, or the average amount of energy between two
    *  frequencies. Accepts Number(s) corresponding
-   *  to frequency (in Hz), or a String corresponding to predefined
+   *  to frequency (in Hz) (frequency must be >= 0), or a "string" corresponding to predefined
    *  frequency ranges ("bass", "lowMid", "mid", "highMid", "treble").
    *  Returns a range between 0 (no energy/volume at that frequency) and
    *  255 (maximum energy).
-   *  <em>NOTE: analyze() must be called prior to getEnergy(). Analyze()
+   *  <em>NOTE: analyze() must be called prior to getEnergy(). analyze()
    *  tells the FFT to analyze frequency data, and getEnergy() uses
-   *  the results determine the value at a specific frequency or
+   *  the results to determine the value at a specific frequency or
    *  range of frequencies.</em></p>
    *
    *  @method  getEnergy
@@ -324,11 +318,11 @@ define(function(require) {
    *                                will return average amount of
    *                                energy that exists between the
    *                                two frequencies.
-   *  @return {Number}   Energy   Energy (volume/amplitude) from
-   *                              0 and 255.
+   *  @return {Number}  Energy (volume/amplitude) from
+   *                    0 and 255.
    *
    */
-  p5.FFT.prototype.getEnergy = function(frequency1, frequency2) {
+  getEnergy(frequency1, frequency2) {
     var nyquist = p5sound.audiocontext.sampleRate / 2;
 
     if (frequency1 === 'bass') {
@@ -350,42 +344,43 @@ define(function(require) {
 
     if (typeof frequency1 !== 'number') {
       throw 'invalid input for getEnergy()';
-    } else if (!frequency2) {
-      // if only one parameter:
-      var index = Math.round(frequency1 / nyquist * this.freqDomain.length);
-      return this.freqDomain[index];
-    } else if (frequency1 && frequency2) {
-      // if two parameters:
-      // if second is higher than first
-      if (frequency1 > frequency2) {
-        var swap = frequency2;
-        frequency2 = frequency1;
-        frequency1 = swap;
-      }
-      var lowIndex = Math.round(frequency1 / nyquist * this.freqDomain.length);
-      var highIndex = Math.round(frequency2 / nyquist * this.freqDomain.length);
-
-      var total = 0;
-      var numFrequencies = 0;
-      // add up all of the values for the frequencies
-      for (var i = lowIndex; i <= highIndex; i++) {
-        total += this.freqDomain[i];
-        numFrequencies += 1;
-      }
-      // divide by total number of frequencies
-      var toReturn = total / numFrequencies;
-      return toReturn;
-    } else {
-      throw 'invalid input for getEnergy()';
     }
-  };
+    if (typeof frequency2 !== 'number') {
+      // if only one parameter:
+      var index = Math.round((frequency1 / nyquist) * this.freqDomain.length);
+      return this.freqDomain[index];
+    }
+    if (frequency1 < 0 || frequency2 < 0) {
+      throw 'invalid input for getEnergy(), frequency cannot be a negative number';
+    }
+    // if two parameters:
+    // if second is higher than first
+    if (frequency1 > frequency2) {
+      var swap = frequency2;
+      frequency2 = frequency1;
+      frequency1 = swap;
+    }
+    var lowIndex = Math.round((frequency1 / nyquist) * this.freqDomain.length);
+    var highIndex = Math.round((frequency2 / nyquist) * this.freqDomain.length);
+
+    var total = 0;
+    var numFrequencies = 0;
+    // add up all of the values for the frequencies
+    for (var i = lowIndex; i <= highIndex; i++) {
+      total += this.freqDomain[i];
+      numFrequencies += 1;
+    }
+    // divide by total number of frequencies
+    var toReturn = total / numFrequencies;
+    return toReturn;
+  }
 
   // compatability with v.012, changed to getEnergy in v.0121. Will be deprecated...
-  p5.FFT.prototype.getFreq = function(freq1, freq2) {
+  getFreq(freq1, freq2) {
     console.log('getFreq() is deprecated. Please use getEnergy() instead.');
     var x = this.getEnergy(freq1, freq2);
     return x;
-  };
+  }
 
   /**
    *  Returns the
@@ -397,63 +392,62 @@ define(function(require) {
    *
    *  @method  getCentroid
    *  @for p5.FFT
-   *  @return {Number}   Spectral Centroid Frequency   Frequency of the spectral centroid in Hz.
+   *  @return {Number}   Spectral Centroid Frequency  of the spectral centroid in Hz.
    *
    *
    * @example
    *  <div><code>
-   *
-   *
-   *function setup(){
+   * function setup(){
    *  cnv = createCanvas(100,100);
+   *  cnv.mousePressed(userStartAudio);
    *  sound = new p5.AudioIn();
    *  sound.start();
    *  fft = new p5.FFT();
    *  sound.connect(fft);
    *}
    *
-   *
-   *function draw(){
-   *
-   *  var centroidplot = 0.0;
-   *  var spectralCentroid = 0;
-   *
+   *function draw() {
+   *  if (getAudioContext().state !== 'running') {
+   *    background(220);
+   *    text('tap here and enable mic to begin', 10, 20, width - 20);
+   *    return;
+   *  }
+   *  let centroidplot = 0.0;
+   *  let spectralCentroid = 0;
    *
    *  background(0);
    *  stroke(0,255,0);
-   *  var spectrum = fft.analyze();
+   *  let spectrum = fft.analyze();
    *  fill(0,255,0); // spectrum is green
    *
    *  //draw the spectrum
-   *  for (var i = 0; i< spectrum.length; i++){
-   *    var x = map(log(i), 0, log(spectrum.length), 0, width);
-   *    var h = map(spectrum[i], 0, 255, 0, height);
-   *    var rectangle_width = (log(i+1)-log(i))*(width/log(spectrum.length));
+   *  for (let i = 0; i < spectrum.length; i++){
+   *    let x = map(log(i), 0, log(spectrum.length), 0, width);
+   *    let h = map(spectrum[i], 0, 255, 0, height);
+   *    let rectangle_width = (log(i+1)-log(i))*(width/log(spectrum.length));
    *    rect(x, height, rectangle_width, -h )
    *  }
-
-   *  var nyquist = 22050;
+   *  let nyquist = 22050;
    *
    *  // get the centroid
    *  spectralCentroid = fft.getCentroid();
    *
    *  // the mean_freq_index calculation is for the display.
-   *  var mean_freq_index = spectralCentroid/(nyquist/spectrum.length);
+   *  let mean_freq_index = spectralCentroid/(nyquist/spectrum.length);
    *
    *  centroidplot = map(log(mean_freq_index), 0, log(spectrum.length), 0, width);
-   *
    *
    *  stroke(255,0,0); // the line showing where the centroid is will be red
    *
    *  rect(centroidplot, 0, width / spectrum.length, height)
    *  noStroke();
    *  fill(255,255,255);  // text is white
-   *  text("centroid: ", 10, 20);
-   *  text(round(spectralCentroid)+" Hz", 10, 40);
+   *  text('centroid: ', 10, 20);
+   *  text(round(spectralCentroid)+' Hz', 10, 40);
    *}
    * </code></div>
    */
-  p5.FFT.prototype.getCentroid = function() {
+  getCentroid() {
     var nyquist = p5sound.audiocontext.sampleRate / 2;
     var cumulative_sum = 0;
     var centroid_normalization = 0;
@@ -472,7 +466,7 @@ define(function(require) {
     var spec_centroid_freq =
       mean_freq_index * (nyquist / this.freqDomain.length);
     return spec_centroid_freq;
-  };
+  }
 
   /**
    *  Smooth FFT analysis by averaging with the last analysis frame.
@@ -481,14 +475,14 @@ define(function(require) {
    *  @param {Number} smoothing    0.0 < smoothing < 1.0.
    *                               Defaults to 0.8.
    */
-  p5.FFT.prototype.smooth = function(s) {
+  smooth(s) {
     if (typeof s !== 'undefined') {
       this.smoothing = s;
     }
     return this.smoothing;
-  };
+  }
 
-  p5.FFT.prototype.dispose = function() {
+  dispose() {
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
@@ -497,7 +491,7 @@ define(function(require) {
       this.analyser.disconnect();
       delete this.analyser;
     }
-  };
+  }
 
   /**
    *  Returns an array of average amplitude values for a given number
@@ -511,8 +505,9 @@ define(function(require) {
    *  @param  {Number}  N                Number of returned frequency groups
    *  @return {Array}   linearAverages   Array of average amplitude values for each group
    */
-  p5.FFT.prototype.linAverages = function(N) {
-    var N = N || 16; // This prevents undefined, null or 0 values of N
+
+  linAverages(_N) {
+    var N = _N || 16; // This prevents undefined, null or 0 values of N
 
     var spectrum = this.freqDomain;
     var spectrumLength = spectrum.length;
@@ -536,7 +531,7 @@ define(function(require) {
     }
 
     return linearAverages;
-  };
+  }
 
   /**
    *  Returns an array of average amplitude values of the spectrum, for a given
@@ -551,7 +546,7 @@ define(function(require) {
    *  @param  {Array}   octaveBands    Array of Octave Bands objects for grouping
    *  @return {Array}   logAverages    Array of average amplitude values for each group
    */
-  p5.FFT.prototype.logAverages = function(octaveBands) {
+  logAverages(octaveBands) {
     var nyquist = p5sound.audiocontext.sampleRate / 2;
     var spectrum = this.freqDomain;
     var spectrumLength = spectrum.length;
@@ -563,7 +558,7 @@ define(function(require) {
 
     for (var specIndex = 0; specIndex < spectrumLength; specIndex++) {
       var specIndexFrequency = Math.round(
-        specIndex * nyquist / this.freqDomain.length
+        (specIndex * nyquist) / this.freqDomain.length
       );
 
       // Increase the group index if the current frequency exceeds the limits of the band
@@ -578,7 +573,7 @@ define(function(require) {
     }
 
     return logAverages;
-  };
+  }
 
   /**
    *  Calculates and Returns the 1/N
@@ -594,15 +589,15 @@ define(function(require) {
    *  @param  {Number}  fCtr0         Minimum central frequency for the lowest band
    *  @return {Array}   octaveBands   Array of octave band objects with their bounds
    */
-  p5.FFT.prototype.getOctaveBands = function(N, fCtr0) {
-    var N = N || 3; // Default to 1/3 Octave Bands
-    var fCtr0 = fCtr0 || 15.625; // Minimum central frequency, defaults to 15.625Hz
+  getOctaveBands(_N, _fCtr0) {
+    var N = _N || 3; // Default to 1/3 Octave Bands
+    var fCtr0 = _fCtr0 || 15.625; // Minimum central frequency, defaults to 15.625Hz
 
     var octaveBands = [];
     var lastFrequencyBand = {
       lo: fCtr0 / Math.pow(2, 1 / (2 * N)),
       ctr: fCtr0,
-      hi: fCtr0 * Math.pow(2, 1 / (2 * N))
+      hi: fCtr0 * Math.pow(2, 1 / (2 * N)),
     };
     octaveBands.push(lastFrequencyBand);
 
@@ -618,27 +613,34 @@ define(function(require) {
     }
 
     return octaveBands;
-  };
+  }
 
-  // helper methods to convert type from float (dB) to int (0-255)
-  var freqToFloat = function(fft) {
-    if (fft.freqDomain instanceof Float32Array === false) {
-      fft.freqDomain = new Float32Array(fft.analyser.frequencyBinCount);
-    }
-  };
-  var freqToInt = function(fft) {
-    if (fft.freqDomain instanceof Uint8Array === false) {
-      fft.freqDomain = new Uint8Array(fft.analyser.frequencyBinCount);
-    }
-  };
-  var timeToFloat = function(fft) {
-    if (fft.timeDomain instanceof Float32Array === false) {
-      fft.timeDomain = new Float32Array(fft.analyser.frequencyBinCount);
-    }
-  };
-  var timeToInt = function(fft) {
-    if (fft.timeDomain instanceof Uint8Array === false) {
-      fft.timeDomain = new Uint8Array(fft.analyser.frequencyBinCount);
-    }
-  };
-});
+  _onNewInput() {
+    //  disconnect FFT from sketch when something is connected
+    p5sound.fftMeter.disconnect();
+  }
+}
+
+// helper methods to convert type from float (dB) to int (0-255)
+function freqToFloat(fft) {
+  if (fft.freqDomain instanceof Float32Array === false) {
+    fft.freqDomain = new Float32Array(fft.analyser.frequencyBinCount);
+  }
+}
+function freqToInt(fft) {
+  if (fft.freqDomain instanceof Uint8Array === false) {
+    fft.freqDomain = new Uint8Array(fft.analyser.frequencyBinCount);
+  }
+}
+function timeToFloat(fft) {
+  if (fft.timeDomain instanceof Float32Array === false) {
+    fft.timeDomain = new Float32Array(fft.analyser.frequencyBinCount);
+  }
+}
+function timeToInt(fft) {
+  if (fft.timeDomain instanceof Uint8Array === false) {
+    fft.timeDomain = new Uint8Array(fft.analyser.frequencyBinCount);
+  }
+}
+
+export default FFT;

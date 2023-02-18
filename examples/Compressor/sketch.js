@@ -50,7 +50,7 @@ function setup() {
 
   compressor = new p5.Compressor();
 
-  // Disconnect soundfile from master output.
+  // Disconnect soundfile from main output.
   // Then, connect it to the filter, so that we only hear the filtered sound
   soundFile.disconnect();
   compressor.process(soundFile);

@@ -1,70 +1,75 @@
-'use strict';
+import p5sound from './main';
+import { safeBufferSize } from './helpers';
+import processorNames from './audioWorklet/processorNames';
 
-define(function (require) {
-  const p5sound = require('master');
-  const { safeBufferSize } = require('helpers');
-  const processorNames = require('./audioWorklet/processorNames');
-
-  /**
-   *  Amplitude measures volume between 0.0 and 1.0.
-   *  Listens to all p5sound by default, or use setInput()
-   *  to listen to a specific sound source. Accepts an optional
-   *  smoothing value, which defaults to 0.
-   *
-   *  @class p5.Amplitude
-   *  @constructor
-   *  @param {Number} [smoothing] between 0.0 and .999 to smooth
-   *                             amplitude readings (defaults to 0)
-   *  @example
-   *  <div><code>
-   *  var sound, amplitude, cnv;
-   *
-   *  function preload(){
-   *    sound = loadSound('assets/beat.mp3');
-   *  }
-   *  function setup() {
-   *    cnv = createCanvas(100,100);
-   *    amplitude = new p5.Amplitude();
-   *
-   *    // start / stop the sound when canvas is clicked
-   *    cnv.mouseClicked(function() {
-   *      if (sound.isPlaying() ){
-   *        sound.stop();
-   *      } else {
-   *        sound.play();
-   *      }
-   *    });
-   *  }
-   *  function draw() {
-   *    background(0);
-   *    fill(255);
-   *    var level = amplitude.getLevel();
-   *    var size = map(level, 0, 1, 0, 200);
-   *    ellipse(width/2, height/2, size, size);
-   *  }
-   *
-   *  </code></div>
-   */
-  p5.Amplitude = function(smoothing) {
-
+/**
+ *  Amplitude measures volume between 0.0 and 1.0.
+ *  Listens to all p5sound by default, or use setInput()
+ *  to listen to a specific sound source. Accepts an optional
+ *  smoothing value, which defaults to 0.
+ *
+ *  @class p5.Amplitude
+ *  @constructor
+ *  @param {Number} [smoothing] between 0.0 and .999 to smooth
+ *                             amplitude readings (defaults to 0)
+ *  @example
+ *  <div><code>
+ *  let sound, amplitude;
+ *
+ *  function preload(){
+ *    sound = loadSound('assets/beat.mp3');
+ *  }
+ *  function setup() {
+ *    let cnv = createCanvas(100,100);
+ *    cnv.mouseClicked(togglePlay);
+ *    amplitude = new p5.Amplitude();
+ *  }
+ *
+ *  function draw() {
+ *    background(220);
+ *    text('tap to play', 20, 20);
+ *
+ *    let level = amplitude.getLevel();
+ *    let size = map(level, 0, 1, 0, 200);
+ *    ellipse(width/2, height/2, size, size);
+ *  }
+ *
+ *  function togglePlay() {
+ *    if (sound.isPlaying() ){
+ *      sound.pause();
+ *    } else {
+ *      sound.loop();
+ *		amplitude = new p5.Amplitude();
+ *		amplitude.setInput(sound);
+ *    }
+ *  }
+ *
+ *  </code></div>
+ */
+class Amplitude {
+  constructor(smoothing) {
     // Set to 2048 for now. In future iterations, this should be inherited or parsed from p5sound's default
     this.bufferSize = safeBufferSize(2048);
 
     // set audio context
     this.audiocontext = p5sound.audiocontext;
-    this._workletNode = new AudioWorkletNode(this.audiocontext, processorNames.amplitudeProcessor, {
-      outputChannelCount: [1],
+    this._workletNode = new AudioWorkletNode(
+      this.audiocontext,
+      processorNames.amplitudeProcessor,
+      {
+        outputChannelCount: [1],
 
-      parameterData: { smoothing: smoothing || 0 },
-      processorOptions: {
-        normalize: false,
-        smoothing: smoothing || 0,
-        numInputChannels: 2,
-        bufferSize: this.bufferSize
+        parameterData: { smoothing: smoothing || 0 },
+        processorOptions: {
+          normalize: false,
+          smoothing: smoothing || 0,
+          numInputChannels: 2,
+          bufferSize: this.bufferSize,
+        },
       }
-    });
+    );
 
-    this._workletNode.port.onmessage = function(event) {
+    this._workletNode.port.onmessage = function (event) {
       if (event.data.name === 'amplitude') {
         this.volume = event.data.volume;
         this.volNorm = event.data.volNorm;
@@ -92,22 +97,22 @@ define(function (require) {
     // this may only be necessary because of a Chrome bug
     this.output.connect(this.audiocontext.destination);
 
-    // connect to p5sound master output by default, unless set by input()
+    // connect to p5sound main output by default, unless set by input()
     p5sound.meter.connect(this._workletNode);
 
     // add this p5.SoundFile to the soundArray
     p5sound.soundArray.push(this);
-  };
+  }
 
   /**
-   *  Connects to the p5sound instance (master output) by default.
+   *  Connects to the p5sound instance (main output) by default.
    *  Optionally, you can pass in a specific source (i.e. a soundfile).
    *
    *  @method setInput
    *  @for p5.Amplitude
    *  @param {soundObject|undefined} [snd] set the sound source
    *                                       (optional, defaults to
-   *                                       master output)
+   *                                       main output)
    *  @param {Number|undefined} [smoothing] a range between 0.0 and 1.0
    *                                        to smooth amplitude readings
    *  @example
@@ -117,26 +122,34 @@ define(function (require) {
    *    sound2 = loadSound('assets/drum.mp3');
    *  }
    *  function setup(){
+   *    cnv = createCanvas(100, 100);
+   *    cnv.mouseClicked(toggleSound);
+   *
    *    amplitude = new p5.Amplitude();
-   *    sound1.play();
-   *    sound2.play();
    *    amplitude.setInput(sound2);
    *  }
+   *
    *  function draw() {
-   *    background(0);
-   *    fill(255);
-   *    var level = amplitude.getLevel();
-   *    var size = map(level, 0, 1, 0, 200);
+   *    background(220);
+   *    text('tap to play', 20, 20);
+   *
+   *    let level = amplitude.getLevel();
+   *    let size = map(level, 0, 1, 0, 200);
    *    ellipse(width/2, height/2, size, size);
    *  }
-   *  function mouseClicked(){
-   *    sound1.stop();
-   *    sound2.stop();
+   *
+   *  function toggleSound(){
+   *    if (sound1.isPlaying() && sound2.isPlaying()) {
+   *      sound1.stop();
+   *      sound2.stop();
+   *    } else {
+   *      sound1.play();
+   *      sound2.play();
+   *    }
    *  }
    *  </code></div>
    */
-  p5.Amplitude.prototype.setInput = function(source, smoothing) {
-
+  setInput(source, smoothing) {
     p5sound.meter.disconnect();
 
     if (smoothing) {
@@ -145,14 +158,12 @@ define(function (require) {
 
     // connect to the master out of p5s instance if no snd is provided
     if (source == null) {
-      console.log('Amplitude input source is not ready! Connecting to master output instead');
+      console.log(
+        'Amplitude input source is not ready! Connecting to main output instead'
+      );
       p5sound.meter.connect(this._workletNode);
     }
 
-    // if it is a p5.Signal
-    else if (source instanceof p5.Signal) {
-      source.output.connect(this._workletNode);
-    }
     // connect to the sound if it is available
     else if (source) {
       source.connect(this._workletNode);
@@ -164,25 +175,7 @@ define(function (require) {
     else {
       p5sound.meter.connect(this._workletNode);
     }
-  };
-
-  p5.Amplitude.prototype.connect = function(unit) {
-    if (unit) {
-      if (unit.hasOwnProperty('input')) {
-        this.output.connect(unit.input);
-      } else {
-        this.output.connect(unit);
-      }
-    } else {
-      this.output.connect(this.panner.connect(p5sound.input));
-    }
-  };
-
-  p5.Amplitude.prototype.disconnect = function() {
-    if (this.output) {
-      this.output.disconnect();
-    }
-  };
+  }
 
   /**
    *  Returns a single Amplitude reading at the moment it is called.
@@ -197,37 +190,45 @@ define(function (require) {
    *  function preload(){
    *    sound = loadSound('assets/beat.mp3');
    *  }
+   *
    *  function setup() {
+   *    let cnv = createCanvas(100, 100);
+   *    cnv.mouseClicked(toggleSound);
    *    amplitude = new p5.Amplitude();
-   *    sound.play();
    *  }
+   *
    *  function draw() {
-   *    background(0);
-   *    fill(255);
-   *    var level = amplitude.getLevel();
-   *    var size = map(level, 0, 1, 0, 200);
+   *    background(220, 150);
+   *    textAlign(CENTER);
+   *    text('tap to play', width/2, 20);
+   *
+   *    let level = amplitude.getLevel();
+   *    let size = map(level, 0, 1, 0, 200);
    *    ellipse(width/2, height/2, size, size);
    *  }
-   *  function mouseClicked(){
-   *    sound.stop();
+   *
+   *  function toggleSound(){
+   *    if (sound.isPlaying()) {
+   *      sound.stop();
+   *    } else {
+   *      sound.play();
+   *    }
    *  }
    *  </code></div>
    */
-  p5.Amplitude.prototype.getLevel = function(channel) {
+  getLevel(channel) {
     if (typeof channel !== 'undefined') {
       if (this.normalize) {
         return this.stereoVolNorm[channel];
       } else {
         return this.stereoVol[channel];
       }
-    }
-    else if (this.normalize) {
+    } else if (this.normalize) {
       return this.volNorm;
-    }
-    else {
+    } else {
       return this.volume;
     }
-  };
+  }
 
   /**
    * Determines whether the results of Amplitude.process() will be
@@ -243,16 +244,17 @@ define(function (require) {
    * @for p5.Amplitude
    * @param {boolean} [boolean] set normalize to true (1) or false (0)
    */
-  p5.Amplitude.prototype.toggleNormalize = function(bool) {
+  toggleNormalize(bool) {
     if (typeof bool === 'boolean') {
       this.normalize = bool;
-    }
-    else {
+    } else {
       this.normalize = !this.normalize;
     }
-    this._workletNode.port.postMessage({ name: 'toggleNormalize', normalize: this.normalize });
-  };
-
+    this._workletNode.port.postMessage({
+      name: 'toggleNormalize',
+      normalize: this.normalize,
+    });
+  }
   /**
    *  Smooth Amplitude analysis by averaging with the last analysis
    *  frame. Off by default.
@@ -261,15 +263,14 @@ define(function (require) {
    *  @for p5.Amplitude
    *  @param {Number} set smoothing from 0.0 <= 1
    */
-  p5.Amplitude.prototype.smooth = function(s) {
+  smooth(s) {
     if (s >= 0 && s < 1) {
       this._workletNode.port.postMessage({ name: 'smoothing', smoothing: s });
     } else {
       console.log('Error: smoothing must be between 0 and 1');
     }
-  };
-
-  p5.Amplitude.prototype.dispose = function() {
+  }
+  dispose() {
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
@@ -285,6 +286,7 @@ define(function (require) {
 
     this._workletNode.disconnect();
     delete this._workletNode;
-  };
+  }
+}
 
-});
+export default Amplitude;

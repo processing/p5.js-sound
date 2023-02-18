@@ -1,75 +1,75 @@
-'use strict';
+import p5sound from './main';
 
-define(function (require) {
-  var p5sound = require('master');
+/**
+ *  A gain node is usefull to set the relative volume of sound.
+ *  It's typically used to build mixers.
+ *
+ *  @class p5.Gain
+ *  @constructor
+ *  @example
+ *  <div><code>
+ *
+ *  // load two soundfile and crossfade beetween them
+ *  let sound1,sound2;
+ *  let sound1Gain, sound2Gain, mixGain;
+ *  function preload(){
+ *    soundFormats('ogg', 'mp3');
+ *    sound1 = loadSound('assets/Damscray_-_Dancing_Tiger_01');
+ *    sound2 = loadSound('assets/beat');
+ *  }
+ *  function setup() {
+ *    let cnv = createCanvas(100, 100);
+ *    cnv.mousePressed(startSound);
+ *    // create a 'mix' gain bus to which we will connect both soundfiles
+ *    mixGain = new p5.Gain();
+ *    mixGain.connect();
+ *    sound1.disconnect(); // diconnect from p5 output
+ *    sound1Gain = new p5.Gain(); // setup a gain node
+ *    sound1Gain.setInput(sound1); // connect the first sound to its input
+ *    sound1Gain.connect(mixGain); // connect its output to the final mix bus
+ *    sound2.disconnect();
+ *    sound2Gain = new p5.Gain();
+ *    sound2Gain.setInput(sound2);
+ *    sound2Gain.connect(mixGain);
+ *  }
+ *  function startSound() {
+ *    sound1.loop();
+ *    sound2.loop();
+ *    loop();
+ *  }
+ *  function mouseReleased() {
+ *    sound1.stop();
+ *    sound2.stop();
+ *  }
+ *  function draw(){
+ *    background(220);
+ *    textAlign(CENTER);
+ *    textSize(11);
+ *    fill(0);
+ *    if (!sound1.isPlaying()) {
+ *      text('tap and drag to play', width/2, height/2);
+ *      return;
+ *    }
+ *    // map the horizontal position of the mouse to values useable for volume    *  control of sound1
+ *    var sound1Volume = constrain(map(mouseX,width,0,0,1), 0, 1);
+ *    var sound2Volume = 1-sound1Volume;
+ *    sound1Gain.amp(sound1Volume);
+ *    sound2Gain.amp(sound2Volume);
+ *    // map the vertical position of the mouse to values useable for 'output    *  volume control'
+ *    var outputVolume = constrain(map(mouseY,height,0,0,1), 0, 1);
+ *    mixGain.amp(outputVolume);
+ *    text('output', width/2, height - outputVolume * height * 0.9)
+ *    fill(255, 0, 255);
+ *    textAlign(LEFT);
+ *    text('sound1', 5, height - sound1Volume * height * 0.9);
+ *    textAlign(RIGHT);
+ *    text('sound2', width - 5, height - sound2Volume * height * 0.9);
+ *  }
+ *</code></div>
+ */
 
-  /**
-   *  A gain node is usefull to set the relative volume of sound.
-   *  It's typically used to build mixers.
-   *
-   *  @class p5.Gain
-   *  @constructor
-   *  @example
-   *  <div><code>
-   *
-   * // load two soundfile and crossfade beetween them
-   * var sound1,sound2;
-   * var gain1, gain2, gain3;
-   *
-   * function preload(){
-   *   soundFormats('ogg', 'mp3');
-   *   sound1 = loadSound('assets/Damscray_-_Dancing_Tiger_01');
-   *   sound2 = loadSound('assets/beat.mp3');
-   * }
-   *
-   * function setup() {
-   *   createCanvas(400,200);
-   *
-   *   // create a 'master' gain to which we will connect both soundfiles
-   *   gain3 = new p5.Gain();
-   *   gain3.connect();
-   *
-   *   // setup first sound for playing
-   *   sound1.rate(1);
-   *   sound1.loop();
-   *   sound1.disconnect(); // diconnect from p5 output
-   *
-   *   gain1 = new p5.Gain(); // setup a gain node
-   *   gain1.setInput(sound1); // connect the first sound to its input
-   *   gain1.connect(gain3); // connect its output to the 'master'
-   *
-   *   sound2.rate(1);
-   *   sound2.disconnect();
-   *   sound2.loop();
-   *
-   *   gain2 = new p5.Gain();
-   *   gain2.setInput(sound2);
-   *   gain2.connect(gain3);
-   *
-   * }
-   *
-   * function draw(){
-   *   background(180);
-   *
-   *   // calculate the horizontal distance beetween the mouse and the right of the screen
-   *   var d = dist(mouseX,0,width,0);
-   *
-   *   // map the horizontal position of the mouse to values useable for volume control of sound1
-   *   var vol1 = map(mouseX,0,width,0,1);
-   *   var vol2 = 1-vol1; // when sound1 is loud, sound2 is quiet and vice versa
-   *
-   *   gain1.amp(vol1,0.5,0);
-   *   gain2.amp(vol2,0.5,0);
-   *
-   *   // map the vertical position of the mouse to values useable for 'master volume control'
-   *   var vol3 = map(mouseY,0,height,0,1);
-   *   gain3.amp(vol3,0.5,0);
-   * }
-   *</code></div>
-   *
-   */
-
-  p5.Gain = function() {
+class Gain {
+  constructor() {
     this.ac = p5sound.audiocontext;
 
     this.input = this.ac.createGain();
@@ -81,7 +81,7 @@ define(function (require) {
 
     // add  to the soundArray
     p5sound.soundArray.push(this);
-  };
+  }
 
   /**
    *  Connect a source to the gain node.
@@ -92,10 +92,9 @@ define(function (require) {
    *                           output.
    */
 
-
-  p5.Gain.prototype.setInput = function(src) {
+  setInput(src) {
     src.connect(this.input);
-  };
+  }
 
   /**
    *  Send output to a p5.sound or web audio object
@@ -104,10 +103,13 @@ define(function (require) {
    *  @for p5.Gain
    *  @param  {Object} unit
    */
-  p5.Gain.prototype.connect = function(unit) {
+  connect(unit) {
     var u = unit || p5.soundOut.input;
     this.output.connect(u.input ? u.input : u);
-  };
+    if (unit && unit._onNewInput) {
+      unit._onNewInput(this);
+    }
+  }
 
   /**
    *  Disconnect all output.
@@ -115,11 +117,11 @@ define(function (require) {
    *  @method disconnect
    *  @for p5.Gain
    */
-  p5.Gain.prototype.disconnect = function() {
+  disconnect() {
     if (this.output) {
       this.output.disconnect();
     }
-  };
+  }
 
   /**
    *  Set the output level of the gain node.
@@ -131,17 +133,15 @@ define(function (require) {
    *  @param  {Number} [timeFromNow] schedule this event to happen
    *                                seconds from now
    */
-  p5.Gain.prototype.amp = function(vol, rampTime, tFromNow) {
-    var rampTime = rampTime || 0;
-    var tFromNow = tFromNow || 0;
+  amp(vol, rampTime = 0, tFromNow = 0) {
     var now = p5sound.audiocontext.currentTime;
     var currentVol = this.output.gain.value;
     this.output.gain.cancelScheduledValues(now);
     this.output.gain.linearRampToValueAtTime(currentVol, now + tFromNow);
     this.output.gain.linearRampToValueAtTime(vol, now + tFromNow + rampTime);
-  };
+  }
 
-  p5.Gain.prototype.dispose = function() {
+  dispose() {
     // remove reference from soundArray
     var index = p5sound.soundArray.indexOf(this);
     p5sound.soundArray.splice(index, 1);
@@ -153,6 +153,7 @@ define(function (require) {
       this.input.disconnect();
       delete this.input;
     }
-  };
+  }
+}
 
-});
+export default Gain;

@@ -38,7 +38,7 @@ function setup() {
   eqSize = 8;
   eq = new p5.EQ(eqSize);
 
-  // Disconnect soundFile from master output.
+  // Disconnect soundFile from main output.
   // Then, connect it to the EQ, so that we only hear the EQ'd sound
   soundFile.loop();
   soundFile.disconnect();
