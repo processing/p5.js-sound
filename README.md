@@ -13,7 +13,7 @@
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/processing/p5.js-sound?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Discord](https://img.shields.io/discord/836700474425475088?logo=discord)](https://discord.gg/HWzy4HpaEJ)
 
-p5.sound brings the [Processing](http://processing.org) approach to [Web Audio](http://w3.org/TR/webaudio/) as an addon for [p5.js](http://github.com/lmccart/p5.js). Functionality includes audio input, playback, manipulation, effects, recording, sequencing, analysis and synthesis. The library is designed to be used in tandem with [p5.js](http://p5js.org).
+p5.sound brings the [Processing](http://processing.org) approach to [Web Audio](http://w3.org/TR/webaudio/) as an addon for [p5.js](http://github.com/processing/p5.js). Functionality includes audio input, playback, manipulation, effects, recording, sequencing, analysis and synthesis. The library is designed to be used in tandem with [p5.js](http://p5js.org).
 
 ### Examples
 
@@ -28,13 +28,13 @@ Interactive documentation at [p5js.org/reference/#/libraries/p5.sound](http://p5
 ### Latest Build
 
 - Visit http://p5js.org/download/ for the latest official release of p5 with the latest p5.sound included.
-- The sound library [here](https://github.com/processing/p5.js-sound/blob/master/lib) is updated more frequently, and we occasionally offer new [releases](https://github.com/processing/p5.js-sound/releases) before p5's release cycle.
+- The sound library [here](https://github.com/processing/p5.js-sound/blob/main/lib) is updated more frequently, and we occasionally offer new [releases](https://github.com/processing/p5.js-sound/releases) before the release cycle of p5.js.
 
 ### Contribute
 
-[Here's a guide](https://github.com/processing/p5.js-sound/wiki/Contribute) to getting started as a contributor.
+Here's a guide to contribute to the p5.js project https://github.com/processing/p5.js-sound/wiki/Contribute, to help you getting started as a contributor.
 
-Note : If you have any questions or concerns regarding the project, you can reach out to our [Discord](https://discord.gg/HWzy4HpaEJ) and [Gitter](https://gitter.im/processing/p5.js-sound) communities. The p5.js team closely monitors all pull requests and issues on GitHub, so there's no need to also post them on Discord. Additionally, conversations about specific pull requests and issues should take place on GitHub, to ensure that people following along over can see and take part in the whole discussion. Thanks - p5.js Team.
+Note : If you have any questions or concerns regarding the project, you can reach out to our [Discord](https://discord.gg/HWzy4HpaEJ) and [Gitter](https://gitter.im/processing/p5.js-sound) communities. The p5.js team closely monitors all pull requests and issues on GitHub, so there's no need to also post them on Discord. Additionally, conversations about specific pull requests and issues should take place on GitHub, to ensure that people following along over can see and take part in the whole discussion.
 
 ### Dependencies
 
@@ -50,5 +50,5 @@ p5.sound is built with a few modules (Clock, TimelineSignal, and signal math com
 - [Chris Wilson](https://github.com/cwilso/)
 - [Chris Lowis](http://blog.chrislowis.co.uk/)
 - [Kevin Ennis](https://github.com/kevincennis)
-- [Wilm Thoben's Sound library for Processing](https://github.com/processing/processing/tree/master/java/libraries/sound)
+- [Processing Sound library](https://github.com/processing/processing-sound)
 - [Web Audio API](http://webaudio.github.io/web-audio-api/)
