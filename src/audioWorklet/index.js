@@ -9,14 +9,17 @@ let initializedAudioWorklets = false;
 
 function loadAudioWorkletModules() {
   return Promise.all(
-    moduleSources.map(function(moduleSrc) {
+    moduleSources.map(function (moduleSrc) {
       const blob = new Blob([moduleSrc], { type: 'application/javascript' });
       const objectURL = URL.createObjectURL(blob);
-      return ac.audioWorklet
-      .addModule(objectURL)
-      // in "p5 instance mode," the module may already be registered
-      .catch(() => Promise.resolve());
-  }));
+      return (
+        ac.audioWorklet
+          .addModule(objectURL)
+          // in "p5 instance mode," the module may already be registered
+          .catch(() => Promise.resolve())
+      );
+    })
+  );
 }
 
 p5.prototype.registerMethod('init', function () {
