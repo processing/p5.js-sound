@@ -1,7 +1,15 @@
-docs
-node_modules
-examples/__test
-p5soundnotes
+# Apple
 *.DS_Store
+
+# npm
+node_modules
+
+# Visual Studio
 .vscode
+
+# others
+docs
+examples/__test
 lib/p5.*
+p5soundnotes
+
