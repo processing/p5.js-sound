@@ -70,8 +70,6 @@ AFTER HERE, COPIED FROM WIKI PAGE ON 2023-02-18
 
 # p5.js-sound to do list
 
-### This is a list of things that we hope to accomplish with p5.sound. If you want to work on one of these, or discuss an idea, feel free to make a GitHub issue. Got something to add to the list? We'd love to hear it!
-
 # Contribute
 
 _If you have contributions, feedback, bug reports, or ideas to share, get involved! [Join the discussion on github](https://github.com/processing/p5.js-sound/issues) to let the community know what you plan to work on (and to make sure we're not already working on it). There is plenty to do...check out the [to do list](https://github.com/processing/p5.js-sound/blob/main/todo.md)._
