@@ -57,6 +57,14 @@ describe('p5.PolySynth', function () {
         expect(monoSynth.env).to.have.property('control');
       }
     });
+    it('can change synthType', function () {
+      let polySynth = new p5.PolySynth(p5.MonoSynth, 6);
+      polySynth.setType('square');
+      for (let i = 0; i < 6; i++) {
+        const monoSynth = polySynth.audiovoices[i];
+        expect(monoSynth.getType()).to.equal('square');
+      }
+    });
 
     it('can trigger a note attack at the present moment with only one argument', function (done) {
       let polySynth = new p5.PolySynth(p5.MonoSynth, 3);
