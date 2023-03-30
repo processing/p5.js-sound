@@ -15,6 +15,8 @@
 
 p5.sound brings the [Processing](http://processing.org) approach to [Web Audio](http://w3.org/TR/webaudio/) as an addon for [p5.js](http://github.com/processing/p5.js). Functionality includes audio input, playback, manipulation, effects, recording, sequencing, analysis and synthesis. The library is designed to be used in tandem with [p5.js](http://p5js.org).
 
+Between February 2023 - July 2023, this repository is being maintained by aarón montoya-moraga (@montoyamoraga), in their role of Processing p5.js sound Fellow.
+
 ### Examples
 
 - Examples at [p5js.org/examples](https://p5js.org/examples/)
