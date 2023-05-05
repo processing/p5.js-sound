@@ -9,7 +9,7 @@
   "devDependencies": {
     "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
-    "almond": "~0.2.7",
+    "almond": "^0.2.9",
     "amdclean": "~2.0",
     "babel-loader": "^8.0.6",
     "babel-plugin-preval": "^3.0.1",
