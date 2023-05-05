@@ -40,9 +40,8 @@ class RecorderProcessor extends AudioWorkletProcessor {
       this.inputRingBuffer.pull(this.inputRingBufferArraySequence);
 
       for (let channel = 0; channel < this.numOutputChannels; ++channel) {
-        const inputChannelCopy = this.inputRingBufferArraySequence[
-          channel
-        ].slice();
+        const inputChannelCopy =
+          this.inputRingBufferArraySequence[channel].slice();
         if (channel === 0) {
           this.leftBuffers.push(inputChannelCopy);
           if (this.numInputChannels === 1) {
