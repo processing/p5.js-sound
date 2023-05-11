@@ -104,8 +104,6 @@ Once you are set up, you can make changes in a variety of ways:
 
 - **Adding features** Simply find the module you want to edit by looking for its files in the `/src` folder. Then, re-build the library by calling `grunt` from the command line when you are ready to try out your changes.
 
-- **Creating examples** You are welcome to create a new sketch in the `/examples` folder to test manually. After you have created your sketch, you can add it to the main examples page by running `node gh-page/generator.js` from the main directory. This re-generates the index.html file from all the examples in the `/examples` folder. These examples can be accessed by first running `grunt dev` from the repository root then navigating to `localhost:8000` within your browser.
-
 - **Writing documentation** `p5.js-sound` uses inline documentation. A good example for how to format and write inline documentation can be seen in [p5.Oscillator](https://github.com/processing/p5.js-sound/blob/main/src/oscillator.js). Check out the [documentation page](https://github.com/processing/p5.js-sound/wiki/Documentation) for more details.
 
 - **Writing automatic tests** More information [below](#testing).
