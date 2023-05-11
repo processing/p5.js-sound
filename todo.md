@@ -42,15 +42,11 @@
 
 * Write tests and benchmark performance.
 
-- Find and optimize areas of slow performance.
-
 * Custom callbacks for error in getUserMedia when it is not available (i.e. in Safari)
 
 * Documentation:
-  - Fix [pause page](http://p5js.org/reference/#/p5.SoundFile/pause)
   - Make sure there are no looping sounds in the reference examples.
   - Lower amplitude on all examples
-  - Improve documentation and examples when you see anything that is unclear.
 
 - Update p5.FFT API to reflect [changes in the Processing Sound FFT API](https://github.com/processing/processing-docs/issues/221)
 
@@ -70,23 +66,15 @@ AFTER HERE, COPIED FROM WIKI PAGE ON 2023-02-18
 
 # p5.js-sound to do list
 
-# Contribute
-
-_If you have contributions, feedback, bug reports, or ideas to share, get involved! [Join the discussion on github](https://github.com/processing/p5.js-sound/issues) to let the community know what you plan to work on (and to make sure we're not already working on it). There is plenty to do...check out the [to do list](https://github.com/processing/p5.js-sound/blob/main/todo.md)._
-
 # Installation
 
-1. [Fork](https://help.github.com/articles/fork-a-repo) the library to your own github account
-2. Open up the terminal, and clone the library to your local computer
-   ```
-   git clone https://github.com/<your github username>/p5.js-sound
-   ```
-3. Navigate to within the `p5.js-sound` folder. You can type `cd` (change directory) and then drag the folder into the terminal window to copy the address of the folder.
-4. Install the following dependencies:
-   - [`npm`](https://www.npmjs.com/) (Node Package Manager). The easiest way to do this is by installing [node.js](http://nodejs.org/), which automatically installs `npm` for you.
-   - [`grunt`](https://gruntjs.com/) command line interface. This is the task runner we use to build the library from source files. Install from the command line using npm: `sudo npm install -g grunt-cli`.
-5. Run `npm install` from the command line. This downloads the node modules that we use to build the `p5.sound.js` file from the source files in the `/src` folder, as well as modules used for running tests and other tasks.
-6. Run `grunt` from the command line to compile the library. This will update the p5.sound.js and p5.sound.min.js files in the `/lib` directory with any changes from the `/src` directory.
+- Clone this repo and navigate to within the `p5.js-sound` folder. You can type `cd` (change directory) and then drag the folder into the terminal window to copy the address of the folder.
+- Install the following dependencies:
+  - [`npm`](https://www.npmjs.com/) (Node Package Manager). The easiest way to do this is by installing [node.js](http://nodejs.org/), which automatically installs `npm` for you.
+  - [`grunt`](https://gruntjs.com/) command line interface. This is the task runner we use to build the library from source files. Install from the command line using npm: `sudo npm install -g grunt-cli`.
+
+* Run `npm install` from the command line. This downloads the node modules that we use to build the `p5.sound.js` file from the source files in the `/src` folder, as well as modules used for running tests and other tasks.
+* Run `grunt` from the command line to compile the library. This will update the p5.sound.js and p5.sound.min.js files in the `/lib` directory with any changes from the `/src` directory.
 
 # Overview
 
@@ -104,11 +92,9 @@ Once you are set up, you can make changes in a variety of ways:
 
 - **Adding features** Simply find the module you want to edit by looking for its files in the `/src` folder. Then, re-build the library by calling `grunt` from the command line when you are ready to try out your changes.
 
-- **Writing documentation** `p5.js-sound` uses inline documentation. A good example for how to format and write inline documentation can be seen in [p5.Oscillator](https://github.com/processing/p5.js-sound/blob/main/src/oscillator.js). Check out the [documentation page](https://github.com/processing/p5.js-sound/wiki/Documentation) for more details.
+- **Writing documentation** `p5.js-sound` uses inline documentation. A good example for how to format and write inline documentation can be seen in [p5.Oscillator](https://github.com/processing/p5.js-sound/blob/main/src/oscillator.js).
 
 - **Writing automatic tests** More information [below](#testing).
-
-To submit your changes, commit your work and push your changes to your fork. Then [submit a pull request](https://help.github.com/articles/creating-a-pull-request) to merge your changes into the main branch.
 
 # Testing
 
@@ -127,7 +113,7 @@ To get started:
 3. Register your new test files by adding their names to the `allTests` array in `test.js`.
 4. Run the tests in the browser (see below).
 
-#### Running tests in the browser
+### Running tests in the browser
 
 It is useful to run tests in the browser, especially when trying to debug test failures on different browsers. To run the tests in the browser:
 
@@ -144,15 +130,6 @@ Linting rules are in this file: `src/.eslintrc`.
 2. Run `grunt lint` to lint the entire `src/` directory (displays linting errors in the directory).
 3. You can auto-fix errors on the terminal, with the optional `--fix` flag that will fix some (but not all) linting errors. For example, to fix the errors in `src/audioin.js`, run `eslint src/audioin.js --fix` which will fix all the auto-fixable errors in that file.
 4. Alternatively (or for the non-auto-fixable errors), you can open those files and fix those errors manually.
-
-#### (Optional but recommended) Get linting hints in your IDE
-
-To get linting hints as you code, you can also install linter tools for your code editor. You will need to look up the instructions for setup in your own editor, but most modern editors support linting.
-
-Some helpful links:
-
-- [eslint integrations](http://eslint.org/docs/user-guide/integrations)
-- [EditorConfig](http://editorconfig.org/#download)
 
 # Main branch development
 
@@ -213,34 +190,13 @@ Some helpful links:
 - `git push <name_of_the_remote> <branch_name>`
 - `git checkout -b <topic-branch-name>` Create a new branch and check it out
 - `git stash` Stash all uncommitted changes you’ve made to the branch. You can get them back later.
-- `git log` Show commit history.
-- `git status` Show branch and pending changes.
-- `git diff` View merge conflicts
-- `git grep "something()"` Search for things in your working directory.
 - `git commit --amend` Amend your previous commit rather than creating a new commit
 
 # Addendum:
 
-## Resolving Merge Conflicts:
-
-- Conflicts occur when branches have conflicting modifications that cannot be automatically resolved/merged. When you try to merge (i.e. pull upstream changes), if there are conflicts, git tells you and adds this stuff to your file:
-
-```
-<<<<<<< HEAD
-
-Here is what you had locally
-=======
-Here is what was in the thing you tried to merge
->>>>>>> 59685c301d09b58fdac23d616
-```
-
-You can fix manually by picking which one you want and getting rid of all this: <<<<<< HEAD ======= >>>>> 583….
-
 DOCUMENTATION
 
 The documentation that appears at https://p5js.org/reference/#/libraries/p5.sound is all generated automatically from inline comments. This happens once a new version of the p5.sound library is merged into the p5.js repo and included in a [release](https://github.com/processing/p5.js/releases).
-
-You can write documentation by following the [p5.js documentation guide](https://github.com/processing/p5.js/blob/master/contributor_docs/inline_documentation.md). The only difference is that you'll be modifying source files that live here, in the p5.sound repo (i.e. `p5.js-sound/src/...`). Then, you'll move over to the p5.js repo to generate and view what your documentation changes will look like.
 
 ### Preview documentation
 
