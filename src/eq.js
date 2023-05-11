@@ -4,7 +4,7 @@ import EQFilter from './eqFilter';
 /**
  * p5.EQ is an audio effect that performs the function of a multiband
  * audio equalizer. Equalization is used to adjust the balance of
- * frequency compoenents of an audio signal. This process is commonly used
+ * frequency components of an audio signal. This process is commonly used
  * in sound production and recording to change the waveform before it reaches
  * a sound output device. EQ can also be used as an audio effect to create
  * interesting distortions by filtering out parts of the spectrum. p5.EQ is
