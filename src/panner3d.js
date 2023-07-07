@@ -259,7 +259,7 @@ class Panner3D extends Effect {
 
   /**
    * How quickly the volume is reduced as the source moves away from the listener
-   * @method  rollof
+   * @method  rolloff
    * @for p5.Panner3D
    * @param  {Number} rolloffFactor
    * @return {Number} updated value
