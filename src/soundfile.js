@@ -527,7 +527,7 @@ class SoundFile {
     if (s === 'restart' || s === 'sustain' || s === 'untildone') {
       this.mode = s;
     } else {
-      throw 'Invalid play mode. Must be either "restart", "sustain" or "untildone';
+      throw 'Invalid play mode. Must be either "restart", "sustain" or "untildone"';
     }
   }
 
