@@ -13,9 +13,11 @@
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/processing/p5.js-sound?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Discord](https://img.shields.io/discord/836700474425475088?logo=discord)](https://discord.gg/HWzy4HpaEJ)
 
+During December 2023 we are sunsetting, archiving and deprecating this repository and version of the p5.sound project, while we prepare the release of the new version of the library, currently being built at [https://github.com/processing/p5.sound.js](https://github.com/processing/p5.sound.js).
+
 p5.sound brings the [Processing](http://processing.org) approach to [Web Audio](http://w3.org/TR/webaudio/) as an addon for [p5.js](http://github.com/processing/p5.js). Functionality includes audio input, playback, manipulation, effects, recording, sequencing, analysis and synthesis. The library is designed to be used in tandem with [p5.js](http://p5js.org).
 
-Between February 2023 - July 2023, this repository is being maintained by aarón montoya-moraga (@montoyamoraga), in their role of Processing p5.js sound Fellow.
+Between February 2023 - December 2023, this repository was  maintained by aarón montoya-moraga (@montoyamoraga), in their role of Processing p5.js sound Fellow.
 
 ### Examples
 
