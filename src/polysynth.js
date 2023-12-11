@@ -211,6 +211,29 @@ class PolySynth {
   }
 
   /**
+   *  Set type to 'sine', 'triangle', 'sawtooth' or 'square'.
+   *  If the current synthVoice is not MonoSynth, it
+   *  replaces the current voice with MonoSynth.
+   *  @method  setType
+   *  @for p5.PolySynth
+   *  @param {String} type 'sine', 'triangle', 'sawtooth' or 'square'.
+   */
+  setType(type) {
+    if (!(this.audiovoices[0] instanceof p5.MonoSynth)) {
+      console.warn(
+        '`PolySynth.setType()` replaces the synthVoice with `MonoSynth`'
+      );
+      this.AudioVoice = p5.MonoSynth;
+      this.audiovoices = [];
+      this._allocateVoices();
+    }
+
+    this.audiovoices.forEach((voice) => {
+      voice.setType(type);
+    });
+  }
+
+  /**
    *  Trigger the Attack, and Decay portion of a MonoSynth.
    *  Similar to holding down a key on a piano, but it will
    *  hold the sustain level until you let go.
