@@ -400,7 +400,7 @@ class Envelope {
    *  If the input is a p5.sound object (i.e. AudioIn, Oscillator,
    *  SoundFile), then Envelope will control its output volume.
    *  Envelopes can also be used to control any <a href="
-   *  http://docs.webplatform.org/wiki/apis/webaudio/AudioParam">
+   *  https://webaudio.github.io/web-audio-api/#AudioParam">
    *  Web Audio Audio Param.</a></p>
    *
    *  @method  play
@@ -470,7 +470,7 @@ class Envelope {
    *  Similar to holding down a key on a piano, but it will
    *  hold the sustain level until you let go. Input can be
    *  any p5.sound object, or a <a href="
-   *  http://docs.webplatform.org/wiki/apis/webaudio/AudioParam">
+   *  https://webaudio.github.io/web-audio-api/#AudioParam">
    *  Web Audio Param</a>.
    *
    *  @method  triggerAttack
